@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Widget Test</title>
+	<link rel="stylesheet" href="/css/site-bootstrap.css" />
+	<link rel="stylesheet" href="/css/site.css" />
+</head>
+<body data-ng-app="widgetApp" data-ng-controller="contactWidgetController">
+	<nav>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Widget Test</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="contactWidget.html">contactWidget</a></li>
+						<li><a href="contactWidgetBuild.html">contactWidgetBuild</a></li>
+						<li><a href="">link</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<div class="container">
+		<h1>Contact Widget</h1>
+		<div class="row">
+			<div class="col-sm-4">
+				<form action="" class="form-horizontal">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Saved Widgets<span class="glyphicon glyphicon-chevron-down pull-right"></span></h3>
+								</div>
+								<div class="panel-body">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<select name="SavedWidgetSelect" id="SavedWidgetSelect" class="form-control" data-ng-model="savedwidget">
+												<option value="-2">Load Saved Widget</option>
+												<option value="-1">Save as a New Widget</option>
+											</select>
+											{{savedwidget}}
+											<button class="btn btn-xs btn-primary" data-ng-class="" type="button">save</button>
+											<button class="btn btn-xs btn-success" type="button">save as new</button>
+											<button class="btn btn-xs btn-danger" type="button">delete</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-sm-8">Demo</div>
+		</div>
+		<!-- .row>.col-sm-12>.panel.panel-default>.panel-heading>h3.panel-title{pt}>span.glyphicon.glyphicon-chevron-down.pull-right^^.panel-body{pb} -->
+	</div>
+	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/js/lib/angular.min.js"></script>
+	<script type="text/javascript" src="/js/lib/ui-bootstrap-tpls.min.js"></script>
+	<script type="text/javascript" src="/js/build-contact-widget.js"></script>
+</body>
+</html>

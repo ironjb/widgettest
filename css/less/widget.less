@@ -1,0 +1,19 @@
+/**
+ * LoanTek Widget
+ *
+ * IMPORTANT!!!
+ * You must first compile widget-bootstrap.less first before compiling this file
+ * Also, after widget-bootstrap.less is compiled, you must @import using the non-minified version
+ *
+ */
+
+// Core variables and mixins
+@import "bootstrap/variables.less";
+// @import "bootstrap/mixins.less";
+
+.ltcw {
+	display: block;
+	font-family: @font-family-base;
+	font-size: @font-size-base;
+	@import (less) url('../widget-bootstrap.css');
+}

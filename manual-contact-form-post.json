@@ -1,0 +1,40 @@
+{
+	"FileType": "SalesLead",
+	"Reason": "FORM_VALUE_Comments",
+	"Source": {
+		"Active": true,
+		"Alias": "LoanTek.com",
+		"Id": 44,
+		"SourceType": "LeadSource",
+		"Name": "LoanTek.com",
+		"SubName": "Contact-Us-Form"
+	},
+	"NotifyUserOfNewLead": true,
+	"SendNewLeadInitialWelcomeMessage": true,
+	"ClientDefinedIdentifier": "LTWSJavaScriptTimeStamp",
+	"ClientId": 399,
+	"Persons": [{
+		"PersonCategoryType": "Person",
+		"PersonType": "Primary",
+		"Addresses": [{
+			"State": "FORM_VALUE_State"
+		}],
+		"ContactMethods": [{
+			"ContactType": "Email",
+			"Address": "FORM_VALUE_Email"
+		}, {
+			"ContactType": "Phone",
+			"Number": "FORM_VALUE_Phone"
+		}],
+		"Assets": [{
+			"AssetType": "Job",
+			"CompanyName": "FORM_VALUE_Company"
+		}],
+		"FirstName": "FORM_VALUE_FName",
+		"LastName": "FORM_VALUE_LName"
+	}],
+	"MiscData": [{
+		"Name": "AdditionalInformation",
+		"Value": "LEAVE_BLANK_FOR_NOW"
+	}]
+}

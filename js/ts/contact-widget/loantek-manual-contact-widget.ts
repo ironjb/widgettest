@@ -1,0 +1,336 @@
+/// <reference path="../../../typings/jquery/jquery.d.ts" />
+
+/**
+ * LoanTek Manual Contact Widget
+ */
+
+// Sets jQuery to unique var and keeps it from conflicting
+// with any other version of jQuery that may be loaded.
+var ltjQuery = jQuery.noConflict(true);
+
+// declare var loanTekManualContactWidgetOptions: any;
+
+
+interface ISource {
+	Active: boolean;
+	Alias: string;
+	Id: number;
+	SourceType: string;
+	Name: string;
+	SubName: string;
+}
+
+interface IPersonAddress {
+	State: string;
+}
+
+interface IContactMethod {
+	ContactType: string;
+	Address?: string;
+	Number?: string;
+}
+
+interface IAsset {
+	AssetType: string;
+	CompanyName: string;
+}
+
+interface IPerson {
+	PersonCategoryType: string;
+	PersonType: string;
+	Addresses: IPersonAddress[];
+	ContactMethods: IContactMethod[];
+	Assets: IAsset[];
+	FirstName: string;
+	LastName: string;
+}
+
+interface IMiscData {
+	Name: string;
+	Value: string;
+}
+
+interface IWidgetData {
+	FileType: string;
+	Reason: string;
+	Source: ISource;
+	NotifyUserOfNewLead: boolean;
+	SendNewLeadInitialWelcomeMessage: boolean;
+	ClientDefinedIdentifier: string;
+	ClientId: number;
+	Persons: IPerson[];
+	MiscData: IMiscData[];
+}
+
+class LoanTekManualContactWidget {
+
+	constructor(options) {
+		var settings = {
+			redirectUrl: null,
+			postUrl: '',
+			successMessage: null,
+
+			// Default form element IDs
+			form_id: '#LtcwContactWidgetForm',
+			form_firstName: '#ltcwFirstName',
+			form_lastName: '#ltcwLastName',
+			form_email: '#ltcwEmail',
+			form_phone: '#ltcwPhone',
+			form_company: '#ltcwCompany',
+			form_state: '#ltcwState',
+			form_comments: '#ltcwComments',
+			form_submit: '#ltcwSubmit',
+			form_errorMsgWrapper: '#ltcwErrorMessageWrapper',
+			form_errorMsg: '#ltcwErrorMessage',
+			successMsgWrapper: '#ltcwSuccessMessageWrapper',
+			successMsg: '#ltcwSuccessMessage'
+		};
+		ltjQuery.extend(settings, options);
+
+		window.console && console.log(settings);
+
+		ltjQuery(() => {
+
+			var widgetData: IWidgetData = {
+				"FileType": "SalesLead",
+				"Reason": "FORM_VALUE_Comments",
+				"Source": {
+					"Active": true,
+					"Alias": "LoanTek.com",
+					"Id": 44,
+					"SourceType": "LeadSource",
+					"Name": "LoanTek.com",
+					"SubName": "Contact-Us-Form"
+				},
+				"NotifyUserOfNewLead": true,
+				"SendNewLeadInitialWelcomeMessage": true,
+				"ClientDefinedIdentifier": "LTWSJavaScriptTimeStamp",
+				"ClientId": 399,
+				"Persons": [{
+					"PersonCategoryType": "Person",
+					"PersonType": "Primary",
+					"Addresses": [{
+						"State": "FORM_VALUE_State"
+					}],
+					"ContactMethods": [{
+						"ContactType": "Email",
+						"Address": "FORM_VALUE_Email"
+					}, {
+							"ContactType": "Phone",
+							"Number": "FORM_VALUE_Phone"
+						}],
+					"Assets": [{
+						"AssetType": "Job",
+						"CompanyName": "FORM_VALUE_Company"
+					}],
+					"FirstName": "FORM_VALUE_FName",
+					"LastName": "FORM_VALUE_LName"
+				}],
+				"MiscData": [{
+					"Name": "AdditionalInformation",
+					"Value": "LEAVE_BLANK_FOR_NOW"
+				}]
+			};
+
+			ltjQuery(settings.form_id).submit((event) => {
+				event.preventDefault();
+				ltjQuery(settings.form_errorMsgWrapper).hide(100);
+				ltjQuery(settings.form_submit).prop('disabled', true);
+
+				widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
+				widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
+				widgetData.Persons[0].ContactMethods[0].Address = ltjQuery(settings.form_email).val();
+				widgetData.Persons[0].ContactMethods[1].Number = ltjQuery(settings.form_phone).val();
+				widgetData.Persons[0].Assets[0].CompanyName = ltjQuery(settings.form_company).val();
+				widgetData.Persons[0].Addresses[0].State = ltjQuery(settings.form_state + ' option:selected').val();
+				widgetData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime().toString();
+				widgetData.Reason = ltjQuery(settings.form_comments).val();
+				widgetData.MiscData[0].Value = '';
+
+				// window.console && console.log(widgetData.toSource());
+				// ltjQuery('.testMsg').html(widgetData.toSource());
+
+				var request = ltjQuery.ajax({
+					// url: 'http://node-cors-server.herokuapp.com/no-cors',
+					//url: 'http://node-cors-server.herokuapp.com/simple-cors',
+					url: settings.postUrl,
+					method: 'POST',
+					data: widgetData,
+					dataType: 'json'
+				});
+
+				request.done((result) => {
+					// window.console && console.log('success', result);
+
+					// Clear all fields
+					ltjQuery(settings.form_id).trigger('reset');
+					ltjQuery(settings.form_submit).prop('disabled', false);
+
+					if (settings.redirectUrl) {
+						window.location.assign(settings.redirectUrl);
+					} else if (settings.successMessage) {
+						ltjQuery(settings.form_id).hide(100, () => {
+							ltjQuery(settings.form_id).remove();
+						});
+						ltjQuery(settings.successMsgWrapper).show(100);
+						ltjQuery(settings.successMsg).html(settings.successMessage);
+					}
+				});
+
+				request.fail((error) => {
+					// TODO: show error message
+					window.console && console.log('errors', error);
+					ltjQuery(settings.form_submit).prop('disabled', false);
+					ltjQuery(settings.form_errorMsg).html(error);
+					ltjQuery(settings.form_errorMsgWrapper).show(100);
+				});
+			});
+		});
+	}
+}
+
+// function LoanTekManualContactWidget(options) {
+// 	ltjQuery(() => {
+
+// 		interface ISource {
+// 			Active: boolean;
+// 			Alias: string;
+// 			Id: number;
+// 			SourceType: string;
+// 			Name: string;
+// 			SubName: string;
+// 		}
+
+// 		interface IPersonAddress {
+// 			State: string;
+// 		}
+
+// 		interface IContactMethod {
+// 			ContactType: string;
+// 			Address?: string;
+// 			Number?: string;
+// 		}
+
+// 		interface IAsset {
+// 			AssetType: string;
+// 			CompanyName: string;
+// 		}
+
+// 		interface IPerson {
+// 			PersonCategoryType: string;
+// 			PersonType: string;
+// 			Addresses: IPersonAddress[];
+// 			ContactMethods: IContactMethod[];
+// 			Assets: IAsset[];
+// 			FirstName: string;
+// 			LastName: string;
+// 		}
+
+// 		interface IMiscData {
+// 			Name: string;
+// 			Value: string;
+// 		}
+
+// 		interface IWidgetData {
+// 			FileType: string;
+// 			Reason: string;
+// 			Source: ISource;
+// 			NotifyUserOfNewLead: boolean;
+// 			SendNewLeadInitialWelcomeMessage: boolean;
+// 			ClientDefinedIdentifier: string;
+// 			ClientId: number;
+// 			Persons: IPerson[];
+// 			MiscData: IMiscData[];
+// 		}
+
+// 		var widgetData : IWidgetData = {
+// 			"FileType": "SalesLead",
+// 			"Reason": "FORM_VALUE_Comments",
+// 			"Source": {
+// 				"Active": true,
+// 				"Alias": "LoanTek.com",
+// 				"Id": 44,
+// 				"SourceType": "LeadSource",
+// 				"Name": "LoanTek.com",
+// 				"SubName": "Contact-Us-Form"
+// 			},
+// 			"NotifyUserOfNewLead": true,
+// 			"SendNewLeadInitialWelcomeMessage": true,
+// 			"ClientDefinedIdentifier": "LTWSJavaScriptTimeStamp",
+// 			"ClientId": 399,
+// 			"Persons": [{
+// 				"PersonCategoryType": "Person",
+// 				"PersonType": "Primary",
+// 				"Addresses": [{
+// 					"State": "FORM_VALUE_State"
+// 				}],
+// 				"ContactMethods": [{
+// 					"ContactType": "Email",
+// 					"Address": "FORM_VALUE_Email"
+// 				}, {
+// 						"ContactType": "Phone",
+// 						"Number": "FORM_VALUE_Phone"
+// 					}],
+// 				"Assets": [{
+// 					"AssetType": "Job",
+// 					"CompanyName": "FORM_VALUE_Company"
+// 				}],
+// 				"FirstName": "FORM_VALUE_FName",
+// 				"LastName": "FORM_VALUE_LName"
+// 			}],
+// 			"MiscData": [{
+// 				"Name": "AdditionalInformation",
+// 				"Value": "LEAVE_BLANK_FOR_NOW"
+// 			}]
+// 		};
+
+// 		ltjQuery('#LtcwContactWidgetForm').submit((event) => {
+// 			event.preventDefault();
+// 			ltjQuery('#ltcwErrorMessageWrapper').hide(100);
+
+// 			widgetData.Persons[0].FirstName = ltjQuery('#ltcwFirstName').val();
+// 			widgetData.Persons[0].LastName = ltjQuery('#ltcwLastName').val();
+// 			widgetData.Persons[0].ContactMethods[0].Address = ltjQuery('#ltcwEmail').val();
+// 			widgetData.Persons[0].ContactMethods[1].Number = ltjQuery('#ltcwPhone').val();
+// 			widgetData.Persons[0].Assets[0].CompanyName = ltjQuery('#ltcwCompany').val();
+// 			widgetData.Persons[0].Addresses[0].State = ltjQuery('#ltcwState option:selected').val();
+// 			widgetData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime().toString();
+// 			widgetData.Reason = ltjQuery('#ltcwComments').val();
+// 			widgetData.MiscData[0].Value = '';
+
+// 			// window.console && console.log(widgetData.toSource());
+// 			// ltjQuery('.testMsg').html(widgetData.toSource());
+
+// 			var request = ltjQuery.ajax({
+// 				// url: 'http://node-cors-server.herokuapp.com/no-cors',
+// 				url: 'http://node-cors-server.herokuapp.com/simple-cors',
+// 				method: 'POST',
+// 				data: widgetData
+// 			});
+
+// 			request.done((result) => {
+// 				// TODO: what happens after they successfully submitted form
+// 				window.console && console.log('success');
+
+// 				// Clear all fields
+// 				// ltjQuery('#LtcwContactWidgetForm').trigger('reset');
+
+// 				if (options.redirectUrl) {
+// 					window.location.assign(options.redirectUrl);
+// 				} else if (options.successMessage) {
+// 					ltjQuery('#LtcwContactWidgetForm').hide(100,() => {
+// 						ltjQuery('#LtcwContactWidgetForm').remove();
+// 					});
+// 					ltjQuery('#ltcwSuccessMessageWrapper').show(100);
+// 					ltjQuery('#ltcwSuccessMessage').html(options.successMessage);
+// 				}
+// 			});
+
+// 			request.fail((error) => {
+// 				// TODO: show error message
+// 				window.console && console.log('errors');
+// 				ltjQuery('#ltcwErrorMessageWrapper').show(100);
+// 			});
+// 		});
+// 	});
+// }

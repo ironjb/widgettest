@@ -1,0 +1,14 @@
+{
+	// "compileOnSave": true,
+	"compilerOptions": {
+		// "module": "umd",
+		// "noImplicitAny" : true,
+		"removeComments": true,
+		// "outDir": "../../"
+		"outFile": "../../loantek-manual-contact-widget.js"
+	}
+	,"files": [
+		"loantek-manual-contact-widget.ts",
+		"build-contact-widget.ts"
+	]
+}

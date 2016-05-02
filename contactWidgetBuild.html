@@ -1,0 +1,23 @@
+<style type="text/css">.ltcw {display:none;}</style>
+<link rel="stylesheet" href="/css/widget.css">
+<div id="ltWidgetWrapper" class="ltcw container-fluid"></div>
+<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+<script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
+<script type="text/javascript">
+var loanTekManualContactWidgetBuildObject = {
+	formId: 'LtcwContactWidgetForm',
+	baseOptions: {
+		// override form defaults
+	},
+	fields: [
+		{ type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true }
+	]
+};
+LoanTekBuildForm('#ltWidgetWrapper',loanTekManualContactWidgetBuildObject);
+
+var loanTekManualContactWidgetOptions = {
+	// redirectUrl: 'http://www.google.com',
+	successMessage: 'Yay!!! Successful POST'
+};
+LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+</script>
