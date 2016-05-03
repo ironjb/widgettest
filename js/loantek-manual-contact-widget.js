@@ -20,7 +20,6 @@ var LoanTekManualContactWidget = (function () {
             successMsg: '#ltcwSuccessMessage'
         };
         ltjQuery.extend(settings, options);
-        window.console && console.log(settings);
         ltjQuery(function () {
             var widgetData = {
                 "FileType": "SalesLead",
@@ -78,7 +77,8 @@ var LoanTekManualContactWidget = (function () {
                 var request = ltjQuery.ajax({
                     url: settings.postUrl,
                     method: 'POST',
-                    data: widgetData,
+                    contentType: 'application/json',
+                    data: JSON.stringify(widgetData),
                     dataType: 'json'
                 });
                 request.done(function (result) {
@@ -96,9 +96,16 @@ var LoanTekManualContactWidget = (function () {
                     }
                 });
                 request.fail(function (error) {
-                    window.console && console.log('errors', error);
                     ltjQuery(settings.form_submit).prop('disabled', false);
-                    ltjQuery(settings.form_errorMsg).html(error);
+                    var msg = 'There was an unexpected error. Please try again.';
+                    try {
+                        var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+                        msg = errorObj.Message;
+                    }
+                    catch (e) {
+                        console.error('Error @ request.fail.responseText:' + e);
+                    }
+                    ltjQuery(settings.form_errorMsg).html(msg);
                     ltjQuery(settings.form_errorMsgWrapper).show(100);
                 });
             });
@@ -136,17 +143,21 @@ var LoanTekBuildForm = (function () {
             }
         };
         var returnForm = el.form();
-        ltjQuery.each(formObj.fields, function (i, fieldItem) {
-            var newField;
-            switch (fieldItem.type) {
-                case 'submit':
-                    break;
-                default:
+        var startRow = null;
+        var colCount = 0;
+        ltjQuery.each(formObj.fields, function (i, elementItem) {
+            window.console && console.log(i, elementItem);
+            if (!startRow) {
+                startRow = el.row();
             }
-            returnForm.append(el.div().addClass('form-group').append(newField));
+            var newElement;
+            returnForm.append(newElement);
         });
         var returnDiv = el.div().addClass('ltcw container-fluid').append(returnForm);
         ltjQuery(elementSelector).empty().replaceWith(returnDiv);
+        function CreateFormElement(elementObj) {
+            var returnElement = null;
+        }
     }
     return LoanTekBuildForm;
 }());

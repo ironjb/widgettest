@@ -7,6 +7,7 @@ interface IFormObject {
 }
 
 interface IField {
+	element: string;
 	id: string;
 	type: string;
 	placeholder?: string;
@@ -37,19 +38,39 @@ class LoanTekBuildForm {
 			}
 		};
 		var returnForm = el.form();
+		var startRow = null;
+		var colCount = 0;
 
-		ltjQuery.each(formObj.fields, (i, fieldItem) => {
-			var newField;
-			switch (fieldItem.type) {
-				case 'submit':
-					break;
-				default:
+		ltjQuery.each(formObj.fields, (i, elementItem) => {
+			window.console && console.log(i, elementItem);
+			if (!startRow) {
+				startRow = el.row()
 			}
-			returnForm.append(el.div().addClass('form-group').append(newField));
+			var newElement;
+			// switch (elementItem.element) {
+			// 	case 'button':
+			// 		newElement = el.row(12).append(el.button());
+			// 		break;
+			// 	default:
+			// }
+			returnForm.append(newElement);
 		});
 
 		var returnDiv = el.div().addClass('ltcw container-fluid').append(returnForm);
 
 		ltjQuery(elementSelector).empty().replaceWith(returnDiv);
+
+		function CreateFormElement(elementObj) {
+			var returnElement = null;
+			// switch (elementObj.element) {
+			// 	case 'button':
+			// 		// code...
+			// 		break;
+			// 	case
+			// 	default:
+			// 		// code...
+			// 		break;
+			// }
+		}
 	}
 }
