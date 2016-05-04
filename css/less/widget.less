@@ -16,4 +16,15 @@
 	font-family: @font-family-base;
 	font-size: @font-size-base;
 	@import (less) url('../widget-bootstrap.css');
+
+	.visible-contents-on-hover {
+		> * {
+			visibility: hidden;
+		}
+		&:hover {
+			> * {
+				visibility: visible;
+			}
+		}
+	}
 }
