@@ -214,11 +214,12 @@ var LoanTekBuildForm = (function () {
                 case 'button':
                     returnElement = el.button(elementObj.type ? elementObj.type : 'button');
                     elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
-                    elementObj.text = elementObj.text ? elementObj.text : 'OK';
-                    returnElement.addClass(elementObj.cssClass).html(elementObj.text);
+                    elementObj.value = elementObj.value ? elementObj.value : 'OK';
+                    returnElement.addClass(elementObj.cssClass).html(elementObj.value);
                     break;
                 case 'select':
                     returnElement = el.select();
+                    elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
                     switch (elementObj.type) {
                         case "state":
                             var usStates = US_States();
@@ -229,11 +230,17 @@ var LoanTekBuildForm = (function () {
                         default:
                             break;
                     }
+                    if (elementObj.value) {
+                        returnElement.val(elementObj.value);
+                    }
                     break;
                 case 'textarea':
                     returnElement = el.textarea();
                     if (elementObj.rows) {
                         returnElement.prop('rows', elementObj.rows);
+                    }
+                    if (elementObj.value) {
+                        returnElement.val(elementObj.value);
                     }
                     break;
                 case 'input':
@@ -242,11 +249,17 @@ var LoanTekBuildForm = (function () {
                     switch (elementObj.type) {
                         case 'button':
                             elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
-                            elementObj.text = elementObj.text ? elementObj.text : 'OK';
-                            returnElement.addClass(elementObj.cssClass).val(elementObj.text);
+                            elementObj.value = elementObj.value ? elementObj.value : 'OK';
+                            returnElement.addClass(elementObj.cssClass).val(elementObj.value);
                             break;
                         default:
                             returnElement.addClass('form-control');
+                            if (elementObj.cssClass) {
+                                returnElement.addClass(elementObj.cssClass);
+                            }
+                            if (elementObj.value) {
+                                returnElement.val(elementObj.value);
+                            }
                             break;
                     }
                     break;
@@ -258,6 +271,9 @@ var LoanTekBuildForm = (function () {
                 if (elementObj.id) {
                     returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
                 }
+                if (elementObj.style) {
+                    returnElement.css(elementObj.style);
+                }
                 if (elementObj.required) {
                     returnElement.prop('required', true);
                 }
@@ -265,7 +281,10 @@ var LoanTekBuildForm = (function () {
                     elementObj.placeholder = elementObj.required ? '* ' + elementObj.placeholder : elementObj.placeholder;
                     switch (elementObj.element) {
                         case 'select':
-                            returnElement.prepend(el.option().val('').html(elementObj.placeholder).prop('selected', true).addClass('text-muted'));
+                            returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('text-muted'));
+                            if (!elementObj.value) {
+                                returnElement.val('');
+                            }
                             break;
                         default:
                             returnElement.prop('placeholder', elementObj.placeholder);

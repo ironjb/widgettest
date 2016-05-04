@@ -6,12 +6,13 @@ interface IField {
 	element: string;
 	id?: string;
 	type?: string;
+	style?: Object;
 	placeholder?: string;
 	required?: boolean,
 	cols?: number,
 	rows?: number,
 	cssClass?: string,
-	text?: string,
+	value?: string,
 	size?: string,
 	pattern?: string
 }
@@ -164,11 +165,12 @@ class LoanTekBuildForm {
 				case 'button':
 					returnElement = el.button(elementObj.type ? elementObj.type : 'button');
 					elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
-					elementObj.text = elementObj.text ? elementObj.text : 'OK';
-					returnElement.addClass(elementObj.cssClass).html(elementObj.text);
+					elementObj.value = elementObj.value ? elementObj.value : 'OK';
+					returnElement.addClass(elementObj.cssClass).html(elementObj.value);
 					break;
 				case 'select':
 					returnElement = el.select();
+					elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
 					// if (elementObj.placeholder) { returnElement.append(el.option().val('').html(elementObj.placeholder)); }
 					switch (elementObj.type) {
 						case "state":
@@ -182,10 +184,12 @@ class LoanTekBuildForm {
 							// code...
 							break;
 					}
+					if (elementObj.value) { returnElement.val(elementObj.value); }
 					break;
 				case 'textarea':
 					returnElement = el.textarea();
 					if (elementObj.rows) { returnElement.prop('rows', elementObj.rows); }
+					if (elementObj.value) { returnElement.val(elementObj.value); }
 					break;
 				case 'input':
 					elementObj.type = elementObj.type ? elementObj.type : 'text';
@@ -193,12 +197,14 @@ class LoanTekBuildForm {
 					switch (elementObj.type) {
 						case 'button':
 							elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
-							elementObj.text = elementObj.text ? elementObj.text : 'OK';
-							returnElement.addClass(elementObj.cssClass).val(elementObj.text);
+							elementObj.value = elementObj.value ? elementObj.value : 'OK';
+							returnElement.addClass(elementObj.cssClass).val(elementObj.value);
 							break;
 
 						default:
 							returnElement.addClass('form-control');
+							if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
+							if (elementObj.value) { returnElement.val(elementObj.value); }
 							break;
 					}
 					break;
@@ -212,6 +218,10 @@ class LoanTekBuildForm {
 					returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
 				}
 
+				if (elementObj.style) {
+					returnElement.css(elementObj.style);
+				}
+
 				if (elementObj.required) {
 					returnElement.prop('required', true);
 				}
@@ -220,7 +230,13 @@ class LoanTekBuildForm {
 					elementObj.placeholder = elementObj.required ? '* ' + elementObj.placeholder : elementObj.placeholder;
 					switch (elementObj.element) {
 						case 'select':
-							returnElement.prepend(el.option().val('').html(elementObj.placeholder).prop('selected', true).addClass('text-muted'));
+							// if (elementObj.value) {
+							// 	returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('text-muted'));
+							// } else {
+							// 	returnElement.prepend(el.option().val('').html(elementObj.placeholder).prop('selected', true).addClass('text-muted'));
+							// }
+							returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('text-muted'));
+							if (!elementObj.value) { returnElement.val(''); }
 							break;
 						default:
 							returnElement.prop('placeholder', elementObj.placeholder);
