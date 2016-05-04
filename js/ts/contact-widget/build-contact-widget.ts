@@ -8,7 +8,21 @@ interface IField {
 	type?: string;
 	placeholder?: string;
 	required?: boolean,
-	cols?: number
+	cols?: number,
+	rows?: number,
+	cssClass?: string,
+	text?: string,
+	size?: string,
+	pattern?: string
+}
+
+interface IOptions {
+	wrapperId?: string
+	formId?: string;
+	errorMessageWrapperId?: string;
+	errrorMessageId?: string;
+	defaultFormSize?: string;
+	showBuilderTools?: boolean;
 }
 
 interface IState {
@@ -23,13 +37,14 @@ interface IStates {
 
 class LoanTekBuildForm {
 
-	constructor(formObj: IFormObject, options) {
+	constructor(formObj: IFormObject, options: IOptions) {
 
-		var settings = {
+		var settings: IOptions = {
 			wrapperId: 'ltWidgetWrapper',
 			formId: 'LtcwContactWidgetForm',
 			errorMessageWrapperId: 'ltcwErrorMessageWrapper',
 			errrorMessageId: 'ltcwErrorMessage',
+			defaultFormSize: null,
 			showBuilderTools: false
 		};
 		ltjQuery.extend(settings, options);
@@ -57,10 +72,10 @@ class LoanTekBuildForm {
 
 		ltjQuery.each(formObj.fields, (i, elementItem) => {
 			elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
-			// window.console && console.log(i, elementItem);
+			elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
 			isLastField = i >= fieldsLength - 1;
 			nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
-			// window.console && console.log(i, isLastField);
+			window.console && console.log(i, elementItem);
 
 			// Create row
 			if (!row) {
@@ -99,8 +114,8 @@ class LoanTekBuildForm {
 					row.append(
 						el.col(remainingColSpace).addClass('hidden-xs').append(
 							el.formGroup().append(
-								el.col().addClass('visible-contents-on-hover').append(
-									el.div().addClass('form-control-static bg-info').html(/*'cols: ' + remainingColSpace*/'')
+								el.col().append(
+									el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')
 								)
 							)
 						)
@@ -128,13 +143,13 @@ class LoanTekBuildForm {
 				p: () => { return ltjQuery('<p/>'); },
 				div: () => { return ltjQuery('<div/>'); },
 				form: () => { return ltjQuery('<form/>').addClass('form-horizontal'); },
-				button: (btnClass: string = 'default', type: string = 'button') => { return ltjQuery('<button/>').addClass('btn btn-' + btnClass); },
+				button: (type: string = 'button') => { return ltjQuery('<button/>').prop('type', type); },
 				select: () => { return ltjQuery('<select/>').addClass('form-control'); },
 				option: () => { return ltjQuery('<option/>'); },
-				input: (type: string = 'text', cssClass: string = 'form-control') => {
-					return ltjQuery('<input/>').prop('type', type).addClass(cssClass);
+				input: (type: string = 'text') => {
+					return ltjQuery('<input/>').prop('type', type);
 				},
-				textarea: () => { return ltjQuery('<textarea/>'); },
+				textarea: () => { return ltjQuery('<textarea/>').addClass('form-control'); },
 				col: (colNumber: number = 12) => { return el.div().addClass('col-sm-' + colNumber.toString()); },
 				row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
 				formGroup: () => { return el.row('form-group'); }
@@ -147,16 +162,19 @@ class LoanTekBuildForm {
 			var returnElement = null;
 			switch (elementObj.element) {
 				case 'button':
-					// code...
+					returnElement = el.button(elementObj.type ? elementObj.type : 'button');
+					elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+					elementObj.text = elementObj.text ? elementObj.text : 'OK';
+					returnElement.addClass(elementObj.cssClass).html(elementObj.text);
 					break;
 				case 'select':
 					returnElement = el.select();
-					if (elementObj.id) { returnElement.prop('id', elementObj.id); }
+					// if (elementObj.placeholder) { returnElement.append(el.option().val('').html(elementObj.placeholder)); }
 					switch (elementObj.type) {
 						case "state":
 							var usStates = US_States();
-							ltjQuery.each(usStates.states, function (i, state) {
-								// body...
+							ltjQuery.each(usStates.states, function(i, state) {
+								returnElement.append(el.option().val(state.abbreviation).html(state.name));
 							});
 							break;
 
@@ -164,14 +182,85 @@ class LoanTekBuildForm {
 							// code...
 							break;
 					}
+					break;
+				case 'textarea':
+					returnElement = el.textarea();
+					if (elementObj.rows) { returnElement.prop('rows', elementObj.rows); }
+					break;
+				case 'input':
+					elementObj.type = elementObj.type ? elementObj.type : 'text';
+					returnElement = el.input(elementObj.type);
+					switch (elementObj.type) {
+						case 'button':
+							elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+							elementObj.text = elementObj.text ? elementObj.text : 'OK';
+							returnElement.addClass(elementObj.cssClass).val(elementObj.text);
+							break;
+
+						default:
+							returnElement.addClass('form-control');
+							break;
+					}
+					break;
 				default:
-					// code...
+					returnElement = el.div();
 					break;
 			}
 
+			if (returnElement) {
+				if (elementObj.id) {
+					returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
+				}
+
+				if (elementObj.required) {
+					returnElement.prop('required', true);
+				}
+
+				if (elementObj.placeholder) {
+					elementObj.placeholder = elementObj.required ? '* ' + elementObj.placeholder : elementObj.placeholder;
+					switch (elementObj.element) {
+						case 'select':
+							returnElement.prepend(el.option().val('').html(elementObj.placeholder).prop('selected', true).addClass('text-muted'));
+							break;
+						default:
+							returnElement.prop('placeholder', elementObj.placeholder);
+							break;
+					}
+				}
+
+				if (elementObj.pattern) {
+					returnElement.prop('pattern', elementObj.pattern);
+				}
+
+				if (elementObj.size) {
+					switch (elementObj.element) {
+						case 'textarea':
+						case 'select':
+							returnElement.addClass('input-' + elementObj.size);
+							break;
+						case 'button':
+							returnElement.addClass('btn-' + elementObj.size);
+							break;
+						case 'input':
+							switch (elementObj.type) {
+								case 'button':
+									returnElement.addClass('btn-' + elementObj.size);
+									break;
+								default:
+									returnElement.addClass('input-' + elementObj.size);
+									break;
+							}
+							break;
+						default:
+							// code...
+							break;
+					}
+				}
+			}
+
 			// window.console && console.log('returnElement', returnElement);
-			return el.input().val(elementObj.element + ' ' + elementObj.id);
-			// return returnElement;
+			// return el.input().val(elementObj.element + ' ' + elementObj.id);
+			return returnElement;
 		}
 
 		function US_States(): IStates {

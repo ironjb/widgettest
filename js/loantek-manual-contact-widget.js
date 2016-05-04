@@ -120,6 +120,7 @@ var LoanTekBuildForm = (function () {
             formId: 'LtcwContactWidgetForm',
             errorMessageWrapperId: 'ltcwErrorMessageWrapper',
             errrorMessageId: 'ltcwErrorMessage',
+            defaultFormSize: null,
             showBuilderTools: false
         };
         ltjQuery.extend(settings, options);
@@ -137,8 +138,10 @@ var LoanTekBuildForm = (function () {
         var remainingColSpace = 0;
         ltjQuery.each(formObj.fields, function (i, elementItem) {
             elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
+            elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
             isLastField = i >= fieldsLength - 1;
             nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
+            window.console && console.log(i, elementItem);
             if (!row) {
                 columnCount = 0;
                 if (elementItem.cols >= COLUMNS_IN_ROW) {
@@ -163,7 +166,7 @@ var LoanTekBuildForm = (function () {
                 isTimeToAddRow = true;
                 remainingColSpace = COLUMNS_IN_ROW - columnCount;
                 if (settings.showBuilderTools) {
-                    row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().addClass('visible-contents-on-hover').append(el.div().addClass('form-control-static bg-info').html('')))));
+                    row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
                 }
             }
             else {
@@ -181,19 +184,17 @@ var LoanTekBuildForm = (function () {
                 p: function () { return ltjQuery('<p/>'); },
                 div: function () { return ltjQuery('<div/>'); },
                 form: function () { return ltjQuery('<form/>').addClass('form-horizontal'); },
-                button: function (btnClass, type) {
-                    if (btnClass === void 0) { btnClass = 'default'; }
+                button: function (type) {
                     if (type === void 0) { type = 'button'; }
-                    return ltjQuery('<button/>').addClass('btn btn-' + btnClass);
+                    return ltjQuery('<button/>').prop('type', type);
                 },
                 select: function () { return ltjQuery('<select/>').addClass('form-control'); },
                 option: function () { return ltjQuery('<option/>'); },
-                input: function (type, cssClass) {
+                input: function (type) {
                     if (type === void 0) { type = 'text'; }
-                    if (cssClass === void 0) { cssClass = 'form-control'; }
-                    return ltjQuery('<input/>').prop('type', type).addClass(cssClass);
+                    return ltjQuery('<input/>').prop('type', type);
                 },
-                textarea: function () { return ltjQuery('<textarea/>'); },
+                textarea: function () { return ltjQuery('<textarea/>').addClass('form-control'); },
                 col: function (colNumber) {
                     if (colNumber === void 0) { colNumber = 12; }
                     return el.div().addClass('col-sm-' + colNumber.toString());
@@ -211,25 +212,94 @@ var LoanTekBuildForm = (function () {
             var returnElement = null;
             switch (elementObj.element) {
                 case 'button':
+                    returnElement = el.button(elementObj.type ? elementObj.type : 'button');
+                    elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+                    elementObj.text = elementObj.text ? elementObj.text : 'OK';
+                    returnElement.addClass(elementObj.cssClass).html(elementObj.text);
                     break;
                 case 'select':
                     returnElement = el.select();
-                    if (elementObj.id) {
-                        returnElement.prop('id', elementObj.id);
-                    }
                     switch (elementObj.type) {
                         case "state":
                             var usStates = US_States();
                             ltjQuery.each(usStates.states, function (i, state) {
+                                returnElement.append(el.option().val(state.abbreviation).html(state.name));
                             });
                             break;
                         default:
                             break;
                     }
+                    break;
+                case 'textarea':
+                    returnElement = el.textarea();
+                    if (elementObj.rows) {
+                        returnElement.prop('rows', elementObj.rows);
+                    }
+                    break;
+                case 'input':
+                    elementObj.type = elementObj.type ? elementObj.type : 'text';
+                    returnElement = el.input(elementObj.type);
+                    switch (elementObj.type) {
+                        case 'button':
+                            elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+                            elementObj.text = elementObj.text ? elementObj.text : 'OK';
+                            returnElement.addClass(elementObj.cssClass).val(elementObj.text);
+                            break;
+                        default:
+                            returnElement.addClass('form-control');
+                            break;
+                    }
+                    break;
                 default:
+                    returnElement = el.div();
                     break;
             }
-            return el.input().val(elementObj.element + ' ' + elementObj.id);
+            if (returnElement) {
+                if (elementObj.id) {
+                    returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
+                }
+                if (elementObj.required) {
+                    returnElement.prop('required', true);
+                }
+                if (elementObj.placeholder) {
+                    elementObj.placeholder = elementObj.required ? '* ' + elementObj.placeholder : elementObj.placeholder;
+                    switch (elementObj.element) {
+                        case 'select':
+                            returnElement.prepend(el.option().val('').html(elementObj.placeholder).prop('selected', true).addClass('text-muted'));
+                            break;
+                        default:
+                            returnElement.prop('placeholder', elementObj.placeholder);
+                            break;
+                    }
+                }
+                if (elementObj.pattern) {
+                    returnElement.prop('pattern', elementObj.pattern);
+                }
+                if (elementObj.size) {
+                    switch (elementObj.element) {
+                        case 'textarea':
+                        case 'select':
+                            returnElement.addClass('input-' + elementObj.size);
+                            break;
+                        case 'button':
+                            returnElement.addClass('btn-' + elementObj.size);
+                            break;
+                        case 'input':
+                            switch (elementObj.type) {
+                                case 'button':
+                                    returnElement.addClass('btn-' + elementObj.size);
+                                    break;
+                                default:
+                                    returnElement.addClass('input-' + elementObj.size);
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            return returnElement;
         }
         function US_States() {
             var s = {

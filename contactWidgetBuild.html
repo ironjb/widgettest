@@ -5,7 +5,8 @@
 <script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
 <script type="text/javascript">
 var loanTeckBuildOptions = {
-	showBuilderTools: true,
+	// showBuilderTools: true,
+	defaultFormSize: 'sm',
 	wrapperId: 'ltWidgetWrapper',
 	formId: 'LtcwContactWidgetForm'
 };
@@ -13,12 +14,15 @@ var loanTekManualContactWidgetBuildObject = {
 	fields: [
 		{ element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 6 },
 		{ element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6 },
-		{ element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 4 },
+		{ element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6 },
 		{ element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone', pattern: '[\\d\\s()-]{7,14}', cols: 6 },
-		{ element: 'input', type: 'tel', id: 'ltcwCompany', placeholder: 'Company', cols: 6 },
+		{ element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6 },
 		{ element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
-		{ element: 'button', type: 'submit' },
-		{ element: 'button', type: 'button', cols: 4 }
+		{ element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', cols: 12, rows: 4 },
+		{ element: 'button', type: 'submit', cssClass: 'btn-primary', text: 'Submit', sizes: 'lg' },
+		// { element: 'button', type: 'button', cols: 4 },
+		// { element: 'button', type: 'button', cols: 4 },
+		// { element: 'input', type: 'button', text: 'Enter', cssClass: 'btn-info', cols: 4 }
 	]
 };
 LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);

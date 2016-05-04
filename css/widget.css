@@ -3513,6 +3513,14 @@
     display: none !important;
   }
 }
+.ltcw .visible-on-hover {
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+.ltcw .visible-on-hover:hover {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
 .ltcw .visible-contents-on-hover > * {
   visibility: hidden;
 }
