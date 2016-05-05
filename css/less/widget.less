@@ -8,14 +8,15 @@
  */
 
 // Core variables and mixins
-@import "bootstrap/variables.less";
-@import "bootstrap/mixins.less";
+@import 'bootstrap/variables.less';
+@import 'bootstrap/mixins.less';
 
 .ltcw {
 	display: block;
 	font-family: @font-family-base;
 	font-size: @font-size-base;
 	@import (less) url('../widget-bootstrap.css');
+	@import 'captcha.less';
 
 	.visible-on-hover {
 		.opacity(0);

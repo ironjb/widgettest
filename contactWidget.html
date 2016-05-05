@@ -101,7 +101,57 @@
 		</div>
 		<!-- .row>.col-sm-6*2>.form-group>.col-sm-12>input.form-control.input-sm[id=ltcwEmail placeholder="* Email" required=required] -->
 		<div class="form-group">
-			<div class="col-sm-12"><button class="btn btn-primary btn-sm" id="ltcwSubmit" type="submit">Submit</button></div>
+			<div class="col-sm-12">
+				<div class="lt-captcha">
+					<div class="panel panel-info">
+						<div class="panel-heading">Security Check</div>
+						<div class="panel-body">
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div id="ltCaptchaImg" class="captcha01 captcha-font">
+										<span class="font11">C</span>
+										<span class="font12">H</span>
+										<span class="font13">A</span>
+										<span class="font09">R</span>
+										<span class="font10">S</span>
+									</div>
+								</div>
+							</div>
+							<!-- <div class="row">
+								<div class="col-sm-8">
+									<div class="form-group">
+										<div class="col-sm-12"><input type="text" id="ltCaptchaInput" class="form-control input-sm" placeholder="Enter the characters" required="required" /></div>
+									</div>
+								</div>
+								<div class="col-sm-4 text-right">
+									<div class="form-group">
+										<div class="col-sm-12"><button class="btn btn-info btn-sm" id="ltCaptchaReset" type="button" alt="Reset" title="Reset">&nbsp;<span class="glyphicon glyphicon-refresh"></span>&nbsp;</button></div>
+									</div>
+								</div>
+							</div> -->
+							<!-- <div class="form-group">
+								<div class="col-sm-12"><input type="text" id="ltCaptchaInput" class="form-control input-sm" placeholder="Enter the characters" required="required" /></div>
+							</div>
+							<div class="row">
+								<div class="col-sm-12 text-right">
+									<button class="btn btn-info btn-sm" id="ltCaptchaReset" type="button" alt="Reset" title="Reset">&nbsp;<span class="glyphicon glyphicon-refresh"></span>&nbsp;</button>
+								</div>
+							</div> -->
+							<div class="row">
+								<div class="col-xs-8">
+									<input type="text" id="ltCaptchaInput" class="form-control input-sm" placeholder="Enter the characters" required="required" />
+								</div>
+								<div class="col-xs-4 text-right">
+									<button class="btn btn-info btn-sm" id="ltCaptchaReset" type="button" alt="Reset" title="Reset">&nbsp;<span class="glyphicon glyphicon-refresh"></span>&nbsp;</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-12"><button class="btn btn-primary btn-sm" id="ltcwSubmit" type="submit">Submit</button> <button class="btn btn-default" onclick="form.submit();">test</button></div>
 		</div>
 	</form>
 	<div class="row" id="ltcwSuccessMessageWrapper" style="display: none;">
