@@ -62,9 +62,15 @@ var LoanTekManualContactWidget = (function () {
                     }]
             };
             ltjQuery(settings.form_id).submit(function (event) {
+                window.console && console.log('ltmcw submit');
                 event.preventDefault();
                 ltjQuery(settings.form_errorMsgWrapper).hide(100);
                 ltjQuery(settings.form_submit).prop('disabled', true);
+                if (1 === 1) {
+                    window.console && console.log('set to false');
+                    return false;
+                }
+                window.console && console.log('continue running');
                 widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
                 widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
                 widgetData.Persons[0].ContactMethods[0].Address = ltjQuery(settings.form_email).val();
@@ -381,4 +387,72 @@ var LoanTekBuildForm = (function () {
         }
     }
     return LoanTekBuildForm;
+}());
+var LoanTekCaptcha = (function () {
+    function LoanTekCaptcha(options) {
+        var _thisClass = this;
+        var settings = {
+            imgId: 'ltCaptchaImg',
+            inputId: 'ltCaptchaInput',
+            resetId: 'ltCaptchaReset',
+            backgroundClasses: ['captcha01', 'captcha02', 'captcha03'],
+            fontClasses: ['font01', 'font02', 'font03', 'font04', 'font05', 'font06', 'font07', 'font08', 'font09', 'font10', 'font11', 'font12', 'font13'],
+            characters: '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+            characterLength: 5
+        };
+        ltjQuery.extend(settings, options);
+        _thisClass._captchaInput = ltjQuery('#' + settings.inputId);
+        var charArray = settings.characters.split('');
+        var capImg = ltjQuery('#' + settings.imgId);
+        var capReset = ltjQuery('#' + settings.resetId);
+        var capSpan = function () { return ltjQuery('<span/>'); };
+        SetRandomCaptcha();
+        capReset.click(function () {
+            SetRandomCaptcha();
+        });
+        function SetRandomCaptcha() {
+            var randomChar;
+            var randomCharIndex;
+            var randomCodeArray = [];
+            _thisClass._randomCodeString = '';
+            _thisClass.SetCaptchaInputValue('');
+            for (var i = 0; i < settings.characterLength; ++i) {
+                randomCharIndex = _thisClass.GetRandomIndexNumber(charArray.length);
+                randomChar = charArray[randomCharIndex];
+                randomCodeArray.push(randomChar);
+                _thisClass._randomCodeString += randomChar;
+            }
+            window.console && console.log(_thisClass._randomCodeString, randomCodeArray);
+            SetCaptchaImg(randomCodeArray);
+        }
+        function SetCaptchaImg(codeArray) {
+            var randomBackgroundIndex = _thisClass.GetRandomIndexNumber(settings.backgroundClasses.length);
+            var randomFontIndex;
+            var randomFont;
+            var imgBgClass = settings.backgroundClasses[randomBackgroundIndex];
+            capImg.addClass(imgBgClass);
+            capImg.html('');
+            for (var i = 0; i < codeArray.length; ++i) {
+                randomFontIndex = _thisClass.GetRandomIndexNumber(settings.fontClasses.length);
+                randomFont = settings.fontClasses[randomFontIndex];
+                capImg.append(capSpan().addClass(randomFont).html(' ' + codeArray[i] + ' '));
+            }
+        }
+    }
+    LoanTekCaptcha.prototype.GetCaptchaInputValue = function () {
+        return this._captchaInput.val();
+    };
+    LoanTekCaptcha.prototype.SetCaptchaInputValue = function (newText) {
+        this._captchaInput.val(newText);
+    };
+    LoanTekCaptcha.prototype.GetRandomIndexNumber = function (objLen) {
+        return Math.floor(Math.random() * objLen);
+    };
+    LoanTekCaptcha.prototype.ValidateEntry = function () {
+        var doesEntryMatch = false;
+        window.console && console.log('rcs', this._randomCodeString.toLowerCase(), 'gciv()', this.GetCaptchaInputValue().toLowerCase());
+        doesEntryMatch = this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase();
+        return doesEntryMatch;
+    };
+    return LoanTekCaptcha;
 }());

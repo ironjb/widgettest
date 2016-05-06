@@ -3869,6 +3869,10 @@
   line-height: 60px;
   font-size: 36px;
   font-weight: bold;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .ltcw .lt-captcha .font01 {
   font-family: Georgia, serif;

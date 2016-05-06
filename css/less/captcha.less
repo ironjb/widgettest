@@ -1,3 +1,6 @@
+@import 'bootstrap/mixins.less';
+
+
 @captcha-max-width: 330px;
 @captcha-height: 60px;
 @captcha-img-max-width: @captcha-max-width - 30px;
@@ -11,6 +14,7 @@
 		line-height: @captcha-height;
 		font-size: @captcha-font-size;
 		font-weight: bold;
+		.user-select(none);
 	}
 
 	.font01 {

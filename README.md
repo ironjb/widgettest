@@ -7,6 +7,9 @@ http://www.codeproject.com/Articles/42842/Implementation-of-Captcha-in-Javascrip
 
 http://stackoverflow.com/questions/3196335/how-to-create-simple-javascript-jquery-client-side-captcha
 
+Safe Characters for Captcha
+https://www.grc.com/ppp.htm
+
 CSS Image Conversion
 http://css-image.org/
 

@@ -131,9 +131,16 @@ class LoanTekManualContactWidget {
 			};
 
 			ltjQuery(settings.form_id).submit((event) => {
+				window.console && console.log('ltmcw submit');
 				event.preventDefault();
 				ltjQuery(settings.form_errorMsgWrapper).hide(100);
 				ltjQuery(settings.form_submit).prop('disabled', true);
+
+				if (1 === 1) {
+					window.console && console.log('set to false');
+					return false;
+				}
+				window.console && console.log('continue running');
 
 				widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
 				widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();

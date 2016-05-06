@@ -108,7 +108,7 @@
 						<div class="panel-body">
 							<div class="form-group">
 								<div class="col-sm-12">
-									<div id="ltCaptchaImg" class="captcha01 captcha-font">
+									<div id="ltCaptchaImg" class="captcha-font">
 										<span class="font11">C</span>
 										<span class="font12">H</span>
 										<span class="font13">A</span>
@@ -142,7 +142,7 @@
 									<input type="text" id="ltCaptchaInput" class="form-control input-sm" placeholder="Enter the characters" required="required" />
 								</div>
 								<div class="col-xs-4 text-right">
-									<button class="btn btn-info btn-sm" id="ltCaptchaReset" type="button" alt="Reset" title="Reset">&nbsp;<span class="glyphicon glyphicon-refresh"></span>&nbsp;</button>
+									<button class="btn btn-info btn-sm" id="ltCaptchaReset" type="button" alt="Reset" title="Reset" tabindex="-1">&nbsp;<span class="glyphicon glyphicon-refresh"></span>&nbsp;</button>
 								</div>
 							</div>
 						</div>
@@ -151,7 +151,7 @@
 			</div>
 		</div>
 		<div class="form-group">
-			<div class="col-sm-12"><button class="btn btn-primary btn-sm" id="ltcwSubmit" type="submit">Submit</button> <button class="btn btn-default" onclick="form.submit();">test</button></div>
+			<div class="col-sm-12"><button class="btn btn-primary btn-sm" id="ltcwSubmit" type="submit">Submit</button> <button class="btn btn-default" type="button" onclick="form.submit();">test</button> <button class="btn btn-default" type="button" onclick="testValidate();">Validate</button></div>
 		</div>
 	</form>
 	<div class="row" id="ltcwSuccessMessageWrapper" style="display: none;">
@@ -165,11 +165,17 @@
 <script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
 <script type="text/javascript">
 var loanTekManualContactWidgetOptions = {
-	// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
+	postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
 	// postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
-	postUrl: 'http://localhost:51256/SalesLeadRequest/Add/RFdNVkY3OE5pZHltR0lDQ0Q3d3dReERxczN5Ukw0V3czWGg5Y2I4VjhkWWJBWGpGYjFCR0pBQT01',
+	// postUrl: 'http://localhost:51256/SalesLeadRequest/Add/RFdNVkY3OE5pZHltR0lDQ0Q3d3dReERxczN5Ukw0V3czWGg5Y2I4VjhkWWJBWGpGYjFCR0pBQT01',
 	// redirectUrl: 'http://www.google.com',
 	successMessage: 'Yay!!! Successful POST'
 };
-LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+// setTimeout(function () {
+	LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+// }, 2000);
+var ltCap2 = new LoanTekCaptcha({characterLength: 6});
+function testValidate() {
+	window.console && console.log(ltCap2.ValidateEntry());
+}
 </script>
