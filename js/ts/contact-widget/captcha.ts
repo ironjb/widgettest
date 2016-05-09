@@ -116,10 +116,12 @@ class LoanTekCaptcha {
 	}
 
 	ValidateEntry(): boolean {
-		var doesEntryMatch = false;
-		window.console && console.log('rcs', this._randomCodeString.toLowerCase(), 'gciv()', this.GetCaptchaInputValue().toLowerCase());
-		// doesEntryMatch = capInput.val() === randomCodeString;
-		doesEntryMatch = this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase();
-		return doesEntryMatch;
+		// var doesEntryMatch = false;
+		// // window.console && console.log('rcs', this._randomCodeString.toLowerCase(), 'gciv()', this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, ''));
+		// // doesEntryMatch = capInput.val() === randomCodeString;
+		// doesEntryMatch = this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, '');
+		// return doesEntryMatch;
+		window.console && console.log('this', this);
+		return this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, '');
 	}
 }

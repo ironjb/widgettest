@@ -1,7 +1,7 @@
 <style type="text/css">.ltcw {display:none;}</style>
 <link rel="stylesheet" href="/css/widget.css">
 <div class="ltcw container-fluid">
-	<form action="" id="LtcwContactWidgetForm" class="form-horizontal">
+	<form id="LtcwContactWidgetForm" class="form-horizontal">
 		<div id="ltcwErrorMessageWrapper" class="row" style="display: none;">
 			<div class="col-sm-12">
 				<div class="alert alert-danger">
@@ -164,18 +164,18 @@
 <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
 <script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
 <script type="text/javascript">
+var ltCaptcha = new LoanTekCaptcha({characterLength: 6});
+function captchaValidate() {
+	// window.console && console.log(ltCaptcha.ValidateEntry());
+	return ltCaptcha.ValidateEntry();
+}
 var loanTekManualContactWidgetOptions = {
 	postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
 	// postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
 	// postUrl: 'http://localhost:51256/SalesLeadRequest/Add/RFdNVkY3OE5pZHltR0lDQ0Q3d3dReERxczN5Ukw0V3czWGg5Y2I4VjhkWWJBWGpGYjFCR0pBQT01',
 	// redirectUrl: 'http://www.google.com',
+	externalValidatorFunction: captchaValidate,
 	successMessage: 'Yay!!! Successful POST'
 };
-// setTimeout(function () {
-	LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
-// }, 2000);
-var ltCap2 = new LoanTekCaptcha({characterLength: 6});
-function testValidate() {
-	window.console && console.log(ltCap2.ValidateEntry());
-}
+LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
 </script>

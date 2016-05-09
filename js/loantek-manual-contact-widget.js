@@ -5,6 +5,7 @@ var LoanTekManualContactWidget = (function () {
             redirectUrl: null,
             postUrl: '',
             successMessage: null,
+            externalValidatorFunction: null,
             form_id: '#LtcwContactWidgetForm',
             form_firstName: '#ltcwFirstName',
             form_lastName: '#ltcwLastName',
@@ -62,15 +63,16 @@ var LoanTekManualContactWidget = (function () {
                     }]
             };
             ltjQuery(settings.form_id).submit(function (event) {
-                window.console && console.log('ltmcw submit');
                 event.preventDefault();
                 ltjQuery(settings.form_errorMsgWrapper).hide(100);
                 ltjQuery(settings.form_submit).prop('disabled', true);
-                if (1 === 1) {
-                    window.console && console.log('set to false');
+                window.console && console.log(typeof settings.externalValidatorFunction);
+                if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+                    window.console && console.log('stopped by external validator');
+                    ltjQuery(settings.form_submit).prop('disabled', false);
                     return false;
                 }
-                window.console && console.log('continue running');
+                window.console && console.log('continue after validator check');
                 widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
                 widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
                 widgetData.Persons[0].ContactMethods[0].Address = ltjQuery(settings.form_email).val();
@@ -121,71 +123,8 @@ var LoanTekManualContactWidget = (function () {
 }());
 var LoanTekBuildForm = (function () {
     function LoanTekBuildForm(formObj, options) {
-        var settings = {
-            wrapperId: 'ltWidgetWrapper',
-            formId: 'LtcwContactWidgetForm',
-            errorMessageWrapperId: 'ltcwErrorMessageWrapper',
-            errrorMessageId: 'ltcwErrorMessage',
-            defaultFormSize: null,
-            showBuilderTools: false
-        };
-        ltjQuery.extend(settings, options);
-        var el = CreateElement();
-        var returnForm = el.form().prop('id', settings.formId).append(el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none' }).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId)))));
-        var COLUMNS_IN_ROW = 12;
-        var columnCount = 0;
-        var row = null;
-        var isSingleRow;
-        var isTimeToAddRow = false;
-        var isLastField = false;
-        var cell = null;
-        var fieldsLength = formObj.fields.length;
-        var nextFieldCols;
-        var remainingColSpace = 0;
-        ltjQuery.each(formObj.fields, function (i, elementItem) {
-            elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
-            elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
-            isLastField = i >= fieldsLength - 1;
-            nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
-            window.console && console.log(i, elementItem);
-            if (!row) {
-                columnCount = 0;
-                if (elementItem.cols >= COLUMNS_IN_ROW) {
-                    row = el.formGroup();
-                    isSingleRow = true;
-                }
-                else {
-                    row = el.row();
-                    isSingleRow = false;
-                }
-            }
-            columnCount += elementItem.cols;
-            if (isSingleRow) {
-                cell = el.col().append(CreateFormElement(elementItem));
-            }
-            else {
-                cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(CreateFormElement(elementItem))));
-            }
-            row.append(cell);
-            isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
-            if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
-                isTimeToAddRow = true;
-                remainingColSpace = COLUMNS_IN_ROW - columnCount;
-                if (settings.showBuilderTools) {
-                    row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
-                }
-            }
-            else {
-                remainingColSpace = 0;
-            }
-            if (isTimeToAddRow) {
-                returnForm.append(row);
-                row = null;
-                columnCount = 0;
-            }
-        });
-        ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
-        function CreateElement() {
+        var _this = this;
+        this.CreateElement = function () {
             var el = {
                 p: function () { return ltjQuery('<p/>'); },
                 div: function () { return ltjQuery('<div/>'); },
@@ -212,9 +151,10 @@ var LoanTekBuildForm = (function () {
                 formGroup: function () { return el.row('form-group'); }
             };
             return el;
-        }
-        function CreateFormElement(elementObj) {
-            var el = CreateElement();
+        };
+        this.CreateFormElement = function (elementObj) {
+            var _thisClass = _this;
+            var el = _thisClass.CreateElement();
             var returnElement = null;
             switch (elementObj.element) {
                 case 'button':
@@ -228,7 +168,7 @@ var LoanTekBuildForm = (function () {
                     elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
                     switch (elementObj.type) {
                         case "state":
-                            var usStates = US_States();
+                            var usStates = _thisClass.US_States();
                             ltjQuery.each(usStates.states, function (i, state) {
                                 returnElement.append(el.option().val(state.abbreviation).html(state.name));
                             });
@@ -325,8 +265,8 @@ var LoanTekBuildForm = (function () {
                 }
             }
             return returnElement;
-        }
-        function US_States() {
+        };
+        this.US_States = function () {
             var s = {
                 country: 'USA',
                 states: [
@@ -384,7 +324,72 @@ var LoanTekBuildForm = (function () {
                 ]
             };
             return s;
-        }
+        };
+        var _thisClass = this;
+        var settings = {
+            wrapperId: 'ltWidgetWrapper',
+            formId: 'LtcwContactWidgetForm',
+            errorMessageWrapperId: 'ltcwErrorMessageWrapper',
+            errrorMessageId: 'ltcwErrorMessage',
+            defaultFormSize: null,
+            showBuilderTools: false
+        };
+        ltjQuery.extend(settings, options);
+        var el = _thisClass.CreateElement();
+        var returnForm = el.form().prop('id', settings.formId).append(el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none' }).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId)))));
+        var COLUMNS_IN_ROW = 12;
+        var columnCount = 0;
+        var row = null;
+        var isSingleRow;
+        var isTimeToAddRow = false;
+        var isLastField = false;
+        var cell = null;
+        var fieldsLength = formObj.fields.length;
+        var nextFieldCols;
+        var remainingColSpace = 0;
+        ltjQuery.each(formObj.fields, function (i, elementItem) {
+            elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
+            elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
+            isLastField = i >= fieldsLength - 1;
+            nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
+            window.console && console.log(i, elementItem);
+            if (!row) {
+                columnCount = 0;
+                if (elementItem.cols >= COLUMNS_IN_ROW) {
+                    row = el.formGroup();
+                    isSingleRow = true;
+                }
+                else {
+                    row = el.row();
+                    isSingleRow = false;
+                }
+            }
+            columnCount += elementItem.cols;
+            if (isSingleRow) {
+                cell = el.col().append(_thisClass.CreateFormElement(elementItem));
+            }
+            else {
+                cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisClass.CreateFormElement(elementItem))));
+            }
+            row.append(cell);
+            isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+            if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
+                isTimeToAddRow = true;
+                remainingColSpace = COLUMNS_IN_ROW - columnCount;
+                if (settings.showBuilderTools) {
+                    row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
+                }
+            }
+            else {
+                remainingColSpace = 0;
+            }
+            if (isTimeToAddRow) {
+                returnForm.append(row);
+                row = null;
+                columnCount = 0;
+            }
+        });
+        ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
     }
     return LoanTekBuildForm;
 }());
@@ -449,10 +454,8 @@ var LoanTekCaptcha = (function () {
         return Math.floor(Math.random() * objLen);
     };
     LoanTekCaptcha.prototype.ValidateEntry = function () {
-        var doesEntryMatch = false;
-        window.console && console.log('rcs', this._randomCodeString.toLowerCase(), 'gciv()', this.GetCaptchaInputValue().toLowerCase());
-        doesEntryMatch = this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase();
-        return doesEntryMatch;
+        window.console && console.log('this', this);
+        return this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, '');
     };
     return LoanTekCaptcha;
 }());

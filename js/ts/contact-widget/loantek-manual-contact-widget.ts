@@ -69,6 +69,7 @@ class LoanTekManualContactWidget {
 			redirectUrl: null,
 			postUrl: '',
 			successMessage: null,
+			externalValidatorFunction: null,
 
 			// Default form element IDs
 			form_id: '#LtcwContactWidgetForm',
@@ -131,16 +132,23 @@ class LoanTekManualContactWidget {
 			};
 
 			ltjQuery(settings.form_id).submit((event) => {
-				window.console && console.log('ltmcw submit');
+				// window.console && console.log('ltmcw submit');
 				event.preventDefault();
 				ltjQuery(settings.form_errorMsgWrapper).hide(100);
 				ltjQuery(settings.form_submit).prop('disabled', true);
 
-				if (1 === 1) {
-					window.console && console.log('set to false');
+				// if (1 === 1) {
+				// 	window.console && console.log('set to false');
+				// 	return false;
+				// }
+				// window.console && console.log('continue running');
+				window.console && console.log(typeof settings.externalValidatorFunction);
+				if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+					window.console && console.log('stopped by external validator');
+					ltjQuery(settings.form_submit).prop('disabled', false);
 					return false;
 				}
-				window.console && console.log('continue running');
+				window.console && console.log('continue after validator check');
 
 				widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
 				widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();

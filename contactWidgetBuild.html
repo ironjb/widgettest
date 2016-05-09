@@ -11,10 +11,19 @@ var loanTeckBuildOptions = {
 	formId: 'LtcwContactWidgetForm'
 };
 var loanTekManualContactWidgetBuildObject = {
-	clientID: 1234,
-	userID: 6789,
 	preCodeCallback: null,
 	fields: [
+		// { element: 'firstname' },
+		// { element: 'lastname' },
+		// { element: 'email' },
+		// { element: 'phone' },
+		// { element: 'company' },
+		// { element: 'state' },
+		// { element: 'comments' },
+		// { element: 'submit' },
+		// { element: '' },
+
+
 		{ element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 2, style: { color: 'blue', fontWeight: 'bold' }, value: 'First' },
 		{ element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
 		{ element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6, value: 'email@mail.com' },
@@ -32,6 +41,10 @@ var loanTekManualContactWidgetBuildObject = {
 LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
 
 var loanTekManualContactWidgetOptions = {
+	clientID: 1234,
+	userID: 6789,
+	// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
+	postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
 	// redirectUrl: 'http://www.google.com',
 	successMessage: 'Yay!!! Successful POST'
 };
