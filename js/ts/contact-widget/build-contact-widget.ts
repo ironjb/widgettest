@@ -3,7 +3,8 @@ interface IFormObject {
 }
 
 interface IField {
-	element: string;
+	field?: string;
+	element?: string;
 	id?: string;
 	type?: string;
 	style?: Object;
@@ -73,29 +74,47 @@ class LoanTekBuildForm {
 		var nextIndex: number;
 		var remainingColSpace: number = 0;
 		var isNextHidden: boolean = false;
+		var fieldTemplate: Object;
 
-		// window.console && console.log(fieldsLength);
+		var fieldTemplates = {
+			clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' + new Date().getTime().toString() },
+			userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
+			firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 6 },
+			lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6 },
+			email: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6 },
+			phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6 },
+			company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6 },
+			state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
+			comments: { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', rows: 4 },
+			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' }
+		};
+
+		function ExtendFieldTemplate(eItem: IField): IField {
+			return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
+		}
+
+		// First transform each template
+		ltjQuery.each(formObj.fields, (i, elementItem) => {
+			if (elementItem.field) {
+				formObj.fields[i] = ExtendFieldTemplate(elementItem);
+				delete formObj.fields[i].field;
+				window.console && console.log('elItem', formObj.fields[i]);
+			}
+		});
 
 		ltjQuery.each(formObj.fields, (i, elementItem) => {
-			// window.console && console.log(i);
 			isHidden = elementItem.type === 'hidden';
 			elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
 			elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
 			isLastField = i >= fieldsLength - 1;
-			// nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
 
 			nextIndex = i + 1;
 			do {
 				// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
 				isNextHidden = formObj.fields[nextIndex] && formObj.fields[nextIndex].type === 'hidden';
 				nextFieldCols = (formObj.fields[nextIndex] && formObj.fields[nextIndex].cols) ? formObj.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
-				// window.console && console.log('on index: ' + i, ', nextIndex set to: ' + nextIndex, ', nextFieldCols set to: ' + nextFieldCols);
 				nextIndex++;
 			} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
-
-			// window.console && console.log('++++++++++++++++++++++  nextFieldCols', nextFieldCols, 'nextIndex', nextIndex);
-
-			// window.console && console.log(i, elementItem);
 
 			if (isHidden) {
 				returnForm.append(_thisC.CreateFormElement(elementItem));
@@ -221,7 +240,7 @@ class LoanTekBuildForm {
 						returnElement.addClass(elementObj.cssClass).val(elementObj.value);
 						break;
 					case 'hidden':
-						returnElement;
+						returnElement.val(elementObj.value);
 \						break;
 					default:
 						returnElement.addClass('form-control');

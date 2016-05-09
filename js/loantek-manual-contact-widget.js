@@ -197,7 +197,7 @@ var LoanTekBuildForm = (function () {
                             returnElement.addClass(elementObj.cssClass).val(elementObj.value);
                             break;
                         case 'hidden':
-                            returnElement;
+                            returnElement.val(elementObj.value);
                             break;
                         default:
                             returnElement.addClass('form-control');
@@ -353,6 +353,29 @@ var LoanTekBuildForm = (function () {
         var nextIndex;
         var remainingColSpace = 0;
         var isNextHidden = false;
+        var fieldTemplate;
+        var fieldTemplates = {
+            clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' + new Date().getTime().toString() },
+            userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
+            firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 6 },
+            lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6 },
+            email: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6 },
+            phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6 },
+            company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6 },
+            state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
+            comments: { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', rows: 4 },
+            submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' }
+        };
+        function ExtendFieldTemplate(eItem) {
+            return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
+        }
+        ltjQuery.each(formObj.fields, function (i, elementItem) {
+            if (elementItem.field) {
+                formObj.fields[i] = ExtendFieldTemplate(elementItem);
+                delete formObj.fields[i].field;
+                window.console && console.log('elItem', formObj.fields[i]);
+            }
+        });
         ltjQuery.each(formObj.fields, function (i, elementItem) {
             isHidden = elementItem.type === 'hidden';
             elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
