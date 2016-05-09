@@ -67,13 +67,10 @@ var LoanTekManualContactWidget = (function () {
                 event.preventDefault();
                 ltjQuery(settings.form_errorMsgWrapper).hide(100);
                 ltjQuery(settings.form_submit).prop('disabled', true);
-                window.console && console.log(typeof settings.externalValidatorFunction);
                 if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-                    window.console && console.log('stopped by external validator');
                     ltjQuery(settings.form_submit).prop('disabled', false);
                     return false;
                 }
-                window.console && console.log('continue after validator check');
                 widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
                 widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
                 widgetData.Persons[0].ContactMethods[0].Address = ltjQuery(settings.form_email).val();

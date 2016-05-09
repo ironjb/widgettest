@@ -25,14 +25,14 @@ var loanTekManualContactWidgetBuildObject = {
 		// { element: 'submit' },
 		// { element: '' },
 
-
+		// { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 1234 },
 		{ element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 2, style: { color: 'blue', fontWeight: 'bold' }, value: 'First' },
 		{ element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
 		{ element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6, value: 'email@mail.com' },
 		{ element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6, value: '208-255-1795' },
 		{ element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6, value: 'comp' },
-		{ element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6, value: 'UT' },
-		{ element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', cols: 12, rows: 4, value: 'my comments' },
+		{ element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6, values: 'UT' },
+		{ element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', cols: 12, rows: 4, value: 'my comments' },
 		{ element: 'captcha' },
 		{ element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit', size: 'lg', style: { color: 'blue', backgroundColor: '#add', borderRadius: '20px' } },
 		{ element: 'button', type: 'button', cols: 2 },

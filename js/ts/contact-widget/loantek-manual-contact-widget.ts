@@ -4,12 +4,8 @@
  * LoanTek Manual Contact Widget
  */
 
-// Sets jQuery to unique var and keeps it from conflicting
-// with any other version of jQuery that may be loaded.
+// Sets jQuery to unique var and keeps it from conflicting with any other version of jQuery that may be loaded.
 var ltjQuery = jQuery.noConflict(true);
-
-// declare var loanTekManualContactWidgetOptions: any;
-
 
 interface ISource {
 	Active: boolean;
@@ -134,23 +130,14 @@ class LoanTekManualContactWidget {
 			ltjQuery(settings.form_submit).prop('disabled', false);
 
 			ltjQuery(settings.form_id).submit((event) => {
-				// window.console && console.log('ltmcw submit');
 				event.preventDefault();
 				ltjQuery(settings.form_errorMsgWrapper).hide(100);
 				ltjQuery(settings.form_submit).prop('disabled', true);
 
-				// if (1 === 1) {
-				// 	window.console && console.log('set to false');
-				// 	return false;
-				// }
-				// window.console && console.log('continue running');
-				window.console && console.log(typeof settings.externalValidatorFunction);
 				if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-					window.console && console.log('stopped by external validator');
 					ltjQuery(settings.form_submit).prop('disabled', false);
 					return false;
 				}
-				window.console && console.log('continue after validator check');
 
 				widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
 				widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
@@ -162,12 +149,9 @@ class LoanTekManualContactWidget {
 				widgetData.Reason = ltjQuery(settings.form_comments).val();
 				widgetData.MiscData[0].Value = '';
 
-				// window.console && console.log(widgetData.toSource());
-				// ltjQuery('.testMsg').html(widgetData.toSource());
-
 				var request = ltjQuery.ajax({
 					// url: 'http://node-cors-server.herokuapp.com/no-cors',
-					//url: 'http://node-cors-server.herokuapp.com/simple-cors',
+					// url: 'http://node-cors-server.herokuapp.com/simple-cors',
 					url: settings.postUrl,
 					method: 'POST',
 					contentType: 'application/json',
