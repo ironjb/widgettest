@@ -66,68 +66,91 @@ class LoanTekBuildForm {
 		var isSingleRow: boolean;
 		var isTimeToAddRow: boolean = false;
 		var isLastField: boolean = false;
+		var isHidden: boolean = false;
 		var cell = null;
 		var fieldsLength = formObj.fields.length;
 		var nextFieldCols: number;
+		var nextIndex: number;
 		var remainingColSpace: number = 0;
+		var isNextHidden: boolean = false;
+
+		// window.console && console.log(fieldsLength);
 
 		ltjQuery.each(formObj.fields, (i, elementItem) => {
+			// window.console && console.log(i);
+			isHidden = elementItem.type === 'hidden';
 			elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
 			elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
 			isLastField = i >= fieldsLength - 1;
-			nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
-			window.console && console.log(i, elementItem);
+			// nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
 
-			// Create row
-			if (!row) {
-				columnCount = 0
-				if (elementItem.cols >= COLUMNS_IN_ROW) {
-					row = el.formGroup();
-					isSingleRow = true;
-				} else {
-					row = el.row();
-					isSingleRow = false;
-				}
-			}
+			nextIndex = i + 1;
+			do {
+				// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
+				isNextHidden = formObj.fields[nextIndex] && formObj.fields[nextIndex].type === 'hidden';
+				nextFieldCols = (formObj.fields[nextIndex] && formObj.fields[nextIndex].cols) ? formObj.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+				// window.console && console.log('on index: ' + i, ', nextIndex set to: ' + nextIndex, ', nextFieldCols set to: ' + nextFieldCols);
+				nextIndex++;
+			} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
 
-			columnCount += elementItem.cols;
+			// window.console && console.log('++++++++++++++++++++++  nextFieldCols', nextFieldCols, 'nextIndex', nextIndex);
 
-			// Create Cell
-			if (isSingleRow) {
-				cell = el.col().append(_thisC.CreateFormElement(elementItem));
+			// window.console && console.log(i, elementItem);
+
+			if (isHidden) {
+				returnForm.append(_thisC.CreateFormElement(elementItem));
 			} else {
-				cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
-			}
+				// Create row
+				if (!row) {
+					columnCount = 0
+					if (elementItem.cols >= COLUMNS_IN_ROW) {
+						row = el.formGroup();
+						isSingleRow = true;
+					} else {
+						row = el.row();
+						isSingleRow = false;
+					}
+				}
 
-			row.append(cell);
+				columnCount += elementItem.cols;
 
-			isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+				// Create Cell
+				if (isSingleRow) {
+					cell = el.col().append(_thisC.CreateFormElement(elementItem));
+				} else {
+					cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
+				}
 
-			if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
-				isTimeToAddRow = true;
-				remainingColSpace = COLUMNS_IN_ROW - columnCount;
+				row.append(cell);
 
-				// On Hover... show leftover space
-				if (settings.showBuilderTools) {
-					row.append(
-						el.col(remainingColSpace).addClass('hidden-xs').append(
-							el.formGroup().append(
-								el.col().append(
-									el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')
+				isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+
+				if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
+					isTimeToAddRow = true;
+					remainingColSpace = COLUMNS_IN_ROW - columnCount;
+
+					// On Hover... show leftover space
+					if (settings.showBuilderTools) {
+						row.append(
+							el.col(remainingColSpace).addClass('hidden-xs').append(
+								el.formGroup().append(
+									el.col().append(
+										el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')
+									)
 								)
 							)
-						)
-					);
+						);
+					}
+
+				} else {
+					remainingColSpace = 0;
 				}
 
-			} else {
-				remainingColSpace = 0;
-			}
-
-			if (isTimeToAddRow) {
-				returnForm.append(row);
-				row = null;
-				columnCount = 0;
+				if (isTimeToAddRow) {
+					returnForm.append(row);
+					row = null;
+					columnCount = 0;
+				}
 			}
 		});
 
@@ -197,7 +220,9 @@ class LoanTekBuildForm {
 						elementObj.value = elementObj.value ? elementObj.value : 'OK';
 						returnElement.addClass(elementObj.cssClass).val(elementObj.value);
 						break;
-
+					case 'hidden':
+						returnElement;
+\						break;
 					default:
 						returnElement.addClass('form-control');
 						if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
@@ -258,6 +283,8 @@ class LoanTekBuildForm {
 						switch (elementObj.type) {
 							case 'button':
 								returnElement.addClass('btn-' + elementObj.size);
+								break;
+							case 'hidden':
 								break;
 							default:
 								returnElement.addClass('input-' + elementObj.size);

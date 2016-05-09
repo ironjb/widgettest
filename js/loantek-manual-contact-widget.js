@@ -196,6 +196,9 @@ var LoanTekBuildForm = (function () {
                             elementObj.value = elementObj.value ? elementObj.value : 'OK';
                             returnElement.addClass(elementObj.cssClass).val(elementObj.value);
                             break;
+                        case 'hidden':
+                            returnElement;
+                            break;
                         default:
                             returnElement.addClass('form-control');
                             if (elementObj.cssClass) {
@@ -251,6 +254,8 @@ var LoanTekBuildForm = (function () {
                             switch (elementObj.type) {
                                 case 'button':
                                     returnElement.addClass('btn-' + elementObj.size);
+                                    break;
+                                case 'hidden':
                                     break;
                                 default:
                                     returnElement.addClass('input-' + elementObj.size);
@@ -341,50 +346,63 @@ var LoanTekBuildForm = (function () {
         var isSingleRow;
         var isTimeToAddRow = false;
         var isLastField = false;
+        var isHidden = false;
         var cell = null;
         var fieldsLength = formObj.fields.length;
         var nextFieldCols;
+        var nextIndex;
         var remainingColSpace = 0;
+        var isNextHidden = false;
         ltjQuery.each(formObj.fields, function (i, elementItem) {
+            isHidden = elementItem.type === 'hidden';
             elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
             elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
             isLastField = i >= fieldsLength - 1;
-            nextFieldCols = (formObj.fields[i + 1] && formObj.fields[i + 1].cols) ? formObj.fields[i + 1].cols : COLUMNS_IN_ROW;
-            window.console && console.log(i, elementItem);
-            if (!row) {
-                columnCount = 0;
-                if (elementItem.cols >= COLUMNS_IN_ROW) {
-                    row = el.formGroup();
-                    isSingleRow = true;
+            nextIndex = i + 1;
+            do {
+                isNextHidden = formObj.fields[nextIndex] && formObj.fields[nextIndex].type === 'hidden';
+                nextFieldCols = (formObj.fields[nextIndex] && formObj.fields[nextIndex].cols) ? formObj.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+                nextIndex++;
+            } while (nextFieldCols === 0 && nextIndex <= fieldsLength);
+            if (isHidden) {
+                returnForm.append(_thisC.CreateFormElement(elementItem));
+            }
+            else {
+                if (!row) {
+                    columnCount = 0;
+                    if (elementItem.cols >= COLUMNS_IN_ROW) {
+                        row = el.formGroup();
+                        isSingleRow = true;
+                    }
+                    else {
+                        row = el.row();
+                        isSingleRow = false;
+                    }
+                }
+                columnCount += elementItem.cols;
+                if (isSingleRow) {
+                    cell = el.col().append(_thisC.CreateFormElement(elementItem));
                 }
                 else {
-                    row = el.row();
-                    isSingleRow = false;
+                    cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
                 }
-            }
-            columnCount += elementItem.cols;
-            if (isSingleRow) {
-                cell = el.col().append(_thisC.CreateFormElement(elementItem));
-            }
-            else {
-                cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
-            }
-            row.append(cell);
-            isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
-            if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
-                isTimeToAddRow = true;
-                remainingColSpace = COLUMNS_IN_ROW - columnCount;
-                if (settings.showBuilderTools) {
-                    row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
+                row.append(cell);
+                isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+                if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
+                    isTimeToAddRow = true;
+                    remainingColSpace = COLUMNS_IN_ROW - columnCount;
+                    if (settings.showBuilderTools) {
+                        row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
+                    }
                 }
-            }
-            else {
-                remainingColSpace = 0;
-            }
-            if (isTimeToAddRow) {
-                returnForm.append(row);
-                row = null;
-                columnCount = 0;
+                else {
+                    remainingColSpace = 0;
+                }
+                if (isTimeToAddRow) {
+                    returnForm.append(row);
+                    row = null;
+                    columnCount = 0;
+                }
             }
         });
         ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
