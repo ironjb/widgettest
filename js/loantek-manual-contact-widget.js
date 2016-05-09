@@ -62,6 +62,7 @@ var LoanTekManualContactWidget = (function () {
                         "Value": "LEAVE_BLANK_FOR_NOW"
                     }]
             };
+            ltjQuery(settings.form_submit).prop('disabled', false);
             ltjQuery(settings.form_id).submit(function (event) {
                 event.preventDefault();
                 ltjQuery(settings.form_errorMsgWrapper).hide(100);
@@ -153,8 +154,8 @@ var LoanTekBuildForm = (function () {
             return el;
         };
         this.CreateFormElement = function (elementObj) {
-            var _thisClass = _this;
-            var el = _thisClass.CreateElement();
+            var _thisM = _this;
+            var el = _thisM.CreateElement();
             var returnElement = null;
             switch (elementObj.element) {
                 case 'button':
@@ -168,7 +169,7 @@ var LoanTekBuildForm = (function () {
                     elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
                     switch (elementObj.type) {
                         case "state":
-                            var usStates = _thisClass.US_States();
+                            var usStates = _thisM.US_States();
                             ltjQuery.each(usStates.states, function (i, state) {
                                 returnElement.append(el.option().val(state.abbreviation).html(state.name));
                             });
@@ -325,7 +326,7 @@ var LoanTekBuildForm = (function () {
             };
             return s;
         };
-        var _thisClass = this;
+        var _thisC = this;
         var settings = {
             wrapperId: 'ltWidgetWrapper',
             formId: 'LtcwContactWidgetForm',
@@ -335,7 +336,7 @@ var LoanTekBuildForm = (function () {
             showBuilderTools: false
         };
         ltjQuery.extend(settings, options);
-        var el = _thisClass.CreateElement();
+        var el = _thisC.CreateElement();
         var returnForm = el.form().prop('id', settings.formId).append(el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none' }).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId)))));
         var COLUMNS_IN_ROW = 12;
         var columnCount = 0;
@@ -366,10 +367,10 @@ var LoanTekBuildForm = (function () {
             }
             columnCount += elementItem.cols;
             if (isSingleRow) {
-                cell = el.col().append(_thisClass.CreateFormElement(elementItem));
+                cell = el.col().append(_thisC.CreateFormElement(elementItem));
             }
             else {
-                cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisClass.CreateFormElement(elementItem))));
+                cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
             }
             row.append(cell);
             isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -395,55 +396,67 @@ var LoanTekBuildForm = (function () {
 }());
 var LoanTekCaptcha = (function () {
     function LoanTekCaptcha(options) {
-        var _thisClass = this;
+        var _this = this;
+        this.Validate = function () {
+            return _this.IsValidEntry();
+        };
+        var _thisC = this;
         var settings = {
             imgId: 'ltCaptchaImg',
             inputId: 'ltCaptchaInput',
             resetId: 'ltCaptchaReset',
+            errorMsgId: 'ltCaptchaErrorMsg',
             backgroundClasses: ['captcha01', 'captcha02', 'captcha03'],
             fontClasses: ['font01', 'font02', 'font03', 'font04', 'font05', 'font06', 'font07', 'font08', 'font09', 'font10', 'font11', 'font12', 'font13'],
             characters: '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
             characterLength: 5
         };
         ltjQuery.extend(settings, options);
-        _thisClass._captchaInput = ltjQuery('#' + settings.inputId);
-        var charArray = settings.characters.split('');
-        var capImg = ltjQuery('#' + settings.imgId);
+        _thisC._captchaInput = ltjQuery('#' + settings.inputId);
+        _thisC._captchaErrorMsg = ltjQuery('#' + settings.errorMsgId);
+        _thisC._charArray = settings.characters.split('');
+        _thisC._capImg = ltjQuery('#' + settings.imgId);
         var capReset = ltjQuery('#' + settings.resetId);
-        var capSpan = function () { return ltjQuery('<span/>'); };
-        SetRandomCaptcha();
+        _thisC._capSpan = function () { return ltjQuery('<span/>'); };
+        _thisC.SetRandomCaptcha(settings);
         capReset.click(function () {
-            SetRandomCaptcha();
+            _thisC.SetRandomCaptcha(settings);
         });
-        function SetRandomCaptcha() {
-            var randomChar;
-            var randomCharIndex;
-            var randomCodeArray = [];
-            _thisClass._randomCodeString = '';
-            _thisClass.SetCaptchaInputValue('');
-            for (var i = 0; i < settings.characterLength; ++i) {
-                randomCharIndex = _thisClass.GetRandomIndexNumber(charArray.length);
-                randomChar = charArray[randomCharIndex];
-                randomCodeArray.push(randomChar);
-                _thisClass._randomCodeString += randomChar;
-            }
-            window.console && console.log(_thisClass._randomCodeString, randomCodeArray);
-            SetCaptchaImg(randomCodeArray);
-        }
-        function SetCaptchaImg(codeArray) {
-            var randomBackgroundIndex = _thisClass.GetRandomIndexNumber(settings.backgroundClasses.length);
-            var randomFontIndex;
-            var randomFont;
-            var imgBgClass = settings.backgroundClasses[randomBackgroundIndex];
-            capImg.addClass(imgBgClass);
-            capImg.html('');
-            for (var i = 0; i < codeArray.length; ++i) {
-                randomFontIndex = _thisClass.GetRandomIndexNumber(settings.fontClasses.length);
-                randomFont = settings.fontClasses[randomFontIndex];
-                capImg.append(capSpan().addClass(randomFont).html(' ' + codeArray[i] + ' '));
-            }
-        }
+        _thisC._captchaInput.blur(function () {
+            _thisC.IsValidEntry();
+        });
     }
+    LoanTekCaptcha.prototype.SetRandomCaptcha = function (settings) {
+        var _thisM = this;
+        var randomChar;
+        var randomCharIndex;
+        var randomCodeArray = [];
+        _thisM._randomCodeString = '';
+        _thisM.SetCaptchaInputValue('');
+        _thisM._captchaErrorMsg.hide();
+        for (var i = 0; i < settings.characterLength; ++i) {
+            randomCharIndex = _thisM.GetRandomIndexNumber(_thisM._charArray.length);
+            randomChar = _thisM._charArray[randomCharIndex];
+            randomCodeArray.push(randomChar);
+            _thisM._randomCodeString += randomChar;
+        }
+        window.console && console.log(_thisM._randomCodeString, randomCodeArray);
+        _thisM.SetCaptchaImg(settings, randomCodeArray);
+    };
+    LoanTekCaptcha.prototype.SetCaptchaImg = function (settings, codeArray) {
+        var _thisM = this;
+        var randomBackgroundIndex = _thisM.GetRandomIndexNumber(settings.backgroundClasses.length);
+        var randomFontIndex;
+        var randomFont;
+        var imgBgClass = settings.backgroundClasses[randomBackgroundIndex];
+        _thisM._capImg.addClass(imgBgClass);
+        _thisM._capImg.html('');
+        for (var i = 0; i < codeArray.length; ++i) {
+            randomFontIndex = _thisM.GetRandomIndexNumber(settings.fontClasses.length);
+            randomFont = settings.fontClasses[randomFontIndex];
+            _thisM._capImg.append(_thisM._capSpan().addClass(randomFont).html(' ' + codeArray[i] + ' '));
+        }
+    };
     LoanTekCaptcha.prototype.GetCaptchaInputValue = function () {
         return this._captchaInput.val();
     };
@@ -453,9 +466,16 @@ var LoanTekCaptcha = (function () {
     LoanTekCaptcha.prototype.GetRandomIndexNumber = function (objLen) {
         return Math.floor(Math.random() * objLen);
     };
-    LoanTekCaptcha.prototype.ValidateEntry = function () {
-        window.console && console.log('this', this);
-        return this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, '');
+    LoanTekCaptcha.prototype.IsValidEntry = function () {
+        var doesEntryMatch = false;
+        doesEntryMatch = this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, '');
+        if (!doesEntryMatch) {
+            this._captchaErrorMsg.show();
+        }
+        else {
+            this._captchaErrorMsg.hide();
+        }
+        return doesEntryMatch;
     };
     return LoanTekCaptcha;
 }());

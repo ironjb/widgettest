@@ -131,6 +131,8 @@ class LoanTekManualContactWidget {
 				}]
 			};
 
+			ltjQuery(settings.form_submit).prop('disabled', false);
+
 			ltjQuery(settings.form_id).submit((event) => {
 				// window.console && console.log('ltmcw submit');
 				event.preventDefault();

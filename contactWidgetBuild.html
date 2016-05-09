@@ -11,6 +11,8 @@ var loanTeckBuildOptions = {
 	formId: 'LtcwContactWidgetForm'
 };
 var loanTekManualContactWidgetBuildObject = {
+	clientID: 1234, // add as hidden field???
+	userID: 6789, // add as hidden field???
 	preCodeCallback: null,
 	fields: [
 		// { element: 'firstname' },
@@ -41,8 +43,6 @@ var loanTekManualContactWidgetBuildObject = {
 LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
 
 var loanTekManualContactWidgetOptions = {
-	clientID: 1234,
-	userID: 6789,
 	// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
 	postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
 	// redirectUrl: 'http://www.google.com',

@@ -39,7 +39,7 @@ interface IStates {
 class LoanTekBuildForm {
 
 	constructor(formObj: IFormObject, options: IOptions) {
-		var _thisClass = this;
+		var _thisC = this;
 		var settings: IOptions = {
 			wrapperId: 'ltWidgetWrapper',
 			formId: 'LtcwContactWidgetForm',
@@ -50,7 +50,7 @@ class LoanTekBuildForm {
 		};
 		ltjQuery.extend(settings, options);
 		// var el = CreateElement();
-		var el = _thisClass.CreateElement();
+		var el = _thisC.CreateElement();
 
 		var returnForm = el.form().prop('id', settings.formId).append(
 			el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none'}).append(
@@ -98,9 +98,9 @@ class LoanTekBuildForm {
 
 			// Create Cell
 			if (isSingleRow) {
-				cell = el.col().append(_thisClass.CreateFormElement(elementItem));
+				cell = el.col().append(_thisC.CreateFormElement(elementItem));
 			} else {
-				cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisClass.CreateFormElement(elementItem))));
+				cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
 			}
 
 			row.append(cell);
@@ -160,7 +160,7 @@ class LoanTekBuildForm {
 		// }
 
 		// function CreateFormElement(elementObj: IField) {
-		// 	var el = _thisClass.CreateElement();
+		// 	var el = _thisC.CreateElement();
 		// 	var returnElement = null;
 		// 	switch (elementObj.element) {
 		// 		case 'button':
@@ -175,7 +175,7 @@ class LoanTekBuildForm {
 		// 			// if (elementObj.placeholder) { returnElement.append(el.option().val('').html(elementObj.placeholder)); }
 		// 			switch (elementObj.type) {
 		// 				case "state":
-		// 					var usStates = _thisClass.US_States();
+		// 					var usStates = _thisC.US_States();
 		// 					ltjQuery.each(usStates.states, function(i, state) {
 		// 						returnElement.append(el.option().val(state.abbreviation).html(state.name));
 		// 					});
@@ -362,8 +362,8 @@ class LoanTekBuildForm {
 	}
 
 	CreateFormElement = (elementObj: IField) => {
-		var _thisClass = this;
-		var el = _thisClass.CreateElement();
+		var _thisM = this;
+		var el = _thisM.CreateElement();
 		var returnElement = null;
 		switch (elementObj.element) {
 			case 'button':
@@ -378,7 +378,7 @@ class LoanTekBuildForm {
 				// if (elementObj.placeholder) { returnElement.append(el.option().val('').html(elementObj.placeholder)); }
 				switch (elementObj.type) {
 					case "state":
-						var usStates = _thisClass.US_States();
+						var usStates = _thisM.US_States();
 						ltjQuery.each(usStates.states, function(i, state) {
 							returnElement.append(el.option().val(state.abbreviation).html(state.name));
 						});
