@@ -4,26 +4,42 @@
 <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
 <script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
 <script type="text/javascript">
+// var ltCaptcha = new LoanTekCaptcha();
+var ltCaptcha;
+var _ltCaptcha = function () {
+	ltCaptcha = new LoanTekCaptcha();
+};
+
+var postDOMFunctions = function () {
+	_ltCaptcha();
+};
+
+var externalValidators = function () {
+	// window.console && console.log('external validatorss');
+	return ltCaptcha.IsValidEntry();
+};
+
 var loanTeckBuildOptions = {
-	showBuilderTools: true,
+	// showBuilderTools: true,
 	defaultFormSize: 'sm',
 	wrapperId: 'ltWidgetWrapper',
+	postDOMCallback: postDOMFunctions,
 	formId: 'LtcwContactWidgetForm'
 };
 var loanTekManualContactWidgetBuildObject = {
 	// clientID: 1234, // add as hidden field???
 	// userID: 6789, // add as hidden field???
-	preCodeCallback: null,
 	fields: [
-		{ field: 'clientid' },
-		{ field: 'firstname' },
-		{ field: 'lastname' },
+		{ field: 'clientid', values: 'test1234' },
+		{ field: 'firstname', value: 'First' },
+		{ field: 'lastname', value: 'Last' },
 		// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
-		{ field: 'email' },
-		{ field: 'phone' },
-		{ field: 'company' },
-		{ field: 'state' },
-		{ field: 'comments' },
+		{ field: 'email', value: 'email@mail.com' },
+		{ field: 'phone', value: '208-456-7890' },
+		{ field: 'company', value: 'LT' },
+		{ field: 'state', value: 'ID' },
+		{ field: 'comments', value: 'My Comments' },
+		{ field: 'captcha' },
 		{ field: 'submit' }
 
 		// { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 2, style: { color: 'blue', fontWeight: 'bold' }, value: 'First' },
@@ -51,6 +67,7 @@ var loanTekManualContactWidgetOptions = {
 	// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
 	postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
 	// redirectUrl: 'http://www.google.com',
+	externalValidatorFunction: externalValidators,
 	successMessage: 'Yay!!! Successful POST'
 };
 LoanTekManualContactWidget(loanTekManualContactWidgetOptions);

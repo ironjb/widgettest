@@ -40,6 +40,8 @@ class LoanTekCaptcha {
 		var capReset = ltjQuery('#' + settings.resetId);
 		_thisC._capSpan = () => { return ltjQuery('<span/>'); };
 
+		// window.console && console.log('_thisC._capImg', _thisC._capImg);
+
 		_thisC.SetRandomCaptcha(settings);
 
 		capReset.click(function() {
@@ -66,7 +68,7 @@ class LoanTekCaptcha {
 			randomCodeArray.push(randomChar);
 			_thisM._randomCodeString += randomChar;
 		}
-		window.console && console.log(_thisM._randomCodeString, randomCodeArray);
+		// window.console && console.log(_thisM._randomCodeString, randomCodeArray);
 		_thisM.SetCaptchaImg(settings, randomCodeArray);
 	}
 
@@ -77,6 +79,7 @@ class LoanTekCaptcha {
 		var randomFontIndex: number;
 		var randomFont: string;
 		var imgBgClass = settings.backgroundClasses[randomBackgroundIndex];
+		_thisM._capImg.removeClass(function() { return settings.backgroundClasses.join(' '); });
 		_thisM._capImg.addClass(imgBgClass);
 		_thisM._capImg.html('');
 		for (var i = 0; i < codeArray.length; ++i) {

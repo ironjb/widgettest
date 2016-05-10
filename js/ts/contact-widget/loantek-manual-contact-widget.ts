@@ -69,6 +69,8 @@ class LoanTekManualContactWidget {
 
 			// Default form element IDs
 			form_id: '#LtcwContactWidgetForm',
+			form_clientid: '#ltcwClientId',
+			form_userid: '#ltcwUserId',
 			form_firstName: '#ltcwFirstName',
 			form_lastName: '#ltcwLastName',
 			form_email: '#ltcwEmail',
@@ -145,9 +147,12 @@ class LoanTekManualContactWidget {
 				widgetData.Persons[0].ContactMethods[1].Number = ltjQuery(settings.form_phone).val();
 				widgetData.Persons[0].Assets[0].CompanyName = ltjQuery(settings.form_company).val();
 				widgetData.Persons[0].Addresses[0].State = ltjQuery(settings.form_state + ' option:selected').val();
-				widgetData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime().toString();
+				// widgetData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime().toString();
+				widgetData.ClientDefinedIdentifier = ltjQuery(settings.form_clientid).val();
 				widgetData.Reason = ltjQuery(settings.form_comments).val();
 				widgetData.MiscData[0].Value = '';
+
+				window.console && console.log('widgetData', widgetData);
 
 				var request = ltjQuery.ajax({
 					// url: 'http://node-cors-server.herokuapp.com/no-cors',

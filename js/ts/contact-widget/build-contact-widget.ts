@@ -9,22 +9,25 @@ interface IField {
 	type?: string;
 	style?: Object;
 	placeholder?: string;
-	required?: boolean,
-	cols?: number,
-	rows?: number,
-	cssClass?: string,
-	value?: string,
-	size?: string,
-	pattern?: string
+	required?: boolean;
+	cols?: number;
+	rows?: number;
+	cssClass?: string;
+	value?: string;
+	size?: string;
+	pattern?: string;
+	alttext?: string;
+	tabindex?: number;
 }
 
 interface IOptions {
-	wrapperId?: string
+	wrapperId?: string;
 	formId?: string;
 	errorMessageWrapperId?: string;
 	errrorMessageId?: string;
 	defaultFormSize?: string;
 	showBuilderTools?: boolean;
+	postDOMCallback?: Function;
 }
 
 interface IState {
@@ -77,7 +80,7 @@ class LoanTekBuildForm {
 		var fieldTemplate: Object;
 
 		var fieldTemplates = {
-			clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' + new Date().getTime().toString() },
+			clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function() { return 'LTWS' + new Date().getTime().toString() } },
 			userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
 			firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 6 },
 			lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6 },
@@ -85,8 +88,9 @@ class LoanTekBuildForm {
 			phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6 },
 			company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6 },
 			state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
-			comments: { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', rows: 4 },
-			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' }
+			comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
+			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+			captcha: { element: 'captcha', cssClass: 'lt-captcha' }
 		};
 
 		function ExtendFieldTemplate(eItem: IField): IField {
@@ -98,7 +102,7 @@ class LoanTekBuildForm {
 			if (elementItem.field) {
 				formObj.fields[i] = ExtendFieldTemplate(elementItem);
 				delete formObj.fields[i].field;
-				window.console && console.log('elItem', formObj.fields[i]);
+				// window.console && console.log('elItem', formObj.fields[i]);
 			}
 		});
 
@@ -174,12 +178,17 @@ class LoanTekBuildForm {
 		});
 
 		ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+
+		if (typeof settings.postDOMCallback === 'function') {
+			settings.postDOMCallback();
+		}
 	}
 
 	// Needs to be instance variable since it is used during the constructor
 	CreateElement = () => {
 		var el = {
 			p: () => { return ltjQuery('<p/>'); },
+			span: () => { return ltjQuery('<span/>'); },
 			div: () => { return ltjQuery('<div/>'); },
 			form: () => { return ltjQuery('<form/>').addClass('form-horizontal'); },
 			button: (type: string = 'button') => { return ltjQuery('<button/>').prop('type', type); },
@@ -189,7 +198,7 @@ class LoanTekBuildForm {
 				return ltjQuery('<input/>').prop('type', type);
 			},
 			textarea: () => { return ltjQuery('<textarea/>').addClass('form-control'); },
-			col: (colNumber: number = 12) => { return el.div().addClass('col-sm-' + colNumber.toString()); },
+			col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
 			row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
 			formGroup: () => { return el.row('form-group'); }
 		};
@@ -210,6 +219,7 @@ class LoanTekBuildForm {
 			case 'select':
 				returnElement = el.select();
 				elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
+				if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 				// if (elementObj.placeholder) { returnElement.append(el.option().val('').html(elementObj.placeholder)); }
 				switch (elementObj.type) {
 					case "state":
@@ -229,6 +239,7 @@ class LoanTekBuildForm {
 				returnElement = el.textarea();
 				if (elementObj.rows) { returnElement.prop('rows', elementObj.rows); }
 				if (elementObj.value) { returnElement.val(elementObj.value); }
+				if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 				break;
 			case 'input':
 				elementObj.type = elementObj.type ? elementObj.type : 'text';
@@ -237,17 +248,55 @@ class LoanTekBuildForm {
 					case 'button':
 						elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
 						elementObj.value = elementObj.value ? elementObj.value : 'OK';
-						returnElement.addClass(elementObj.cssClass).val(elementObj.value);
+						returnElement.val(elementObj.value);
 						break;
 					case 'hidden':
 						returnElement.val(elementObj.value);
 \						break;
 					default:
 						returnElement.addClass('form-control');
-						if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 						if (elementObj.value) { returnElement.val(elementObj.value); }
 						break;
 				}
+				if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
+				break;
+			case 'captcha':
+				var captchaInputObj: IField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
+				var captchaResetBtnObj: IField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+				if (elementObj.size) {
+					captchaInputObj.size = elementObj.size;
+					captchaResetBtnObj.size = elementObj.size;
+				}
+				var captchaInput = _thisM.CreateFormElement(captchaInputObj);
+				var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
+
+				returnElement = el.div().addClass('lt-captcha').append(
+					el.div().addClass('panel panel-info').append(
+						el.div().addClass('panel-heading').text('Security Check')
+					).append(
+						el.div().addClass('panel-body').append(
+							el.formGroup().append(
+								el.col().append(
+									el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')
+								)
+							)
+						).append(
+							el.row().append(
+								el.col(8, 'xs').append(
+									captchaInput
+								).append(
+									el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.')
+								)
+							).append(
+								el.col(4, 'xs').addClass('text-right').append(
+									captchaResetBtn.html('&nbsp;').append(
+										el.span().addClass('glyphicon glyphicon-refresh')
+									).append('&nbsp;')
+								)
+							)
+						)
+					)
+				);
 				break;
 			default:
 				returnElement = el.div();
@@ -265,6 +314,14 @@ class LoanTekBuildForm {
 
 			if (elementObj.required) {
 				returnElement.prop('required', true);
+			}
+
+			if (elementObj.alttext) {
+				returnElement.prop('alt', elementObj.alttext).prop('title', elementObj.alttext);
+			}
+
+			if (elementObj.tabindex) {
+				returnElement.prop('tabindex', elementObj.tabindex);
 			}
 
 			if (elementObj.placeholder) {

@@ -7,6 +7,8 @@ var LoanTekManualContactWidget = (function () {
             successMessage: null,
             externalValidatorFunction: null,
             form_id: '#LtcwContactWidgetForm',
+            form_clientid: '#ltcwClientId',
+            form_userid: '#ltcwUserId',
             form_firstName: '#ltcwFirstName',
             form_lastName: '#ltcwLastName',
             form_email: '#ltcwEmail',
@@ -77,9 +79,10 @@ var LoanTekManualContactWidget = (function () {
                 widgetData.Persons[0].ContactMethods[1].Number = ltjQuery(settings.form_phone).val();
                 widgetData.Persons[0].Assets[0].CompanyName = ltjQuery(settings.form_company).val();
                 widgetData.Persons[0].Addresses[0].State = ltjQuery(settings.form_state + ' option:selected').val();
-                widgetData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime().toString();
+                widgetData.ClientDefinedIdentifier = ltjQuery(settings.form_clientid).val();
                 widgetData.Reason = ltjQuery(settings.form_comments).val();
                 widgetData.MiscData[0].Value = '';
+                window.console && console.log('widgetData', widgetData);
                 var request = ltjQuery.ajax({
                     url: settings.postUrl,
                     method: 'POST',
@@ -125,6 +128,7 @@ var LoanTekBuildForm = (function () {
         this.CreateElement = function () {
             var el = {
                 p: function () { return ltjQuery('<p/>'); },
+                span: function () { return ltjQuery('<span/>'); },
                 div: function () { return ltjQuery('<div/>'); },
                 form: function () { return ltjQuery('<form/>').addClass('form-horizontal'); },
                 button: function (type) {
@@ -138,9 +142,10 @@ var LoanTekBuildForm = (function () {
                     return ltjQuery('<input/>').prop('type', type);
                 },
                 textarea: function () { return ltjQuery('<textarea/>').addClass('form-control'); },
-                col: function (colNumber) {
+                col: function (colNumber, colSize) {
                     if (colNumber === void 0) { colNumber = 12; }
-                    return el.div().addClass('col-sm-' + colNumber.toString());
+                    if (colSize === void 0) { colSize = 'sm'; }
+                    return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
                 },
                 row: function (rowType) {
                     if (rowType === void 0) { rowType = 'row'; }
@@ -164,6 +169,9 @@ var LoanTekBuildForm = (function () {
                 case 'select':
                     returnElement = el.select();
                     elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     switch (elementObj.type) {
                         case "state":
                             var usStates = _thisM.US_States();
@@ -186,6 +194,9 @@ var LoanTekBuildForm = (function () {
                     if (elementObj.value) {
                         returnElement.val(elementObj.value);
                     }
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     break;
                 case 'input':
                     elementObj.type = elementObj.type ? elementObj.type : 'text';
@@ -194,21 +205,32 @@ var LoanTekBuildForm = (function () {
                         case 'button':
                             elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
                             elementObj.value = elementObj.value ? elementObj.value : 'OK';
-                            returnElement.addClass(elementObj.cssClass).val(elementObj.value);
+                            returnElement.val(elementObj.value);
                             break;
                         case 'hidden':
                             returnElement.val(elementObj.value);
                             break;
                         default:
                             returnElement.addClass('form-control');
-                            if (elementObj.cssClass) {
-                                returnElement.addClass(elementObj.cssClass);
-                            }
                             if (elementObj.value) {
                                 returnElement.val(elementObj.value);
                             }
                             break;
                     }
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
+                    break;
+                case 'captcha':
+                    var captchaInputObj = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
+                    var captchaResetBtnObj = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+                    if (elementObj.size) {
+                        captchaInputObj.size = elementObj.size;
+                        captchaResetBtnObj.size = elementObj.size;
+                    }
+                    var captchaInput = _thisM.CreateFormElement(captchaInputObj);
+                    var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
+                    returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 default:
                     returnElement = el.div();
@@ -223,6 +245,12 @@ var LoanTekBuildForm = (function () {
                 }
                 if (elementObj.required) {
                     returnElement.prop('required', true);
+                }
+                if (elementObj.alttext) {
+                    returnElement.prop('alt', elementObj.alttext).prop('title', elementObj.alttext);
+                }
+                if (elementObj.tabindex) {
+                    returnElement.prop('tabindex', elementObj.tabindex);
                 }
                 if (elementObj.placeholder) {
                     elementObj.placeholder = elementObj.required ? '* ' + elementObj.placeholder : elementObj.placeholder;
@@ -355,7 +383,7 @@ var LoanTekBuildForm = (function () {
         var isNextHidden = false;
         var fieldTemplate;
         var fieldTemplates = {
-            clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' + new Date().getTime().toString() },
+            clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function () { return 'LTWS' + new Date().getTime().toString(); } },
             userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
             firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 6 },
             lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6 },
@@ -363,8 +391,9 @@ var LoanTekBuildForm = (function () {
             phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6 },
             company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6 },
             state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
-            comments: { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', rows: 4 },
-            submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' }
+            comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
+            submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+            captcha: { element: 'captcha', cssClass: 'lt-captcha' }
         };
         function ExtendFieldTemplate(eItem) {
             return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
@@ -373,7 +402,6 @@ var LoanTekBuildForm = (function () {
             if (elementItem.field) {
                 formObj.fields[i] = ExtendFieldTemplate(elementItem);
                 delete formObj.fields[i].field;
-                window.console && console.log('elItem', formObj.fields[i]);
             }
         });
         ltjQuery.each(formObj.fields, function (i, elementItem) {
@@ -429,6 +457,9 @@ var LoanTekBuildForm = (function () {
             }
         });
         ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+        if (typeof settings.postDOMCallback === 'function') {
+            settings.postDOMCallback();
+        }
     }
     return LoanTekBuildForm;
 }());
@@ -478,7 +509,6 @@ var LoanTekCaptcha = (function () {
             randomCodeArray.push(randomChar);
             _thisM._randomCodeString += randomChar;
         }
-        window.console && console.log(_thisM._randomCodeString, randomCodeArray);
         _thisM.SetCaptchaImg(settings, randomCodeArray);
     };
     LoanTekCaptcha.prototype.SetCaptchaImg = function (settings, codeArray) {
@@ -487,6 +517,7 @@ var LoanTekCaptcha = (function () {
         var randomFontIndex;
         var randomFont;
         var imgBgClass = settings.backgroundClasses[randomBackgroundIndex];
+        _thisM._capImg.removeClass(function () { return settings.backgroundClasses.join(' '); });
         _thisM._capImg.addClass(imgBgClass);
         _thisM._capImg.html('');
         for (var i = 0; i < codeArray.length; ++i) {
