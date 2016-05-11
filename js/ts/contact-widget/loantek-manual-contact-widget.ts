@@ -1,11 +1,6 @@
-/// <reference path="../../../typings/jquery/jquery.d.ts" />
-
 /**
  * LoanTek Manual Contact Widget
  */
-
-// Sets jQuery to unique var and keeps it from conflicting with any other version of jQuery that may be loaded.
-var ltjQuery = jQuery.noConflict(true);
 
 interface ISource {
 	Active: boolean;

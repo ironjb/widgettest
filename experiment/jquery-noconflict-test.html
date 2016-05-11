@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Multiple jQuery noConflict Test</title>
+</head>
+<body>
+<h3>Multiple jQuery noConflict Test</h3>
+
+<!-- load jQuery 1.12.3 -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+<script type="text/javascript">
+//var jQuery_1_12_3 = $.noConflict(true);
+console.log(jQuery.fn.jquery);
+$(function() {
+	console.log('ready shortcut', $.fn.jquery);
+});
+</script>
+
+
+<!-- load jQuery 1.9.1 -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript">
+var jQuery_1_9_1 = $.noConflict(true);
+
+
+console.log('no conflict version', jQuery_1_9_1.fn.jquery);
+
+console.log('after', jQuery.fn.jquery);
+console.log('after $', $.fn.jquery);
+</script>
+
+</body>
+</html>

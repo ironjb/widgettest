@@ -5,12 +5,9 @@
 		// "noImplicitAny" : true,
 		"removeComments": true,
 		// "outDir": "../../"
-		"outFile": "../../loantek-manual-contact-widget.js"
+		"outFile": "../../widget-builder.js"
 	}
 	,"files": [
-		"../common/jquery-noconflict.ts",
-		"loantek-manual-contact-widget.ts",
-		"build-form.ts",
-		"captcha.ts"
+		"main.ts"
 	]
 }
