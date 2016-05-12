@@ -36,35 +36,47 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Saved Widgets<span class="glyphicon glyphicon-chevron-down pull-right"></span></h3>
+								<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
+									<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
-								<div class="panel-body">
-									<div class="form-group">
-										<div class="col-sm-12">
-											<select name="SavedWidgetSelect" id="SavedWidgetSelect" class="form-control" data-ng-model="savedwidget">
-												<option value="-2">Load Saved Widget</option>
-												<option value="-1">Save as a New Widget</option>
-											</select>
-											{{savedwidget}}
-											<button class="btn btn-xs btn-primary" data-ng-class="" type="button">save</button>
-											<button class="btn btn-xs btn-success" type="button">save as new</button>
-											<button class="btn btn-xs btn-danger" type="button">delete</button>
+								<div data-uib-collapse="isCollapsedSaved">
+									<div class="panel-body">
+										<div class="form-group">
+											<div class="col-sm-12">
+												<select name="SavedWidgetSelect" id="SavedWidgetSelect" class="form-control" data-ng-model="savedwidget">
+													<option value="-2">Load Saved Widget</option>
+													<option value="-1">Save as a New Widget</option>
+												</select>
+												<button class="btn btn-xs btn-primary" data-ng-class="" type="button">save</button>
+												<button class="btn btn-xs btn-success" type="button">save as new</button>
+												<button class="btn btn-xs btn-danger" type="button">delete</button>
+											</div>
 										</div>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-default">
+								<div class="panel-heading" data-ng-click="isCollapsedFields = !isCollapsedFields">
+									<h3 class="panel-title">Use a Prebuilt Template<span class="glyphicon pull-right" data-ng-class="isCollapsedFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+								</div>
+								<div data-uib-collapse="isCollapsedFields">
+									<div class="panel-body">
+										<select name="prebuiltTemplate" id="prebuiltTemplate" class="form-control"></select>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
+					<!-- .row>.col-sm-12>.panel.panel-default>.panel-heading[data-ng-click="isCollapsed$ = !isCollapsed$"]>h3.panel-title{pt}>span.glyphicon.pull-right[data-ng-class="isCollapsed$ &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"]^^div[data-uib-collapse=isCollapsed$]>.panel-body{pb} -->
 				</form>
 			</div>
-			<div class="col-sm-8">Demo</div>
+			<div class="col-sm-8">{{demo}}</div>
 		</div>
-		<!-- .row>.col-sm-12>.panel.panel-default>.panel-heading>h3.panel-title{pt}>span.glyphicon.glyphicon-chevron-down.pull-right^^.panel-body{pb} -->
 	</div>
 	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular.min.js"></script>
+	<script type="text/javascript" src="/js/lib/angular-animate.min.js"></script>
 	<script type="text/javascript" src="/js/lib/ui-bootstrap-tpls.min.js"></script>
 	<script type="text/javascript" src="/js/widget-builder.js"></script>
 </body>

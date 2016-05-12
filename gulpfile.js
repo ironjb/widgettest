@@ -6,6 +6,7 @@
 			'bower_components/jquery/dist/jquery.min.js',
 			'bower_components/bootstrap/dist/js/bootstrap.min.js',
 			'bower_components/angular/angular.min.js',
+			'bower_components/angular-animate/angular-animate.min.js',
 			'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
 			])
 		.pipe(gulp.dest('js/lib'));

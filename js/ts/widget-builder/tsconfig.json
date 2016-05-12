@@ -8,6 +8,7 @@
 		"outFile": "../../widget-builder.js"
 	}
 	,"files": [
+		// "../common/interfaces.ts",
 		"main.ts"
 	]
 }

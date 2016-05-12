@@ -1,4 +1,4 @@
-var ltjQuery = jQuery.noConflict(true);
+var ltjQuery = ltjQuery || jQuery.noConflict(true);
 var LoanTekManualContactWidget = (function () {
     function LoanTekManualContactWidget(options) {
         var settings = {

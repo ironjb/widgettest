@@ -1,50 +1,10 @@
-interface IFormObject {
-	fields: IField[];
-}
-
-interface IField {
-	field?: string;
-	element?: string;
-	id?: string;
-	type?: string;
-	style?: Object;
-	placeholder?: string;
-	required?: boolean;
-	cols?: number;
-	rows?: number;
-	cssClass?: string;
-	value?: string;
-	size?: string;
-	pattern?: string;
-	alttext?: string;
-	tabindex?: number;
-}
-
-interface IOptions {
-	wrapperId?: string;
-	formId?: string;
-	errorMessageWrapperId?: string;
-	errrorMessageId?: string;
-	defaultFormSize?: string;
-	showBuilderTools?: boolean;
-	postDOMCallback?: Function;
-}
-
-interface IState {
-	abbreviation: string;
-	name: string;
-}
-
-interface IStates {
-	country: string;
-	states: IState[];
-}
+/// <reference path="../common/interfaces-widget.d.ts" />
 
 class LoanTekBuildForm {
 
-	constructor(formObj: IFormObject, options: IOptions) {
+	constructor(formObj: IWidgetFormObject, options: IWidgetBuildOptions) {
 		var _thisC = this;
-		var settings: IOptions = {
+		var settings: IWidgetBuildOptions = {
 			wrapperId: 'ltWidgetWrapper',
 			formId: 'LtcwContactWidgetForm',
 			errorMessageWrapperId: 'ltcwErrorMessageWrapper',
@@ -93,7 +53,7 @@ class LoanTekBuildForm {
 			captcha: { element: 'captcha', cssClass: 'lt-captcha' }
 		};
 
-		function ExtendFieldTemplate(eItem: IField): IField {
+		function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
 			return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
 		}
 
@@ -205,7 +165,7 @@ class LoanTekBuildForm {
 		return el;
 	}
 
-	CreateFormElement = (elementObj: IField) => {
+	CreateFormElement = (elementObj: IWidgetField) => {
 		var _thisM = this;
 		var el = _thisM.CreateElement();
 		var returnElement = null;
@@ -252,7 +212,7 @@ class LoanTekBuildForm {
 						break;
 					case 'hidden':
 						returnElement.val(elementObj.value);
-\						break;
+						break;
 					default:
 						returnElement.addClass('form-control');
 						if (elementObj.value) { returnElement.val(elementObj.value); }
@@ -261,8 +221,8 @@ class LoanTekBuildForm {
 				if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 				break;
 			case 'captcha':
-				var captchaInputObj: IField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
-				var captchaResetBtnObj: IField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+				var captchaInputObj: IWidgetField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
+				var captchaResetBtnObj: IWidgetField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
 				if (elementObj.size) {
 					captchaInputObj.size = elementObj.size;
 					captchaResetBtnObj.size = elementObj.size;
