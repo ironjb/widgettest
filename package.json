@@ -5,11 +5,14 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gulpcopy": "bower install && gulp copy"
+    "gulpcopy": "bower install && gulp copy",
+    "ts:compile": "gulp ts:compile",
+    "ts:watch": "gulp ts:watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^2.13.4"
   }
 }

@@ -2,12 +2,11 @@
     var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate']);
     widgetBuilderApp.controller('WidgetBuilderController', ['$scope', function ($scope) {
             $scope.demo = 'demo';
-            var WidgetType;
-            (function (WidgetType) {
-                WidgetType[WidgetType["contact"] = 0] = "contact";
-                WidgetType[WidgetType["quote"] = 1] = "quote";
-                WidgetType[WidgetType["rate"] = 2] = "rate";
-            })(WidgetType || (WidgetType = {}));
+            var WidgetType = {
+                contact: 'contact',
+                quote: 'quote',
+                rate: 'rate'
+            };
             var BootstrapSizing = {
                 xs: 'xs',
                 sm: 'sm',
@@ -21,15 +20,29 @@
                         {
                             name: 'Default Contact Widget',
                             template: {
-                                fieldSize: BootstrapSizing.sm,
                                 fields: []
                             }
                         }
+                    ],
+                    allAvailableFields: [
+                        { name: 'firstname', isLTRequired: true, isIncluded: true }
                     ]
                 },
-                quote: {},
-                rate: {}
+                quote: {
+                    allAvailableFields: []
+                },
+                rate: {
+                    allAvailableFields: []
+                }
             };
-            $scope.currentWidget = widgets[currentWidgetType];
+            var BuilderSetup = function () {
+                $scope.currentWidget = angular.copy(widgets[currentWidgetType]);
+                $scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];
+                window.console && console.log(currentWidgetType, $scope.currentWidget.prebuiltTemplates);
+            };
+            BuilderSetup();
+            $scope.UsePrebuiltTemplate = function (tmp) {
+                window.console && console.log('use this template: ', tmp.name);
+            };
         }]);
 })();

@@ -4,12 +4,22 @@ interface IWidgets {
 	rate?: IWidget;
 }
 
+interface IWidgetAvailableField {
+	name: string;
+	isLTRequired?: boolean;
+	isIncluded?: boolean;
+	allowMultiples?: boolean;
+	hideOnList?: boolean;
+	fieldTemplate?: IWidgetField;
+}
+
 interface IWidgetPrebuiltTemplate {
 	name: string;
-	template: IWidgetFormObject;
+	template?: IWidgetFormObject;
 }
 
 interface IWidget {
+	allAvailableFields: IWidgetAvailableField[];
 	prebuiltTemplates?: IWidgetPrebuiltTemplate[];
 }
 

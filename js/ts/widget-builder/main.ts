@@ -16,10 +16,10 @@
 
 	widgetBuilderApp.controller('WidgetBuilderController', ['$scope', function($scope) {
 		$scope.demo = 'demo';
-		enum WidgetType {
-			contact,
-			quote,
-			rate
+		var WidgetType = {
+			contact: 'contact',
+			quote: 'quote',
+			rate: 'rate'
 		}
 
 		var BootstrapSizing = {
@@ -37,16 +37,33 @@
 					{
 						name: 'Default Contact Widget',
 						template: {
-							fieldSize: BootstrapSizing.sm,
+							// fieldSize: BootstrapSizing.sm,
 							fields: []
 						}
 					}
+				],
+				allAvailableFields: [
+					{ name: 'firstname', isLTRequired: true, isIncluded: true}
 				]
 			},
-			quote: {},
-			rate: {}
+			quote: {
+				allAvailableFields: []
+			},
+			rate: {
+				allAvailableFields: []
+			}
 		};
 
-		$scope.currentWidget = widgets[currentWidgetType];
+		var BuilderSetup = () => {
+			$scope.currentWidget = angular.copy(widgets[currentWidgetType]);
+			$scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];		// selects first template if not selected already
+			window.console && console.log(currentWidgetType, $scope.currentWidget.prebuiltTemplates);
+		};
+		BuilderSetup();
+
+		$scope.UsePrebuiltTemplate = (tmp: IWidgetPrebuiltTemplate) => {
+			window.console && console.log('use this template: ', tmp.name);
+		};
+
 	}]);
 })();

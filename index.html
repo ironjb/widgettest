@@ -61,7 +61,7 @@
 								</div>
 								<div data-uib-collapse="isCollapsedFields">
 									<div class="panel-body">
-										<select name="prebuiltTemplate" id="prebuiltTemplate" class="form-control"></select>
+										<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-model="selectedTemplate" data-ng-options="ptemp.name for ptemp in currentWidget.prebuiltTemplates"></select>
 									</div>
 								</div>
 							</div>
