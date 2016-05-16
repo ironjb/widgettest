@@ -20,20 +20,21 @@
 		return ltCaptcha.IsValidEntry();
 	};
 
-	var loanTeckBuildOptions = {
-		// showBuilderTools: true,
+	// var loanTeckBuildOptions = {
+	// };
+	var loanTekManualContactWidgetBuildObject = {
+		showBuilderTools: true,
 		defaultFormSize: 'sm',
 		wrapperId: 'ltWidgetWrapper',
 		postDOMCallback: postDOMFunctions,
-		formId: 'LtcwContactWidgetForm'
-	};
-	var loanTekManualContactWidgetBuildObject = {
+		formId: 'LtcwContactWidgetForm',
 		// clientID: 1234, // add as hidden field???
 		// userID: 6789, // add as hidden field???
 		fields: [
 			{ field: 'clientid', values: 'test1234' },
-			{ field: 'firstname', value: 'First' },
-			{ field: 'lastname', value: 'Last' },
+			// { field: 'firstname', value: 'First' },
+			{ field: 'label', cols: 2, value: 'Last Name' },
+			{ field: 'lastname', cols: 8, value: 'Last' },
 			// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
 			{ field: 'email', value: 'email@mail.com' },
 			{ field: 'phone', value: '208-456-7890' },
@@ -62,7 +63,8 @@
 			// { element: 'input', type: 'button', value: 'Enter', cssClass: 'btn-info', cols: 2 }
 		]
 	};
-	LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
+	// LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
+	LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
 
 	var loanTekManualContactWidgetOptions = {
 		// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',

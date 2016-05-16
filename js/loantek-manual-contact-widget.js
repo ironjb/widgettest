@@ -123,7 +123,7 @@ var LoanTekManualContactWidget = (function () {
     return LoanTekManualContactWidget;
 }());
 var LoanTekBuildForm = (function () {
-    function LoanTekBuildForm(formObj, options) {
+    function LoanTekBuildForm(options) {
         var _this = this;
         this.CreateElement = function () {
             var el = {
@@ -131,6 +131,7 @@ var LoanTekBuildForm = (function () {
                 span: function () { return ltjQuery('<span/>'); },
                 div: function () { return ltjQuery('<div/>'); },
                 form: function () { return ltjQuery('<form/>').addClass('form-horizontal'); },
+                label: function () { return ltjQuery('<label/>').addClass('control-label col-sm-12'); },
                 button: function (type) {
                     if (type === void 0) { type = 'button'; }
                     return ltjQuery('<button/>').prop('type', type);
@@ -151,7 +152,14 @@ var LoanTekBuildForm = (function () {
                     if (rowType === void 0) { rowType = 'row'; }
                     return el.div().addClass(rowType);
                 },
-                formGroup: function () { return el.row('form-group'); }
+                formGroup: function (formGroupSize) {
+                    if (formGroupSize) {
+                        return el.row('form-group').addClass('form-group-' + formGroupSize);
+                    }
+                    else {
+                        return el.row('form-group');
+                    }
+                }
             };
             return el;
         };
@@ -160,6 +168,14 @@ var LoanTekBuildForm = (function () {
             var el = _thisM.CreateElement();
             var returnElement = null;
             switch (elementObj.element) {
+                case 'label':
+                    returnElement = el.label();
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
+                    elementObj.value = elementObj.value || 'label';
+                    returnElement.html(elementObj.value);
+                    break;
                 case 'button':
                     returnElement = el.button(elementObj.type ? elementObj.type : 'button');
                     elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
@@ -363,7 +379,8 @@ var LoanTekBuildForm = (function () {
             errorMessageWrapperId: 'ltcwErrorMessageWrapper',
             errrorMessageId: 'ltcwErrorMessage',
             defaultFormSize: null,
-            showBuilderTools: false
+            showBuilderTools: false,
+            fields: null
         };
         ltjQuery.extend(settings, options);
         var el = _thisC.CreateElement();
@@ -375,8 +392,9 @@ var LoanTekBuildForm = (function () {
         var isTimeToAddRow = false;
         var isLastField = false;
         var isHidden = false;
+        var isLabel;
         var cell = null;
-        var fieldsLength = formObj.fields.length;
+        var fieldsLength = settings.fields.length;
         var nextFieldCols;
         var nextIndex;
         var remainingColSpace = 0;
@@ -393,26 +411,28 @@ var LoanTekBuildForm = (function () {
             state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
             comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
             submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+            label: { element: 'label', cols: 6 },
             captcha: { element: 'captcha', cssClass: 'lt-captcha' }
         };
         function ExtendFieldTemplate(eItem) {
             return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
         }
-        ltjQuery.each(formObj.fields, function (i, elementItem) {
+        ltjQuery.each(settings.fields, function (i, elementItem) {
             if (elementItem.field) {
-                formObj.fields[i] = ExtendFieldTemplate(elementItem);
-                delete formObj.fields[i].field;
+                settings.fields[i] = ExtendFieldTemplate(elementItem);
+                delete settings.fields[i].field;
             }
         });
-        ltjQuery.each(formObj.fields, function (i, elementItem) {
+        ltjQuery.each(settings.fields, function (i, elementItem) {
             isHidden = elementItem.type === 'hidden';
             elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
             elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
             isLastField = i >= fieldsLength - 1;
+            isLabel = elementItem.element === 'label';
             nextIndex = i + 1;
             do {
-                isNextHidden = formObj.fields[nextIndex] && formObj.fields[nextIndex].type === 'hidden';
-                nextFieldCols = (formObj.fields[nextIndex] && formObj.fields[nextIndex].cols) ? formObj.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+                isNextHidden = settings.fields[nextIndex] && settings.fields[nextIndex].type === 'hidden';
+                nextFieldCols = (settings.fields[nextIndex] && settings.fields[nextIndex].cols) ? settings.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
                 nextIndex++;
             } while (nextFieldCols === 0 && nextIndex <= fieldsLength);
             if (isHidden) {
@@ -422,7 +442,7 @@ var LoanTekBuildForm = (function () {
                 if (!row) {
                     columnCount = 0;
                     if (elementItem.cols >= COLUMNS_IN_ROW) {
-                        row = el.formGroup();
+                        row = el.formGroup(elementItem.size);
                         isSingleRow = true;
                     }
                     else {
@@ -432,10 +452,20 @@ var LoanTekBuildForm = (function () {
                 }
                 columnCount += elementItem.cols;
                 if (isSingleRow) {
-                    cell = el.col().append(_thisC.CreateFormElement(elementItem));
+                    if (isLabel) {
+                        cell = _thisC.CreateFormElement(elementItem);
+                    }
+                    else {
+                        cell = el.col().append(_thisC.CreateFormElement(elementItem));
+                    }
                 }
                 else {
-                    cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
+                    if (isLabel) {
+                        cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(_thisC.CreateFormElement(elementItem)));
+                    }
+                    else {
+                        cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(el.col().append(_thisC.CreateFormElement(elementItem))));
+                    }
                 }
                 row.append(cell);
                 isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -443,7 +473,7 @@ var LoanTekBuildForm = (function () {
                     isTimeToAddRow = true;
                     remainingColSpace = COLUMNS_IN_ROW - columnCount;
                     if (settings.showBuilderTools) {
-                        row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup().append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
+                        row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
                     }
                 }
                 else {

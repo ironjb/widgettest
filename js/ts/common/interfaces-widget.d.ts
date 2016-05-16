@@ -5,11 +5,12 @@ interface IWidgets {
 }
 
 interface IWidgetAvailableField {
+	id?: string;
 	name: string;
 	isLTRequired?: boolean;
 	isIncluded?: boolean;
 	allowMultiples?: boolean;
-	hideOnList?: boolean;
+	hideFromList?: boolean;
 	fieldTemplate?: IWidgetField;
 }
 
@@ -24,11 +25,20 @@ interface IWidget {
 }
 
 interface IWidgetFormObject {
-	formWidth?: string;
+	formWidth?: number;
+	formWidthUnit?: string;
 	fieldSize?: string;
 	formGroupSpacing?: string;
 	formStyles?: string;
 	fields: IWidgetField[];
+
+	wrapperId?: string;
+	formId?: string;
+	errorMessageWrapperId?: string;
+	errrorMessageId?: string;
+	defaultFormSize?: string;
+	showBuilderTools?: boolean;
+	postDOMCallback?: Function;
 }
 
 interface IWidgetField {
@@ -49,15 +59,15 @@ interface IWidgetField {
 	tabindex?: number;
 }
 
-interface IWidgetBuildOptions {
-	wrapperId?: string;
-	formId?: string;
-	errorMessageWrapperId?: string;
-	errrorMessageId?: string;
-	defaultFormSize?: string;
-	showBuilderTools?: boolean;
-	postDOMCallback?: Function;
-}
+// interface IWidgetBuildOptions {
+// 	wrapperId?: string;
+// 	formId?: string;
+// 	errorMessageWrapperId?: string;
+// 	errrorMessageId?: string;
+// 	defaultFormSize?: string;
+// 	showBuilderTools?: boolean;
+// 	postDOMCallback?: Function;
+// }
 
 interface IState {
 	abbreviation: string;

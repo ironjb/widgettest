@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="/css/site-bootstrap.css" />
 	<link rel="stylesheet" href="/css/site.css" />
 </head>
-<body data-ng-app="WidgetBuilder" data-ng-controller="WidgetBuilderController">
+<body data-ng-app="WidgetBuilder" data-ng-controller="ContactWidgetBuilderController">
 	<nav>
 		<div class="navbar navbar-inverse navbar-fixed-top">
 			<div class="container">
@@ -35,6 +35,14 @@
 				<form action="" class="form-horizontal">
 					<div class="row">
 						<div class="col-sm-12">
+						<div class="panel panel-default">
+							<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
+								<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+							</div>
+							<div data-uib-collapse="isCollapsedScriptCopy">
+								<div class="panel-body"><textarea data-ng-model="demoCode" class="form-control input-sm" rows="4"></textarea></div>
+							</div>
+						</div>
 							<div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
 									<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
@@ -61,7 +69,7 @@
 								</div>
 								<div data-uib-collapse="isCollapsedFields">
 									<div class="panel-body">
-										<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-model="selectedTemplate" data-ng-options="ptemp.name for ptemp in currentWidget.prebuiltTemplates"></select>
+										<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltTemplate();" data-ng-model="selectedTemplate" data-ng-options="ptemp.name for ptemp in currentWidget.prebuiltTemplates"></select>
 									</div>
 								</div>
 							</div>
@@ -70,14 +78,27 @@
 					<!-- .row>.col-sm-12>.panel.panel-default>.panel-heading[data-ng-click="isCollapsed$ = !isCollapsed$"]>h3.panel-title{pt}>span.glyphicon.pull-right[data-ng-class="isCollapsed$ &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"]^^div[data-uib-collapse=isCollapsed$]>.panel-body{pb} -->
 				</form>
 			</div>
-			<div class="col-sm-8">{{demo}}</div>
+			<div class="col-sm-8">
+				{{demos}}
+				<div id="demoHtml" data-ng-bind-html-NN="demo"></div>
+			</div>
 		</div>
 	</div>
 	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script> -->
 	<script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular-animate.min.js"></script>
+	<script type="text/javascript" src="/js/lib/angular-sanitize.min.js"></script>
 	<script type="text/javascript" src="/js/lib/ui-bootstrap-tpls.min.js"></script>
+
+	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->
+
+	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
+
+	<!-- <script type="text/javascript">window.console && console.log('after', $.fn.jquery, 'ltjQuery', ltjQuery.fn.jquery);</script> -->
+
 	<script type="text/javascript" src="/js/widget-builder.js"></script>
 </body>
 </html>

@@ -2,15 +2,16 @@
 
 class LoanTekBuildForm {
 
-	constructor(formObj: IWidgetFormObject, options: IWidgetBuildOptions) {
+	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormObject) {
 		var _thisC = this;
-		var settings: IWidgetBuildOptions = {
-			wrapperId: 'ltWidgetWrapper',
-			formId: 'LtcwContactWidgetForm',
-			errorMessageWrapperId: 'ltcwErrorMessageWrapper',
-			errrorMessageId: 'ltcwErrorMessage',
-			defaultFormSize: null,
-			showBuilderTools: false
+		var settings: IWidgetFormObject = {
+			wrapperId: 'ltWidgetWrapper'
+			, formId: 'LtcwContactWidgetForm'
+			, errorMessageWrapperId: 'ltcwErrorMessageWrapper'
+			, errrorMessageId: 'ltcwErrorMessage'
+			, defaultFormSize: null
+			, showBuilderTools: false
+			, fields: null
 		};
 		ltjQuery.extend(settings, options);
 		var el = _thisC.CreateElement();
@@ -31,8 +32,9 @@ class LoanTekBuildForm {
 		var isTimeToAddRow: boolean = false;
 		var isLastField: boolean = false;
 		var isHidden: boolean = false;
+		var isLabel: boolean;
 		var cell = null;
-		var fieldsLength = formObj.fields.length;
+		var fieldsLength = settings.fields.length;
 		var nextFieldCols: number;
 		var nextIndex: number;
 		var remainingColSpace: number = 0;
@@ -50,6 +52,7 @@ class LoanTekBuildForm {
 			state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
 			comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
 			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+			label: { element: 'label', cols: 6 },
 			captcha: { element: 'captcha', cssClass: 'lt-captcha' }
 		};
 
@@ -58,25 +61,26 @@ class LoanTekBuildForm {
 		}
 
 		// First transform each template
-		ltjQuery.each(formObj.fields, (i, elementItem) => {
+		ltjQuery.each(settings.fields, (i, elementItem) => {
 			if (elementItem.field) {
-				formObj.fields[i] = ExtendFieldTemplate(elementItem);
-				delete formObj.fields[i].field;
-				// window.console && console.log('elItem', formObj.fields[i]);
+				settings.fields[i] = ExtendFieldTemplate(elementItem);
+				delete settings.fields[i].field;
+				// window.console && console.log('elItem', settings.fields[i]);
 			}
 		});
 
-		ltjQuery.each(formObj.fields, (i, elementItem) => {
+		ltjQuery.each(settings.fields, (i, elementItem) => {
 			isHidden = elementItem.type === 'hidden';
 			elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
 			elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
 			isLastField = i >= fieldsLength - 1;
+			isLabel = elementItem.element === 'label';
 
 			nextIndex = i + 1;
 			do {
 				// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
-				isNextHidden = formObj.fields[nextIndex] && formObj.fields[nextIndex].type === 'hidden';
-				nextFieldCols = (formObj.fields[nextIndex] && formObj.fields[nextIndex].cols) ? formObj.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+				isNextHidden = settings.fields[nextIndex] && settings.fields[nextIndex].type === 'hidden';
+				nextFieldCols = (settings.fields[nextIndex] && settings.fields[nextIndex].cols) ? settings.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
 				nextIndex++;
 			} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
 
@@ -87,7 +91,7 @@ class LoanTekBuildForm {
 				if (!row) {
 					columnCount = 0
 					if (elementItem.cols >= COLUMNS_IN_ROW) {
-						row = el.formGroup();
+						row = el.formGroup(elementItem.size);
 						isSingleRow = true;
 					} else {
 						row = el.row();
@@ -99,9 +103,19 @@ class LoanTekBuildForm {
 
 				// Create Cell
 				if (isSingleRow) {
-					cell = el.col().append(_thisC.CreateFormElement(elementItem));
+					// window.console && console.log(elementItem.element, isLabel);
+					if (isLabel) {
+						cell = _thisC.CreateFormElement(elementItem);
+					} else {
+						cell = el.col().append(_thisC.CreateFormElement(elementItem));
+					}
 				} else {
-					cell = el.col(elementItem.cols).append(el.formGroup().append(el.col().append(_thisC.CreateFormElement(elementItem))));
+					// window.console && console.log(elementItem.element, isLabel);
+					if (isLabel) {
+						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(_thisC.CreateFormElement(elementItem)));
+					} else {
+						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(el.col().append(_thisC.CreateFormElement(elementItem))));
+					}
 				}
 
 				row.append(cell);
@@ -116,7 +130,7 @@ class LoanTekBuildForm {
 					if (settings.showBuilderTools) {
 						row.append(
 							el.col(remainingColSpace).addClass('hidden-xs').append(
-								el.formGroup().append(
+								el.formGroup(elementItem.size).append(
 									el.col().append(
 										el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')
 									)
@@ -151,6 +165,7 @@ class LoanTekBuildForm {
 			span: () => { return ltjQuery('<span/>'); },
 			div: () => { return ltjQuery('<div/>'); },
 			form: () => { return ltjQuery('<form/>').addClass('form-horizontal'); },
+			label: () => { return ltjQuery('<label/>').addClass('control-label col-sm-12'); },
 			button: (type: string = 'button') => { return ltjQuery('<button/>').prop('type', type); },
 			select: () => { return ltjQuery('<select/>').addClass('form-control'); },
 			option: () => { return ltjQuery('<option/>'); },
@@ -160,7 +175,13 @@ class LoanTekBuildForm {
 			textarea: () => { return ltjQuery('<textarea/>').addClass('form-control'); },
 			col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
 			row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
-			formGroup: () => { return el.row('form-group'); }
+			formGroup: (formGroupSize?: string) => {
+				if (formGroupSize) {
+					return el.row('form-group').addClass('form-group-' + formGroupSize);
+				} else {
+					return el.row('form-group');
+				}
+			}
 		};
 		return el;
 	}
@@ -170,6 +191,13 @@ class LoanTekBuildForm {
 		var el = _thisM.CreateElement();
 		var returnElement = null;
 		switch (elementObj.element) {
+			case 'label':
+				// window.console && console.log(elementObj.element);
+				returnElement = el.label();
+				if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
+				elementObj.value = elementObj.value || 'label';
+				returnElement.html(elementObj.value);
+				break;
 			case 'button':
 				returnElement = el.button(elementObj.type ? elementObj.type : 'button');
 				elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';

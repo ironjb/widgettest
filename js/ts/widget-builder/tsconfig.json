@@ -9,6 +9,7 @@
 	}
 	,"files": [
 		// "../common/interfaces.ts",
+		"../common/widget-helpers.ts",
 		"main.ts"
 	]
 }

@@ -18,7 +18,7 @@ class LoanTekCaptcha {
 	private _capImg: JQuery;
 	private _capSpan: () => JQuery;
 
-	constructor(options: ICaptchaSettings) {
+	constructor(options?: ICaptchaSettings) {
 		var _thisC = this;
 		var settings: ICaptchaSettings = {
 			imgId: 'ltCaptchaImg',
