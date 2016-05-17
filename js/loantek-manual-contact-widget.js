@@ -23,6 +23,7 @@ var LoanTekManualContactWidget = (function () {
             successMsg: '#ltcwSuccessMessage'
         };
         ltjQuery.extend(settings, options);
+        ltjQuery('input, textarea').placeholder();
         ltjQuery(function () {
             var widgetData = {
                 "FileType": "SalesLead",

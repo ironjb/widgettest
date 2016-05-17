@@ -6,7 +6,7 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "jquery/jquery.d.ts": {
-      "commit": "08ed4e9f1869e37e29514d862e0158b40e550232"
+      "commit": "b4bbee8f60560c34bc74b154b283f7ce83a31dae"
     },
     "bootstrap/bootstrap.d.ts": {
       "commit": "08ed4e9f1869e37e29514d862e0158b40e550232"
@@ -37,6 +37,9 @@
     },
     "angularjs/angular-mocks.d.ts": {
       "commit": "08ed4e9f1869e37e29514d862e0158b40e550232"
+    },
+    "jquery.placeholder/jquery.placeholder.d.ts": {
+      "commit": "b4bbee8f60560c34bc74b154b283f7ce83a31dae"
     }
   }
 }

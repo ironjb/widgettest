@@ -26,6 +26,15 @@ class LoanTekWidgetHelpers {
 		, per: '%'
 	};
 
+	GetIndexOfFirstObjectInArray (theArray, theKey, theValue): number {
+		for (var i = 0, l = theArray.length; i < l; i++) {
+			if (theArray[i][theKey] === theValue) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	CreateElement() {
 		var $ = this.$;
 		return {
@@ -45,7 +54,7 @@ class LoanTekWidgetHelpers {
 				return returnStyle;
 			}
 		};
-	};
+	}
 
 	// ContactFields(): IWidgetAvailableField[] {
 	// 	var contactFields: IWidgetAvailableField[] = [

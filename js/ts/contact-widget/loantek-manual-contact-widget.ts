@@ -1,3 +1,7 @@
+/// <reference path="../../../typings/jquery/jquery.d.ts" />
+/// <reference path="../../../typings/jquery.placeholder/jquery.placeholder.d.ts" />
+/// <reference path="../common/jquery-noconflict.ts" />
+
 /**
  * LoanTek Manual Contact Widget
  */
@@ -80,6 +84,8 @@ class LoanTekManualContactWidget {
 			successMsg: '#ltcwSuccessMessage'
 		};
 		ltjQuery.extend(settings, options);
+
+		ltjQuery('input, textarea').placeholder();
 
 		ltjQuery(() => {
 

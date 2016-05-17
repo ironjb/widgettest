@@ -18,6 +18,14 @@ var LoanTekWidgetHelpers = (function () {
         };
         this.$ = jquery;
     }
+    LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
+        for (var i = 0, l = theArray.length; i < l; i++) {
+            if (theArray[i][theKey] === theValue) {
+                return i;
+            }
+        }
+        return -1;
+    };
     LoanTekWidgetHelpers.prototype.CreateElement = function () {
         var $ = this.$;
         return {
@@ -41,7 +49,6 @@ var LoanTekWidgetHelpers = (function () {
             }
         };
     };
-    ;
     return LoanTekWidgetHelpers;
 }());
 var ltjQuery = ltjQuery || jQuery.noConflict(true);
@@ -69,6 +76,7 @@ var LoanTekManualContactWidget = (function () {
             successMsg: '#ltcwSuccessMessage'
         };
         ltjQuery.extend(settings, options);
+        ltjQuery('input, textarea').placeholder();
         ltjQuery(function () {
             var widgetData = {
                 "FileType": "SalesLead",
@@ -694,10 +702,19 @@ var LoanTekCaptcha = (function () {
     return LoanTekCaptcha;
 }());
 (function ($) {
+    $('input textarea').placeholder();
     var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']);
     var lth = new LoanTekWidgetHelpers($);
     var el = lth.CreateElement();
-    window.console && console.log('dv', el.div());
+    var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
+    var contactWidgetCSS = [
+        '/css/widget.css'
+    ];
+    var contactWidgetScripts = [
+        '/js/lib/jquery.min.js',
+        '/js/lib/jquery.placeholder.min.js',
+        '/js/loantek-manual-contact-widget.js'
+    ];
     widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', function ($scope, $sce) {
             var contactWidget = {
                 prebuiltTemplates: [
@@ -735,7 +752,6 @@ var LoanTekCaptcha = (function () {
                                 { field: 'company', cols: 12 },
                                 { field: 'state', cols: 12 },
                                 { field: 'comments' },
-                                { field: 'captcha' },
                                 { field: 'submit' }
                             ]
                         }
@@ -755,50 +771,69 @@ var LoanTekCaptcha = (function () {
                     { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { field: 'submit' } }
                 ]
             };
-            var DemoPopulate = function () {
-                $scope.demo = 'demo';
-                var demoElement = el.div();
-                demoElement.append(el.style().text('.ltcw {display:none;}'));
-                demoElement.append(el.link('/css/widget.css'));
-                demoElement.append(el.div().prop('id', 'ltWidgetWrapper'));
-                $('#demoHtml').html(demoElement.html());
-                (function () {
-                    var ltCaptcha;
-                    var _ltCaptcha = function () {
-                        ltCaptcha = new LoanTekCaptcha();
-                    };
-                    var postDOMFunctions = function () {
-                        _ltCaptcha();
-                    };
-                    var externalValidators = function () {
-                        return ltCaptcha.IsValidEntry() && false;
-                    };
-                    var loanTekManualContactWidgetBuildObject = {
-                        showBuilderTools: true,
-                        defaultFormSize: 'sm',
-                        wrapperId: 'ltWidgetWrapper',
-                        postDOMCallback: postDOMFunctions,
-                        formId: 'LtcwContactWidgetForm',
-                        fields: $scope.currentFormObject.fields
-                    };
-                    var loanTekBuildForm = new LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
-                    var loanTekManualContactWidgetOptions = {
-                        postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
-                        externalValidatorFunction: externalValidators,
-                        successMessage: 'Yay!!! Successful POST'
-                    };
-                    var loanTekManualContactWidget = new LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
-                })();
-                if ($scope.currentFormObject) {
-                    window.console && console.log('has $scope.currentFormObject');
-                    $scope.demoCode = "\n<style type=\"text/css\">.ltcw {display:none;}</style>\n<link rel=\"stylesheet\" href=\"/css/widget.css\">\n<div id=\"ltWidgetWrapper\">x</div>\n<script>window.console && console.log('test');</script>\n\t\t\t\t";
+            var WidgetScriptBuild = function () {
+                var cfo = $scope.currentFormObject;
+                var wScript = '<style type="text/css">.ltcw {display:none;}</style>';
+                var wScriptDisplay = wScript;
+                var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
+                window.console && console.log('hasCaptcha', hasCaptchaField);
+                for (var iCss = 0, lCss = contactWidgetCSS.length; iCss < lCss; iCss++) {
+                    var cssHref = contactWidgetCSS[iCss];
+                    var cssLink = '\n<link rel="stylesheet" href="' + wwwRoot + cssHref + '">';
+                    wScript += cssLink;
+                    wScriptDisplay += cssLink;
                 }
+                var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
+                wScript += widgetWrapper;
+                wScriptDisplay += widgetWrapper;
+                for (var iScript = 0; iScript < contactWidgetScripts.length; iScript++) {
+                    var scriptSrc = contactWidgetScripts[iScript];
+                    var scriptLink = '\n<script type="text/javascript" src="' + wwwRoot + scriptSrc + '"></script>';
+                    wScript += scriptLink;
+                }
+                var mainSCript_start = "\n<script type=\"text/javascript\">\n(function () {";
+                wScript += mainSCript_start;
+                wScriptDisplay += mainSCript_start;
+                var captchaVar = "\n\tvar ltCaptcha;";
+                if (hasCaptchaField) {
+                    wScript += captchaVar;
+                    wScriptDisplay += captchaVar;
+                }
+                var postDOM = "\n\tvar postDOMFunctions = function () {";
+                if (hasCaptchaField) {
+                    postDOM += "\n\t\tltCaptcha = new LoanTekCaptcha();";
+                }
+                postDOM += "\n\t};";
+                wScript += postDOM;
+                wScriptDisplay += postDOM;
+                var extValid = "\n\tvar externalValidators = function () {\n\t\treturn ltCaptcha.IsValidEntry();\n\t};";
+                if (hasCaptchaField) {
+                    wScript += extValid;
+                    wScriptDisplay += extValid;
+                }
+                var buildObject = '', buildObjectWithTools = '';
+                buildObjectWithTools += "\n\t\tshowBuilderTools: true,";
+                if (cfo.defaultFormSize) {
+                    buildObject += "\n\t\tdefaultFormSize: '" + cfo.defaultFormSize + "'";
+                }
+                var buildObject_start = "\n\tvar loanTekManualContactWidgetBuildObject = {";
+                var buildObject_end = "\n\t};";
+                buildObject = buildObject_start + buildObject + buildObject_end;
+                buildObjectWithTools = buildObject_start + buildObjectWithTools + buildObject_end;
+                wScript += buildObject;
+                wScriptDisplay += buildObjectWithTools;
+                var mainScript_end = "\n})();\n</script>";
+                wScript += mainScript_end;
+                wScriptDisplay += mainScript_end;
+                $scope.widgetScript = wScript;
+                $scope.widgetScriptDisplay = wScriptDisplay;
+                $scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
             };
             $scope.UsePrebuiltTemplate = function () {
                 $scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];
                 $scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
                 window.console && console.log($scope.currentFormObject);
-                DemoPopulate();
+                WidgetScriptBuild();
             };
             var BuilderInit = function () {
                 $scope.currentWidget = angular.copy(contactWidget);

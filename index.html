@@ -35,26 +35,23 @@
 				<form action="" class="form-horizontal">
 					<div class="row">
 						<div class="col-sm-12">
-						<div class="panel panel-default">
-							<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
-								<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-							</div>
-							<div data-uib-collapse="isCollapsedScriptCopy">
-								<div class="panel-body"><textarea data-ng-model="demoCode" class="form-control input-sm" rows="4"></textarea></div>
-							</div>
-						</div>
 							<div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
 									<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
 								<div data-uib-collapse="isCollapsedSaved">
 									<div class="panel-body">
-										<div class="form-group">
+										<div class="form-group form-group-sm">
 											<div class="col-sm-12">
 												<select name="SavedWidgetSelect" id="SavedWidgetSelect" class="form-control" data-ng-model="savedwidget">
+													<option value=""></option>
 													<option value="-2">Load Saved Widget</option>
 													<option value="-1">Save as a New Widget</option>
 												</select>
+											</div>
+										</div>
+										<div class="form-group form-group-sm">
+											<div class="col-sm-12">
 												<button class="btn btn-xs btn-primary" data-ng-class="" type="button">save</button>
 												<button class="btn btn-xs btn-success" type="button">save as new</button>
 												<button class="btn btn-xs btn-danger" type="button">delete</button>
@@ -69,7 +66,11 @@
 								</div>
 								<div data-uib-collapse="isCollapsedFields">
 									<div class="panel-body">
-										<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltTemplate();" data-ng-model="selectedTemplate" data-ng-options="ptemp.name for ptemp in currentWidget.prebuiltTemplates"></select>
+										<div class="form-group form-group-sm">
+											<div class="col-sm-12">
+												<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltTemplate();" data-ng-model="selectedTemplate" data-ng-options="ptemp.name for ptemp in currentWidget.prebuiltTemplates"></select>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -79,13 +80,33 @@
 				</form>
 			</div>
 			<div class="col-sm-8">
-				{{demos}}
-				<div id="demoHtml" data-ng-bind-html-NN="demo"></div>
+				<div class="panel panel-default">
+					<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
+						<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+					</div>
+					<div data-uib-collapse="isCollapsedScriptCopy">
+						<div class="panel-body">
+							<div class="form-group form-group-sm">
+								<div class="col-sm-6">
+									<textarea data-ng-model="widgetScript" class="form-control" rows="20"></textarea>
+								</div>
+								<div class="col-sm-6">
+									<textarea data-ng-model="widgetScriptDisplay" class="form-control" rows="20"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div id="demoHtml" data-ng-bind-html="widgetDisplay"></div>
+				</div>
 			</div>
 		</div>
 	</div>
+
 	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script> -->
+	<script type="text/javascript" src="/js/lib/jquery.placeholder.min.js"></script>
 	<script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular-animate.min.js"></script>
@@ -95,6 +116,7 @@
 	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->
 
 	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/lib/jquery.placeholder.min.js"></script>
 	<script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
 
 	<!-- <script type="text/javascript">window.console && console.log('after', $.fn.jquery, 'ltjQuery', ltjQuery.fn.jquery);</script> -->
