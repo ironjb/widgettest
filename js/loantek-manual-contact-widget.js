@@ -1,128 +1,4 @@
 var ltjQuery = ltjQuery || jQuery.noConflict(true);
-var LoanTekManualContactWidget = (function () {
-    function LoanTekManualContactWidget(options) {
-        var settings = {
-            redirectUrl: null,
-            postUrl: '',
-            successMessage: null,
-            externalValidatorFunction: null,
-            form_id: '#LtcwContactWidgetForm',
-            form_clientid: '#ltcwClientId',
-            form_userid: '#ltcwUserId',
-            form_firstName: '#ltcwFirstName',
-            form_lastName: '#ltcwLastName',
-            form_email: '#ltcwEmail',
-            form_phone: '#ltcwPhone',
-            form_company: '#ltcwCompany',
-            form_state: '#ltcwState',
-            form_comments: '#ltcwComments',
-            form_submit: '#ltcwSubmit',
-            form_errorMsgWrapper: '#ltcwErrorMessageWrapper',
-            form_errorMsg: '#ltcwErrorMessage',
-            successMsgWrapper: '#ltcwSuccessMessageWrapper',
-            successMsg: '#ltcwSuccessMessage'
-        };
-        ltjQuery.extend(settings, options);
-        ltjQuery('input, textarea').placeholder();
-        ltjQuery(function () {
-            var widgetData = {
-                "FileType": "SalesLead",
-                "Reason": "FORM_VALUE_Comments",
-                "Source": {
-                    "Active": true,
-                    "Alias": "LoanTek.com",
-                    "Id": 44,
-                    "SourceType": "LeadSource",
-                    "Name": "LoanTek.com",
-                    "SubName": "Contact-Us-Form"
-                },
-                "NotifyUserOfNewLead": true,
-                "SendNewLeadInitialWelcomeMessage": true,
-                "ClientDefinedIdentifier": "LTWSJavaScriptTimeStamp",
-                "ClientId": 399,
-                "Persons": [{
-                        "PersonCategoryType": "Person",
-                        "PersonType": "Primary",
-                        "Addresses": [{
-                                "State": "FORM_VALUE_State"
-                            }],
-                        "ContactMethods": [{
-                                "ContactType": "Email",
-                                "Address": "FORM_VALUE_Email"
-                            }, {
-                                "ContactType": "Phone",
-                                "Number": "FORM_VALUE_Phone"
-                            }],
-                        "Assets": [{
-                                "AssetType": "Job",
-                                "CompanyName": "FORM_VALUE_Company"
-                            }],
-                        "FirstName": "FORM_VALUE_FName",
-                        "LastName": "FORM_VALUE_LName"
-                    }],
-                "MiscData": [{
-                        "Name": "AdditionalInformation",
-                        "Value": "LEAVE_BLANK_FOR_NOW"
-                    }]
-            };
-            ltjQuery(settings.form_submit).prop('disabled', false);
-            ltjQuery(settings.form_id).submit(function (event) {
-                event.preventDefault();
-                ltjQuery(settings.form_errorMsgWrapper).hide(100);
-                ltjQuery(settings.form_submit).prop('disabled', true);
-                if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-                    ltjQuery(settings.form_submit).prop('disabled', false);
-                    return false;
-                }
-                widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
-                widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
-                widgetData.Persons[0].ContactMethods[0].Address = ltjQuery(settings.form_email).val();
-                widgetData.Persons[0].ContactMethods[1].Number = ltjQuery(settings.form_phone).val();
-                widgetData.Persons[0].Assets[0].CompanyName = ltjQuery(settings.form_company).val();
-                widgetData.Persons[0].Addresses[0].State = ltjQuery(settings.form_state + ' option:selected').val();
-                widgetData.ClientDefinedIdentifier = ltjQuery(settings.form_clientid).val();
-                widgetData.Reason = ltjQuery(settings.form_comments).val();
-                widgetData.MiscData[0].Value = '';
-                window.console && console.log('widgetData', widgetData);
-                var request = ltjQuery.ajax({
-                    url: settings.postUrl,
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(widgetData),
-                    dataType: 'json'
-                });
-                request.done(function (result) {
-                    ltjQuery(settings.form_id).trigger('reset');
-                    ltjQuery(settings.form_submit).prop('disabled', false);
-                    if (settings.redirectUrl) {
-                        window.location.assign(settings.redirectUrl);
-                    }
-                    else if (settings.successMessage) {
-                        ltjQuery(settings.form_id).hide(100, function () {
-                            ltjQuery(settings.form_id).remove();
-                        });
-                        ltjQuery(settings.successMsgWrapper).show(100);
-                        ltjQuery(settings.successMsg).html(settings.successMessage);
-                    }
-                });
-                request.fail(function (error) {
-                    ltjQuery(settings.form_submit).prop('disabled', false);
-                    var msg = 'There was an unexpected error. Please try again.';
-                    try {
-                        var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
-                        msg = errorObj.Message;
-                    }
-                    catch (e) {
-                        console.error('Error @ request.fail.responseText:' + e);
-                    }
-                    ltjQuery(settings.form_errorMsg).html(msg);
-                    ltjQuery(settings.form_errorMsgWrapper).show(100);
-                });
-            });
-        });
-    }
-    return LoanTekManualContactWidget;
-}());
 var LoanTekBuildForm = (function () {
     function LoanTekBuildForm(options) {
         var _this = this;
@@ -247,7 +123,7 @@ var LoanTekBuildForm = (function () {
                     }
                     var captchaInput = _thisM.CreateFormElement(captchaInputObj);
                     var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
-                    returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
+                    returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-default').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 default:
                     returnElement = el.div();
@@ -379,7 +255,7 @@ var LoanTekBuildForm = (function () {
             formId: 'LtcwContactWidgetForm',
             errorMessageWrapperId: 'ltcwErrorMessageWrapper',
             errrorMessageId: 'ltcwErrorMessage',
-            defaultFormSize: null,
+            fieldSize: null,
             showBuilderTools: false,
             fields: null
         };
@@ -413,7 +289,7 @@ var LoanTekBuildForm = (function () {
             comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
             submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
             label: { element: 'label', cols: 6 },
-            captcha: { element: 'captcha', cssClass: 'lt-captcha' }
+            captcha: { element: 'captcha' }
         };
         function ExtendFieldTemplate(eItem) {
             return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
@@ -427,7 +303,7 @@ var LoanTekBuildForm = (function () {
         ltjQuery.each(settings.fields, function (i, elementItem) {
             isHidden = elementItem.type === 'hidden';
             elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
-            elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
+            elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
             isLastField = i >= fieldsLength - 1;
             isLabel = elementItem.element === 'label';
             nextIndex = i + 1;
@@ -647,4 +523,128 @@ var LoanTekCaptcha = (function () {
         return doesEntryMatch;
     };
     return LoanTekCaptcha;
+}());
+var LoanTekManualContactWidget = (function () {
+    function LoanTekManualContactWidget(options) {
+        var settings = {
+            redirectUrl: null,
+            postUrl: '',
+            successMessage: null,
+            externalValidatorFunction: null,
+            form_id: '#LtcwContactWidgetForm',
+            form_clientid: '#ltcwClientId',
+            form_userid: '#ltcwUserId',
+            form_firstName: '#ltcwFirstName',
+            form_lastName: '#ltcwLastName',
+            form_email: '#ltcwEmail',
+            form_phone: '#ltcwPhone',
+            form_company: '#ltcwCompany',
+            form_state: '#ltcwState',
+            form_comments: '#ltcwComments',
+            form_submit: '#ltcwSubmit',
+            form_errorMsgWrapper: '#ltcwErrorMessageWrapper',
+            form_errorMsg: '#ltcwErrorMessage',
+            successMsgWrapper: '#ltcwSuccessMessageWrapper',
+            successMsg: '#ltcwSuccessMessage'
+        };
+        ltjQuery.extend(settings, options);
+        ltjQuery('input, textarea').placeholder();
+        ltjQuery(function () {
+            var widgetData = {
+                "FileType": "SalesLead",
+                "Reason": "FORM_VALUE_Comments",
+                "Source": {
+                    "Active": true,
+                    "Alias": "LoanTek.com",
+                    "Id": 44,
+                    "SourceType": "LeadSource",
+                    "Name": "LoanTek.com",
+                    "SubName": "Contact-Us-Form"
+                },
+                "NotifyUserOfNewLead": true,
+                "SendNewLeadInitialWelcomeMessage": true,
+                "ClientDefinedIdentifier": "LTWSJavaScriptTimeStamp",
+                "ClientId": 399,
+                "Persons": [{
+                        "PersonCategoryType": "Person",
+                        "PersonType": "Primary",
+                        "Addresses": [{
+                                "State": "FORM_VALUE_State"
+                            }],
+                        "ContactMethods": [{
+                                "ContactType": "Email",
+                                "Address": "FORM_VALUE_Email"
+                            }, {
+                                "ContactType": "Phone",
+                                "Number": "FORM_VALUE_Phone"
+                            }],
+                        "Assets": [{
+                                "AssetType": "Job",
+                                "CompanyName": "FORM_VALUE_Company"
+                            }],
+                        "FirstName": "FORM_VALUE_FName",
+                        "LastName": "FORM_VALUE_LName"
+                    }],
+                "MiscData": [{
+                        "Name": "AdditionalInformation",
+                        "Value": "LEAVE_BLANK_FOR_NOW"
+                    }]
+            };
+            ltjQuery(settings.form_submit).prop('disabled', false);
+            ltjQuery(settings.form_id).submit(function (event) {
+                event.preventDefault();
+                ltjQuery(settings.form_errorMsgWrapper).hide(100);
+                ltjQuery(settings.form_submit).prop('disabled', true);
+                if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+                    ltjQuery(settings.form_submit).prop('disabled', false);
+                    return false;
+                }
+                widgetData.Persons[0].FirstName = ltjQuery(settings.form_firstName).val();
+                widgetData.Persons[0].LastName = ltjQuery(settings.form_lastName).val();
+                widgetData.Persons[0].ContactMethods[0].Address = ltjQuery(settings.form_email).val();
+                widgetData.Persons[0].ContactMethods[1].Number = ltjQuery(settings.form_phone).val();
+                widgetData.Persons[0].Assets[0].CompanyName = ltjQuery(settings.form_company).val();
+                widgetData.Persons[0].Addresses[0].State = ltjQuery(settings.form_state + ' option:selected').val();
+                widgetData.ClientDefinedIdentifier = ltjQuery(settings.form_clientid).val();
+                widgetData.Reason = ltjQuery(settings.form_comments).val();
+                widgetData.MiscData[0].Value = '';
+                window.console && console.log('widgetData', widgetData);
+                var request = ltjQuery.ajax({
+                    url: settings.postUrl,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(widgetData),
+                    dataType: 'json'
+                });
+                request.done(function (result) {
+                    ltjQuery(settings.form_id).trigger('reset');
+                    ltjQuery(settings.form_submit).prop('disabled', false);
+                    if (settings.redirectUrl) {
+                        window.location.assign(settings.redirectUrl);
+                    }
+                    else if (settings.successMessage) {
+                        ltjQuery(settings.form_id).hide(100, function () {
+                            ltjQuery(settings.form_id).remove();
+                        });
+                        ltjQuery(settings.successMsgWrapper).show(100);
+                        ltjQuery(settings.successMsg).html(settings.successMessage);
+                    }
+                });
+                request.fail(function (error) {
+                    ltjQuery(settings.form_submit).prop('disabled', false);
+                    var msg = 'There was an unexpected error. Please try again.';
+                    try {
+                        var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+                        msg = errorObj.Message;
+                    }
+                    catch (e) {
+                        console.error('Error @ request.fail.responseText:' + e);
+                    }
+                    ltjQuery(settings.form_errorMsg).html(msg);
+                    ltjQuery(settings.form_errorMsgWrapper).show(100);
+                });
+            });
+        });
+    }
+    return LoanTekManualContactWidget;
 }());

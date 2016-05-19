@@ -9,7 +9,7 @@ class LoanTekBuildForm {
 			, formId: 'LtcwContactWidgetForm'
 			, errorMessageWrapperId: 'ltcwErrorMessageWrapper'
 			, errrorMessageId: 'ltcwErrorMessage'
-			, defaultFormSize: null
+			, fieldSize: null
 			, showBuilderTools: false
 			, fields: null
 		};
@@ -53,7 +53,7 @@ class LoanTekBuildForm {
 			comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
 			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
 			label: { element: 'label', cols: 6 },
-			captcha: { element: 'captcha', cssClass: 'lt-captcha' }
+			captcha: { element: 'captcha'/*, cssClass: 'lt-captcha'*/ }
 		};
 
 		function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
@@ -72,7 +72,7 @@ class LoanTekBuildForm {
 		ltjQuery.each(settings.fields, (i, elementItem) => {
 			isHidden = elementItem.type === 'hidden';
 			elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
-			elementItem.size = elementItem.size ? elementItem.size : settings.defaultFormSize;
+			elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
 			isLastField = i >= fieldsLength - 1;
 			isLabel = elementItem.element === 'label';
 
@@ -259,7 +259,7 @@ class LoanTekBuildForm {
 				var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
 
 				returnElement = el.div().addClass('lt-captcha').append(
-					el.div().addClass('panel panel-info').append(
+					el.div().addClass('panel panel-default').append(
 						el.div().addClass('panel-heading').text('Security Check')
 					).append(
 						el.div().addClass('panel-body').append(

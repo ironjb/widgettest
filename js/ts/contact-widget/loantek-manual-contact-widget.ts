@@ -1,6 +1,8 @@
 /// <reference path="../../../typings/jquery/jquery.d.ts" />
 /// <reference path="../../../typings/jquery.placeholder/jquery.placeholder.d.ts" />
 /// <reference path="../common/jquery-noconflict.ts" />
+/// <reference path="build-form.ts" />
+/// <reference path="captcha.ts" />
 
 /**
  * LoanTek Manual Contact Widget

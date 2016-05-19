@@ -30,7 +30,15 @@ CSS Image Conversion
 
 http://css-image.org/
 
-
 Canvas
 
 https://gist.github.com/SneakyBrian/5209271
+
+
+
+## JavaScript String Interpolation
+
+https://gist.github.com/NaniSore/3191000
+
+https://gist.github.com/search?l=javascript&q=javascript+interpolation&ref=searchresults&utf8=%E2%9C%93
+

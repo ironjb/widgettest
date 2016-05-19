@@ -16,6 +16,8 @@ interface IWidgetAvailableField {
 
 interface IWidgetPrebuiltTemplate {
 	name: string;
+	formWidth?: number;
+	formWidthUnit?: string;
 	template?: IWidgetFormObject;
 }
 
@@ -25,8 +27,6 @@ interface IWidget {
 }
 
 interface IWidgetFormObject {
-	formWidth?: number;
-	formWidthUnit?: string;
 	fieldSize?: string;
 	formGroupSpacing?: string;
 	formStyles?: string;
@@ -36,9 +36,8 @@ interface IWidgetFormObject {
 	formId?: string;
 	errorMessageWrapperId?: string;
 	errrorMessageId?: string;
-	defaultFormSize?: string;
 	showBuilderTools?: boolean;
-	postDOMCallback?: Function;
+	postDOMCallback?: any;
 }
 
 interface IWidgetField {

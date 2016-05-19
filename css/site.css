@@ -1,3 +1,39 @@
 body {
   padding-top: 50px;
 }
+.code-mono {
+  font-family: "Lucida Console", Monaco, monospace;
+}
+.code-sm {
+  font-size: 0.7em;
+}
+@-webkit-keyframes example {
+  10% {
+    background-color: #dddddd;
+  }
+  50% {
+    background-color: #ddeedd;
+  }
+  100% {
+    background-color: #dddddd;
+  }
+}
+@keyframes example {
+  10% {
+    background-color: #dddddd;
+  }
+  50% {
+    background-color: #ddeedd;
+  }
+  100% {
+    background-color: #dddddd;
+  }
+}
+.code-change.ng-animate {
+  -webkit-animation-name: example;
+          animation-name: example;
+  -webkit-animation-duration: 1s;
+          animation-duration: 1s;
+  -webkit-animation-iteration-count: 2;
+          animation-iteration-count: 2;
+}

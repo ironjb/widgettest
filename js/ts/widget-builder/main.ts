@@ -4,25 +4,14 @@
 /// <reference path="../../../typings/angularjs/angular-animate.d.ts" />
 /// <reference path="../../../typings/angularjs/angular-sanitize.d.ts" />
 /// <reference path="../common/interfaces-widget.d.ts" />
-/// <reference path="../common/jquery-noconflict.ts" />
-/// <reference path="../contact-widget/loantek-manual-contact-widget.ts" />
-/// <reference path="../contact-widget/build-form.ts" />
-/// <reference path="../contact-widget/captcha.ts" />
-
-// // 'use strict';
-// $('#testClick').click(() => {
-// 	$('#testStuff').html(`
-// <style>.ltcw{display:none}</style> <link rel="stylesheet" href="/css/widget.css"> <div id="ltWidgetWrapper"></div> <script src="/js/lib/jquery.min.js"></script> <script src="/js/loantek-manual-contact-widget.js"></script> <script>var ltCaptcha,_ltCaptcha=function(){ltCaptcha=new LoanTekCaptcha},postDOMFunctions=function(){_ltCaptcha()},externalValidators=function(){return ltCaptcha.IsValidEntry()},loanTeckBuildOptions={defaultFormSize:"sm",wrapperId:"ltWidgetWrapper",postDOMCallback:postDOMFunctions,formId:"LtcwContactWidgetForm"},loanTekManualContactWidgetBuildObject={fields:[{field:"clientid",values:"test1234"},{field:"firstname",value:"First"},{field:"lastname",value:"Last"},{field:"email",value:"email@mail.com"},{field:"phone",value:"208-456-7890"},{field:"company",value:"LT"},{field:"state",value:"ID"},{field:"comments",value:"My Comments"},{field:"captcha"},{field:"submit"}]};LoanTekBuildForm(loanTekManualContactWidgetBuildObject,loanTeckBuildOptions);var loanTekManualContactWidgetOptions={postUrl:"http://node-cors-server.herokuapp.com/simple-cors",externalValidatorFunction:externalValidators,successMessage:"Yay!!! Successful POST"};LoanTekManualContactWidget(loanTekManualContactWidgetOptions)</script>
-
-// 	`);
-// });
+/// <reference path="../common/widget-helpers.ts" />
 
 (function ($: JQueryStatic) {
+	var x = 1;
 	$('input textarea').placeholder();
 	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']);
 	var lth = new LoanTekWidgetHelpers($);
 	var el = lth.CreateElement();
-	// window.console && console.log(window.location.href);
 	var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
 	var contactWidgetCSS: string[] = [
 		'/css/widget.css'
@@ -33,52 +22,24 @@
 		, '/js/loantek-manual-contact-widget.js'
 	];
 
-	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', function($scope, $sce) {
-		// $scope.demo = 'demo';
-		// var WidgetType = {
-		// 	contact: 'contact',
-		// 	quote: 'quote',
-		// 	rate: 'rate'
-		// }
-
-		// var bootstrap = {
-		// 	gridSizing: {
-		// 		xs: 'xs'
-		// 		, sm: 'sm'
-		// 		, md: 'md'
-		// 		, lg: 'lg'
-		// 	},
-		// 	inputSizing: {
-		// 		sm: 'sm'
-		// 		, lg: 'lg'
-		// 	}
-		// };
-
-		// var ws = {
-		// 	widthUnit: {
-		// 		px: 'px'
-		// 		, per: '%'
-		// 	}
-		// };
-
-		// var currentWidgetType = WidgetType.contact;
-
+	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', '$timeout', function($scope, $sce, $timeout) {
 		var contactWidget: IWidget = {
 			prebuiltTemplates: [
 				{
 					name: 'Default Contact Widget',
 					template: {
-						// fieldSize: bootstrap.inputSizing.sm,
+						// fieldSize: lth.bootstrap.inputSizing.sm,
 						fields: [
 							{ field: 'clientid' }
 							, { field: 'userid' }
-							, { field: 'firstname' }
+							, { field: 'firstname', cols: 2 }
 							, { field: 'lastname' }
 							, { field: 'email' }
 							, { field: 'phone' }
 							, { field: 'company' }
 							, { field: 'state' }
 							, { field: 'comments' }
+							// , { element: 'input', type: 'file' }
 							, { field: 'captcha' }
 							, { field: 'submit' }
 						]
@@ -86,10 +47,10 @@
 				},
 				{
 					name: 'Small Contact Widget',
+					formWidth: 200,
+					formWidthUnit: lth.widthUnit.px,
 					template: {
 						fieldSize: lth.bootstrap.inputSizing.sm,
-						formWidth: 200,
-						formWidthUnit: lth.widthUnit.px,
 						fields: [
 							{ field: 'clientid' }
 							, { field: 'userid' }
@@ -118,22 +79,24 @@
 				, { id: 'comments', name: 'Comments', fieldTemplate: { field: 'comments' } }
 				, { id: 'captcha', name: 'Captcha', fieldTemplate: { field: 'captcha' } }
 				, { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { field: 'submit' } }
-				// { name: ''}
 			]
 		};
 
 		var WidgetScriptBuild = () => {
-			// $scope.widgetDisplay = 'demo';
-			var cfo: IWidgetFormObject = $scope.currentFormObject;
+			var cfo: IWidgetFormObject = angular.copy($scope.currentFormObject);
+			var cfod: IWidgetFormObject = angular.copy($scope.currentFormObject);
 			var wScript: string = '<style type="text/css">.ltcw {display:none;}</style>';
 			var wScriptDisplay: string = wScript;
 			var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
-			window.console && console.log('hasCaptcha', hasCaptchaField);
+			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+			cfod.showBuilderTools = true;
+			cfo.postDOMCallback = '#fn{postDOMFunctions}';
+			cfod.postDOMCallback = '#fn{postDOMFunctions}';
 
 			// Add CSS files
 			for (var iCss = 0, lCss = contactWidgetCSS.length; iCss < lCss; iCss++) {
 				var cssHref = contactWidgetCSS[iCss];
-				var cssLink = '\n<link rel="stylesheet" href="' + wwwRoot + cssHref + '">';
+				var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
 				wScript += cssLink;
 				wScriptDisplay += cssLink;
 			}
@@ -146,214 +109,141 @@
 			// Add scripts
 			for (var iScript = 0; iScript < contactWidgetScripts.length; iScript++) {
 				var scriptSrc = contactWidgetScripts[iScript];
-				var scriptLink = '\n<script type="text/javascript" src="' + wwwRoot + scriptSrc + '"></script>';
+				var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
 				wScript += scriptLink;
 				// DO NOT ADD for wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
 				// Instead, each of these scripts should be added already to the builder page.
 			}
 
-			// Start Main Script
-			var mainSCript_start = `
-<script type="text/javascript">
-(function () {`;
-			wScript += mainSCript_start;
-			wScriptDisplay += mainSCript_start;
+			// Build Main Script
+			var mainScript = '';
+			var mainScriptDisplay = '';
 
 			// Captcha var
 			var captchaVar = `
 	var ltCaptcha;`;
 			if (hasCaptchaField) {
-				wScript += captchaVar;
-				wScriptDisplay += captchaVar;
+				mainScript += captchaVar;
+				mainScriptDisplay += captchaVar;
 			}
 
 			// PostDOMFunctions
-			var postDOM = `
-	var postDOMFunctions = function () {`;
+			var postDomCode = '/*code ran after DOM created*/', postDomFn = `
+	var postDOMFunctions = function () {
+		#{code}
+	};`;
 			if (hasCaptchaField) {
-				postDOM += `
+				postDomCode += `
 		ltCaptcha = new LoanTekCaptcha();`;
 			}
-			postDOM += `
-	};`;
-			wScript += postDOM;
-			wScriptDisplay += postDOM;
+			mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
+			mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
 
 			// External Validator
 			var extValid = `
 	var externalValidators = function () {
-		return ltCaptcha.IsValidEntry();
+		#{validReturn}
 	};`;
 			if (hasCaptchaField) {
-				wScript += extValid;
-				wScriptDisplay += extValid;
+				extValid = lth.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
+			} else {
+				extValid = lth.Interpolate(extValid, { validReturn: 'return true;' });
 			}
+			mainScript += extValid;
+			mainScriptDisplay += extValid;
 
-			// Build Object
-			var buildObject = '', buildObjectWithTools = '';
+			// Add buildObject to mainScript
+			var buildObjectWrap = `
+	var loanTekManualContactWidgetBuildObject = #{bow};`;
+			var cfoString = JSON.stringify(cfo/*, null, 2*/);
+			var cfodString = JSON.stringify(cfod/*, null, 2*/);
+			mainScript += lth.Interpolate(buildObjectWrap, { bow: cfoString });
+			mainScriptDisplay += lth.Interpolate(buildObjectWrap, { bow: cfodString });
 
-			buildObjectWithTools += `
-		showBuilderTools: true,`;
+			// Add Execution of LoanTekBuildForm
+			var exBuildForm = `
+	LoanTekBuildForm(loanTekManualContactWidgetBuildObject);`;
 
-			if (cfo.defaultFormSize) {
-				buildObject += `
-		defaultFormSize: '` + cfo.defaultFormSize + `'`;
-			}
+			mainScript += exBuildForm;
+			mainScriptDisplay += exBuildForm;
 
-			// Wrap buildObject
-			var buildObject_start = `
-	var loanTekManualContactWidgetBuildObject = {`;
-			var buildObject_end = `
-	};`;
-			buildObject = buildObject_start + buildObject + buildObject_end;
-			buildObjectWithTools = buildObject_start + buildObjectWithTools + buildObject_end;
+			// Widget Options Object setup
+			var ltWidgetOptions = {
+				// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
+				postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
+				// redirectUrl: 'http://www.google.com',
+				externalValidatorFunction: '#fn{externalValidators}',
+				successMessage: 'Yay!!! Successful POST'
+			};
 
-			// Add buildObject to wScript
-			wScript += buildObject;
-			wScriptDisplay += buildObjectWithTools;
+			var ltWidgetOptionsWrap = `
+	var loanTekManualContactWidgetOptions = #{cwow};`;
+			mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
+			mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
 
+			// Add Execution of Contact Widget
+			var contactWidget = `
+	LoanTekManualContactWidget(loanTekManualContactWidgetOptions);`;
+			mainScript += contactWidget;
+			mainScriptDisplay += contactWidget;
 
-			// End Main Script
-			var mainScript_end = `
+			mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
+			mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
+
+			// Wrap Main Script
+			var mainScriptWrap = `
+<script type="text/javascript">
+(function () {#{m}
 })();
 </script>`;
-			wScript += mainScript_end;
-			wScriptDisplay += mainScript_end;
+			mainScript = lth.Interpolate(mainScriptWrap,{m: mainScript});
+			mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
+
+			wScript += mainScript;
+			wScriptDisplay += mainScriptDisplay;
 
 
-			$scope.widgetScript = wScript;
+			// $scope.widgetScript = wScript;
+			$scope.widgetScript = wScript.replace(/\s+/g, ' ');
 			$scope.widgetScriptDisplay = wScriptDisplay;
-			// $scope.widgetScript = wScript.replace(/\s+/g, ' ');
 			$scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
-
-
-
-
-
-
-
-			// var demoElement = el.div();
-			// demoElement.append(el.style().text('.ltcw {display:none;}'));
-			// demoElement.append(el.link('/css/widget.css'));
-			// demoElement.append(el.div().prop('id', 'ltWidgetWrapper'));
-			// $('#demoHtml').html(demoElement.html());
-			// $scope.widgetDisplay = $sce.trustAsHtml(demoElement.html());
-
-
-			// var testScript = function() {
-			// 	console.log('test');
-			// };
-
-			// $scope.widgetScript = testScript.toString();
-			// // $scope.widgetScript = $scope.widgetScript.replace(/[\s+]/g, ' ');
-			// $scope.widgetScript = $scope.widgetScript.replace(/\s+/g, ' ');
-
-			// $.getScript('/js/lib/jquery.min.js', (data, textStatus, jqxhr) => {
-				// window.console && console.log('jq loaded', data);
-				// $.getScript('/js/loantek-manual-contact-widget.js', (data, textStatus, jqxhr) => {
-					// window.console && console.log('lmcw loaded', ltjQuery);
-					// (function() {
-					// 	// var ltCaptcha = new LoanTekCaptcha();
-					// 	var ltCaptcha;
-					// 	// var _ltCaptcha = function() {
-					// 	// 	ltCaptcha = new LoanTekCaptcha();
-					// 	// };
-
-					// 	var postDOMFunctions = function() {
-					// 		// _ltCaptcha();
-					// 		ltCaptcha = new LoanTekCaptcha();
-					// 	};
-
-					// 	var externalValidators = function() {
-					// 		// window.console && console.log('external validatorss');
-					// 		return ltCaptcha.IsValidEntry() && false;
-					// 	};
-
-					// 	// var loanTeckBuildOptions = {
-					// 	// };
-					// 	var loanTekManualContactWidgetBuildObject = {
-					// 		showBuilderTools: true,
-					// 		defaultFormSize: 'sm',
-					// 		wrapperId: 'ltWidgetWrapper',
-					// 		postDOMCallback: postDOMFunctions,
-					// 		formId: 'LtcwContactWidgetForm',
-					// 		// clientID: 1234, // add as hidden field???
-					// 		// userID: 6789, // add as hidden field???
-					// 		// fields: [
-					// 		// 	{ field: 'clientid', values: 'test1234' },
-					// 		// 	// { field: 'firstname', value: 'First' },
-					// 		// 	{ field: 'label', cols: 2, value: 'Last Name' },
-					// 		// 	{ field: 'lastname', cols: 8, value: 'Last' },
-					// 		// 	// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
-					// 		// 	{ field: 'email', value: 'email@mail.com' },
-					// 		// 	{ field: 'phone', value: '208-456-7890' },
-					// 		// 	{ field: 'company', value: 'LT' },
-					// 		// 	{ field: 'state', value: 'ID' },
-					// 		// 	{ field: 'comments', value: 'My Comments' },
-					// 		// 	{ field: 'captcha' },
-					// 		// 	{ field: 'submit' }
-					// 		// ]
-					// 		fields: $scope.currentFormObject.fields
-					// 	};
-					// 	// LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
-					// 	var loanTekBuildForm = new LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
-
-					// 	var loanTekManualContactWidgetOptions = {
-					// 		// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
-					// 		postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
-					// 		// redirectUrl: 'http://www.google.com',
-					// 		externalValidatorFunction: externalValidators,
-					// 		successMessage: 'Yay!!! Successful POST'
-					// 	};
-					// 	var loanTekManualContactWidget = new LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
-					// })();
-				// });
-			// });
-			// demoElement.append(el.script('/js/lib/jquery.min.js'));
-			// demoElement.append(el.script('/js/loantek-manual-contact-widget.js'));
-
-			// $scope.widgetDisplay = $sce.trustAsHtml(demoElement.html());
-			// $('#demoHtml').html(demoElement.html());
-
-// 			if ($scope.currentFormObject) {
-// 				window.console && console.log('has $scope.currentFormObject');
-// 				$scope.widgetScript = `
-// <style type="text/css">.ltcw {display:none;}</style>
-// <link rel="stylesheet" href="/css/widget.css">
-// <div id="ltWidgetWrapper">x</div>
-// <script>window.console && console.log('test');</script>
-// 				`;
-// 				// $scope.widgetScript = $scope.widgetScript.replace(/[\s+]/g, ' ');
-// 				// $scope.widgetScript.replace(/dis/, '_');
-// // 				$('#demoHtml').html(`
-// // <style type="text/css">.ltcw {display:none;}</style>
-// // <link rel="stylesheet" href="/css/widget.css">
-// // <div id="ltWidgetWrapper">x</div>
-// // <script>window.console && console.log('test');</script>
-// // 				`);
-// 			}
 		};
 
 		$scope.UsePrebuiltTemplate = () => {
-			// // window.console && console.log('use this template: ', tmp.name);
-			// window.console && console.log($scope.selectedTemplate);
-			// $scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
 			$scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];		// selects first template if not selected already
 			$scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
-			window.console && console.log($scope.currentFormObject);
-			// window.console && console.log($scope.currentWidget.prebuiltTemplates);
 			WidgetScriptBuild();
+			// $scope.scriptChangedClass = '';
+			// window.console && console.log('change class', $scope.scriptChangedClass);
+			// $scope.scriptChangedClass = 'example-test';
+			// window.console && console.log('change class 2', $scope.scriptChangedClass);
+			$timeout(() => {
+				$scope.scriptChangedClass = 't' + new Date().getTime();
+			});
 		};
 
 		var BuilderInit = () => {
 			$scope.currentWidget = angular.copy(contactWidget);
-			// $scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];		// selects first template if not selected already
-			// $scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
-			// window.console && console.log($scope.currentFormObject);
-			// // window.console && console.log($scope.currentWidget.prebuiltTemplates);
-			// WidgetScriptBuild();
 			$scope.UsePrebuiltTemplate();
 		};
 		BuilderInit();
 	}]);
+	// widgetBuilderApp.directive('ltContactWidgetScript', [function() {
+	// 	return {
+	// 		restrict: 'AEC',
+	// 		// replace: true,
+	// 		scope: {
+	// 			lcws: '=ltContactWidgetScript'
+	// 		},
+	// 		templateUrl: 'template/contactWidgetScript.html',
+	// 		link: (scope) => {
+	// 			// window.console && console.log('scope', scope);
+	// 			// window.console && console.log('scope ltContactWidgetScript', scope.lcws);
+	// 		}
+	// 	};
+	// }]);
+	// angular.module('lt.templates', []).run(['$templateCache', function($templateCache) {
+	// 	$templateCache.put('template/contactWidgetScript.html', `
+	// 	`);
+	// }]);
 })(jQuery);

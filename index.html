@@ -30,11 +30,25 @@
 	</nav>
 	<div class="container">
 		<h1>Widget Builder</h1>
-		<div class="row">
+		<div class="row example-test">
 			<div class="col-sm-4">
 				<form action="" class="form-horizontal">
 					<div class="row">
 						<div class="col-sm-12">
+							<div class="panel panel-default">
+								<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
+									<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+								</div>
+								<div data-uib-collapse="isCollapsedScriptCopy">
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-sm-12">
+												<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change" rows="2" readonly="readonly"></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 							<div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
 									<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
@@ -80,7 +94,7 @@
 				</form>
 			</div>
 			<div class="col-sm-8">
-				<div class="panel panel-default">
+				<!-- <div class="panel panel-default">
 					<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
 						<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 					</div>
@@ -88,15 +102,15 @@
 						<div class="panel-body">
 							<div class="form-group form-group-sm">
 								<div class="col-sm-6">
-									<textarea data-ng-model="widgetScript" class="form-control" rows="20"></textarea>
+									<textarea data-ng-model="widgetScript" class="form-control" style="font-size: 0.7em;" rows="20" readonly="readonly"></textarea>
 								</div>
 								<div class="col-sm-6">
-									<textarea data-ng-model="widgetScriptDisplay" class="form-control" rows="20"></textarea>
+									<textarea data-ng-model="widgetScriptDisplay" class="form-control" style="font-size: 0.7em;" rows="20" readonly="readonly"></textarea>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 				<div class="row">
 					<div id="demoHtml" data-ng-bind-html="widgetDisplay"></div>
 				</div>
