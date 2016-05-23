@@ -1,20 +1,26 @@
 /// <reference path="../common/interfaces-widget.d.ts" />
+/// <reference path="../common/widget-helpers.ts" />
 
 class LoanTekBuildForm {
 
+	private lth;
+
 	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormObject) {
 		var _thisC = this;
+		_thisC.lth = new LoanTekWidgetHelpers(ltjQuery);
 		var settings: IWidgetFormObject = {
 			wrapperId: 'ltWidgetWrapper'
 			, formId: 'LtcwContactWidgetForm'
 			, errorMessageWrapperId: 'ltcwErrorMessageWrapper'
 			, errrorMessageId: 'ltcwErrorMessage'
 			, fieldSize: null
+			, formBorderType: null
+			, panelTitle: null
 			, showBuilderTools: false
 			, fields: null
 		};
 		ltjQuery.extend(settings, options);
-		var el = _thisC.CreateElement();
+		var el = _thisC.lth.CreateElement();
 
 		var returnForm = el.form().prop('id', settings.formId).append(
 			el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none'}).append(
@@ -64,7 +70,7 @@ class LoanTekBuildForm {
 		ltjQuery.each(settings.fields, (i, elementItem) => {
 			if (elementItem.field) {
 				settings.fields[i] = ExtendFieldTemplate(elementItem);
-				delete settings.fields[i].field;
+				// delete settings.fields[i].field;
 				// window.console && console.log('elItem', settings.fields[i]);
 			}
 		});
@@ -118,6 +124,12 @@ class LoanTekBuildForm {
 					}
 				}
 
+				if (settings.showBuilderTools) {
+					// cell.append(el.div().html('Edit helper ' + elementItem.element));
+					// cell.attr('data-lt-widget-tool', `{ field: '` + elementItem.field + `' }`);
+					cell.attr('data-ng-click', 'testFun();');
+				}
+
 				row.append(cell);
 
 				isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -151,44 +163,81 @@ class LoanTekBuildForm {
 			}
 		});
 
+		// window.console && console.log('settings.formBorderType', settings.formBorderType);
+		if (settings.formBorderType) {
+			if (settings.formBorderType === 'well') {
+				var wellMain = el.div().addClass('well');
+
+				if (settings.panelTitle) {
+					wellMain.append(el.h(4).html(settings.panelTitle));
+				}
+
+				returnForm = wellMain.append(returnForm);
+				// returnForm = el.div().addClass('well').append(el.h(4).html(settings.panelTitle)).append(returnForm);
+			} else if (settings.formBorderType === _thisC.lth.formBorderType.panel) {
+				var panelMain, panelHeading, panelBody;
+				panelMain = el.div().addClass('panel panel-default');
+				panelBody = el.div().addClass('panel-body').append(returnForm);
+
+				if (settings.panelTitle) {
+					panelHeading = el.div().addClass('panel-heading').html(settings.panelTitle);
+					// panelHeading = el.div().addClass('panel-heading').append(el.h(4).addClass('panel-title').html(settings.panelTitle));
+				}
+
+				if (panelHeading) {
+					panelMain.append(panelHeading);
+				}
+
+				panelMain.append(panelBody);
+
+				returnForm = panelMain;
+				// returnForm = el.div().addClass('panel panel-default').append(returnForm);
+			}
+
+		}
+		// window.console && console.log('after form bordertype test', settings.wrapperId);
+
+		// window.console && console.log('ltjQuery("#ltWidgetWrapper")', ltjQuery('#ltWidgetWrapper').addClass('ltcw container-fluid').empty().append(returnForm));
+
 		ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
 
+		// window.console && console.log('after append to thing');
 		if (typeof settings.postDOMCallback === 'function') {
 			settings.postDOMCallback();
 		}
 	}
 
 	// Needs to be instance variable since it is used during the constructor
-	CreateElement = () => {
-		var el = {
-			p: () => { return ltjQuery('<p/>'); },
-			span: () => { return ltjQuery('<span/>'); },
-			div: () => { return ltjQuery('<div/>'); },
-			form: () => { return ltjQuery('<form/>').addClass('form-horizontal'); },
-			label: () => { return ltjQuery('<label/>').addClass('control-label col-sm-12'); },
-			button: (type: string = 'button') => { return ltjQuery('<button/>').prop('type', type); },
-			select: () => { return ltjQuery('<select/>').addClass('form-control'); },
-			option: () => { return ltjQuery('<option/>'); },
-			input: (type: string = 'text') => {
-				return ltjQuery('<input/>').prop('type', type);
-			},
-			textarea: () => { return ltjQuery('<textarea/>').addClass('form-control'); },
-			col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
-			row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
-			formGroup: (formGroupSize?: string) => {
-				if (formGroupSize) {
-					return el.row('form-group').addClass('form-group-' + formGroupSize);
-				} else {
-					return el.row('form-group');
-				}
-			}
-		};
-		return el;
-	}
+	// CreateElement = () => {
+	// 	var el = {
+	// 		p: () => { return ltjQuery('<p/>'); },
+	// 		span: () => { return ltjQuery('<span/>'); },
+	// 		div: () => { return ltjQuery('<div/>'); },
+	// 		form: () => { return ltjQuery('<form/>').addClass('form-horizontal'); },
+	// 		label: () => { return ltjQuery('<label/>').addClass('control-label col-sm-12'); },
+	// 		button: (type: string = 'button') => { return ltjQuery('<button/>').prop('type', type); },
+	// 		select: () => { return ltjQuery('<select/>').addClass('form-control'); },
+	// 		option: () => { return ltjQuery('<option/>'); },
+	// 		input: (type: string = 'text') => {
+	// 			return ltjQuery('<input/>').prop('type', type);
+	// 		},
+	// 		textarea: () => { return ltjQuery('<textarea/>').addClass('form-control'); },
+	// 		col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
+	// 		row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
+	// 		formGroup: (formGroupSize?: string) => {
+	// 			if (formGroupSize) {
+	// 				return el.row('form-group').addClass('form-group-' + formGroupSize);
+	// 			} else {
+	// 				return el.row('form-group');
+	// 			}
+	// 		}
+	// 	};
+	// 	return el;
+	// }
 
 	CreateFormElement = (elementObj: IWidgetField) => {
 		var _thisM = this;
-		var el = _thisM.CreateElement();
+		var el = _thisM.lth.CreateElement();
 		var returnElement = null;
 		switch (elementObj.element) {
 			case 'label':

@@ -23,9 +23,9 @@
 		.pipe(gulp.dest('css/less/bootstrap'));
 	});
 
-	var tsWidgetBuilderProject = ts.createProject('js/ts/widget-builder/tsconfig.json');
-	var tsContactWidgetProject = ts.createProject('js/ts/contact-widget/tsconfig.json');
 	gulp.task('ts:compile', function () {
+		var tsWidgetBuilderProject = ts.createProject('js/ts/widget-builder/tsconfig.json');
+		var tsContactWidgetProject = ts.createProject('js/ts/contact-widget/tsconfig.json');
 		// Widget Builder
 		var tsWidgetBuilder = tsWidgetBuilderProject.src()
 		.pipe(ts(tsWidgetBuilderProject));
@@ -40,6 +40,9 @@
 	});
 
 	gulp.task('ts:watch', ['ts:compile'], function() {
-		gulp.watch('js/ts/**/*.ts', ['ts:compile']);
+		var watcher = gulp.watch('js/ts/**/*.ts', ['ts:compile']);
+		watcher.on('change', function(event) {
+			console.log('File [' + event.path + '] was ' + event.type + '!');
+		});
 	});
 })();

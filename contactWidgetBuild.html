@@ -1,88 +1,92 @@
-<style type="text/css">.ltcw {display:none;}</style>
-<link rel="stylesheet" href="/css/widget.css">
-<style type="text/css">
-.ltcw .form-group .form-control { border-radius: 0px; }
-.ltcw .btn { border-radius: 0px; }
-.ltcw .panel { border-radius: 0px; }
-.ltcw { background-color: #add; padding: 40px; }
-</style>
-<div id="ltWidgetWrapper"></div>
-<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
-<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
-<script type="text/javascript" src="/js/lib/jquery.placeholder.min.js"></script>
-<script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
-<script type="text/javascript">
-(function () {
-	// var ltCaptcha = new LoanTekCaptcha();
-	var ltCaptcha;
-	// var _ltCaptcha = function () {
-	// 	ltCaptcha = new LoanTekCaptcha();
-	// };
+<html>
+<body>
+	<style type="text/css">.ltcw {display:none;}</style>
+	<link rel="stylesheet" href="/css/widget.css">
+	<style type="text/css">
+	.ltcw .form-group .form-control { border-radius: 0px; }
+	.ltcw .btn { border-radius: 0px; }
+	.ltcw .panel { border-radius: 0px; }
+	.ltcw { background-color: #add; padding: 40px; }
+	</style>
+	<div id="ltWidgetWrapper"></div>
+	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
+	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/lib/jquery.placeholder.min.js"></script>
+	<script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
+	<script type="text/javascript">
+	(function () {
+		// var ltCaptcha = new LoanTekCaptcha();
+		var ltCaptcha;
+		// var _ltCaptcha = function () {
+		// 	ltCaptcha = new LoanTekCaptcha();
+		// };
 
-	var postDOMFunctions = function () {
-		// ltjQuery('input, textarea').placeholder();
-		// _ltCaptcha();
-		ltCaptcha = new LoanTekCaptcha();
-	};
+		var postDOMFunctions = function () {
+			// ltjQuery('input, textarea').placeholder();
+			// _ltCaptcha();
+			ltCaptcha = new LoanTekCaptcha();
+		};
 
-	var externalValidators = function () {
-		// window.console && console.log('external validator');
-		return ltCaptcha.IsValidEntry();
-	};
+		var externalValidators = function () {
+			// window.console && console.log('external validator');
+			return ltCaptcha.IsValidEntry();
+		};
 
-	// var loanTeckBuildOptions = {
-	// };
-	var loanTekManualContactWidgetBuildObject = {
-		showBuilderTools: true,
-		fieldSize: 'sm',
-		wrapperId: 'ltWidgetWrapper',
-		postDOMCallback: postDOMFunctions,
-		formId: 'LtcwContactWidgetForm',
-		// clientID: 1234, // add as hidden field???
-		// userID: 6789, // add as hidden field???
-		fields: [
-			{ field: 'clientid', values: 'test1234' },
-			// { field: 'firstname', value: 'First' },
-			{ field: 'label', cols: 2, value: 'Last Name' },
-			{ field: 'lastname', cols: 8, value: 'Last' },
-			// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
-			{ field: 'email', value: 'email@mail.com' },
-			{ field: 'phone', value: '208-456-7890' },
-			{ field: 'company', value: 'LT' },
-			{ field: 'state', value: 'ID' },
-			{ field: 'comments', value: 'My Comments' },
-			{ field: 'captcha' },
-			{ field: 'submit' }
+		// var loanTeckBuildOptions = {
+		// };
+		var loanTekManualContactWidgetBuildObject = {
+			showBuilderTools: true,
+			fieldSize: 'sm',
+			wrapperId: 'ltWidgetWrapper',
+			postDOMCallback: postDOMFunctions,
+			formId: 'LtcwContactWidgetForm',
+			// clientID: 1234, // add as hidden field???
+			// userID: 6789, // add as hidden field???
+			fields: [
+				{ field: 'clientid', values: 'test1234' }
+				// , { field: 'firstname', value: 'First' }
+				, { field: 'label', cols: 2, value: 'Last Name' }
+				, { field: 'lastname', cols: 8, value: 'Last' }
+				// , { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' }
+				, { field: 'email', value: 'email@mail.com' }
+				, { field: 'phone', value: '208-456-7890' }
+				, { field: 'company', value: 'LT' }
+				, { field: 'state', value: 'ID' }
+				, { field: 'comments', value: 'My Comments' }
+				// , { field: 'captcha' }
+				// , { field: 'submit' }
 
-			// { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 2, style: { color: 'blue', fontWeight: 'bold' }, value: 'First' },
-			// { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 1234 },
-			// { element: 'input', type: 'hidden', id: 'ltcwClientId2', value: 1234 },
-			// { element: 'input', type: 'hidden', id: 'ltcwClientId3', value: 1234 },
-			// { element: 'input', type: 'hidden', id: 'ltcwClientId4', value: 1234 },
-			// { element: 'input', type: 'hidden', id: 'ltcwClientId5', value: 1234 },
-			// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
-			// { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6, value: 'email@mail.com' },
-			// { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6, value: '208-255-1795' },
-			// { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6, value: 'comp' },
-			// { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6, values: 'UT' },
-			// { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', cols: 12, rows: 4, value: 'my comments' },
-			// // { element: 'captcha' },
-			// { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit', size: 'lg', style: { color: 'blue', backgroundColor: '#add', borderRadius: '20px' } },
-			// { element: 'button', type: 'button', cols: 2 },
-			// { element: 'button', type: 'button', cols: 2 },
-			// { element: 'input', type: 'button', value: 'Enter', cssClass: 'btn-info', cols: 2 }
-		]
-	};
-	// LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
-	LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
+				// { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 2, style: { color: 'blue', fontWeight: 'bold' }, value: 'First' },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId2', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId3', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId4', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId5', value: 1234 },
+				// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
+				// { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6, value: 'email@mail.com' },
+				// { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6, value: '208-255-1795' },
+				// { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6, value: 'comp' },
+				// { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6, values: 'UT' },
+				// { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', cols: 12, rows: 4, value: 'my comments' },
+				// // { element: 'captcha' },
+				// { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit', size: 'lg', style: { color: 'blue', backgroundColor: '#add', borderRadius: '20px' } },
+				// { element: 'button', type: 'button', cols: 2 },
+				// { element: 'button', type: 'button', cols: 2 },
+				// { element: 'input', type: 'button', value: 'Enter', cssClass: 'btn-info', cols: 2 }
+			]
+		};
+		// LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
+		LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
 
-	var loanTekManualContactWidgetOptions = {
-		// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
-		postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
-		// redirectUrl: 'http://www.google.com',
-		externalValidatorFunction: externalValidators,
-		successMessage: 'Yay!!! Successful POST'
-	};
-	LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
-})();
-</script>
+		var loanTekManualContactWidgetOptions = {
+			// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
+			postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
+			// redirectUrl: 'http://www.google.com',
+			externalValidatorFunction: externalValidators,
+			successMessage: 'Yay!!! Successful POST'
+		};
+		LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+	})();
+	</script>
+</body>
+</html>

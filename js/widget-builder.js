@@ -16,6 +16,10 @@ var LoanTekWidgetHelpers = (function () {
             px: 'px',
             per: '%'
         };
+        this.formBorderType = {
+            panel: 'panel',
+            well: 'well'
+        };
         this.$ = jquery;
     }
     LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
@@ -48,7 +52,7 @@ var LoanTekWidgetHelpers = (function () {
     };
     LoanTekWidgetHelpers.prototype.CreateElement = function () {
         var $ = this.$;
-        return {
+        var el = {
             div: function () { return $('<div/>'); },
             script: function (src, type) {
                 if (type === void 0) { type = 'text/javascript'; }
@@ -66,13 +70,57 @@ var LoanTekWidgetHelpers = (function () {
                 if (type === void 0) { type = 'text/css'; }
                 var returnStyle = $('<style/>').prop('type', type);
                 return returnStyle;
+            },
+            p: function () { return $('<p/>'); },
+            span: function () { return $('<span/>'); },
+            h: function (headNumber) {
+                if (headNumber === void 0) { headNumber = 3; }
+                return $('<h' + headNumber + '/>');
+            },
+            form: function () { return $('<form/>').addClass('form-horizontal'); },
+            label: function () { return $('<label/>').addClass('control-label col-sm-12'); },
+            button: function (type) {
+                if (type === void 0) { type = 'button'; }
+                return $('<button/>').prop('type', type);
+            },
+            select: function () { return $('<select/>').addClass('form-control'); },
+            option: function () { return $('<option/>'); },
+            input: function (type) {
+                if (type === void 0) { type = 'text'; }
+                return $('<input/>').prop('type', type);
+            },
+            textarea: function () { return $('<textarea/>').addClass('form-control'); },
+            col: function (colNumber, colSize) {
+                if (colNumber === void 0) { colNumber = 12; }
+                if (colSize === void 0) { colSize = 'sm'; }
+                return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
+            },
+            row: function (rowType) {
+                if (rowType === void 0) { rowType = 'row'; }
+                return el.div().addClass(rowType);
+            },
+            formGroup: function (formGroupSize) {
+                if (formGroupSize) {
+                    return el.row('form-group').addClass('form-group-' + formGroupSize);
+                }
+                else {
+                    return el.row('form-group');
+                }
             }
         };
+        return el;
+    };
+    LoanTekWidgetHelpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
+        $ = this.$;
+        scrollSpeed = scrollSpeed || 200;
+        topOffset = topOffset || 50;
+        $('html, body').animate({
+            scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
+        }, scrollSpeed);
     };
     return LoanTekWidgetHelpers;
 }());
 (function ($) {
-    var x = 1;
     $('input textarea').placeholder();
     var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']);
     var lth = new LoanTekWidgetHelpers($);
@@ -86,7 +134,8 @@ var LoanTekWidgetHelpers = (function () {
         '/js/lib/jquery.placeholder.min.js',
         '/js/loantek-manual-contact-widget.js'
     ];
-    widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', '$timeout', function ($scope, $sce, $timeout) {
+    widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', function ($scope, $sce) {
+            $scope.myInfo = 'me';
             var contactWidget = {
                 prebuiltTemplates: [
                     {
@@ -109,9 +158,14 @@ var LoanTekWidgetHelpers = (function () {
                     },
                     {
                         name: 'Small Contact Widget',
-                        formWidth: 200,
+                        formWidth: 400,
                         formWidthUnit: lth.widthUnit.px,
+                        formGroupSpacing: 4,
+                        formFieldBorderRadius: 0,
+                        formButtonBorderRadius: 0,
                         template: {
+                            formBorderType: lth.formBorderType.well,
+                            panelTitle: 'Contact Us',
                             fieldSize: lth.bootstrap.inputSizing.sm,
                             fields: [
                                 { field: 'clientid' },
@@ -123,6 +177,7 @@ var LoanTekWidgetHelpers = (function () {
                                 { field: 'company', cols: 12 },
                                 { field: 'state', cols: 12 },
                                 { field: 'comments' },
+                                { field: 'captcha' },
                                 { field: 'submit' }
                             ]
                         }
@@ -139,16 +194,20 @@ var LoanTekWidgetHelpers = (function () {
                     { id: 'state', name: 'State', fieldTemplate: { field: 'state' } },
                     { id: 'comments', name: 'Comments', fieldTemplate: { field: 'comments' } },
                     { id: 'captcha', name: 'Captcha', fieldTemplate: { field: 'captcha' } },
-                    { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { field: 'submit' } }
+                    { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { field: 'submit' } },
+                    { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { field: 'title ' } },
+                    { id: 'p', name: 'Paragraph', allowMultiples: true, fieldTemplate: { field: 'p' } }
                 ]
             };
-            var WidgetScriptBuild = function () {
-                var cfo = angular.copy($scope.currentFormObject);
-                var cfod = angular.copy($scope.currentFormObject);
+            var WidgetScriptBuild = function (currentTemplate) {
+                var ct = angular.copy(currentTemplate);
+                var cfo = angular.copy(ct.template);
+                var cfod = angular.copy(ct.template);
                 var wScript = '<style type="text/css">.ltcw {display:none;}</style>';
                 var wScriptDisplay = wScript;
                 var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
                 var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+                var formStyles = '';
                 cfod.showBuilderTools = true;
                 cfo.postDOMCallback = '#fn{postDOMFunctions}';
                 cfod.postDOMCallback = '#fn{postDOMFunctions}';
@@ -157,6 +216,24 @@ var LoanTekWidgetHelpers = (function () {
                     var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
                     wScript += cssLink;
                     wScriptDisplay += cssLink;
+                }
+                if (ct.formWidth) {
+                    ct.formWidthUnit = ct.formWidthUnit || lth.widthUnit.per;
+                    formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
+                }
+                if (!isNaN(ct.formGroupSpacing)) {
+                    formStyles += '\n.ltcw .form-group { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
+                }
+                if (!isNaN(ct.formFieldBorderRadius)) {
+                    formStyles += '\n.ltcw .form-group .form-control { border-radius: ' + ct.formFieldBorderRadius + 'px; }';
+                }
+                if (!isNaN(ct.formButtonBorderRadius)) {
+                    formStyles += '\n.ltcw .btn { border-radius: ' + ct.formButtonBorderRadius + 'px; }';
+                }
+                var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
+                if (formStyles) {
+                    wScript += lth.Interpolate(styleWrap, { styles: formStyles });
+                    wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
                 }
                 var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
                 wScript += widgetWrapper;
@@ -214,22 +291,56 @@ var LoanTekWidgetHelpers = (function () {
                 mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
                 wScript += mainScript;
                 wScriptDisplay += mainScriptDisplay;
-                $scope.widgetScript = wScript.replace(/\s+/g, ' ');
+                wScript = wScript.replace(/\s+/g, ' ');
+                $scope.widgetScript = wScript;
                 $scope.widgetScriptDisplay = wScriptDisplay;
-                $scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
+            };
+            $scope.testFun = function () {
+                window.console && console.log('test fun... NOTE: please replace this testFun with a directive or something that will show the editing elements');
             };
             $scope.UsePrebuiltTemplate = function () {
                 $scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];
-                $scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
-                WidgetScriptBuild();
-                $timeout(function () {
-                    $scope.scriptChangedClass = 't' + new Date().getTime();
-                });
+                $scope.currentTemplate = angular.copy($scope.selectedTemplate);
+                WidgetScriptBuild($scope.currentTemplate);
+                lth.ScrollToAnchor('widgetTop');
+                $scope.scriptChangedClass = 't' + new Date().getTime();
             };
             var BuilderInit = function () {
                 $scope.currentWidget = angular.copy(contactWidget);
                 $scope.UsePrebuiltTemplate();
             };
             BuilderInit();
+        }]);
+    widgetBuilderApp.directive('ltContactWidgetScript', [function () {
+            return {
+                restrict: 'AEC',
+                scope: {
+                    lcws: '=ltContactWidgetScript'
+                },
+                templateUrl: 'template/contactWidgetScript.html',
+                link: function (scope) {
+                }
+            };
+        }]).directive('ltCompileCode', ['$parse', '$compile', function ($parse, $compile) {
+            return {
+                restrict: 'A',
+                link: function (scope, elem, attrs) {
+                    scope.$watch(attrs.ltCompileCode, function (value) {
+                        window.console && console.log('watching: ', attrs.ltCompileCode);
+                        elem.html(value);
+                        $compile(elem.contents())(scope);
+                    });
+                }
+            };
+        }]).directive('ltWidgetTool', ['$parse', function ($parse) {
+            return {
+                link: function (scope, elem, attrs) {
+                    var thisWigetTool = $parse(attrs.ltWidgetTool);
+                    window.console && console.log('widget directive running', attrs.ltWidgetTool, thisWigetTool(scope));
+                }
+            };
+        }]);
+    angular.module('lt.templates', []).run(['$templateCache', function ($templateCache) {
+            $templateCache.put('template/contactWidgetScript.html', "\n\t\t");
         }]);
 })(jQuery);

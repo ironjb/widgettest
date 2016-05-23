@@ -26,6 +26,11 @@ class LoanTekWidgetHelpers {
 		, per: '%'
 	};
 
+	formBorderType = {
+		panel: 'panel'
+		, well: 'well'
+	}
+
 	GetIndexOfFirstObjectInArray (theArray, theKey, theValue): number {
 		for (var i = 0, l = theArray.length; i < l; i++) {
 			if (theArray[i][theKey] === theValue) {
@@ -70,7 +75,7 @@ class LoanTekWidgetHelpers {
 
 	CreateElement() {
 		var $ = this.$;
-		return {
+		var el = {
 			div: () => { return $('<div/>'); }
 			, script: (src?: string, type: string = 'text/javascript') => {
 				var returnScript = $('<script/>').prop('type', type);
@@ -86,7 +91,39 @@ class LoanTekWidgetHelpers {
 				var returnStyle = $('<style/>').prop('type', type);
 				return returnStyle;
 			}
+			, p: () => { return $('<p/>'); }
+			, span: () => { return $('<span/>'); }
+			, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
+			// div: () => { return $('<div/>'); },
+			, form: () => { return $('<form/>').addClass('form-horizontal'); },
+			label: () => { return $('<label/>').addClass('control-label col-sm-12'); },
+			button: (type: string = 'button') => { return $('<button/>').prop('type', type); },
+			select: () => { return $('<select/>').addClass('form-control'); },
+			option: () => { return $('<option/>'); },
+			input: (type: string = 'text') => {
+				return $('<input/>').prop('type', type);
+			},
+			textarea: () => { return $('<textarea/>').addClass('form-control'); },
+			col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
+			row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
+			formGroup: (formGroupSize?: string) => {
+				if (formGroupSize) {
+					return el.row('form-group').addClass('form-group-' + formGroupSize);
+				} else {
+					return el.row('form-group');
+				}
+			}
 		};
+		return el;
+	}
+
+	ScrollToAnchor(anchorName: string, scrollSpeed?: number, topOffset?: number) {
+		$ = this.$;
+		scrollSpeed = scrollSpeed || 200;
+		topOffset = topOffset || 50;
+		$('html, body').animate({
+			scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
+		}, scrollSpeed);
 	}
 
 	// ContactFields(): IWidgetAvailableField[] {

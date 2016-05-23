@@ -7,9 +7,33 @@
 /// <reference path="../common/widget-helpers.ts" />
 
 (function ($: JQueryStatic) {
-	var x = 1;
 	$('input textarea').placeholder();
-	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']);
+	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']/*, function($compileProvider) {
+		// configure new 'compile' directive by passing a directive
+		// factory function. The factory function injects the '$compile'
+		$compileProvider.directive('compile', function($compile) {
+			// directive factory creates a link function
+			return function(scope, element, attrs) {
+				scope.$watch(
+					function(scope) {
+						// watch the 'compile' expression for changes
+						return scope.$eval(attrs.compile);
+					},
+					function(value) {
+						// when the 'compile' expression changes
+						// assign it into the current DOM
+						element.html(value);
+
+						// compile the new DOM and link it to the current
+						// scope.
+						// NOTE: we only compile .childNodes so that
+						// we don't get into infinite loop compiling ourselves
+						$compile(element.contents())(scope);
+					}
+				);
+			};
+		});
+	}*/);
 	var lth = new LoanTekWidgetHelpers($);
 	var el = lth.CreateElement();
 	var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
@@ -22,7 +46,8 @@
 		, '/js/loantek-manual-contact-widget.js'
 	];
 
-	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', '$timeout', function($scope, $sce, $timeout) {
+	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce'/*, '$timeout'*/, function($scope, $sce/*, $timeout*/) {
+		$scope.myInfo = 'me';
 		var contactWidget: IWidget = {
 			prebuiltTemplates: [
 				{
@@ -47,9 +72,15 @@
 				},
 				{
 					name: 'Small Contact Widget',
-					formWidth: 200,
+					formWidth: 400,
 					formWidthUnit: lth.widthUnit.px,
+					formGroupSpacing: 4,
+					formFieldBorderRadius: 0,
+					formButtonBorderRadius: 0,
 					template: {
+						formBorderType: lth.formBorderType.well,
+						// formBorderType: lth.formBorderType.panel,
+						panelTitle: 'Contact Us',
 						fieldSize: lth.bootstrap.inputSizing.sm,
 						fields: [
 							{ field: 'clientid' }
@@ -61,7 +92,7 @@
 							, { field: 'company', cols: 12 }
 							, { field: 'state', cols: 12 }
 							, { field: 'comments' }
-							// , { field: 'captcha' }
+							, { field: 'captcha' }
 							, { field: 'submit' }
 						]
 					}
@@ -79,16 +110,20 @@
 				, { id: 'comments', name: 'Comments', fieldTemplate: { field: 'comments' } }
 				, { id: 'captcha', name: 'Captcha', fieldTemplate: { field: 'captcha' } }
 				, { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { field: 'submit' } }
+				, { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { field: 'title '} }
+				, { id: 'p', name: 'Paragraph', allowMultiples: true, fieldTemplate: { field: 'p'} }
 			]
 		};
 
-		var WidgetScriptBuild = () => {
-			var cfo: IWidgetFormObject = angular.copy($scope.currentFormObject);
-			var cfod: IWidgetFormObject = angular.copy($scope.currentFormObject);
+		var WidgetScriptBuild = (currentTemplate: IWidgetPrebuiltTemplate) => {
+			var ct: IWidgetPrebuiltTemplate = angular.copy(currentTemplate);
+			var cfo: IWidgetFormObject = angular.copy(ct.template);
+			var cfod: IWidgetFormObject = angular.copy(ct.template);
 			var wScript: string = '<style type="text/css">.ltcw {display:none;}</style>';
 			var wScriptDisplay: string = wScript;
 			var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
 			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+			var formStyles = '';
 			cfod.showBuilderTools = true;
 			cfo.postDOMCallback = '#fn{postDOMFunctions}';
 			cfod.postDOMCallback = '#fn{postDOMFunctions}';
@@ -99,6 +134,30 @@
 				var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
 				wScript += cssLink;
 				wScriptDisplay += cssLink;
+			}
+
+			if (ct.formWidth) {
+				ct.formWidthUnit = ct.formWidthUnit || lth.widthUnit.per;
+				formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
+			}
+
+			if (!isNaN(ct.formGroupSpacing)) {
+				formStyles += '\n.ltcw .form-group { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
+			}
+
+			// window.console && console.log(ct.formFieldBorderRadius);
+			if (!isNaN(ct.formFieldBorderRadius)) {
+				formStyles += '\n.ltcw .form-group .form-control { border-radius: ' + ct.formFieldBorderRadius + 'px; }';
+			}
+
+			if (!isNaN(ct.formButtonBorderRadius)) {
+				formStyles += '\n.ltcw .btn { border-radius: ' + ct.formButtonBorderRadius + 'px; }';
+			}
+
+			var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
+			if (formStyles) {
+				wScript += lth.Interpolate(styleWrap, { styles: formStyles });
+				wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
 			}
 
 			// Add Widget Wrapper
@@ -202,24 +261,32 @@
 			wScript += mainScript;
 			wScriptDisplay += mainScriptDisplay;
 
-
-			// $scope.widgetScript = wScript;
-			$scope.widgetScript = wScript.replace(/\s+/g, ' ');
+			wScript = wScript.replace(/\s+/g, ' ');
+			$scope.widgetScript = wScript;
 			$scope.widgetScriptDisplay = wScriptDisplay;
-			$scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
+			// $scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
+			// window.console && console.log('typeof $scope.widgetScriptDisplay', typeof $scope.widgetScriptDisplay);
+			// window.console && console.log('typeof $scope.widgetDisplay', typeof $scope.widgetDisplay);
+			// $('#demoHtml').html($scope.widgetScriptDisplay);
+		};
+
+		$scope.testFun = () => {
+			window.console && console.log('test fun... NOTE: please replace this testFun with a directive or something that will show the editing elements');
 		};
 
 		$scope.UsePrebuiltTemplate = () => {
 			$scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];		// selects first template if not selected already
-			$scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
-			WidgetScriptBuild();
+			$scope.currentTemplate = angular.copy($scope.selectedTemplate);
+			// $scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
+			WidgetScriptBuild($scope.currentTemplate);
+			lth.ScrollToAnchor('widgetTop');
 			// $scope.scriptChangedClass = '';
 			// window.console && console.log('change class', $scope.scriptChangedClass);
 			// $scope.scriptChangedClass = 'example-test';
 			// window.console && console.log('change class 2', $scope.scriptChangedClass);
-			$timeout(() => {
-				$scope.scriptChangedClass = 't' + new Date().getTime();
-			});
+			// $timeout(() => {
+			$scope.scriptChangedClass = 't' + new Date().getTime();
+			// });
 		};
 
 		var BuilderInit = () => {
@@ -228,22 +295,52 @@
 		};
 		BuilderInit();
 	}]);
-	// widgetBuilderApp.directive('ltContactWidgetScript', [function() {
-	// 	return {
-	// 		restrict: 'AEC',
-	// 		// replace: true,
-	// 		scope: {
-	// 			lcws: '=ltContactWidgetScript'
-	// 		},
-	// 		templateUrl: 'template/contactWidgetScript.html',
-	// 		link: (scope) => {
-	// 			// window.console && console.log('scope', scope);
-	// 			// window.console && console.log('scope ltContactWidgetScript', scope.lcws);
-	// 		}
-	// 	};
-	// }]);
-	// angular.module('lt.templates', []).run(['$templateCache', function($templateCache) {
-	// 	$templateCache.put('template/contactWidgetScript.html', `
-	// 	`);
-	// }]);
+	widgetBuilderApp.directive('ltContactWidgetScript', [function() {
+		return {
+			restrict: 'AEC',
+			// replace: true,
+			scope: {
+				lcws: '=ltContactWidgetScript'
+			},
+			templateUrl: 'template/contactWidgetScript.html',
+			link: (scope) => {
+				// window.console && console.log('scope', scope);
+				// window.console && console.log('scope ltContactWidgetScript', scope.lcws);
+			}
+		};
+	}]).directive('ltCompileCode', ['$parse', '$compile', function($parse, $compile) {
+		return {
+			restrict: 'A'
+			// , require: 'ngBindHtml'
+			, link: (scope, elem, attrs) => {
+				// window.console && console.log('attrs.ngBindHtml', typeof attrs.ngBindHtml);
+				// var thisNgBindHtml = $parse(attrs.ngBindHtml);
+
+				// scope.$watch(thisNgBindHtml, function () {
+				// 	window.console && console.log('watch triggered');
+				// });
+				scope.$watch(attrs.ltCompileCode/*function(scope) {
+					window.console && console.log('watching');
+					window.console && console.log('attrs.ltCompileCode', attrs.ltCompileCode);
+					return scope.$eval();
+				}*/,function (value) {
+					// window.console && console.log(value);
+					window.console && console.log('watching: ', attrs.ltCompileCode);
+					elem.html(value);
+					$compile(elem.contents())(scope);
+				});
+			}
+		};
+	}]).directive('ltWidgetTool', ['$parse', function($parse) {
+		return {
+			link: (scope, elem, attrs) => {
+				var thisWigetTool = $parse(attrs.ltWidgetTool);
+				window.console && console.log('widget directive running', attrs.ltWidgetTool, thisWigetTool(scope));
+			}
+		};
+	}]);
+angular.module('lt.templates', []).run(['$templateCache', function($templateCache) {
+		$templateCache.put('template/contactWidgetScript.html', `
+		`);
+	}]);
 })(jQuery);

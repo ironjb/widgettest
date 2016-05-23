@@ -18,6 +18,9 @@ interface IWidgetPrebuiltTemplate {
 	name: string;
 	formWidth?: number;
 	formWidthUnit?: string;
+	formGroupSpacing?: number;
+	formFieldBorderRadius?: number;
+	formButtonBorderRadius?: number;
 	template?: IWidgetFormObject;
 }
 
@@ -27,17 +30,17 @@ interface IWidget {
 }
 
 interface IWidgetFormObject {
-	fieldSize?: string;
-	formGroupSpacing?: string;
-	formStyles?: string;
-	fields: IWidgetField[];
-
 	wrapperId?: string;
 	formId?: string;
 	errorMessageWrapperId?: string;
 	errrorMessageId?: string;
 	showBuilderTools?: boolean;
 	postDOMCallback?: any;
+
+	fieldSize?: string;
+	formBorderType?: string;
+	panelTitle?: string;
+	fields: IWidgetField[];
 }
 
 interface IWidgetField {

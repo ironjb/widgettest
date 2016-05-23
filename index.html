@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Widget Test</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/css/site-bootstrap.css" />
 	<link rel="stylesheet" href="/css/site.css" />
 </head>
@@ -29,8 +30,9 @@
 		</div>
 	</nav>
 	<div class="container">
+		<a name="widgetTop"></a>
 		<h1>Widget Builder</h1>
-		<div class="row example-test">
+		<div class="row">
 			<div class="col-sm-4">
 				<form action="" class="form-horizontal">
 					<div class="row">
@@ -112,8 +114,11 @@
 					</div>
 				</div> -->
 				<div class="row">
-					<div id="demoHtml" data-ng-bind-html="widgetDisplay"></div>
+					<div data-ng-bind-html-NOT-USED="widgetDisplay" data-lt-compile-code="widgetScriptDisplay"></div>
 				</div>
+				<!-- <div class="row">
+					<div id="demoHtml"></div>
+				</div> -->
 			</div>
 		</div>
 	</div>

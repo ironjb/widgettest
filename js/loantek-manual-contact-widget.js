@@ -1,48 +1,132 @@
 var ltjQuery = ltjQuery || jQuery.noConflict(true);
+var LoanTekWidgetHelpers = (function () {
+    function LoanTekWidgetHelpers(jquery) {
+        this.bootstrap = {
+            gridSizing: {
+                xs: 'xs',
+                sm: 'sm',
+                md: 'md',
+                lg: 'lg'
+            },
+            inputSizing: {
+                sm: 'sm',
+                lg: 'lg'
+            }
+        };
+        this.widthUnit = {
+            px: 'px',
+            per: '%'
+        };
+        this.formBorderType = {
+            panel: 'panel',
+            well: 'well'
+        };
+        this.$ = jquery;
+    }
+    LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
+        for (var i = 0, l = theArray.length; i < l; i++) {
+            if (theArray[i][theKey] === theValue) {
+                return i;
+            }
+        }
+        return -1;
+    };
+    LoanTekWidgetHelpers.prototype.Interpolate = function (text, parameters, fn, regex) {
+        text = text || '';
+        parameters = parameters || {};
+        fn = fn || function (x) { return x; };
+        regex = regex || /#{[^\}]+}/g;
+        return text.replace(regex, function (m, p, ft) {
+            var indexOfStart = m.indexOf('{') + 1;
+            var spaceFromEnd = m.length - m.indexOf('}');
+            var rt = m.substr(indexOfStart);
+            rt = rt.substr(0, rt.length - spaceFromEnd);
+            if (!parameters[rt]) {
+                window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
+                rt = m;
+            }
+            else {
+                rt = parameters[rt].toString() || '';
+            }
+            return fn(rt);
+        });
+    };
+    LoanTekWidgetHelpers.prototype.CreateElement = function () {
+        var $ = this.$;
+        var el = {
+            div: function () { return $('<div/>'); },
+            script: function (src, type) {
+                if (type === void 0) { type = 'text/javascript'; }
+                var returnScript = $('<script/>').prop('type', type);
+                returnScript = src ? returnScript.prop('src', src) : returnScript;
+                return returnScript;
+            },
+            link: function (href, rel) {
+                if (rel === void 0) { rel = 'stylesheet'; }
+                var returnLink = $('<link/>').prop('rel', rel);
+                returnLink = href ? returnLink.prop('href', href) : returnLink;
+                return returnLink;
+            },
+            style: function (type) {
+                if (type === void 0) { type = 'text/css'; }
+                var returnStyle = $('<style/>').prop('type', type);
+                return returnStyle;
+            },
+            p: function () { return $('<p/>'); },
+            span: function () { return $('<span/>'); },
+            h: function (headNumber) {
+                if (headNumber === void 0) { headNumber = 3; }
+                return $('<h' + headNumber + '/>');
+            },
+            form: function () { return $('<form/>').addClass('form-horizontal'); },
+            label: function () { return $('<label/>').addClass('control-label col-sm-12'); },
+            button: function (type) {
+                if (type === void 0) { type = 'button'; }
+                return $('<button/>').prop('type', type);
+            },
+            select: function () { return $('<select/>').addClass('form-control'); },
+            option: function () { return $('<option/>'); },
+            input: function (type) {
+                if (type === void 0) { type = 'text'; }
+                return $('<input/>').prop('type', type);
+            },
+            textarea: function () { return $('<textarea/>').addClass('form-control'); },
+            col: function (colNumber, colSize) {
+                if (colNumber === void 0) { colNumber = 12; }
+                if (colSize === void 0) { colSize = 'sm'; }
+                return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
+            },
+            row: function (rowType) {
+                if (rowType === void 0) { rowType = 'row'; }
+                return el.div().addClass(rowType);
+            },
+            formGroup: function (formGroupSize) {
+                if (formGroupSize) {
+                    return el.row('form-group').addClass('form-group-' + formGroupSize);
+                }
+                else {
+                    return el.row('form-group');
+                }
+            }
+        };
+        return el;
+    };
+    LoanTekWidgetHelpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
+        $ = this.$;
+        scrollSpeed = scrollSpeed || 200;
+        topOffset = topOffset || 50;
+        $('html, body').animate({
+            scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
+        }, scrollSpeed);
+    };
+    return LoanTekWidgetHelpers;
+}());
 var LoanTekBuildForm = (function () {
     function LoanTekBuildForm(options) {
         var _this = this;
-        this.CreateElement = function () {
-            var el = {
-                p: function () { return ltjQuery('<p/>'); },
-                span: function () { return ltjQuery('<span/>'); },
-                div: function () { return ltjQuery('<div/>'); },
-                form: function () { return ltjQuery('<form/>').addClass('form-horizontal'); },
-                label: function () { return ltjQuery('<label/>').addClass('control-label col-sm-12'); },
-                button: function (type) {
-                    if (type === void 0) { type = 'button'; }
-                    return ltjQuery('<button/>').prop('type', type);
-                },
-                select: function () { return ltjQuery('<select/>').addClass('form-control'); },
-                option: function () { return ltjQuery('<option/>'); },
-                input: function (type) {
-                    if (type === void 0) { type = 'text'; }
-                    return ltjQuery('<input/>').prop('type', type);
-                },
-                textarea: function () { return ltjQuery('<textarea/>').addClass('form-control'); },
-                col: function (colNumber, colSize) {
-                    if (colNumber === void 0) { colNumber = 12; }
-                    if (colSize === void 0) { colSize = 'sm'; }
-                    return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
-                },
-                row: function (rowType) {
-                    if (rowType === void 0) { rowType = 'row'; }
-                    return el.div().addClass(rowType);
-                },
-                formGroup: function (formGroupSize) {
-                    if (formGroupSize) {
-                        return el.row('form-group').addClass('form-group-' + formGroupSize);
-                    }
-                    else {
-                        return el.row('form-group');
-                    }
-                }
-            };
-            return el;
-        };
         this.CreateFormElement = function (elementObj) {
             var _thisM = _this;
-            var el = _thisM.CreateElement();
+            var el = _thisM.lth.CreateElement();
             var returnElement = null;
             switch (elementObj.element) {
                 case 'label':
@@ -250,17 +334,20 @@ var LoanTekBuildForm = (function () {
             return s;
         };
         var _thisC = this;
+        _thisC.lth = new LoanTekWidgetHelpers(ltjQuery);
         var settings = {
             wrapperId: 'ltWidgetWrapper',
             formId: 'LtcwContactWidgetForm',
             errorMessageWrapperId: 'ltcwErrorMessageWrapper',
             errrorMessageId: 'ltcwErrorMessage',
             fieldSize: null,
+            formBorderType: null,
+            panelTitle: null,
             showBuilderTools: false,
             fields: null
         };
         ltjQuery.extend(settings, options);
-        var el = _thisC.CreateElement();
+        var el = _thisC.lth.CreateElement();
         var returnForm = el.form().prop('id', settings.formId).append(el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none' }).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId)))));
         var COLUMNS_IN_ROW = 12;
         var columnCount = 0;
@@ -297,7 +384,6 @@ var LoanTekBuildForm = (function () {
         ltjQuery.each(settings.fields, function (i, elementItem) {
             if (elementItem.field) {
                 settings.fields[i] = ExtendFieldTemplate(elementItem);
-                delete settings.fields[i].field;
             }
         });
         ltjQuery.each(settings.fields, function (i, elementItem) {
@@ -344,6 +430,9 @@ var LoanTekBuildForm = (function () {
                         cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(el.col().append(_thisC.CreateFormElement(elementItem))));
                     }
                 }
+                if (settings.showBuilderTools) {
+                    cell.attr('data-ng-click', 'testFun();');
+                }
                 row.append(cell);
                 isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
                 if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
@@ -363,6 +452,28 @@ var LoanTekBuildForm = (function () {
                 }
             }
         });
+        if (settings.formBorderType) {
+            if (settings.formBorderType === 'well') {
+                var wellMain = el.div().addClass('well');
+                if (settings.panelTitle) {
+                    wellMain.append(el.h(4).html(settings.panelTitle));
+                }
+                returnForm = wellMain.append(returnForm);
+            }
+            else if (settings.formBorderType === _thisC.lth.formBorderType.panel) {
+                var panelMain, panelHeading, panelBody;
+                panelMain = el.div().addClass('panel panel-default');
+                panelBody = el.div().addClass('panel-body').append(returnForm);
+                if (settings.panelTitle) {
+                    panelHeading = el.div().addClass('panel-heading').html(settings.panelTitle);
+                }
+                if (panelHeading) {
+                    panelMain.append(panelHeading);
+                }
+                panelMain.append(panelBody);
+                returnForm = panelMain;
+            }
+        }
         ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
         if (typeof settings.postDOMCallback === 'function') {
             settings.postDOMCallback();
