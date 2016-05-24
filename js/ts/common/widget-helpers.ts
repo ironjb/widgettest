@@ -9,16 +9,36 @@ class LoanTekWidgetHelpers {
 	}
 
 	bootstrap = {
-		gridSizing: {
-			xs: 'xs'
-			, sm: 'sm'
-			, md: 'md'
-			, lg: 'lg'
-		},
 		inputSizing: {
 			sm: 'sm'
 			, lg: 'lg'
 		}
+		, gridSizing: {
+			xs: 'xs'
+			, sm: 'sm'
+			, md: 'md'
+			, lg: 'lg'
+		}
+	};
+
+	// hSizing = {
+	// 	h1: { id: 1, name: 'h1' }
+	// 	, h2: { id: 2, name: 'h2' }
+	// 	, h3: { id: 3, name: 'h3' }
+	// 	, h4: { id: 4, name: 'h4' }
+	// 	, h5: { id: 5, name: 'h5' }
+	// 	, h6: { id: 6, name: 'h6' }
+	// 	, default: this.hSizing.h3
+	// };
+
+	hSizing = {
+		h1: 1
+		, h2: 2
+		, h3: 3
+		, h4: 4
+		, h5: 5
+		, h6: 6
+		, default: 4
 	};
 
 	widthUnit = {
@@ -29,7 +49,7 @@ class LoanTekWidgetHelpers {
 	formBorderType = {
 		panel: 'panel'
 		, well: 'well'
-	}
+	};
 
 	GetIndexOfFirstObjectInArray (theArray, theKey, theValue): number {
 		for (var i = 0, l = theArray.length; i < l; i++) {

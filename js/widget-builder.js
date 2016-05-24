@@ -1,16 +1,25 @@
 var LoanTekWidgetHelpers = (function () {
     function LoanTekWidgetHelpers(jquery) {
         this.bootstrap = {
+            inputSizing: {
+                sm: 'sm',
+                lg: 'lg'
+            },
             gridSizing: {
                 xs: 'xs',
                 sm: 'sm',
                 md: 'md',
                 lg: 'lg'
-            },
-            inputSizing: {
-                sm: 'sm',
-                lg: 'lg'
             }
+        };
+        this.hSizing = {
+            h1: 1,
+            h2: 2,
+            h3: 3,
+            h4: 4,
+            h5: 5,
+            h6: 6,
+            default: 4
         };
         this.widthUnit = {
             px: 'px',
@@ -122,7 +131,7 @@ var LoanTekWidgetHelpers = (function () {
 }());
 (function ($) {
     $('input textarea').placeholder();
-    var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']);
+    var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate']);
     var lth = new LoanTekWidgetHelpers($);
     var el = lth.CreateElement();
     var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
@@ -134,8 +143,7 @@ var LoanTekWidgetHelpers = (function () {
         '/js/lib/jquery.placeholder.min.js',
         '/js/loantek-manual-contact-widget.js'
     ];
-    widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce', function ($scope, $sce) {
-            $scope.myInfo = 'me';
+    widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', function ($scope) {
             var contactWidget = {
                 prebuiltTemplates: [
                     {
@@ -144,6 +152,7 @@ var LoanTekWidgetHelpers = (function () {
                             fields: [
                                 { field: 'clientid' },
                                 { field: 'userid' },
+                                { field: 'title', value: 'Contact Us', nsize: 3 },
                                 { field: 'firstname', cols: 2 },
                                 { field: 'lastname' },
                                 { field: 'email' },
@@ -158,13 +167,18 @@ var LoanTekWidgetHelpers = (function () {
                     },
                     {
                         name: 'Small Contact Widget',
-                        formWidth: 400,
+                        formWidth: 380,
                         formWidthUnit: lth.widthUnit.px,
+                        formBg: '#def',
+                        formBorderRadius: 0,
+                        formBorderColor: '#08f',
+                        formTitleColor: '#ddf',
+                        formTitleBgColor: '#06d',
                         formGroupSpacing: 4,
                         formFieldBorderRadius: 0,
                         formButtonBorderRadius: 0,
                         template: {
-                            formBorderType: lth.formBorderType.well,
+                            formBorderType: lth.formBorderType.panel,
                             panelTitle: 'Contact Us',
                             fieldSize: lth.bootstrap.inputSizing.sm,
                             fields: [
@@ -221,8 +235,26 @@ var LoanTekWidgetHelpers = (function () {
                     ct.formWidthUnit = ct.formWidthUnit || lth.widthUnit.per;
                     formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
                 }
+                if (ct.formBg) {
+                    formStyles += '\n.ltcw .lt-widget-border { background-color: ' + ct.formBg + '; }';
+                }
+                if (!isNaN(ct.formBorderRadius)) {
+                    var fbr = ct.formBorderRadius + '';
+                    var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
+                    formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .alert { border-radius: ' + fbr + 'px; }';
+                    formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+                }
+                if (ct.formBorderColor) {
+                    formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
+                }
+                if (ct.formTitleColor) {
+                    formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { color: ' + ct.formTitleColor + '; }';
+                }
+                if (ct.formTitleBgColor) {
+                    formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { background-color: ' + ct.formTitleBgColor + '; }';
+                }
                 if (!isNaN(ct.formGroupSpacing)) {
-                    formStyles += '\n.ltcw .form-group { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
+                    formStyles += '\n.ltcw .form-group, .ltcw .alert { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
                 }
                 if (!isNaN(ct.formFieldBorderRadius)) {
                     formStyles += '\n.ltcw .form-group .form-control { border-radius: ' + ct.formFieldBorderRadius + 'px; }';

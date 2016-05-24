@@ -2,16 +2,25 @@ var ltjQuery = ltjQuery || jQuery.noConflict(true);
 var LoanTekWidgetHelpers = (function () {
     function LoanTekWidgetHelpers(jquery) {
         this.bootstrap = {
+            inputSizing: {
+                sm: 'sm',
+                lg: 'lg'
+            },
             gridSizing: {
                 xs: 'xs',
                 sm: 'sm',
                 md: 'md',
                 lg: 'lg'
-            },
-            inputSizing: {
-                sm: 'sm',
-                lg: 'lg'
             }
+        };
+        this.hSizing = {
+            h1: 1,
+            h2: 2,
+            h3: 3,
+            h4: 4,
+            h5: 5,
+            h6: 6,
+            default: 4
         };
         this.widthUnit = {
             px: 'px',
@@ -129,6 +138,11 @@ var LoanTekBuildForm = (function () {
             var el = _thisM.lth.CreateElement();
             var returnElement = null;
             switch (elementObj.element) {
+                case 'title':
+                    elementObj.nsize = elementObj.nsize || _thisM.lth.hSizing.default;
+                    returnElement = el.h(elementObj.nsize);
+                    returnElement.html(elementObj.value);
+                    break;
                 case 'label':
                     returnElement = el.label();
                     if (elementObj.cssClass) {
@@ -348,7 +362,11 @@ var LoanTekBuildForm = (function () {
         };
         ltjQuery.extend(settings, options);
         var el = _thisC.lth.CreateElement();
-        var returnForm = el.form().prop('id', settings.formId).append(el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none' }).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId)))));
+        var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId))));
+        if (!settings.showBuilderTools) {
+            errorRow.css({ display: 'none' });
+        }
+        var returnForm = el.form().prop('id', settings.formId).append(errorRow);
         var COLUMNS_IN_ROW = 12;
         var columnCount = 0;
         var row = null;
@@ -375,6 +393,7 @@ var LoanTekBuildForm = (function () {
             state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
             comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
             submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+            title: { element: 'title' },
             label: { element: 'label', cols: 6 },
             captcha: { element: 'captcha' }
         };
@@ -454,18 +473,18 @@ var LoanTekBuildForm = (function () {
         });
         if (settings.formBorderType) {
             if (settings.formBorderType === 'well') {
-                var wellMain = el.div().addClass('well');
+                var wellMain = el.div().addClass('well lt-widget-border');
                 if (settings.panelTitle) {
-                    wellMain.append(el.h(4).html(settings.panelTitle));
+                    wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
                 }
                 returnForm = wellMain.append(returnForm);
             }
             else if (settings.formBorderType === _thisC.lth.formBorderType.panel) {
                 var panelMain, panelHeading, panelBody;
-                panelMain = el.div().addClass('panel panel-default');
+                panelMain = el.div().addClass('panel panel-default lt-widget-border');
                 panelBody = el.div().addClass('panel-body').append(returnForm);
                 if (settings.panelTitle) {
-                    panelHeading = el.div().addClass('panel-heading').html(settings.panelTitle);
+                    panelHeading = el.div().addClass('panel-heading lt-widget-heading').html(settings.panelTitle);
                 }
                 if (panelHeading) {
                     panelMain.append(panelHeading);

@@ -18,6 +18,11 @@ interface IWidgetPrebuiltTemplate {
 	name: string;
 	formWidth?: number;
 	formWidthUnit?: string;
+	formBg?: string;
+	formBorderRadius?: number;
+	formBorderColor?: string;
+	formTitleColor?: string;
+	formTitleBgColor?: string;
 	formGroupSpacing?: number;
 	formFieldBorderRadius?: number;
 	formButtonBorderRadius?: number;
@@ -59,6 +64,7 @@ interface IWidgetField {
 	pattern?: string;
 	alttext?: string;
 	tabindex?: number;
+	nsize?: number;
 }
 
 // interface IWidgetBuildOptions {

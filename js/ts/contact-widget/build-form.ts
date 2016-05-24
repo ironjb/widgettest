@@ -22,15 +22,19 @@ class LoanTekBuildForm {
 		ltjQuery.extend(settings, options);
 		var el = _thisC.lth.CreateElement();
 
-		var returnForm = el.form().prop('id', settings.formId).append(
-			el.row('row').prop('id', settings.errorMessageWrapperId).css({ display: 'none'}).append(
-				el.col().append(
-					el.div().addClass('alert alert-danger').append(
-						el.p().prop('id', settings.errrorMessageId)
-					)
+		var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId).append(
+			el.col().append(
+				el.div().addClass('alert alert-danger').append(
+					el.p().prop('id', settings.errrorMessageId)
 				)
 			)
 		);
+
+		if (!settings.showBuilderTools) {
+			errorRow.css({ display: 'none' });
+		}
+
+		var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 		const COLUMNS_IN_ROW: number = 12;
 		var columnCount: number = 0;
 		var row = null;
@@ -58,6 +62,7 @@ class LoanTekBuildForm {
 			state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6 },
 			comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
 			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+			title: { element: 'title' },
 			label: { element: 'label', cols: 6 },
 			captcha: { element: 'captcha'/*, cssClass: 'lt-captcha'*/ }
 		};
@@ -166,21 +171,21 @@ class LoanTekBuildForm {
 		// window.console && console.log('settings.formBorderType', settings.formBorderType);
 		if (settings.formBorderType) {
 			if (settings.formBorderType === 'well') {
-				var wellMain = el.div().addClass('well');
+				var wellMain = el.div().addClass('well lt-widget-border');
 
 				if (settings.panelTitle) {
-					wellMain.append(el.h(4).html(settings.panelTitle));
+					wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 				}
 
 				returnForm = wellMain.append(returnForm);
 				// returnForm = el.div().addClass('well').append(el.h(4).html(settings.panelTitle)).append(returnForm);
 			} else if (settings.formBorderType === _thisC.lth.formBorderType.panel) {
 				var panelMain, panelHeading, panelBody;
-				panelMain = el.div().addClass('panel panel-default');
+				panelMain = el.div().addClass('panel panel-default lt-widget-border');
 				panelBody = el.div().addClass('panel-body').append(returnForm);
 
 				if (settings.panelTitle) {
-					panelHeading = el.div().addClass('panel-heading').html(settings.panelTitle);
+					panelHeading = el.div().addClass('panel-heading lt-widget-heading').html(settings.panelTitle);
 					// panelHeading = el.div().addClass('panel-heading').append(el.h(4).addClass('panel-title').html(settings.panelTitle));
 				}
 
@@ -240,6 +245,11 @@ class LoanTekBuildForm {
 		var el = _thisM.lth.CreateElement();
 		var returnElement = null;
 		switch (elementObj.element) {
+			case 'title':
+				elementObj.nsize = elementObj.nsize || _thisM.lth.hSizing.default;
+				returnElement = el.h(elementObj.nsize);
+				returnElement.html(elementObj.value);
+				break;
 			case 'label':
 				// window.console && console.log(elementObj.element);
 				returnElement = el.label();

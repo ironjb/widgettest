@@ -8,7 +8,7 @@
 
 (function ($: JQueryStatic) {
 	$('input textarea').placeholder();
-	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ngSanitize']/*, function($compileProvider) {
+	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate'/*, 'ngSanitize'*/]/*, function($compileProvider) {
 		// configure new 'compile' directive by passing a directive
 		// factory function. The factory function injects the '$compile'
 		$compileProvider.directive('compile', function($compile) {
@@ -46,8 +46,8 @@
 		, '/js/loantek-manual-contact-widget.js'
 	];
 
-	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', '$sce'/*, '$timeout'*/, function($scope, $sce/*, $timeout*/) {
-		$scope.myInfo = 'me';
+	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope'/*, '$sce', '$timeout'*/, function($scope/*, $sce, $timeout*/) {
+		// $scope.myInfo = 'me';
 		var contactWidget: IWidget = {
 			prebuiltTemplates: [
 				{
@@ -57,6 +57,7 @@
 						fields: [
 							{ field: 'clientid' }
 							, { field: 'userid' }
+							, { field: 'title', value: 'Contact Us', nsize: 3 }
 							, { field: 'firstname', cols: 2 }
 							, { field: 'lastname' }
 							, { field: 'email' }
@@ -72,14 +73,19 @@
 				},
 				{
 					name: 'Small Contact Widget',
-					formWidth: 400,
+					formWidth: 380,
 					formWidthUnit: lth.widthUnit.px,
+					formBg: '#def',
+					formBorderRadius: 0,
+					formBorderColor: '#08f',
+					formTitleColor: '#ddf',
+					formTitleBgColor: '#06d',
 					formGroupSpacing: 4,
 					formFieldBorderRadius: 0,
 					formButtonBorderRadius: 0,
 					template: {
-						formBorderType: lth.formBorderType.well,
-						// formBorderType: lth.formBorderType.panel,
+						// formBorderType: lth.formBorderType.well,
+						formBorderType: lth.formBorderType.panel,
 						panelTitle: 'Contact Us',
 						fieldSize: lth.bootstrap.inputSizing.sm,
 						fields: [
@@ -141,8 +147,35 @@
 				formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
 			}
 
+			if (ct.formBg) {
+				formStyles += '\n.ltcw .lt-widget-border { background-color: ' + ct.formBg + '; }';
+			}
+
+			if (!isNaN(ct.formBorderRadius)) {
+				var fbr = ct.formBorderRadius + '';
+				var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
+				formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .alert { border-radius: ' + fbr + 'px; }';
+				formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+			}
+
+			if (ct.formBorderColor) {
+				// if (ct.template.formBorderType === lth.formBorderType.panel) {
+					formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
+				// } else if (ct.template.formBorderType === lth.formBorderType.well) {
+				// 	formStyles += '\n.ltcw .lt-widget-border { border-color: ' + ct.formBorderColor + '}';
+				// }
+			}
+
+			if (ct.formTitleColor) {
+				formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { color: ' + ct.formTitleColor + '; }';
+			}
+
+			if (ct.formTitleBgColor) {
+				formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { background-color: ' + ct.formTitleBgColor + '; }';
+			}
+
 			if (!isNaN(ct.formGroupSpacing)) {
-				formStyles += '\n.ltcw .form-group { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
+				formStyles += '\n.ltcw .form-group, .ltcw .alert { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
 			}
 
 			// window.console && console.log(ct.formFieldBorderRadius);
