@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
 	<script type="text/javascript" src="/js/lib/jquery.placeholder.min.js"></script>
 	<script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
+	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
 	<script type="text/javascript">
 	(function () {
 		// var ltCaptcha = new LoanTekCaptcha();
@@ -43,16 +44,16 @@
 			// clientID: 1234, // add as hidden field???
 			// userID: 6789, // add as hidden field???
 			fields: [
-				{ field: 'clientid', values: 'test1234' }
-				// , { field: 'firstname', value: 'First' }
+				{ field: 'clientid', value: 'test1234' }
+				, { field: 'firstname', placeholders: 'First', alttext: 'firstname alt text' }
 				, { field: 'label', cols: 2, value: 'Last Name' }
-				, { field: 'lastname', cols: 8, value: 'Last' }
+				, { field: 'lastname', cols: 8, value: '' }
 				// , { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' }
-				, { field: 'email', value: 'email@mail.com' }
-				, { field: 'phone', value: '208-456-7890' }
-				, { field: 'company', value: 'LT' }
-				, { field: 'state', value: 'ID' }
-				, { field: 'comments', value: 'My Comments' }
+				, { field: 'email', values: 'email@mail.com' }
+				, { field: 'phone', values: '208-456-7890' }
+				, { field: 'company', values: 'LT' }
+				, { field: 'state', values: 'ID' }
+				, { field: 'comments', values: 'My Comments' }
 				// , { field: 'captcha' }
 				// , { field: 'submit' }
 

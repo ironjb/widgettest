@@ -233,13 +233,13 @@ var LoanTekBuildForm = (function () {
                     elementObj.placeholder = elementObj.required ? '* ' + elementObj.placeholder : elementObj.placeholder;
                     switch (elementObj.element) {
                         case 'select':
-                            returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('text-muted'));
+                            returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('placeholder-text'));
                             if (!elementObj.value) {
                                 returnElement.val('');
                             }
                             break;
                         default:
-                            returnElement.prop('placeholder', elementObj.placeholder);
+                            returnElement.attr('placeholder', elementObj.placeholder);
                             break;
                     }
                 }
@@ -659,7 +659,7 @@ var LoanTekManualContactWidget = (function () {
             successMsg: '#ltcwSuccessMessage'
         };
         ltjQuery.extend(settings, options);
-        ltjQuery('input, textarea').placeholder();
+        ltjQuery('input, textarea').placeholder({ customClass: 'placeholder-text' });
         ltjQuery(function () {
             var widgetData = {
                 "FileType": "SalesLead",

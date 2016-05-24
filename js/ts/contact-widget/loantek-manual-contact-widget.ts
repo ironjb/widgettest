@@ -87,7 +87,7 @@ class LoanTekManualContactWidget {
 		};
 		ltjQuery.extend(settings, options);
 
-		ltjQuery('input, textarea').placeholder();
+		ltjQuery('input, textarea').placeholder({ customClass: 'placeholder-text' });
 
 		ltjQuery(() => {
 

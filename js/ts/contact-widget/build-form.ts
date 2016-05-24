@@ -370,11 +370,11 @@ class LoanTekBuildForm {
 						// } else {
 						// 	returnElement.prepend(el.option().val('').html(elementObj.placeholder).prop('selected', true).addClass('text-muted'));
 						// }
-						returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('text-muted'));
+						returnElement.prepend(el.option().val('').html(elementObj.placeholder).addClass('placeholder-text'));
 						if (!elementObj.value) { returnElement.val(''); }
 						break;
 					default:
-						returnElement.prop('placeholder', elementObj.placeholder);
+						returnElement.attr('placeholder', elementObj.placeholder);
 						break;
 				}
 			}
