@@ -149,10 +149,10 @@ var LoanTekWidgetHelpers = (function () {
                     {
                         name: 'Default Contact Widget',
                         template: {
+                            panelTitle: 'Contact Us',
                             fields: [
                                 { field: 'clientid' },
                                 { field: 'userid' },
-                                { field: 'title', value: 'Contact Us', nsize: 3 },
                                 { field: 'firstname', cols: 2 },
                                 { field: 'lastname' },
                                 { field: 'email' },
@@ -241,8 +241,10 @@ var LoanTekWidgetHelpers = (function () {
                 if (!isNaN(ct.formBorderRadius)) {
                     var fbr = ct.formBorderRadius + '';
                     var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
-                    formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .alert { border-radius: ' + fbr + 'px; }';
-                    formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+                    formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
+                    if (ct.template.formBorderType === lth.formBorderType.panel) {
+                        formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+                    }
                 }
                 if (ct.formBorderColor) {
                     formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
@@ -257,7 +259,13 @@ var LoanTekWidgetHelpers = (function () {
                     formStyles += '\n.ltcw .form-group, .ltcw .alert { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
                 }
                 if (!isNaN(ct.formFieldBorderRadius)) {
-                    formStyles += '\n.ltcw .form-group .form-control { border-radius: ' + ct.formFieldBorderRadius + 'px; }';
+                    var ffbr = ct.formFieldBorderRadius + '';
+                    var ffbhr = ct.formFieldBorderRadius - 1 < 0 ? '0' : (ct.formFieldBorderRadius - 1) + '';
+                    formStyles += '\n.ltcw .form-group .form-control, .ltcw .alert { border-radius: ' + ffbr + 'px; }';
+                    if (hasCaptchaField) {
+                        formStyles += '\n.ltcw .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+                        formStyles += '\n.ltcw .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+                    }
                 }
                 if (!isNaN(ct.formButtonBorderRadius)) {
                     formStyles += '\n.ltcw .btn { border-radius: ' + ct.formButtonBorderRadius + 'px; }';

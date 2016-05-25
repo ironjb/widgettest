@@ -221,7 +221,7 @@ var LoanTekBuildForm = (function () {
                     }
                     var captchaInput = _thisM.CreateFormElement(captchaInputObj);
                     var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
-                    returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-default').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
+                    returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 default:
                     returnElement = el.div();
@@ -361,12 +361,6 @@ var LoanTekBuildForm = (function () {
             fields: null
         };
         ltjQuery.extend(settings, options);
-        var el = _thisC.lth.CreateElement();
-        var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId).append(el.col().append(el.div().addClass('alert alert-danger').append(el.p().prop('id', settings.errrorMessageId))));
-        if (!settings.showBuilderTools) {
-            errorRow.css({ display: 'none' });
-        }
-        var returnForm = el.form().prop('id', settings.formId).append(errorRow);
         var COLUMNS_IN_ROW = 12;
         var columnCount = 0;
         var row = null;
@@ -382,6 +376,17 @@ var LoanTekBuildForm = (function () {
         var remainingColSpace = 0;
         var isNextHidden = false;
         var fieldTemplate;
+        var el = _thisC.lth.CreateElement();
+        var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
+        var errorMsg = el.p().prop('id', settings.errrorMessageId);
+        if (!settings.showBuilderTools) {
+            errorRow.css({ display: 'none' });
+        }
+        else {
+            errorMsg.text('Error Message');
+        }
+        errorRow.append(el.col().append(el.div().addClass('alert alert-danger').append(errorMsg)));
+        var returnForm = el.form().prop('id', settings.formId).append(errorRow);
         var fieldTemplates = {
             clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function () { return 'LTWS' + new Date().getTime().toString(); } },
             userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
@@ -492,6 +497,9 @@ var LoanTekBuildForm = (function () {
                 panelMain.append(panelBody);
                 returnForm = panelMain;
             }
+        }
+        else if (settings.panelTitle) {
+            returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
         }
         ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
         if (typeof settings.postDOMCallback === 'function') {

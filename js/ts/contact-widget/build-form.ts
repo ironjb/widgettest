@@ -20,21 +20,7 @@ class LoanTekBuildForm {
 			, fields: null
 		};
 		ltjQuery.extend(settings, options);
-		var el = _thisC.lth.CreateElement();
 
-		var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId).append(
-			el.col().append(
-				el.div().addClass('alert alert-danger').append(
-					el.p().prop('id', settings.errrorMessageId)
-				)
-			)
-		);
-
-		if (!settings.showBuilderTools) {
-			errorRow.css({ display: 'none' });
-		}
-
-		var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 		const COLUMNS_IN_ROW: number = 12;
 		var columnCount: number = 0;
 		var row = null;
@@ -50,6 +36,25 @@ class LoanTekBuildForm {
 		var remainingColSpace: number = 0;
 		var isNextHidden: boolean = false;
 		var fieldTemplate: Object;
+
+		var el = _thisC.lth.CreateElement();
+
+		var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
+		var errorMsg = el.p().prop('id', settings.errrorMessageId);
+
+		if (!settings.showBuilderTools) {
+			errorRow.css({ display: 'none' });
+		} else {
+			errorMsg.text('Error Message');
+		}
+
+		errorRow.append(
+			el.col().append(
+				el.div().addClass('alert alert-danger').append(errorMsg)
+			)
+		);
+
+		var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 
 		var fieldTemplates = {
 			clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function() { return 'LTWS' + new Date().getTime().toString() } },
@@ -199,6 +204,8 @@ class LoanTekBuildForm {
 				// returnForm = el.div().addClass('panel panel-default').append(returnForm);
 			}
 
+		} else if (settings.panelTitle) {
+			returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 		}
 		// window.console && console.log('after form bordertype test', settings.wrapperId);
 
@@ -318,7 +325,7 @@ class LoanTekBuildForm {
 				var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
 
 				returnElement = el.div().addClass('lt-captcha').append(
-					el.div().addClass('panel panel-default').append(
+					el.div().addClass('panel panel-info').append(
 						el.div().addClass('panel-heading').text('Security Check')
 					).append(
 						el.div().addClass('panel-body').append(
