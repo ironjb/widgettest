@@ -27,11 +27,36 @@ var LoanTekWidgetHelpers = (function () {
             per: '%'
         };
         this.formBorderType = {
-            panel: 'panel',
-            well: 'well'
+            panel: { id: 'panel', name: 'Panel' },
+            well: { id: 'well', name: 'Well' }
         };
+        this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
         this.$ = jquery;
     }
+    LoanTekWidgetHelpers.prototype.ConvertObjectToArray = function (theObj) {
+        var objArray = [];
+        for (var key in theObj) {
+            var objVal = theObj[key];
+            if (objVal) {
+                objArray.push(objVal);
+            }
+        }
+        return objArray;
+    };
+    LoanTekWidgetHelpers.prototype.ConvertArrayToObject = function (theArray, theKey) {
+        theKey = theKey || 'id';
+        var returnObj = {};
+        for (var i = 0, l = theArray.length; i < l; i++) {
+            var obj = theArray[i];
+            var objectKey = obj[theKey];
+            if (objectKey) {
+                window.console && console.log('objectKey', objectKey);
+                returnObj[objectKey] = obj;
+            }
+        }
+        window.console && console.log('returnObj', returnObj);
+        return returnObj;
+    };
     LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
         for (var i = 0, l = theArray.length; i < l; i++) {
             if (theArray[i][theKey] === theValue) {
@@ -477,14 +502,14 @@ var LoanTekBuildForm = (function () {
             }
         });
         if (settings.formBorderType) {
-            if (settings.formBorderType === 'well') {
+            if (settings.formBorderType === _thisC.lth.formBorderType.well.id) {
                 var wellMain = el.div().addClass('well lt-widget-border');
                 if (settings.panelTitle) {
                     wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
                 }
                 returnForm = wellMain.append(returnForm);
             }
-            else if (settings.formBorderType === _thisC.lth.formBorderType.panel) {
+            else if (settings.formBorderType === _thisC.lth.formBorderType.panel.id) {
                 var panelMain, panelHeading, panelBody;
                 panelMain = el.div().addClass('panel panel-default lt-widget-border');
                 panelBody = el.div().addClass('panel-body').append(returnForm);
@@ -503,7 +528,7 @@ var LoanTekBuildForm = (function () {
         }
         var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
         if (settings.showBuilderTools) {
-            widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', ''));
+            widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
         }
         if (typeof settings.postDOMCallback === 'function') {
             settings.postDOMCallback();

@@ -78,13 +78,13 @@
 							</div>
 							<div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedFields = !isCollapsedFields">
-									<h3 class="panel-title">Use a Prebuilt Template<span class="glyphicon pull-right" data-ng-class="isCollapsedFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+									<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
 								<div data-uib-collapse="isCollapsedFields">
 									<div class="panel-body">
 										<div class="form-group form-group-sm">
 											<div class="col-sm-12">
-												<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltTemplate();" data-ng-model="selectedTemplate" data-ng-options="ptemp.name for ptemp in currentWidget.prebuiltTemplates"></select>
+												<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltForm();" data-ng-model="selectedForm" data-ng-options="pform.name for pform in currentWidget.prebuiltForms"></select>
 											</div>
 										</div>
 									</div>

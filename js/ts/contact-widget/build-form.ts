@@ -175,7 +175,7 @@ class LoanTekBuildForm {
 
 		// window.console && console.log('settings.formBorderType', settings.formBorderType);
 		if (settings.formBorderType) {
-			if (settings.formBorderType === 'well') {
+			if (settings.formBorderType === _thisC.lth.formBorderType.well.id) {
 				var wellMain = el.div().addClass('well lt-widget-border');
 
 				if (settings.panelTitle) {
@@ -184,7 +184,7 @@ class LoanTekBuildForm {
 
 				returnForm = wellMain.append(returnForm);
 				// returnForm = el.div().addClass('well').append(el.h(4).html(settings.panelTitle)).append(returnForm);
-			} else if (settings.formBorderType === _thisC.lth.formBorderType.panel) {
+			} else if (settings.formBorderType === _thisC.lth.formBorderType.panel.id) {
 				var panelMain, panelHeading, panelBody;
 				panelMain = el.div().addClass('panel panel-default lt-widget-border');
 				panelBody = el.div().addClass('panel-body').append(returnForm);
@@ -214,7 +214,7 @@ class LoanTekBuildForm {
 
 		var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
 		if (settings.showBuilderTools) {
-			widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', ''));
+			widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
 		}
 
 		// window.console && console.log('after append to thing');

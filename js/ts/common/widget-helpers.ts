@@ -1,5 +1,7 @@
 /// <reference path="../../../typings/jquery/jquery.d.ts" />
 /// <reference path="interfaces-widget.d.ts" />
+interface IFormBorderType { panel: INameId; well: INameId; }
+interface INameId { id: string; name: string; }
 
 class LoanTekWidgetHelpers {
 	private $: JQueryStatic;
@@ -46,10 +48,51 @@ class LoanTekWidgetHelpers {
 		, per: '%'
 	};
 
-	formBorderType = {
-		panel: 'panel'
-		, well: 'well'
+	// formBorderTypeArray: INameId[] = [
+	// 	{ id: 'panel', name: 'Panel' }
+	// 	, { id: 'well', name: 'Well' }
+	// ];
+
+	// formBorderType = this.ConvertArrayToObject<IFormBorderType>(this.formBorderTypeArray);
+
+	// formBorderType = {
+	// 	panel: 'panel'
+	// 	, well: 'well'
+	// };
+
+	formBorderType: IFormBorderType = {
+		panel: { id: 'panel', name: 'Panel' }
+		, well: { id: 'well', name: 'Well' }
 	};
+
+	formBorderTypeArray = this.ConvertObjectToArray<INameId>(this.formBorderType);
+
+	ConvertObjectToArray<T> (theObj: Object): T[] {
+		var objArray = [];
+		for (var key in theObj) {
+			var objVal = theObj[key];
+			// window.console && console.log(key, objVal);
+			if (objVal) {
+				objArray.push(objVal);
+			}
+		}
+		return objArray;
+	}
+
+	ConvertArrayToObject<T> (theArray: Object[], theKey?: string): T {
+		theKey = theKey || 'id';
+		var returnObj = <T>{};
+		for (var i = 0, l = theArray.length; i < l; i++) {
+			var obj = theArray[i];
+			var objectKey = obj[theKey];
+			if (objectKey) {
+				window.console && console.log('objectKey', objectKey);
+				returnObj[objectKey] = obj;
+			}
+		}
+		window.console && console.log('returnObj', returnObj);
+		return returnObj;
+	}
 
 	GetIndexOfFirstObjectInArray (theArray, theKey, theValue): number {
 		for (var i = 0, l = theArray.length; i < l; i++) {

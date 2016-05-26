@@ -36,7 +36,7 @@
 	}*/);
 	var lth = new LoanTekWidgetHelpers($);
 	var el = lth.CreateElement();
-	var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
+	var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
 	var contactWidgetCSS: string[] = [
 		'/css/widget.css'
 	];
@@ -48,8 +48,12 @@
 
 	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope'/*, 'widgetServices', '$sce', '$timeout'*/, function($scope/*, widgetServices, $sce, $timeout*/) {
 		// $scope.myInfo = 'me';
+		// $scope.ltFormEditTool = {
+		// 	currentForm: $scope.currentForm
+		// 	, WidgetScriptBuild: WidgetScriptBuild
+		// };
 		var contactWidget: IWidget = {
-			prebuiltTemplates: [
+			prebuiltForms: [
 				{
 					name: 'Default Contact Widget',
 					// formFieldBorderRadius: 12,
@@ -86,8 +90,8 @@
 					formFieldBorderRadius: 0,
 					formButtonBorderRadius: 0,
 					template: {
-						// formBorderType: lth.formBorderType.well,
-						formBorderType: lth.formBorderType.panel,
+						// formBorderType: lth.formBorderType.well.id,
+						formBorderType: lth.formBorderType.panel.id,
 						panelTitle: 'Contact Us',
 						fieldSize: lth.bootstrap.inputSizing.sm,
 						fields: [
@@ -123,8 +127,9 @@
 			]
 		};
 
-		var WidgetScriptBuild = (currentTemplate: IWidgetTemplate) => {
-			var ct: IWidgetTemplate = angular.copy(currentTemplate);
+		var WidgetScriptBuild = (currentFormObj: IWidgetObject) => {
+			// $scope.currentForm = currentFormObj;
+			var ct: IWidgetObject = angular.copy(currentFormObj);
 			var cfo: IWidgetFormObject = angular.copy(ct.template);
 			var cfod: IWidgetFormObject = angular.copy(ct.template);
 			var wScript: string = '<style type="text/css">.ltcw {display:none;}</style>';
@@ -153,19 +158,21 @@
 				formStyles += '\n.ltcw .lt-widget-border { background-color: ' + ct.formBg + '; }';
 			}
 
+			// window.console && console.log('lth formBorder type 2', lth.formBorderType2);
+
 			if (!isNaN(ct.formBorderRadius)) {
 				var fbr = ct.formBorderRadius + '';
 				var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
 				formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
-				if (ct.template.formBorderType === lth.formBorderType.panel) {
+				if (ct.template.formBorderType === lth.formBorderType.panel.id) {
 					formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
 				}
 			}
 
 			if (ct.formBorderColor) {
-				// if (ct.template.formBorderType === lth.formBorderType.panel) {
+				// if (ct.template.formBorderType === lth.formBorderType.panel.id) {
 				formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
-				// } else if (ct.template.formBorderType === lth.formBorderType.well) {
+				// } else if (ct.template.formBorderType === lth.formBorderType.well.id) {
 				// 	formStyles += '\n.ltcw .lt-widget-border { border-color: ' + ct.formBorderColor + '}';
 				// }
 			}
@@ -311,17 +318,7 @@
 			// window.console && console.log('typeof $scope.widgetScriptDisplay', typeof $scope.widgetScriptDisplay);
 			// window.console && console.log('typeof $scope.widgetDisplay', typeof $scope.widgetDisplay);
 			// $('#demoHtml').html($scope.widgetScriptDisplay);
-		};
 
-		$scope.testFun = () => {
-			window.console && console.log('test fun... NOTE: please replace this testFun with a directive or something that will show the editing elements');
-		};
-
-		$scope.UsePrebuiltTemplate = () => {
-			$scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];		// selects first template if not selected already
-			$scope.currentTemplate = angular.copy($scope.selectedTemplate);
-			// $scope.currentFormObject = angular.copy($scope.selectedTemplate.template);
-			WidgetScriptBuild($scope.currentTemplate);
 			lth.ScrollToAnchor('widgetTop');
 			// $scope.scriptChangedClass = '';
 			// window.console && console.log('change class', $scope.scriptChangedClass);
@@ -332,25 +329,65 @@
 			// });
 		};
 
+		$scope.RunWidgetScriptBuild = (currentForm) => {
+			WidgetScriptBuild(currentForm);
+		};
+
+		$scope.UsePrebuiltForm = () => {
+			$scope.selectedForm = $scope.selectedForm || $scope.currentWidget.prebuiltForms[0];		// selects first template if not selected already
+			$scope.currentForm = angular.copy($scope.selectedForm);
+			window.console && console.log($scope.selectedForm);
+			// $scope.currentFormObject = angular.copy($scope.selectedForm.template);
+			WidgetScriptBuild($scope.currentForm);
+		};
+
 		var BuilderInit = () => {
 			$scope.currentWidget = angular.copy(contactWidget);
-			$scope.UsePrebuiltTemplate();
+			$scope.UsePrebuiltForm();
 		};
 		BuilderInit();
 	}]);
 
+	//////////////
+	// Services //
+	//////////////
 	var ltWidgetServices = angular.module('ltw.services', []);
 	ltWidgetServices.factory('widgetServices', ['$uibModal', ($uibModal) => {
 		var widgetMethods = {
-			editWidget: (currentTemplate: IWidgetTemplate, options) => {
-				// window.console && console.log('service editWidget currentTemplate: ', currentTemplate);
-				var settings = { modalSize: 'lg', instanceOptions: null };
+			editForm: (/*currentForm: IWidgetObject, */options) => {
+				// window.console && console.log('service editForm currentForm: ', currentForm);
+				var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
 				angular.extend(settings, options);
+				window.console && console.log('settings', settings);
 
-				var modalCtrl = ['$scope', '$uibModalInstance', ($scope, $uibModalInstance, intanceOptions) => {}];
+				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope, $uibModalInstance, intanceOptions) => {
+
+					$scope.modForm = angular.copy(intanceOptions.currentForm);
+					$scope.borderTypes = lth.formBorderTypeArray;
+					$scope.borderTypes.push({ id: 'none', name: 'None' });
+
+					$scope.saveClick = () => {
+						var newForm: IWidgetObject = angular.copy($scope.modForm);
+						newForm.name = 'modified';
+
+						if (!newForm.template.formBorderType) {
+							delete newForm.template.formBorderType;
+							delete newForm.formTitleBgColor;
+						}
+						// intanceOptions.saveForm(newForm);
+						// cWidget = angular.copy($scope.modForm);
+						// $scope.WidgetScriptBuild(cWidget);
+						$uibModalInstance.close(newForm);
+					};
+
+					$scope.cancelClick = () => {
+						$uibModalInstance.dismiss();
+					};
+				}];
 
 				var modalInstance = $uibModal.open({
-					templateUrl: 'template/modal/editWidget.html'
+					// templateUrl: 'template/modal/editForm.html'
+					templateUrl: '/template.html?t=' + new Date().getTime()
 					, controller: modalCtrl
 					, size: settings.modalSize
 					, resolve: {
@@ -359,15 +396,19 @@
 				});
 
 				modalInstance.result.then((result) => {
-					window.console && console.log('modal success');
+					window.console && console.log('modal save result', result);
+					settings.saveForm(result);
 				}, (error) => {
-					window.console && console.log('modal error');
+					window.console && console.log('modal close');
 				});
 			}
 		};
 		return widgetMethods;
 	}]);
 
+	////////////////
+	// Directives //
+	////////////////
 	var widgetDirectives = angular.module('ltw.directives', []);
 	// widgetDirectives.directive('ltContactWidgetScript', [function() {
 	// 	return {
@@ -411,10 +452,28 @@
 		return {
 			restrict: 'A'
 			, templateUrl: 'template/widgetFormEditButton.html'
+			// , scope: {
+			// 	ltFormEditTool: '=ltFormEditTool'
+			// }
 			, link: (scope, elem, attrs) => {
 				scope.EditWigetForm = () => {
-					// window.console && console.log('code to edit form', scope.currentTemplate);
-					widgetServices.editWidget(scope.currentTemplate);
+					// window.console && console.log('code to edit form', scope.currentForm);
+					var formEditOptions = {
+						instanceOptions: {
+							currentForm: angular.copy(scope.currentForm)
+						}
+						, saveForm: (updatedForm) => {
+							window.console && console.log('saveForm');
+							scope.currentForm = updatedForm;
+							scope.selectedForm = {};
+							scope.RunWidgetScriptBuild(scope.currentForm);
+						}
+					};
+					widgetServices.editForm(formEditOptions);
+					// window.console && console.log('scope.currentForm', scope.currentForm);
+					// scope.currentForm.formWidth = 50;
+					// scope.WidgetScriptBuild(scope.currentForm);
+					// window.console && console.log('scope.currentForm', scope.currentForm);
 				};
 			}
 		};
@@ -431,17 +490,36 @@
 		$templateCache.put('template/widgetFormEditButton.html', `
 			<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWigetForm();"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
 		`);
-		$templateCache.put('template/modal/editWidget.html', `
-		<div class="modal-header alert alert-info">
-			<h3 class="modal-title">Edit Widget Form</h3>
-		</div>
-		<div class="modal-body">
-			<div>body</div>
-		</div>
-		<div class="modal-footer">
-			<button class="btn btn-primary" data-ng-click-nnn="okClick();" autofocus="autofocus">Save</button>
-			<button class="btn btn-default" data-ng-click-nnn="cancelClick();">Cancel</button>
-		</div>
+		$templateCache.put('template/modal/editForm.html', `
+		<form class="form-horizontal" data-ng-submit="saveClick();">
+			<div class="modal-header alert alert-info">
+				<h3 class="modal-title">Edit Widget Form</h3>
+			</div>
+			<div class="modal-body">
+				<div class="form-group form-group-sm">
+					<label for="ltewBorderType" class="col-sm-2 control-label">Border Type</label>
+					<div class="col-sm-6">
+						<!-- <select name="ltewBorderType" id="ltewBorderType" class="form-control" data-ng-model="modForm.template.formBorderType" data-ng-options="btype.id as btype.name for btype in borderTypes">
+							<option value="">None</option>
+						</select> -->
+						<div class="btn-group btn-group-sm">
+							<label class="btn btn-primary" data-ng-model="modForm.template.formBorderType" uib-btn-radio="btype.id" data-ng-repeat="btype in borderTypes track by btype.id">{{btype.name}}</label>
+						</div>
+					</div>
+					<div class="col-sm-4">{{modForm.template.formBorderType}}</div>
+				</div>
+				<div class="form-group form-group-sm">
+					<label for="ltewBorderWidth" class="col-sm-2 control-label">Border Width</label>
+					<div class="col-sm-2">
+						<input type="number" class="form-control" id="ltewBorderWidth" name="ltewBorderWidth" />
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit">Save</button>
+				<button class="btn btn-default" data-ng-click="cancelClick();">Cancel</button>
+			</div>
+		</form>
 		`);
 	}]);
 })(jQuery);

@@ -4,6 +4,11 @@ interface IWidgets {
 	rate?: IWidget;
 }
 
+interface IWidget {
+	allAvailableFields: IWidgetAvailableField[];
+	prebuiltForms?: IWidgetObject[];
+}
+
 interface IWidgetAvailableField {
 	id?: string;
 	name: string;
@@ -14,7 +19,7 @@ interface IWidgetAvailableField {
 	fieldTemplate?: IWidgetField;
 }
 
-interface IWidgetTemplate {
+interface IWidgetObject {
 	name: string;
 	formWidth?: number;
 	formWidthUnit?: string;
@@ -27,11 +32,6 @@ interface IWidgetTemplate {
 	formFieldBorderRadius?: number;
 	formButtonBorderRadius?: number;
 	template?: IWidgetFormObject;
-}
-
-interface IWidget {
-	allAvailableFields: IWidgetAvailableField[];
-	prebuiltTemplates?: IWidgetTemplate[];
 }
 
 interface IWidgetFormObject {

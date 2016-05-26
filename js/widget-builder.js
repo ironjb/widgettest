@@ -26,11 +26,36 @@ var LoanTekWidgetHelpers = (function () {
             per: '%'
         };
         this.formBorderType = {
-            panel: 'panel',
-            well: 'well'
+            panel: { id: 'panel', name: 'Panel' },
+            well: { id: 'well', name: 'Well' }
         };
+        this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
         this.$ = jquery;
     }
+    LoanTekWidgetHelpers.prototype.ConvertObjectToArray = function (theObj) {
+        var objArray = [];
+        for (var key in theObj) {
+            var objVal = theObj[key];
+            if (objVal) {
+                objArray.push(objVal);
+            }
+        }
+        return objArray;
+    };
+    LoanTekWidgetHelpers.prototype.ConvertArrayToObject = function (theArray, theKey) {
+        theKey = theKey || 'id';
+        var returnObj = {};
+        for (var i = 0, l = theArray.length; i < l; i++) {
+            var obj = theArray[i];
+            var objectKey = obj[theKey];
+            if (objectKey) {
+                window.console && console.log('objectKey', objectKey);
+                returnObj[objectKey] = obj;
+            }
+        }
+        window.console && console.log('returnObj', returnObj);
+        return returnObj;
+    };
     LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
         for (var i = 0, l = theArray.length; i < l; i++) {
             if (theArray[i][theKey] === theValue) {
@@ -134,7 +159,7 @@ var LoanTekWidgetHelpers = (function () {
     var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
     var lth = new LoanTekWidgetHelpers($);
     var el = lth.CreateElement();
-    var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
+    var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
     var contactWidgetCSS = [
         '/css/widget.css'
     ];
@@ -145,7 +170,7 @@ var LoanTekWidgetHelpers = (function () {
     ];
     widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', function ($scope) {
             var contactWidget = {
-                prebuiltTemplates: [
+                prebuiltForms: [
                     {
                         name: 'Default Contact Widget',
                         template: {
@@ -178,7 +203,7 @@ var LoanTekWidgetHelpers = (function () {
                         formFieldBorderRadius: 0,
                         formButtonBorderRadius: 0,
                         template: {
-                            formBorderType: lth.formBorderType.panel,
+                            formBorderType: lth.formBorderType.panel.id,
                             panelTitle: 'Contact Us',
                             fieldSize: lth.bootstrap.inputSizing.sm,
                             fields: [
@@ -213,8 +238,8 @@ var LoanTekWidgetHelpers = (function () {
                     { id: 'p', name: 'Paragraph', allowMultiples: true, fieldTemplate: { field: 'p' } }
                 ]
             };
-            var WidgetScriptBuild = function (currentTemplate) {
-                var ct = angular.copy(currentTemplate);
+            var WidgetScriptBuild = function (currentFormObj) {
+                var ct = angular.copy(currentFormObj);
                 var cfo = angular.copy(ct.template);
                 var cfod = angular.copy(ct.template);
                 var wScript = '<style type="text/css">.ltcw {display:none;}</style>';
@@ -242,7 +267,7 @@ var LoanTekWidgetHelpers = (function () {
                     var fbr = ct.formBorderRadius + '';
                     var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
                     formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
-                    if (ct.template.formBorderType === lth.formBorderType.panel) {
+                    if (ct.template.formBorderType === lth.formBorderType.panel.id) {
                         formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
                     }
                 }
@@ -334,32 +359,50 @@ var LoanTekWidgetHelpers = (function () {
                 wScript = wScript.replace(/\s+/g, ' ');
                 $scope.widgetScript = wScript;
                 $scope.widgetScriptDisplay = wScriptDisplay;
-            };
-            $scope.testFun = function () {
-                window.console && console.log('test fun... NOTE: please replace this testFun with a directive or something that will show the editing elements');
-            };
-            $scope.UsePrebuiltTemplate = function () {
-                $scope.selectedTemplate = $scope.selectedTemplate || $scope.currentWidget.prebuiltTemplates[0];
-                $scope.currentTemplate = angular.copy($scope.selectedTemplate);
-                WidgetScriptBuild($scope.currentTemplate);
                 lth.ScrollToAnchor('widgetTop');
                 $scope.scriptChangedClass = 't' + new Date().getTime();
             };
+            $scope.RunWidgetScriptBuild = function (currentForm) {
+                WidgetScriptBuild(currentForm);
+            };
+            $scope.UsePrebuiltForm = function () {
+                $scope.selectedForm = $scope.selectedForm || $scope.currentWidget.prebuiltForms[0];
+                $scope.currentForm = angular.copy($scope.selectedForm);
+                window.console && console.log($scope.selectedForm);
+                WidgetScriptBuild($scope.currentForm);
+            };
             var BuilderInit = function () {
                 $scope.currentWidget = angular.copy(contactWidget);
-                $scope.UsePrebuiltTemplate();
+                $scope.UsePrebuiltForm();
             };
             BuilderInit();
         }]);
     var ltWidgetServices = angular.module('ltw.services', []);
     ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal) {
             var widgetMethods = {
-                editWidget: function (currentTemplate, options) {
-                    var settings = { modalSize: 'lg', instanceOptions: null };
+                editForm: function (options) {
+                    var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
                     angular.extend(settings, options);
-                    var modalCtrl = ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance, intanceOptions) { }];
+                    window.console && console.log('settings', settings);
+                    var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, intanceOptions) {
+                            $scope.modForm = angular.copy(intanceOptions.currentForm);
+                            $scope.borderTypes = lth.formBorderTypeArray;
+                            $scope.borderTypes.push({ id: 'none', name: 'None' });
+                            $scope.saveClick = function () {
+                                var newForm = angular.copy($scope.modForm);
+                                newForm.name = 'modified';
+                                if (!newForm.template.formBorderType) {
+                                    delete newForm.template.formBorderType;
+                                    delete newForm.formTitleBgColor;
+                                }
+                                $uibModalInstance.close(newForm);
+                            };
+                            $scope.cancelClick = function () {
+                                $uibModalInstance.dismiss();
+                            };
+                        }];
                     var modalInstance = $uibModal.open({
-                        templateUrl: 'template/modal/editWidget.html',
+                        templateUrl: '/template.html?t=' + new Date().getTime(),
                         controller: modalCtrl,
                         size: settings.modalSize,
                         resolve: {
@@ -367,9 +410,10 @@ var LoanTekWidgetHelpers = (function () {
                         }
                     });
                     modalInstance.result.then(function (result) {
-                        window.console && console.log('modal success');
+                        window.console && console.log('modal save result', result);
+                        settings.saveForm(result);
                     }, function (error) {
-                        window.console && console.log('modal error');
+                        window.console && console.log('modal close');
                     });
                 }
             };
@@ -393,13 +437,24 @@ var LoanTekWidgetHelpers = (function () {
                 templateUrl: 'template/widgetFormEditButton.html',
                 link: function (scope, elem, attrs) {
                     scope.EditWigetForm = function () {
-                        widgetServices.editWidget(scope.currentTemplate);
+                        var formEditOptions = {
+                            instanceOptions: {
+                                currentForm: angular.copy(scope.currentForm)
+                            },
+                            saveForm: function (updatedForm) {
+                                window.console && console.log('saveForm');
+                                scope.currentForm = updatedForm;
+                                scope.selectedForm = {};
+                                scope.RunWidgetScriptBuild(scope.currentForm);
+                            }
+                        };
+                        widgetServices.editForm(formEditOptions);
                     };
                 }
             };
         }]);
     angular.module('ltw.templates', []).run(['$templateCache', function ($templateCache) {
             $templateCache.put('template/widgetFormEditButton.html', "\n\t\t\t<button type=\"button\" class=\"btn btn-default btn-xs btn-tool\" data-ng-click=\"EditWigetForm();\"><span class=\"glyphicon glyphicon-pencil\"></span> Edit</button>\n\t\t");
-            $templateCache.put('template/modal/editWidget.html', "\n\t\t<div class=\"modal-header alert alert-info\">\n\t\t\t<h3 class=\"modal-title\">Edit Widget Form</h3>\n\t\t</div>\n\t\t<div class=\"modal-body\">\n\t\t\t<div>body</div>\n\t\t</div>\n\t\t<div class=\"modal-footer\">\n\t\t\t<button class=\"btn btn-primary\" data-ng-click-nnn=\"okClick();\" autofocus=\"autofocus\">Save</button>\n\t\t\t<button class=\"btn btn-default\" data-ng-click-nnn=\"cancelClick();\">Cancel</button>\n\t\t</div>\n\t\t");
+            $templateCache.put('template/modal/editForm.html', "\n\t\t<form class=\"form-horizontal\" data-ng-submit=\"saveClick();\">\n\t\t\t<div class=\"modal-header alert alert-info\">\n\t\t\t\t<h3 class=\"modal-title\">Edit Widget Form</h3>\n\t\t\t</div>\n\t\t\t<div class=\"modal-body\">\n\t\t\t\t<div class=\"form-group form-group-sm\">\n\t\t\t\t\t<label for=\"ltewBorderType\" class=\"col-sm-2 control-label\">Border Type</label>\n\t\t\t\t\t<div class=\"col-sm-6\">\n\t\t\t\t\t\t<!-- <select name=\"ltewBorderType\" id=\"ltewBorderType\" class=\"form-control\" data-ng-model=\"modForm.template.formBorderType\" data-ng-options=\"btype.id as btype.name for btype in borderTypes\">\n\t\t\t\t\t\t\t<option value=\"\">None</option>\n\t\t\t\t\t\t</select> -->\n\t\t\t\t\t\t<div class=\"btn-group btn-group-sm\">\n\t\t\t\t\t\t\t<label class=\"btn btn-primary\" data-ng-model=\"modForm.template.formBorderType\" uib-btn-radio=\"btype.id\" data-ng-repeat=\"btype in borderTypes track by btype.id\">{{btype.name}}</label>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"col-sm-4\">{{modForm.template.formBorderType}}</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"form-group form-group-sm\">\n\t\t\t\t\t<label for=\"ltewBorderWidth\" class=\"col-sm-2 control-label\">Border Width</label>\n\t\t\t\t\t<div class=\"col-sm-2\">\n\t\t\t\t\t\t<input type=\"number\" class=\"form-control\" id=\"ltewBorderWidth\" name=\"ltewBorderWidth\" />\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"modal-footer\">\n\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">Save</button>\n\t\t\t\t<button class=\"btn btn-default\" data-ng-click=\"cancelClick();\">Cancel</button>\n\t\t\t</div>\n\t\t</form>\n\t\t");
         }]);
 })(jQuery);
