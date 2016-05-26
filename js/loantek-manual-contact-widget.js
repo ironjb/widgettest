@@ -501,7 +501,10 @@ var LoanTekBuildForm = (function () {
         else if (settings.panelTitle) {
             returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
         }
-        ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+        var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+        if (settings.showBuilderTools) {
+            widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', ''));
+        }
         if (typeof settings.postDOMCallback === 'function') {
             settings.postDOMCallback();
         }

@@ -3,7 +3,7 @@
 
 class LoanTekBuildForm {
 
-	private lth;
+	private lth: LoanTekWidgetHelpers;
 
 	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormObject) {
 		var _thisC = this;
@@ -207,11 +207,15 @@ class LoanTekBuildForm {
 		} else if (settings.panelTitle) {
 			returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 		}
+
 		// window.console && console.log('after form bordertype test', settings.wrapperId);
 
 		// window.console && console.log('ltjQuery("#ltWidgetWrapper")', ltjQuery('#ltWidgetWrapper').addClass('ltcw container-fluid').empty().append(returnForm));
 
-		ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+		var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+		if (settings.showBuilderTools) {
+			widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', ''));
+		}
 
 		// window.console && console.log('after append to thing');
 		if (typeof settings.postDOMCallback === 'function') {

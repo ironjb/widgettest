@@ -1,3 +1,7 @@
+// Core variables and mixins
+@import 'bootstrap/variables.less';
+@import 'bootstrap/mixins.less';
+
 body {
 	padding-top:50px;
 }
@@ -12,12 +16,25 @@ body {
 
 @keyframes example {
 	10% {background-color: #dddddd;}
-	50% {background-color: #ddeedd;}
+	50% {background-color: #ddffdd;}
 	100% {background-color: #dddddd;}
 }
 
 .code-change.ng-animate {
 	animation-name: example;
-	animation-duration: 1s;
+	animation-duration: 0.3s;
 	animation-iteration-count: 2;
+}
+
+.ltw-tool-form-update { position: absolute; top: -5px; right: 0;}
+.ltw-builder-tools {
+	position: relative;
+	.ltw-tool-form-update { opacity: 0.3; }
+	&:hover .ltw-tool-form-update { opacity: 1; }
+	.btn {
+		&.btn-tool {
+			border-radius: @btn-border-radius-base;
+			&.btn-sm, &.btn-xs { border-radius: @btn-border-radius-small; }
+		}
+	}
 }

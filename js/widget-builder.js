@@ -131,7 +131,7 @@ var LoanTekWidgetHelpers = (function () {
 }());
 (function ($) {
     $('input textarea').placeholder();
-    var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate']);
+    var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
     var lth = new LoanTekWidgetHelpers($);
     var el = lth.CreateElement();
     var wwwRoot = window.location.href === 'http://localhost:8080/' ? '' : '//www.loantek.com';
@@ -285,18 +285,18 @@ var LoanTekWidgetHelpers = (function () {
                 }
                 var mainScript = '';
                 var mainScriptDisplay = '';
-                var captchaVar = "\n\tvar ltCaptcha;";
+                var captchaVar = "\n\t\t\t\tvar ltCaptcha;";
                 if (hasCaptchaField) {
                     mainScript += captchaVar;
                     mainScriptDisplay += captchaVar;
                 }
-                var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\tvar postDOMFunctions = function () {\n\t\t#{code}\n\t};";
+                var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\t\t\tvar postDOMFunctions = function () {\n\t\t\t\t#{code}\n\t\t\t};";
                 if (hasCaptchaField) {
-                    postDomCode += "\n\t\tltCaptcha = new LoanTekCaptcha();";
+                    postDomCode += "\n\t\t\t\t\tltCaptcha = new LoanTekCaptcha();";
                 }
                 mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
                 mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
-                var extValid = "\n\tvar externalValidators = function () {\n\t\t#{validReturn}\n\t};";
+                var extValid = "\n\t\t\tvar externalValidators = function () {\n\t\t\t\t#{validReturn}\n\t\t\t};";
                 if (hasCaptchaField) {
                     extValid = lth.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
                 }
@@ -305,12 +305,12 @@ var LoanTekWidgetHelpers = (function () {
                 }
                 mainScript += extValid;
                 mainScriptDisplay += extValid;
-                var buildObjectWrap = "\n\tvar loanTekManualContactWidgetBuildObject = #{bow};";
+                var buildObjectWrap = "\n\t\t\tvar loanTekManualContactWidgetBuildObject = #{bow};";
                 var cfoString = JSON.stringify(cfo);
                 var cfodString = JSON.stringify(cfod);
                 mainScript += lth.Interpolate(buildObjectWrap, { bow: cfoString });
                 mainScriptDisplay += lth.Interpolate(buildObjectWrap, { bow: cfodString });
-                var exBuildForm = "\n\tLoanTekBuildForm(loanTekManualContactWidgetBuildObject);";
+                var exBuildForm = "\n\t\t\tLoanTekBuildForm(loanTekManualContactWidgetBuildObject);";
                 mainScript += exBuildForm;
                 mainScriptDisplay += exBuildForm;
                 var ltWidgetOptions = {
@@ -318,15 +318,15 @@ var LoanTekWidgetHelpers = (function () {
                     externalValidatorFunction: '#fn{externalValidators}',
                     successMessage: 'Yay!!! Successful POST'
                 };
-                var ltWidgetOptionsWrap = "\n\tvar loanTekManualContactWidgetOptions = #{cwow};";
+                var ltWidgetOptionsWrap = "\n\t\t\tvar loanTekManualContactWidgetOptions = #{cwow};";
                 mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
                 mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
-                var contactWidget = "\n\tLoanTekManualContactWidget(loanTekManualContactWidgetOptions);";
+                var contactWidget = "\n\t\t\tLoanTekManualContactWidget(loanTekManualContactWidgetOptions);";
                 mainScript += contactWidget;
                 mainScriptDisplay += contactWidget;
                 mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
                 mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
-                var mainScriptWrap = "\n<script type=\"text/javascript\">\n(function () {#{m}\n})();\n</script>";
+                var mainScriptWrap = "\n\t\t\t<script type=\"text/javascript\">\n\t\t\t(function () {#{m}\n\t\t\t})();\n\t\t\t</script>";
                 mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
                 mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
                 wScript += mainScript;
@@ -351,36 +351,55 @@ var LoanTekWidgetHelpers = (function () {
             };
             BuilderInit();
         }]);
-    widgetBuilderApp.directive('ltContactWidgetScript', [function () {
-            return {
-                restrict: 'AEC',
-                scope: {
-                    lcws: '=ltContactWidgetScript'
-                },
-                templateUrl: 'template/contactWidgetScript.html',
-                link: function (scope) {
+    var ltWidgetServices = angular.module('ltw.services', []);
+    ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal) {
+            var widgetMethods = {
+                editWidget: function (currentTemplate, options) {
+                    var settings = { modalSize: 'lg', instanceOptions: null };
+                    angular.extend(settings, options);
+                    var modalCtrl = ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance, intanceOptions) { }];
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'template/modal/editWidget.html',
+                        controller: modalCtrl,
+                        size: settings.modalSize,
+                        resolve: {
+                            instanceOptions: function () { return settings.instanceOptions; }
+                        }
+                    });
+                    modalInstance.result.then(function (result) {
+                        window.console && console.log('modal success');
+                    }, function (error) {
+                        window.console && console.log('modal error');
+                    });
                 }
             };
-        }]).directive('ltCompileCode', ['$parse', '$compile', function ($parse, $compile) {
+            return widgetMethods;
+        }]);
+    var widgetDirectives = angular.module('ltw.directives', []);
+    widgetDirectives.directive('ltCompileCode', ['$compile', function ($compile) {
             return {
                 restrict: 'A',
                 link: function (scope, elem, attrs) {
                     scope.$watch(attrs.ltCompileCode, function (value) {
-                        window.console && console.log('watching: ', attrs.ltCompileCode);
                         elem.html(value);
                         $compile(elem.contents())(scope);
                     });
                 }
             };
-        }]).directive('ltWidgetTool', ['$parse', function ($parse) {
+        }]);
+    widgetDirectives.directive('ltFormEditTool', ['widgetServices', function (widgetServices) {
             return {
+                restrict: 'A',
+                templateUrl: 'template/widgetFormEditButton.html',
                 link: function (scope, elem, attrs) {
-                    var thisWigetTool = $parse(attrs.ltWidgetTool);
-                    window.console && console.log('widget directive running', attrs.ltWidgetTool, thisWigetTool(scope));
+                    scope.EditWigetForm = function () {
+                        widgetServices.editWidget(scope.currentTemplate);
+                    };
                 }
             };
         }]);
-    angular.module('lt.templates', []).run(['$templateCache', function ($templateCache) {
-            $templateCache.put('template/contactWidgetScript.html', "\n\t\t");
+    angular.module('ltw.templates', []).run(['$templateCache', function ($templateCache) {
+            $templateCache.put('template/widgetFormEditButton.html', "\n\t\t\t<button type=\"button\" class=\"btn btn-default btn-xs btn-tool\" data-ng-click=\"EditWigetForm();\"><span class=\"glyphicon glyphicon-pencil\"></span> Edit</button>\n\t\t");
+            $templateCache.put('template/modal/editWidget.html', "\n\t\t<div class=\"modal-header alert alert-info\">\n\t\t\t<h3 class=\"modal-title\">Edit Widget Form</h3>\n\t\t</div>\n\t\t<div class=\"modal-body\">\n\t\t\t<div>body</div>\n\t\t</div>\n\t\t<div class=\"modal-footer\">\n\t\t\t<button class=\"btn btn-primary\" data-ng-click-nnn=\"okClick();\" autofocus=\"autofocus\">Save</button>\n\t\t\t<button class=\"btn btn-default\" data-ng-click-nnn=\"cancelClick();\">Cancel</button>\n\t\t</div>\n\t\t");
         }]);
 })(jQuery);

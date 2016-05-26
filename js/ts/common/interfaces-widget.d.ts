@@ -14,7 +14,7 @@ interface IWidgetAvailableField {
 	fieldTemplate?: IWidgetField;
 }
 
-interface IWidgetPrebuiltTemplate {
+interface IWidgetTemplate {
 	name: string;
 	formWidth?: number;
 	formWidthUnit?: string;
@@ -31,7 +31,7 @@ interface IWidgetPrebuiltTemplate {
 
 interface IWidget {
 	allAvailableFields: IWidgetAvailableField[];
-	prebuiltTemplates?: IWidgetPrebuiltTemplate[];
+	prebuiltTemplates?: IWidgetTemplate[];
 }
 
 interface IWidgetFormObject {

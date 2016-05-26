@@ -42,3 +42,16 @@ https://gist.github.com/NaniSore/3191000
 
 https://gist.github.com/search?l=javascript&q=javascript+interpolation&ref=searchresults&utf8=%E2%9C%93
 
+
+
+## Compile code for Angular after being dynamically added.
+
+https://docs.angularjs.org/api/ng/service/$compile
+
+http://stackoverflow.com/questions/20297638/call-function-inside-sce-trustashtml-string-in-angular-js
+
+
+## Copy to clipboard
+
+http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+

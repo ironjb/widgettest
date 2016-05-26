@@ -8,7 +8,7 @@
 
 (function ($: JQueryStatic) {
 	$('input textarea').placeholder();
-	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate'/*, 'ngSanitize'*/]/*, function($compileProvider) {
+	var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates'/*, 'ngSanitize'*/]/*, function($compileProvider) {
 		// configure new 'compile' directive by passing a directive
 		// factory function. The factory function injects the '$compile'
 		$compileProvider.directive('compile', function($compile) {
@@ -46,7 +46,7 @@
 		, '/js/loantek-manual-contact-widget.js'
 	];
 
-	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope'/*, '$sce', '$timeout'*/, function($scope/*, $sce, $timeout*/) {
+	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope'/*, 'widgetServices', '$sce', '$timeout'*/, function($scope/*, widgetServices, $sce, $timeout*/) {
 		// $scope.myInfo = 'me';
 		var contactWidget: IWidget = {
 			prebuiltTemplates: [
@@ -118,13 +118,13 @@
 				, { id: 'comments', name: 'Comments', fieldTemplate: { field: 'comments' } }
 				, { id: 'captcha', name: 'Captcha', fieldTemplate: { field: 'captcha' } }
 				, { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { field: 'submit' } }
-				, { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { field: 'title '} }
-				, { id: 'p', name: 'Paragraph', allowMultiples: true, fieldTemplate: { field: 'p'} }
+				, { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { field: 'title ' } }
+				, { id: 'p', name: 'Paragraph', allowMultiples: true, fieldTemplate: { field: 'p' } }
 			]
 		};
 
-		var WidgetScriptBuild = (currentTemplate: IWidgetPrebuiltTemplate) => {
-			var ct: IWidgetPrebuiltTemplate = angular.copy(currentTemplate);
+		var WidgetScriptBuild = (currentTemplate: IWidgetTemplate) => {
+			var ct: IWidgetTemplate = angular.copy(currentTemplate);
 			var cfo: IWidgetFormObject = angular.copy(ct.template);
 			var cfod: IWidgetFormObject = angular.copy(ct.template);
 			var wScript: string = '<style type="text/css">.ltcw {display:none;}</style>';
@@ -164,7 +164,7 @@
 
 			if (ct.formBorderColor) {
 				// if (ct.template.formBorderType === lth.formBorderType.panel) {
-					formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
+				formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
 				// } else if (ct.template.formBorderType === lth.formBorderType.well) {
 				// 	formStyles += '\n.ltcw .lt-widget-border { border-color: ' + ct.formBorderColor + '}';
 				// }
@@ -223,7 +223,7 @@
 
 			// Captcha var
 			var captchaVar = `
-	var ltCaptcha;`;
+				var ltCaptcha;`;
 			if (hasCaptchaField) {
 				mainScript += captchaVar;
 				mainScriptDisplay += captchaVar;
@@ -231,21 +231,21 @@
 
 			// PostDOMFunctions
 			var postDomCode = '/*code ran after DOM created*/', postDomFn = `
-	var postDOMFunctions = function () {
-		#{code}
-	};`;
+			var postDOMFunctions = function () {
+				#{code}
+			};`;
 			if (hasCaptchaField) {
 				postDomCode += `
-		ltCaptcha = new LoanTekCaptcha();`;
+					ltCaptcha = new LoanTekCaptcha();`;
 			}
 			mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
 			mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
 
 			// External Validator
 			var extValid = `
-	var externalValidators = function () {
-		#{validReturn}
-	};`;
+			var externalValidators = function () {
+				#{validReturn}
+			};`;
 			if (hasCaptchaField) {
 				extValid = lth.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
 			} else {
@@ -256,7 +256,7 @@
 
 			// Add buildObject to mainScript
 			var buildObjectWrap = `
-	var loanTekManualContactWidgetBuildObject = #{bow};`;
+			var loanTekManualContactWidgetBuildObject = #{bow};`;
 			var cfoString = JSON.stringify(cfo/*, null, 2*/);
 			var cfodString = JSON.stringify(cfod/*, null, 2*/);
 			mainScript += lth.Interpolate(buildObjectWrap, { bow: cfoString });
@@ -264,7 +264,7 @@
 
 			// Add Execution of LoanTekBuildForm
 			var exBuildForm = `
-	LoanTekBuildForm(loanTekManualContactWidgetBuildObject);`;
+			LoanTekBuildForm(loanTekManualContactWidgetBuildObject);`;
 
 			mainScript += exBuildForm;
 			mainScriptDisplay += exBuildForm;
@@ -279,13 +279,13 @@
 			};
 
 			var ltWidgetOptionsWrap = `
-	var loanTekManualContactWidgetOptions = #{cwow};`;
+			var loanTekManualContactWidgetOptions = #{cwow};`;
 			mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
 			mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
 
 			// Add Execution of Contact Widget
 			var contactWidget = `
-	LoanTekManualContactWidget(loanTekManualContactWidgetOptions);`;
+			LoanTekManualContactWidget(loanTekManualContactWidgetOptions);`;
 			mainScript += contactWidget;
 			mainScriptDisplay += contactWidget;
 
@@ -294,11 +294,11 @@
 
 			// Wrap Main Script
 			var mainScriptWrap = `
-<script type="text/javascript">
-(function () {#{m}
-})();
-</script>`;
-			mainScript = lth.Interpolate(mainScriptWrap,{m: mainScript});
+			<script type="text/javascript">
+			(function () {#{m}
+			})();
+			</script>`;
+			mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
 			mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
 
 			wScript += mainScript;
@@ -338,20 +338,52 @@
 		};
 		BuilderInit();
 	}]);
-	widgetBuilderApp.directive('ltContactWidgetScript', [function() {
-		return {
-			restrict: 'AEC',
-			// replace: true,
-			scope: {
-				lcws: '=ltContactWidgetScript'
-			},
-			templateUrl: 'template/contactWidgetScript.html',
-			link: (scope) => {
-				// window.console && console.log('scope', scope);
-				// window.console && console.log('scope ltContactWidgetScript', scope.lcws);
+
+	var ltWidgetServices = angular.module('ltw.services', []);
+	ltWidgetServices.factory('widgetServices', ['$uibModal', ($uibModal) => {
+		var widgetMethods = {
+			editWidget: (currentTemplate: IWidgetTemplate, options) => {
+				// window.console && console.log('service editWidget currentTemplate: ', currentTemplate);
+				var settings = { modalSize: 'lg', instanceOptions: null };
+				angular.extend(settings, options);
+
+				var modalCtrl = ['$scope', '$uibModalInstance', ($scope, $uibModalInstance, intanceOptions) => {}];
+
+				var modalInstance = $uibModal.open({
+					templateUrl: 'template/modal/editWidget.html'
+					, controller: modalCtrl
+					, size: settings.modalSize
+					, resolve: {
+						instanceOptions: () => { return settings.instanceOptions }
+					}
+				});
+
+				modalInstance.result.then((result) => {
+					window.console && console.log('modal success');
+				}, (error) => {
+					window.console && console.log('modal error');
+				});
 			}
 		};
-	}]).directive('ltCompileCode', ['$parse', '$compile', function($parse, $compile) {
+		return widgetMethods;
+	}]);
+
+	var widgetDirectives = angular.module('ltw.directives', []);
+	// widgetDirectives.directive('ltContactWidgetScript', [function() {
+	// 	return {
+	// 		restrict: 'AEC',
+	// 		// replace: true,
+	// 		scope: {
+	// 			lcws: '=ltContactWidgetScript'
+	// 		},
+	// 		templateUrl: 'template/contactWidgetScript.html',
+	// 		link: (scope) => {
+	// 			// window.console && console.log('scope', scope);
+	// 			// window.console && console.log('scope ltContactWidgetScript', scope.lcws);
+	// 		}
+	// 	};
+	// }]);
+	widgetDirectives.directive('ltCompileCode', [/*'$parse', */'$compile', function(/*$parse, */$compile) {
 		return {
 			restrict: 'A'
 			// , require: 'ngBindHtml'
@@ -366,24 +398,50 @@
 					window.console && console.log('watching');
 					window.console && console.log('attrs.ltCompileCode', attrs.ltCompileCode);
 					return scope.$eval();
-				}*/,function (value) {
-					// window.console && console.log(value);
-					window.console && console.log('watching: ', attrs.ltCompileCode);
-					elem.html(value);
-					$compile(elem.contents())(scope);
-				});
-			}
-		};
-	}]).directive('ltWidgetTool', ['$parse', function($parse) {
-		return {
-			link: (scope, elem, attrs) => {
-				var thisWigetTool = $parse(attrs.ltWidgetTool);
-				window.console && console.log('widget directive running', attrs.ltWidgetTool, thisWigetTool(scope));
+				}*/, function(value) {
+						// window.console && console.log(value);
+						// window.console && console.log('watching: ', attrs.ltCompileCode);
+						elem.html(value);
+						$compile(elem.contents())(scope);
+					});
 			}
 		};
 	}]);
-angular.module('lt.templates', []).run(['$templateCache', function($templateCache) {
-		$templateCache.put('template/contactWidgetScript.html', `
+	widgetDirectives.directive('ltFormEditTool', ['widgetServices', function(widgetServices) {
+		return {
+			restrict: 'A'
+			, templateUrl: 'template/widgetFormEditButton.html'
+			, link: (scope, elem, attrs) => {
+				scope.EditWigetForm = () => {
+					// window.console && console.log('code to edit form', scope.currentTemplate);
+					widgetServices.editWidget(scope.currentTemplate);
+				};
+			}
+		};
+	}]);
+	// widgetDirectives.directive('ltWidgetTool', ['$parse', function($parse) {
+	// 	return {
+	// 		link: (scope, elem, attrs) => {
+	// 			var thisWigetTool = $parse(attrs.ltWidgetTool);
+	// 			window.console && console.log('widget directive running', attrs.ltWidgetTool, thisWigetTool(scope));
+	// 		}
+	// 	};
+	// }]);
+	angular.module('ltw.templates', []).run(['$templateCache', function($templateCache) {
+		$templateCache.put('template/widgetFormEditButton.html', `
+			<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWigetForm();"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+		`);
+		$templateCache.put('template/modal/editWidget.html', `
+		<div class="modal-header alert alert-info">
+			<h3 class="modal-title">Edit Widget Form</h3>
+		</div>
+		<div class="modal-body">
+			<div>body</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" data-ng-click-nnn="okClick();" autofocus="autofocus">Save</button>
+			<button class="btn btn-default" data-ng-click-nnn="cancelClick();">Cancel</button>
+		</div>
 		`);
 	}]);
 })(jQuery);
