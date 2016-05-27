@@ -3,11 +3,13 @@
 
 class LoanTekBuildForm {
 
-	private lth: LoanTekWidgetHelpers;
+	private ltm: LoanTekWidgetHelpers.methods;
+	private ltp: LoanTekWidgetHelpers.properties;
 
 	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormObject) {
 		var _thisC = this;
-		_thisC.lth = new LoanTekWidgetHelpers(ltjQuery);
+		_thisC.ltm = new LoanTekWidgetHelpers.methods(ltjQuery);
+		_thisC.ltp = new LoanTekWidgetHelpers.properties();
 		var settings: IWidgetFormObject = {
 			wrapperId: 'ltWidgetWrapper'
 			, formId: 'LtcwContactWidgetForm'
@@ -37,7 +39,7 @@ class LoanTekBuildForm {
 		var isNextHidden: boolean = false;
 		var fieldTemplate: Object;
 
-		var el = _thisC.lth.CreateElement();
+		var el = _thisC.ltm.CreateElement();
 
 		var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
 		var errorMsg = el.p().prop('id', settings.errrorMessageId);
@@ -175,7 +177,7 @@ class LoanTekBuildForm {
 
 		// window.console && console.log('settings.formBorderType', settings.formBorderType);
 		if (settings.formBorderType) {
-			if (settings.formBorderType === _thisC.lth.formBorderType.well.id) {
+			if (settings.formBorderType === _thisC.ltp.formBorderType.well.id) {
 				var wellMain = el.div().addClass('well lt-widget-border');
 
 				if (settings.panelTitle) {
@@ -184,7 +186,7 @@ class LoanTekBuildForm {
 
 				returnForm = wellMain.append(returnForm);
 				// returnForm = el.div().addClass('well').append(el.h(4).html(settings.panelTitle)).append(returnForm);
-			} else if (settings.formBorderType === _thisC.lth.formBorderType.panel.id) {
+			} else if (settings.formBorderType === _thisC.ltp.formBorderType.panel.id) {
 				var panelMain, panelHeading, panelBody;
 				panelMain = el.div().addClass('panel panel-default lt-widget-border');
 				panelBody = el.div().addClass('panel-body').append(returnForm);
@@ -253,11 +255,11 @@ class LoanTekBuildForm {
 
 	CreateFormElement = (elementObj: IWidgetField) => {
 		var _thisM = this;
-		var el = _thisM.lth.CreateElement();
+		var el = _thisM.ltm.CreateElement();
 		var returnElement = null;
 		switch (elementObj.element) {
 			case 'title':
-				elementObj.nsize = elementObj.nsize || _thisM.lth.hSizing.default;
+				elementObj.nsize = elementObj.nsize || _thisM.ltp.hsize.default.id;
 				returnElement = el.h(elementObj.nsize);
 				returnElement.html(elementObj.value);
 				break;

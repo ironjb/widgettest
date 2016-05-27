@@ -34,8 +34,10 @@
 			};
 		});
 	}*/);
-	var lth = new LoanTekWidgetHelpers($);
-	var el = lth.CreateElement();
+	var ltm = new LoanTekWidgetHelpers.methods($);
+	var ltp = new LoanTekWidgetHelpers.properties();
+	window.console && console.log('ltp', ltp.hsize.h1.id);
+	var el = ltm.CreateElement();
 	var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
 	var contactWidgetCSS: string[] = [
 		'/css/widget.css'
@@ -58,7 +60,7 @@
 					name: 'Default Contact Widget',
 					// formFieldBorderRadius: 12,
 					template: {
-						// fieldSize: lth.bootstrap.inputSizing.sm,
+						// fieldSize: ltm.bootstrap.inputSizing.sm,
 						panelTitle: 'Contact Us',
 						fields: [
 							{ field: 'clientid' }
@@ -80,7 +82,7 @@
 				{
 					name: 'Small Contact Widget',
 					formWidth: 380,
-					formWidthUnit: lth.widthUnit.px,
+					formWidthUnit: ltp.widthUnit.px.id,
 					formBg: '#def',
 					formBorderRadius: 0,
 					formBorderColor: '#08f',
@@ -90,10 +92,10 @@
 					formFieldBorderRadius: 0,
 					formButtonBorderRadius: 0,
 					template: {
-						// formBorderType: lth.formBorderType.well.id,
-						formBorderType: lth.formBorderType.panel.id,
+						// formBorderType: ltm.formBorderType.well.id,
+						formBorderType: ltp.formBorderType.panel.id,
 						panelTitle: 'Contact Us',
-						fieldSize: lth.bootstrap.inputSizing.sm,
+						fieldSize: ltp.bootstrap.inputSizing.sm.id,
 						fields: [
 							{ field: 'clientid' }
 							, { field: 'userid' }
@@ -134,7 +136,7 @@
 			var cfod: IWidgetFormObject = angular.copy(ct.template);
 			var wScript: string = '<style type="text/css">.ltcw {display:none;}</style>';
 			var wScriptDisplay: string = wScript;
-			var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
+			var hasCaptchaField = ltm.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
 			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
 			var formStyles = '';
 			cfod.showBuilderTools = true;
@@ -144,13 +146,13 @@
 			// Add CSS files
 			for (var iCss = 0, lCss = contactWidgetCSS.length; iCss < lCss; iCss++) {
 				var cssHref = contactWidgetCSS[iCss];
-				var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
+				var cssLink = ltm.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
 				wScript += cssLink;
 				wScriptDisplay += cssLink;
 			}
 
 			if (ct.formWidth) {
-				ct.formWidthUnit = ct.formWidthUnit || lth.widthUnit.per;
+				ct.formWidthUnit = ct.formWidthUnit || ltp.widthUnit.per.id;
 				formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
 			}
 
@@ -158,21 +160,21 @@
 				formStyles += '\n.ltcw .lt-widget-border { background-color: ' + ct.formBg + '; }';
 			}
 
-			// window.console && console.log('lth formBorder type 2', lth.formBorderType2);
+			// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
 
 			if (!isNaN(ct.formBorderRadius)) {
 				var fbr = ct.formBorderRadius + '';
 				var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
 				formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
-				if (ct.template.formBorderType === lth.formBorderType.panel.id) {
+				if (ct.template.formBorderType === ltp.formBorderType.panel.id) {
 					formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
 				}
 			}
 
 			if (ct.formBorderColor) {
-				// if (ct.template.formBorderType === lth.formBorderType.panel.id) {
+				// if (ct.template.formBorderType === ltm.formBorderType.panel.id) {
 				formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
-				// } else if (ct.template.formBorderType === lth.formBorderType.well.id) {
+				// } else if (ct.template.formBorderType === ltm.formBorderType.well.id) {
 				// 	formStyles += '\n.ltcw .lt-widget-border { border-color: ' + ct.formBorderColor + '}';
 				// }
 			}
@@ -206,8 +208,8 @@
 
 			var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
 			if (formStyles) {
-				wScript += lth.Interpolate(styleWrap, { styles: formStyles });
-				wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
+				wScript += ltm.Interpolate(styleWrap, { styles: formStyles });
+				wScriptDisplay += ltm.Interpolate(styleWrap, { styles: formStyles });
 			}
 
 			// Add Widget Wrapper
@@ -218,7 +220,7 @@
 			// Add scripts
 			for (var iScript = 0; iScript < contactWidgetScripts.length; iScript++) {
 				var scriptSrc = contactWidgetScripts[iScript];
-				var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
+				var scriptLink = ltm.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
 				wScript += scriptLink;
 				// DO NOT ADD for wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
 				// Instead, each of these scripts should be added already to the builder page.
@@ -245,8 +247,8 @@
 				postDomCode += `
 					ltCaptcha = new LoanTekCaptcha();`;
 			}
-			mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
-			mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
+			mainScript += ltm.Interpolate(postDomFn, { code: postDomCode });
+			mainScriptDisplay += ltm.Interpolate(postDomFn, { code: postDomCode });
 
 			// External Validator
 			var extValid = `
@@ -254,9 +256,9 @@
 				#{validReturn}
 			};`;
 			if (hasCaptchaField) {
-				extValid = lth.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
+				extValid = ltm.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
 			} else {
-				extValid = lth.Interpolate(extValid, { validReturn: 'return true;' });
+				extValid = ltm.Interpolate(extValid, { validReturn: 'return true;' });
 			}
 			mainScript += extValid;
 			mainScriptDisplay += extValid;
@@ -266,8 +268,8 @@
 			var loanTekManualContactWidgetBuildObject = #{bow};`;
 			var cfoString = JSON.stringify(cfo/*, null, 2*/);
 			var cfodString = JSON.stringify(cfod/*, null, 2*/);
-			mainScript += lth.Interpolate(buildObjectWrap, { bow: cfoString });
-			mainScriptDisplay += lth.Interpolate(buildObjectWrap, { bow: cfodString });
+			mainScript += ltm.Interpolate(buildObjectWrap, { bow: cfoString });
+			mainScriptDisplay += ltm.Interpolate(buildObjectWrap, { bow: cfodString });
 
 			// Add Execution of LoanTekBuildForm
 			var exBuildForm = `
@@ -287,8 +289,8 @@
 
 			var ltWidgetOptionsWrap = `
 			var loanTekManualContactWidgetOptions = #{cwow};`;
-			mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
-			mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
+			mainScript += ltm.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
+			mainScriptDisplay += ltm.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions/*, null, 2*/) });
 
 			// Add Execution of Contact Widget
 			var contactWidget = `
@@ -296,8 +298,8 @@
 			mainScript += contactWidget;
 			mainScriptDisplay += contactWidget;
 
-			mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
-			mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
+			mainScript = ltm.Interpolate(mainScript, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
+			mainScriptDisplay = ltm.Interpolate(mainScriptDisplay, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
 
 			// Wrap Main Script
 			var mainScriptWrap = `
@@ -305,13 +307,13 @@
 			(function () {#{m}
 			})();
 			</script>`;
-			mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
-			mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
+			mainScript = ltm.Interpolate(mainScriptWrap, { m: mainScript });
+			mainScriptDisplay = ltm.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
 
 			wScript += mainScript;
 			wScriptDisplay += mainScriptDisplay;
 
-			wScript = wScript.replace(/\s+/g, ' ');
+			wScript = wScript.replace(/\s+/gm, ' ');
 			$scope.widgetScript = wScript;
 			$scope.widgetScriptDisplay = wScriptDisplay;
 			// $scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
@@ -319,7 +321,7 @@
 			// window.console && console.log('typeof $scope.widgetDisplay', typeof $scope.widgetDisplay);
 			// $('#demoHtml').html($scope.widgetScriptDisplay);
 
-			lth.ScrollToAnchor('widgetTop');
+			ltm.ScrollToAnchor('widgetTop');
 			// $scope.scriptChangedClass = '';
 			// window.console && console.log('change class', $scope.scriptChangedClass);
 			// $scope.scriptChangedClass = 'example-test';
@@ -363,14 +365,19 @@
 				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope, $uibModalInstance, intanceOptions) => {
 
 					$scope.modForm = angular.copy(intanceOptions.currentForm);
-					$scope.borderTypes = lth.formBorderTypeArray;
-					$scope.borderTypes.push({ id: 'none', name: 'None' });
+					$scope.borderTypes = angular.copy(ltp.formBorderTypeArray);
+					// window.console && console.log('$scope.borderTypes', $scope.borderTypes);
+					// $scope.borderTypes.push({ id: '', name: 'None' });
+					if (!$scope.modForm.template.formBorderType) {
+						$scope.modForm.template.formBorderType = ltp.formBorderType.none.id;
+					}
 
 					$scope.saveClick = () => {
 						var newForm: IWidgetObject = angular.copy($scope.modForm);
 						newForm.name = 'modified';
+						// ltm.hn.h2
 
-						if (!newForm.template.formBorderType) {
+						if (!newForm.template.formBorderType || newForm.template.formBorderType === ltp.formBorderType.none.id) {
 							delete newForm.template.formBorderType;
 							delete newForm.formTitleBgColor;
 						}

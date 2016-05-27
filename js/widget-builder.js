@@ -1,164 +1,202 @@
-var LoanTekWidgetHelpers = (function () {
-    function LoanTekWidgetHelpers(jquery) {
-        this.bootstrap = {
-            inputSizing: {
-                sm: 'sm',
-                lg: 'lg'
-            },
-            gridSizing: {
-                xs: 'xs',
-                sm: 'sm',
-                md: 'md',
-                lg: 'lg'
-            }
-        };
-        this.hSizing = {
-            h1: 1,
-            h2: 2,
-            h3: 3,
-            h4: 4,
-            h5: 5,
-            h6: 6,
-            default: 4
-        };
-        this.widthUnit = {
-            px: 'px',
-            per: '%'
-        };
-        this.formBorderType = {
-            panel: { id: 'panel', name: 'Panel' },
-            well: { id: 'well', name: 'Well' }
-        };
-        this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
-        this.$ = jquery;
-    }
-    LoanTekWidgetHelpers.prototype.ConvertObjectToArray = function (theObj) {
-        var objArray = [];
-        for (var key in theObj) {
-            var objVal = theObj[key];
-            if (objVal) {
-                objArray.push(objVal);
-            }
+var LoanTekWidgetHelpers;
+(function (LoanTekWidgetHelpers) {
+    var hSizing = (function () {
+        function hSizing() {
+            this.h1 = { id: 1, name: 'h1' };
+            this.h2 = { id: 2, name: 'h2' };
+            this.h3 = { id: 3, name: 'h3' };
+            this.h4 = { id: 4, name: 'h4' };
+            this.h5 = { id: 5, name: 'h5' };
+            this.h6 = { id: 6, name: 'h6' };
+            this.default = this.h4;
         }
-        return objArray;
-    };
-    LoanTekWidgetHelpers.prototype.ConvertArrayToObject = function (theArray, theKey) {
-        theKey = theKey || 'id';
-        var returnObj = {};
-        for (var i = 0, l = theArray.length; i < l; i++) {
-            var obj = theArray[i];
-            var objectKey = obj[theKey];
-            if (objectKey) {
-                window.console && console.log('objectKey', objectKey);
-                returnObj[objectKey] = obj;
-            }
+        return hSizing;
+    }());
+    var inputSizing = (function () {
+        function inputSizing() {
+            this.sm = { id: 'sm', name: 'Small' };
+            this.lg = { id: 'lg', name: 'Large' };
         }
-        window.console && console.log('returnObj', returnObj);
-        return returnObj;
-    };
-    LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
-        for (var i = 0, l = theArray.length; i < l; i++) {
-            if (theArray[i][theKey] === theValue) {
-                return i;
-            }
+        return inputSizing;
+    }());
+    var gridSizing = (function () {
+        function gridSizing() {
+            this.xs = { id: 'xs', name: 'xs' };
+            this.sm = { id: 'sm', name: 'sm' };
+            this.md = { id: 'md', name: 'md' };
+            this.lg = { id: 'lg', name: 'lg' };
+            this.default = this.md;
         }
-        return -1;
-    };
-    LoanTekWidgetHelpers.prototype.Interpolate = function (text, parameters, fn, regex) {
-        text = text || '';
-        parameters = parameters || {};
-        fn = fn || function (x) { return x; };
-        regex = regex || /#{[^\}]+}/g;
-        return text.replace(regex, function (m, p, ft) {
-            var indexOfStart = m.indexOf('{') + 1;
-            var spaceFromEnd = m.length - m.indexOf('}');
-            var rt = m.substr(indexOfStart);
-            rt = rt.substr(0, rt.length - spaceFromEnd);
-            if (!parameters[rt]) {
-                window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
-                rt = m;
+        return gridSizing;
+    }());
+    var bootstrap = (function () {
+        function bootstrap() {
+            this.inputSizing = new inputSizing;
+            this.gridSizing = new gridSizing;
+        }
+        return bootstrap;
+    }());
+    var formBorderType = (function () {
+        function formBorderType() {
+            this.panel = { id: 'panel', name: 'Panel' };
+            this.well = { id: 'well', name: 'Well' };
+            this.none = { id: 'none', name: 'None' };
+        }
+        return formBorderType;
+    }());
+    var widthUnit = (function () {
+        function widthUnit() {
+            this.px = { id: 'px', name: 'Pixels' };
+            this.per = { id: '%', name: 'Percent' };
+        }
+        return widthUnit;
+    }());
+    var properties = (function () {
+        function properties() {
+            this.hsize = new hSizing;
+            this.bootstrap = new bootstrap;
+            this.formBorderType = new formBorderType;
+            this.formBorderTypeArray = methods.prototype.ConvertObjectToArray(this.formBorderType);
+            this.widthUnit = new widthUnit;
+        }
+        return properties;
+    }());
+    LoanTekWidgetHelpers.properties = properties;
+    var methods = (function () {
+        function methods(jq) {
+            this.$ = jq;
+        }
+        methods.prototype.ConvertObjectToArray = function (theObj) {
+            var objArray = [];
+            for (var key in theObj) {
+                var objVal = theObj[key];
+                if (objVal) {
+                    objArray.push(objVal);
+                }
             }
-            else {
-                rt = parameters[rt].toString() || '';
+            return objArray;
+        };
+        methods.prototype.ConvertArrayToObject = function (theArray, theKey) {
+            theKey = theKey || 'id';
+            var returnObj = {};
+            for (var i = 0, l = theArray.length; i < l; i++) {
+                var obj = theArray[i];
+                var objectKey = obj[theKey];
+                if (objectKey) {
+                    window.console && console.log('objectKey', objectKey);
+                    returnObj[objectKey] = obj;
+                }
             }
-            return fn(rt);
-        });
-    };
-    LoanTekWidgetHelpers.prototype.CreateElement = function () {
-        var $ = this.$;
-        var el = {
-            div: function () { return $('<div/>'); },
-            script: function (src, type) {
-                if (type === void 0) { type = 'text/javascript'; }
-                var returnScript = $('<script/>').prop('type', type);
-                returnScript = src ? returnScript.prop('src', src) : returnScript;
-                return returnScript;
-            },
-            link: function (href, rel) {
-                if (rel === void 0) { rel = 'stylesheet'; }
-                var returnLink = $('<link/>').prop('rel', rel);
-                returnLink = href ? returnLink.prop('href', href) : returnLink;
-                return returnLink;
-            },
-            style: function (type) {
-                if (type === void 0) { type = 'text/css'; }
-                var returnStyle = $('<style/>').prop('type', type);
-                return returnStyle;
-            },
-            p: function () { return $('<p/>'); },
-            span: function () { return $('<span/>'); },
-            h: function (headNumber) {
-                if (headNumber === void 0) { headNumber = 3; }
-                return $('<h' + headNumber + '/>');
-            },
-            form: function () { return $('<form/>').addClass('form-horizontal'); },
-            label: function () { return $('<label/>').addClass('control-label col-sm-12'); },
-            button: function (type) {
-                if (type === void 0) { type = 'button'; }
-                return $('<button/>').prop('type', type);
-            },
-            select: function () { return $('<select/>').addClass('form-control'); },
-            option: function () { return $('<option/>'); },
-            input: function (type) {
-                if (type === void 0) { type = 'text'; }
-                return $('<input/>').prop('type', type);
-            },
-            textarea: function () { return $('<textarea/>').addClass('form-control'); },
-            col: function (colNumber, colSize) {
-                if (colNumber === void 0) { colNumber = 12; }
-                if (colSize === void 0) { colSize = 'sm'; }
-                return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
-            },
-            row: function (rowType) {
-                if (rowType === void 0) { rowType = 'row'; }
-                return el.div().addClass(rowType);
-            },
-            formGroup: function (formGroupSize) {
-                if (formGroupSize) {
-                    return el.row('form-group').addClass('form-group-' + formGroupSize);
+            window.console && console.log('returnObj', returnObj);
+            return returnObj;
+        };
+        methods.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
+            for (var i = 0, l = theArray.length; i < l; i++) {
+                if (theArray[i][theKey] === theValue) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+        methods.prototype.Interpolate = function (text, parameters, fn, regex) {
+            text = text || '';
+            parameters = parameters || {};
+            fn = fn || function (x) { return x; };
+            regex = regex || /#{[^\}]+}/g;
+            return text.replace(regex, function (m, p, ft) {
+                var indexOfStart = m.indexOf('{') + 1;
+                var spaceFromEnd = m.length - m.indexOf('}');
+                var rt = m.substr(indexOfStart);
+                rt = rt.substr(0, rt.length - spaceFromEnd);
+                if (!parameters[rt]) {
+                    window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
+                    rt = m;
                 }
                 else {
-                    return el.row('form-group');
+                    rt = parameters[rt].toString() || '';
                 }
-            }
+                return fn(rt);
+            });
         };
-        return el;
-    };
-    LoanTekWidgetHelpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
-        $ = this.$;
-        scrollSpeed = scrollSpeed || 200;
-        topOffset = topOffset || 50;
-        $('html, body').animate({
-            scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
-        }, scrollSpeed);
-    };
-    return LoanTekWidgetHelpers;
-}());
+        methods.prototype.CreateElement = function () {
+            var $ = this.$;
+            var el = {
+                div: function () { return $('<div/>'); },
+                script: function (src, type) {
+                    if (type === void 0) { type = 'text/javascript'; }
+                    var returnScript = $('<script/>').prop('type', type);
+                    returnScript = src ? returnScript.prop('src', src) : returnScript;
+                    return returnScript;
+                },
+                link: function (href, rel) {
+                    if (rel === void 0) { rel = 'stylesheet'; }
+                    var returnLink = $('<link/>').prop('rel', rel);
+                    returnLink = href ? returnLink.prop('href', href) : returnLink;
+                    return returnLink;
+                },
+                style: function (type) {
+                    if (type === void 0) { type = 'text/css'; }
+                    var returnStyle = $('<style/>').prop('type', type);
+                    return returnStyle;
+                },
+                p: function () { return $('<p/>'); },
+                span: function () { return $('<span/>'); },
+                h: function (headNumber) {
+                    if (headNumber === void 0) { headNumber = 3; }
+                    return $('<h' + headNumber + '/>');
+                },
+                form: function () { return $('<form/>').addClass('form-horizontal'); },
+                label: function () { return $('<label/>').addClass('control-label col-sm-12'); },
+                button: function (type) {
+                    if (type === void 0) { type = 'button'; }
+                    return $('<button/>').prop('type', type);
+                },
+                select: function () { return $('<select/>').addClass('form-control'); },
+                option: function () { return $('<option/>'); },
+                input: function (type) {
+                    if (type === void 0) { type = 'text'; }
+                    return $('<input/>').prop('type', type);
+                },
+                textarea: function () { return $('<textarea/>').addClass('form-control'); },
+                col: function (colNumber, colSize) {
+                    if (colNumber === void 0) { colNumber = 12; }
+                    if (colSize === void 0) { colSize = 'sm'; }
+                    return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
+                },
+                row: function (rowType) {
+                    if (rowType === void 0) { rowType = 'row'; }
+                    return el.div().addClass(rowType);
+                },
+                formGroup: function (formGroupSize) {
+                    if (formGroupSize) {
+                        return el.row('form-group').addClass('form-group-' + formGroupSize);
+                    }
+                    else {
+                        return el.row('form-group');
+                    }
+                }
+            };
+            return el;
+        };
+        methods.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
+            $ = this.$;
+            scrollSpeed = scrollSpeed || 200;
+            topOffset = topOffset || 50;
+            $('html, body').animate({
+                scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
+            }, scrollSpeed);
+        };
+        return methods;
+    }());
+    LoanTekWidgetHelpers.methods = methods;
+})(LoanTekWidgetHelpers || (LoanTekWidgetHelpers = {}));
 (function ($) {
     $('input textarea').placeholder();
     var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
-    var lth = new LoanTekWidgetHelpers($);
-    var el = lth.CreateElement();
+    var ltm = new LoanTekWidgetHelpers.methods($);
+    var ltp = new LoanTekWidgetHelpers.properties();
+    window.console && console.log('ltp', ltp.hsize.h1.id);
+    var el = ltm.CreateElement();
     var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
     var contactWidgetCSS = [
         '/css/widget.css'
@@ -193,7 +231,7 @@ var LoanTekWidgetHelpers = (function () {
                     {
                         name: 'Small Contact Widget',
                         formWidth: 380,
-                        formWidthUnit: lth.widthUnit.px,
+                        formWidthUnit: ltp.widthUnit.px.id,
                         formBg: '#def',
                         formBorderRadius: 0,
                         formBorderColor: '#08f',
@@ -203,9 +241,9 @@ var LoanTekWidgetHelpers = (function () {
                         formFieldBorderRadius: 0,
                         formButtonBorderRadius: 0,
                         template: {
-                            formBorderType: lth.formBorderType.panel.id,
+                            formBorderType: ltp.formBorderType.panel.id,
                             panelTitle: 'Contact Us',
-                            fieldSize: lth.bootstrap.inputSizing.sm,
+                            fieldSize: ltp.bootstrap.inputSizing.sm.id,
                             fields: [
                                 { field: 'clientid' },
                                 { field: 'userid' },
@@ -244,7 +282,7 @@ var LoanTekWidgetHelpers = (function () {
                 var cfod = angular.copy(ct.template);
                 var wScript = '<style type="text/css">.ltcw {display:none;}</style>';
                 var wScriptDisplay = wScript;
-                var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
+                var hasCaptchaField = ltm.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
                 var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
                 var formStyles = '';
                 cfod.showBuilderTools = true;
@@ -252,12 +290,12 @@ var LoanTekWidgetHelpers = (function () {
                 cfod.postDOMCallback = '#fn{postDOMFunctions}';
                 for (var iCss = 0, lCss = contactWidgetCSS.length; iCss < lCss; iCss++) {
                     var cssHref = contactWidgetCSS[iCss];
-                    var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
+                    var cssLink = ltm.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
                     wScript += cssLink;
                     wScriptDisplay += cssLink;
                 }
                 if (ct.formWidth) {
-                    ct.formWidthUnit = ct.formWidthUnit || lth.widthUnit.per;
+                    ct.formWidthUnit = ct.formWidthUnit || ltp.widthUnit.per.id;
                     formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
                 }
                 if (ct.formBg) {
@@ -267,7 +305,7 @@ var LoanTekWidgetHelpers = (function () {
                     var fbr = ct.formBorderRadius + '';
                     var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
                     formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
-                    if (ct.template.formBorderType === lth.formBorderType.panel.id) {
+                    if (ct.template.formBorderType === ltp.formBorderType.panel.id) {
                         formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
                     }
                 }
@@ -297,15 +335,15 @@ var LoanTekWidgetHelpers = (function () {
                 }
                 var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
                 if (formStyles) {
-                    wScript += lth.Interpolate(styleWrap, { styles: formStyles });
-                    wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
+                    wScript += ltm.Interpolate(styleWrap, { styles: formStyles });
+                    wScriptDisplay += ltm.Interpolate(styleWrap, { styles: formStyles });
                 }
                 var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
                 wScript += widgetWrapper;
                 wScriptDisplay += widgetWrapper;
                 for (var iScript = 0; iScript < contactWidgetScripts.length; iScript++) {
                     var scriptSrc = contactWidgetScripts[iScript];
-                    var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
+                    var scriptLink = ltm.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
                     wScript += scriptLink;
                 }
                 var mainScript = '';
@@ -319,22 +357,22 @@ var LoanTekWidgetHelpers = (function () {
                 if (hasCaptchaField) {
                     postDomCode += "\n\t\t\t\t\tltCaptcha = new LoanTekCaptcha();";
                 }
-                mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
-                mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
+                mainScript += ltm.Interpolate(postDomFn, { code: postDomCode });
+                mainScriptDisplay += ltm.Interpolate(postDomFn, { code: postDomCode });
                 var extValid = "\n\t\t\tvar externalValidators = function () {\n\t\t\t\t#{validReturn}\n\t\t\t};";
                 if (hasCaptchaField) {
-                    extValid = lth.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
+                    extValid = ltm.Interpolate(extValid, { validReturn: 'return ltCaptcha.IsValidEntry();' });
                 }
                 else {
-                    extValid = lth.Interpolate(extValid, { validReturn: 'return true;' });
+                    extValid = ltm.Interpolate(extValid, { validReturn: 'return true;' });
                 }
                 mainScript += extValid;
                 mainScriptDisplay += extValid;
                 var buildObjectWrap = "\n\t\t\tvar loanTekManualContactWidgetBuildObject = #{bow};";
                 var cfoString = JSON.stringify(cfo);
                 var cfodString = JSON.stringify(cfod);
-                mainScript += lth.Interpolate(buildObjectWrap, { bow: cfoString });
-                mainScriptDisplay += lth.Interpolate(buildObjectWrap, { bow: cfodString });
+                mainScript += ltm.Interpolate(buildObjectWrap, { bow: cfoString });
+                mainScriptDisplay += ltm.Interpolate(buildObjectWrap, { bow: cfodString });
                 var exBuildForm = "\n\t\t\tLoanTekBuildForm(loanTekManualContactWidgetBuildObject);";
                 mainScript += exBuildForm;
                 mainScriptDisplay += exBuildForm;
@@ -344,22 +382,22 @@ var LoanTekWidgetHelpers = (function () {
                     successMessage: 'Yay!!! Successful POST'
                 };
                 var ltWidgetOptionsWrap = "\n\t\t\tvar loanTekManualContactWidgetOptions = #{cwow};";
-                mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
-                mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
+                mainScript += ltm.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
+                mainScriptDisplay += ltm.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
                 var contactWidget = "\n\t\t\tLoanTekManualContactWidget(loanTekManualContactWidgetOptions);";
                 mainScript += contactWidget;
                 mainScriptDisplay += contactWidget;
-                mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
-                mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
+                mainScript = ltm.Interpolate(mainScript, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
+                mainScriptDisplay = ltm.Interpolate(mainScriptDisplay, { postDOMFunctions: 'postDOMFunctions', externalValidators: 'externalValidators' }, null, fnReplaceRegEx);
                 var mainScriptWrap = "\n\t\t\t<script type=\"text/javascript\">\n\t\t\t(function () {#{m}\n\t\t\t})();\n\t\t\t</script>";
-                mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
-                mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
+                mainScript = ltm.Interpolate(mainScriptWrap, { m: mainScript });
+                mainScriptDisplay = ltm.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
                 wScript += mainScript;
                 wScriptDisplay += mainScriptDisplay;
-                wScript = wScript.replace(/\s+/g, ' ');
+                wScript = wScript.replace(/\s+/gm, ' ');
                 $scope.widgetScript = wScript;
                 $scope.widgetScriptDisplay = wScriptDisplay;
-                lth.ScrollToAnchor('widgetTop');
+                ltm.ScrollToAnchor('widgetTop');
                 $scope.scriptChangedClass = 't' + new Date().getTime();
             };
             $scope.RunWidgetScriptBuild = function (currentForm) {
@@ -386,12 +424,14 @@ var LoanTekWidgetHelpers = (function () {
                     window.console && console.log('settings', settings);
                     var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, intanceOptions) {
                             $scope.modForm = angular.copy(intanceOptions.currentForm);
-                            $scope.borderTypes = lth.formBorderTypeArray;
-                            $scope.borderTypes.push({ id: 'none', name: 'None' });
+                            $scope.borderTypes = angular.copy(ltp.formBorderTypeArray);
+                            if (!$scope.modForm.template.formBorderType) {
+                                $scope.modForm.template.formBorderType = ltp.formBorderType.none.id;
+                            }
                             $scope.saveClick = function () {
                                 var newForm = angular.copy($scope.modForm);
                                 newForm.name = 'modified';
-                                if (!newForm.template.formBorderType) {
+                                if (!newForm.template.formBorderType || newForm.template.formBorderType === ltp.formBorderType.none.id) {
                                     delete newForm.template.formBorderType;
                                     delete newForm.formTitleBgColor;
                                 }

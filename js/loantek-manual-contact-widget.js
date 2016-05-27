@@ -1,170 +1,206 @@
 var ltjQuery = ltjQuery || jQuery.noConflict(true);
-var LoanTekWidgetHelpers = (function () {
-    function LoanTekWidgetHelpers(jquery) {
-        this.bootstrap = {
-            inputSizing: {
-                sm: 'sm',
-                lg: 'lg'
-            },
-            gridSizing: {
-                xs: 'xs',
-                sm: 'sm',
-                md: 'md',
-                lg: 'lg'
-            }
-        };
-        this.hSizing = {
-            h1: 1,
-            h2: 2,
-            h3: 3,
-            h4: 4,
-            h5: 5,
-            h6: 6,
-            default: 4
-        };
-        this.widthUnit = {
-            px: 'px',
-            per: '%'
-        };
-        this.formBorderType = {
-            panel: { id: 'panel', name: 'Panel' },
-            well: { id: 'well', name: 'Well' }
-        };
-        this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
-        this.$ = jquery;
-    }
-    LoanTekWidgetHelpers.prototype.ConvertObjectToArray = function (theObj) {
-        var objArray = [];
-        for (var key in theObj) {
-            var objVal = theObj[key];
-            if (objVal) {
-                objArray.push(objVal);
-            }
+var LoanTekWidgetHelpers;
+(function (LoanTekWidgetHelpers) {
+    var hSizing = (function () {
+        function hSizing() {
+            this.h1 = { id: 1, name: 'h1' };
+            this.h2 = { id: 2, name: 'h2' };
+            this.h3 = { id: 3, name: 'h3' };
+            this.h4 = { id: 4, name: 'h4' };
+            this.h5 = { id: 5, name: 'h5' };
+            this.h6 = { id: 6, name: 'h6' };
+            this.default = this.h4;
         }
-        return objArray;
-    };
-    LoanTekWidgetHelpers.prototype.ConvertArrayToObject = function (theArray, theKey) {
-        theKey = theKey || 'id';
-        var returnObj = {};
-        for (var i = 0, l = theArray.length; i < l; i++) {
-            var obj = theArray[i];
-            var objectKey = obj[theKey];
-            if (objectKey) {
-                window.console && console.log('objectKey', objectKey);
-                returnObj[objectKey] = obj;
-            }
+        return hSizing;
+    }());
+    var inputSizing = (function () {
+        function inputSizing() {
+            this.sm = { id: 'sm', name: 'Small' };
+            this.lg = { id: 'lg', name: 'Large' };
         }
-        window.console && console.log('returnObj', returnObj);
-        return returnObj;
-    };
-    LoanTekWidgetHelpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
-        for (var i = 0, l = theArray.length; i < l; i++) {
-            if (theArray[i][theKey] === theValue) {
-                return i;
-            }
+        return inputSizing;
+    }());
+    var gridSizing = (function () {
+        function gridSizing() {
+            this.xs = { id: 'xs', name: 'xs' };
+            this.sm = { id: 'sm', name: 'sm' };
+            this.md = { id: 'md', name: 'md' };
+            this.lg = { id: 'lg', name: 'lg' };
+            this.default = this.md;
         }
-        return -1;
-    };
-    LoanTekWidgetHelpers.prototype.Interpolate = function (text, parameters, fn, regex) {
-        text = text || '';
-        parameters = parameters || {};
-        fn = fn || function (x) { return x; };
-        regex = regex || /#{[^\}]+}/g;
-        return text.replace(regex, function (m, p, ft) {
-            var indexOfStart = m.indexOf('{') + 1;
-            var spaceFromEnd = m.length - m.indexOf('}');
-            var rt = m.substr(indexOfStart);
-            rt = rt.substr(0, rt.length - spaceFromEnd);
-            if (!parameters[rt]) {
-                window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
-                rt = m;
+        return gridSizing;
+    }());
+    var bootstrap = (function () {
+        function bootstrap() {
+            this.inputSizing = new inputSizing;
+            this.gridSizing = new gridSizing;
+        }
+        return bootstrap;
+    }());
+    var formBorderType = (function () {
+        function formBorderType() {
+            this.panel = { id: 'panel', name: 'Panel' };
+            this.well = { id: 'well', name: 'Well' };
+            this.none = { id: 'none', name: 'None' };
+        }
+        return formBorderType;
+    }());
+    var widthUnit = (function () {
+        function widthUnit() {
+            this.px = { id: 'px', name: 'Pixels' };
+            this.per = { id: '%', name: 'Percent' };
+        }
+        return widthUnit;
+    }());
+    var properties = (function () {
+        function properties() {
+            this.hsize = new hSizing;
+            this.bootstrap = new bootstrap;
+            this.formBorderType = new formBorderType;
+            this.formBorderTypeArray = methods.prototype.ConvertObjectToArray(this.formBorderType);
+            this.widthUnit = new widthUnit;
+        }
+        return properties;
+    }());
+    LoanTekWidgetHelpers.properties = properties;
+    var methods = (function () {
+        function methods(jq) {
+            this.$ = jq;
+        }
+        methods.prototype.ConvertObjectToArray = function (theObj) {
+            var objArray = [];
+            for (var key in theObj) {
+                var objVal = theObj[key];
+                if (objVal) {
+                    objArray.push(objVal);
+                }
             }
-            else {
-                rt = parameters[rt].toString() || '';
+            return objArray;
+        };
+        methods.prototype.ConvertArrayToObject = function (theArray, theKey) {
+            theKey = theKey || 'id';
+            var returnObj = {};
+            for (var i = 0, l = theArray.length; i < l; i++) {
+                var obj = theArray[i];
+                var objectKey = obj[theKey];
+                if (objectKey) {
+                    window.console && console.log('objectKey', objectKey);
+                    returnObj[objectKey] = obj;
+                }
             }
-            return fn(rt);
-        });
-    };
-    LoanTekWidgetHelpers.prototype.CreateElement = function () {
-        var $ = this.$;
-        var el = {
-            div: function () { return $('<div/>'); },
-            script: function (src, type) {
-                if (type === void 0) { type = 'text/javascript'; }
-                var returnScript = $('<script/>').prop('type', type);
-                returnScript = src ? returnScript.prop('src', src) : returnScript;
-                return returnScript;
-            },
-            link: function (href, rel) {
-                if (rel === void 0) { rel = 'stylesheet'; }
-                var returnLink = $('<link/>').prop('rel', rel);
-                returnLink = href ? returnLink.prop('href', href) : returnLink;
-                return returnLink;
-            },
-            style: function (type) {
-                if (type === void 0) { type = 'text/css'; }
-                var returnStyle = $('<style/>').prop('type', type);
-                return returnStyle;
-            },
-            p: function () { return $('<p/>'); },
-            span: function () { return $('<span/>'); },
-            h: function (headNumber) {
-                if (headNumber === void 0) { headNumber = 3; }
-                return $('<h' + headNumber + '/>');
-            },
-            form: function () { return $('<form/>').addClass('form-horizontal'); },
-            label: function () { return $('<label/>').addClass('control-label col-sm-12'); },
-            button: function (type) {
-                if (type === void 0) { type = 'button'; }
-                return $('<button/>').prop('type', type);
-            },
-            select: function () { return $('<select/>').addClass('form-control'); },
-            option: function () { return $('<option/>'); },
-            input: function (type) {
-                if (type === void 0) { type = 'text'; }
-                return $('<input/>').prop('type', type);
-            },
-            textarea: function () { return $('<textarea/>').addClass('form-control'); },
-            col: function (colNumber, colSize) {
-                if (colNumber === void 0) { colNumber = 12; }
-                if (colSize === void 0) { colSize = 'sm'; }
-                return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
-            },
-            row: function (rowType) {
-                if (rowType === void 0) { rowType = 'row'; }
-                return el.div().addClass(rowType);
-            },
-            formGroup: function (formGroupSize) {
-                if (formGroupSize) {
-                    return el.row('form-group').addClass('form-group-' + formGroupSize);
+            window.console && console.log('returnObj', returnObj);
+            return returnObj;
+        };
+        methods.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
+            for (var i = 0, l = theArray.length; i < l; i++) {
+                if (theArray[i][theKey] === theValue) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+        methods.prototype.Interpolate = function (text, parameters, fn, regex) {
+            text = text || '';
+            parameters = parameters || {};
+            fn = fn || function (x) { return x; };
+            regex = regex || /#{[^\}]+}/g;
+            return text.replace(regex, function (m, p, ft) {
+                var indexOfStart = m.indexOf('{') + 1;
+                var spaceFromEnd = m.length - m.indexOf('}');
+                var rt = m.substr(indexOfStart);
+                rt = rt.substr(0, rt.length - spaceFromEnd);
+                if (!parameters[rt]) {
+                    window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
+                    rt = m;
                 }
                 else {
-                    return el.row('form-group');
+                    rt = parameters[rt].toString() || '';
                 }
-            }
+                return fn(rt);
+            });
         };
-        return el;
-    };
-    LoanTekWidgetHelpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
-        $ = this.$;
-        scrollSpeed = scrollSpeed || 200;
-        topOffset = topOffset || 50;
-        $('html, body').animate({
-            scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
-        }, scrollSpeed);
-    };
-    return LoanTekWidgetHelpers;
-}());
+        methods.prototype.CreateElement = function () {
+            var $ = this.$;
+            var el = {
+                div: function () { return $('<div/>'); },
+                script: function (src, type) {
+                    if (type === void 0) { type = 'text/javascript'; }
+                    var returnScript = $('<script/>').prop('type', type);
+                    returnScript = src ? returnScript.prop('src', src) : returnScript;
+                    return returnScript;
+                },
+                link: function (href, rel) {
+                    if (rel === void 0) { rel = 'stylesheet'; }
+                    var returnLink = $('<link/>').prop('rel', rel);
+                    returnLink = href ? returnLink.prop('href', href) : returnLink;
+                    return returnLink;
+                },
+                style: function (type) {
+                    if (type === void 0) { type = 'text/css'; }
+                    var returnStyle = $('<style/>').prop('type', type);
+                    return returnStyle;
+                },
+                p: function () { return $('<p/>'); },
+                span: function () { return $('<span/>'); },
+                h: function (headNumber) {
+                    if (headNumber === void 0) { headNumber = 3; }
+                    return $('<h' + headNumber + '/>');
+                },
+                form: function () { return $('<form/>').addClass('form-horizontal'); },
+                label: function () { return $('<label/>').addClass('control-label col-sm-12'); },
+                button: function (type) {
+                    if (type === void 0) { type = 'button'; }
+                    return $('<button/>').prop('type', type);
+                },
+                select: function () { return $('<select/>').addClass('form-control'); },
+                option: function () { return $('<option/>'); },
+                input: function (type) {
+                    if (type === void 0) { type = 'text'; }
+                    return $('<input/>').prop('type', type);
+                },
+                textarea: function () { return $('<textarea/>').addClass('form-control'); },
+                col: function (colNumber, colSize) {
+                    if (colNumber === void 0) { colNumber = 12; }
+                    if (colSize === void 0) { colSize = 'sm'; }
+                    return el.div().addClass('col-' + colSize + '-' + colNumber.toString());
+                },
+                row: function (rowType) {
+                    if (rowType === void 0) { rowType = 'row'; }
+                    return el.div().addClass(rowType);
+                },
+                formGroup: function (formGroupSize) {
+                    if (formGroupSize) {
+                        return el.row('form-group').addClass('form-group-' + formGroupSize);
+                    }
+                    else {
+                        return el.row('form-group');
+                    }
+                }
+            };
+            return el;
+        };
+        methods.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
+            $ = this.$;
+            scrollSpeed = scrollSpeed || 200;
+            topOffset = topOffset || 50;
+            $('html, body').animate({
+                scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
+            }, scrollSpeed);
+        };
+        return methods;
+    }());
+    LoanTekWidgetHelpers.methods = methods;
+})(LoanTekWidgetHelpers || (LoanTekWidgetHelpers = {}));
 var LoanTekBuildForm = (function () {
     function LoanTekBuildForm(options) {
         var _this = this;
         this.CreateFormElement = function (elementObj) {
             var _thisM = _this;
-            var el = _thisM.lth.CreateElement();
+            var el = _thisM.ltm.CreateElement();
             var returnElement = null;
             switch (elementObj.element) {
                 case 'title':
-                    elementObj.nsize = elementObj.nsize || _thisM.lth.hSizing.default;
+                    elementObj.nsize = elementObj.nsize || _thisM.ltp.hsize.default.id;
                     returnElement = el.h(elementObj.nsize);
                     returnElement.html(elementObj.value);
                     break;
@@ -373,7 +409,8 @@ var LoanTekBuildForm = (function () {
             return s;
         };
         var _thisC = this;
-        _thisC.lth = new LoanTekWidgetHelpers(ltjQuery);
+        _thisC.ltm = new LoanTekWidgetHelpers.methods(ltjQuery);
+        _thisC.ltp = new LoanTekWidgetHelpers.properties();
         var settings = {
             wrapperId: 'ltWidgetWrapper',
             formId: 'LtcwContactWidgetForm',
@@ -401,7 +438,7 @@ var LoanTekBuildForm = (function () {
         var remainingColSpace = 0;
         var isNextHidden = false;
         var fieldTemplate;
-        var el = _thisC.lth.CreateElement();
+        var el = _thisC.ltm.CreateElement();
         var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
         var errorMsg = el.p().prop('id', settings.errrorMessageId);
         if (!settings.showBuilderTools) {
@@ -502,14 +539,14 @@ var LoanTekBuildForm = (function () {
             }
         });
         if (settings.formBorderType) {
-            if (settings.formBorderType === _thisC.lth.formBorderType.well.id) {
+            if (settings.formBorderType === _thisC.ltp.formBorderType.well.id) {
                 var wellMain = el.div().addClass('well lt-widget-border');
                 if (settings.panelTitle) {
                     wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
                 }
                 returnForm = wellMain.append(returnForm);
             }
-            else if (settings.formBorderType === _thisC.lth.formBorderType.panel.id) {
+            else if (settings.formBorderType === _thisC.ltp.formBorderType.panel.id) {
                 var panelMain, panelHeading, panelBody;
                 panelMain = el.div().addClass('panel panel-default lt-widget-border');
                 panelBody = el.div().addClass('panel-body').append(returnForm);
