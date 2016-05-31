@@ -82,31 +82,38 @@ namespace LoanTekWidgetHelpers {
 		}
 	}
 
-	export class properties {
+	// export class properties {
+	// 	public bootstrap: bootstrap;
+	// 	public hsize: hSizing;
+	// 	public formBorderType: formBorderType;
+	// 	public formBorderTypeArray: IHelperNameId[];
+	// 	public widthUnit: widthUnit;
+	// 	constructor() {
+	// 		// var mthd = methods.prototype.ConvertObjectToArray<IHelperNameId>();
+	// 		this.hsize = new hSizing;
+	// 		this.bootstrap = new bootstrap;
+	// 		this.formBorderType = new formBorderType;
+	// 		this.formBorderTypeArray = methods.prototype.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+	// 		this.widthUnit = new widthUnit;
+	// 	}
+	// }
+
+	export class helpers {
+		private $: JQueryStatic;
 		public bootstrap: bootstrap;
 		public hsize: hSizing;
 		public formBorderType: formBorderType;
 		public formBorderTypeArray: IHelperNameId[];
 		public widthUnit: widthUnit;
-		constructor() {
-			// var mthd = methods.prototype.ConvertObjectToArray<IHelperNameId>();
-			this.hsize = new hSizing;
-			this.bootstrap = new bootstrap;
-			this.formBorderType = new formBorderType;
-			this.formBorderTypeArray = methods.prototype.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
-			this.widthUnit = new widthUnit;
-		}
-	}
-
-	export class methods {
-		private $: JQueryStatic;
-		// public h: absHSizing;
-		// public bs: absBootstrap;
 
 		constructor(jq: JQueryStatic) {
 			this.$ = jq;
 
-			// let dep: AbsHSizing;
+			this.hsize = new hSizing;
+			this.bootstrap = new bootstrap;
+			this.formBorderType = new formBorderType;
+			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+			this.widthUnit = new widthUnit;
 		}
 
 		// bootstrap: IHelperBootstrap = {

@@ -38,3 +38,19 @@ body {
 		}
 	}
 }
+
+.show-on-active-inline-block {
+	display: none;
+}
+
+.active {
+	&.show-on-active-inline-block, & .show-on-active-inline-block {
+		display: inline-block;
+	}
+}
+
+input {
+	&.ng-invalid.ng-dirty {
+		border-color: @state-danger-text;
+	}
+}

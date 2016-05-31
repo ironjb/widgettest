@@ -34,12 +34,12 @@
 			};
 		});
 	}*/);
-	var ltm = new LoanTekWidgetHelpers.methods($);
-	var ltp = new LoanTekWidgetHelpers.properties();
-	window.console && console.log('ltp', ltp.hsize.h1.id);
+	var ltm = new LoanTekWidgetHelpers.helpers($);
+	// var ltp = new LoanTekWidgetHelpers.properties();
+	// window.console && console.log('ltp', ltp.hsize.h1.id);
 	var el = ltm.CreateElement();
 	var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
-	var contactWidgetCSS: string[] = [
+	var ltWidgetCSS: string[] = [
 		'/css/widget.css'
 	];
 	var contactWidgetScripts: string[] = [
@@ -47,6 +47,70 @@
 		, '/js/lib/jquery.placeholder.min.js'
 		, '/js/loantek-manual-contact-widget.js'
 	];
+	var defaultFormWidthUnit = ltm.widthUnit.per;
+
+	var ApplyFormStyles = (currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean) => {
+		// formClass = formClass || '.ltw';
+		// window.console && console.log('form Id:', currentFormObject.buildObject.wrapperId);
+		var wrapId = currentFormObject.buildObject.wrapperId ? '#' + currentFormObject.buildObject.wrapperId : '';
+		excludeCaptchaField = excludeCaptchaField || true;
+		var returnStyles = '';
+		if (currentFormObject.formWidth) {
+			currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
+			returnStyles += '\n' + wrapId + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
+		}
+
+		if (currentFormObject.formBg) {
+			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
+		}
+
+		// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
+
+		if (!isNaN(currentFormObject.formBorderRadius)) {
+			var fbr = currentFormObject.formBorderRadius + '';
+			var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
+			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+				returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+			}
+		}
+
+		if (currentFormObject.formBorderColor) {
+			// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+			// } else if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.well.id) {
+			// 	returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { border-color: ' + currentFormObject.formBorderColor + '}';
+			// }
+		}
+
+		if (currentFormObject.formTitleColor) {
+			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-heading, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+		}
+
+		if (currentFormObject.formTitleBgColor) {
+			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-heading, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+		}
+
+		if (!isNaN(currentFormObject.formGroupSpacing)) {
+			returnStyles += '\n' + wrapId + '.ltw  .form-group, ' + wrapId + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+		}
+
+		// window.console && console.log(currentFormObject.formFieldBorderRadius);
+		if (!isNaN(currentFormObject.formFieldBorderRadius)) {
+			var ffbr = currentFormObject.formFieldBorderRadius + '';
+			var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
+			returnStyles += '\n' + wrapId + '.ltw  .form-group .form-control, ' + wrapId + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+			if (!excludeCaptchaField) {
+				returnStyles += '\n' + wrapId + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+				returnStyles += '\n' + wrapId + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+			}
+		}
+
+		if (!isNaN(currentFormObject.formButtonBorderRadius)) {
+			returnStyles += '\n' + wrapId + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+		}
+		return returnStyles;
+	};
 
 	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope'/*, 'widgetServices', '$sce', '$timeout'*/, function($scope/*, widgetServices, $sce, $timeout*/) {
 		// $scope.myInfo = 'me';
@@ -59,7 +123,7 @@
 				{
 					name: 'Default Contact Widget',
 					// formFieldBorderRadius: 12,
-					template: {
+					buildObject: {
 						// fieldSize: ltm.bootstrap.inputSizing.sm,
 						panelTitle: 'Contact Us',
 						fields: [
@@ -82,7 +146,7 @@
 				{
 					name: 'Small Contact Widget',
 					formWidth: 380,
-					formWidthUnit: ltp.widthUnit.px.id,
+					formWidthUnit: ltm.widthUnit.px.id,
 					formBg: '#def',
 					formBorderRadius: 0,
 					formBorderColor: '#08f',
@@ -91,11 +155,11 @@
 					formGroupSpacing: 4,
 					formFieldBorderRadius: 0,
 					formButtonBorderRadius: 0,
-					template: {
+					buildObject: {
 						// formBorderType: ltm.formBorderType.well.id,
-						formBorderType: ltp.formBorderType.panel.id,
+						formBorderType: ltm.formBorderType.panel.id,
 						panelTitle: 'Contact Us',
-						fieldSize: ltp.bootstrap.inputSizing.sm.id,
+						fieldSize: ltm.bootstrap.inputSizing.sm.id,
 						fields: [
 							{ field: 'clientid' }
 							, { field: 'userid' }
@@ -129,12 +193,12 @@
 			]
 		};
 
-		var WidgetScriptBuild = (currentFormObj: IWidgetObject) => {
+		var WidgetScriptBuild = (currentFormObj: IWidgetFormObject) => {
 			// $scope.currentForm = currentFormObj;
-			var ct: IWidgetObject = angular.copy(currentFormObj);
-			var cfo: IWidgetFormObject = angular.copy(ct.template);
-			var cfod: IWidgetFormObject = angular.copy(ct.template);
-			var wScript: string = '<style type="text/css">.ltcw {display:none;}</style>';
+			var ct: IWidgetFormObject = angular.copy(currentFormObj);
+			var cfo: IWidgetFormBuildObject = angular.copy(ct.buildObject);
+			var cfod: IWidgetFormBuildObject = angular.copy(ct.buildObject);
+			var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 			var wScriptDisplay: string = wScript;
 			var hasCaptchaField = ltm.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
 			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
@@ -144,67 +208,70 @@
 			cfod.postDOMCallback = '#fn{postDOMFunctions}';
 
 			// Add CSS files
-			for (var iCss = 0, lCss = contactWidgetCSS.length; iCss < lCss; iCss++) {
-				var cssHref = contactWidgetCSS[iCss];
+			for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
+				var cssHref = ltWidgetCSS[iCss];
 				var cssLink = ltm.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
 				wScript += cssLink;
 				wScriptDisplay += cssLink;
 			}
 
-			if (ct.formWidth) {
-				ct.formWidthUnit = ct.formWidthUnit || ltp.widthUnit.per.id;
-				formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
-			}
+			// if (ct.formWidth) {
+			// 	ct.formWidthUnit = ct.formWidthUnit || defaultFormWidthUnit.id;
+			// 	formStyles += '\n.ltw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
+			// }
 
-			if (ct.formBg) {
-				formStyles += '\n.ltcw .lt-widget-border { background-color: ' + ct.formBg + '; }';
-			}
+			// if (ct.formBg) {
+			// 	formStyles += '\n.ltw .lt-widget-border { background-color: ' + ct.formBg + '; }';
+			// }
 
-			// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
+			// // window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
 
-			if (!isNaN(ct.formBorderRadius)) {
-				var fbr = ct.formBorderRadius + '';
-				var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
-				formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
-				if (ct.template.formBorderType === ltp.formBorderType.panel.id) {
-					formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
-				}
-			}
+			// if (!isNaN(ct.formBorderRadius)) {
+			// 	var fbr = ct.formBorderRadius + '';
+			// 	var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
+			// 	formStyles += '\n.ltw .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			// 	if (ct.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+			// 		formStyles += '\n.ltw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+			// 	}
+			// }
 
-			if (ct.formBorderColor) {
-				// if (ct.template.formBorderType === ltm.formBorderType.panel.id) {
-				formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
-				// } else if (ct.template.formBorderType === ltm.formBorderType.well.id) {
-				// 	formStyles += '\n.ltcw .lt-widget-border { border-color: ' + ct.formBorderColor + '}';
-				// }
-			}
+			// if (ct.formBorderColor) {
+			// 	// if (ct.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+			// 	formStyles += '\n.ltw .lt-widget-border, .ltw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
+			// 	// } else if (ct.buildObject.formBorderType === ltm.formBorderType.well.id) {
+			// 	// 	formStyles += '\n.ltw .lt-widget-border { border-color: ' + ct.formBorderColor + '}';
+			// 	// }
+			// }
 
-			if (ct.formTitleColor) {
-				formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { color: ' + ct.formTitleColor + '; }';
-			}
+			// if (ct.formTitleColor) {
+			// 	formStyles += '\n.ltw .lt-widget-heading, .ltw .lt-widget-border .lt-widget-heading  { color: ' + ct.formTitleColor + '; }';
+			// }
 
-			if (ct.formTitleBgColor) {
-				formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { background-color: ' + ct.formTitleBgColor + '; }';
-			}
+			// if (ct.formTitleBgColor) {
+			// 	formStyles += '\n.ltw .lt-widget-heading, .ltw .lt-widget-border .lt-widget-heading  { background-color: ' + ct.formTitleBgColor + '; }';
+			// }
 
-			if (!isNaN(ct.formGroupSpacing)) {
-				formStyles += '\n.ltcw .form-group, .ltcw .alert { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
-			}
+			// if (!isNaN(ct.formGroupSpacing)) {
+			// 	formStyles += '\n.ltw .form-group, .ltw .alert { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
+			// }
 
-			// window.console && console.log(ct.formFieldBorderRadius);
-			if (!isNaN(ct.formFieldBorderRadius)) {
-				var ffbr = ct.formFieldBorderRadius + '';
-				var ffbhr = ct.formFieldBorderRadius - 1 < 0 ? '0' : (ct.formFieldBorderRadius - 1) + '';
-				formStyles += '\n.ltcw .form-group .form-control, .ltcw .alert { border-radius: ' + ffbr + 'px; }';
-				if (hasCaptchaField) {
-					formStyles += '\n.ltcw .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
-					formStyles += '\n.ltcw .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
-				}
-			}
+			// // window.console && console.log(ct.formFieldBorderRadius);
+			// if (!isNaN(ct.formFieldBorderRadius)) {
+			// 	var ffbr = ct.formFieldBorderRadius + '';
+			// 	var ffbhr = ct.formFieldBorderRadius - 1 < 0 ? '0' : (ct.formFieldBorderRadius - 1) + '';
+			// 	formStyles += '\n.ltw .form-group .form-control, .ltw .alert { border-radius: ' + ffbr + 'px; }';
+			// 	if (hasCaptchaField) {
+			// 		formStyles += '\n.ltw .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+			// 		formStyles += '\n.ltw .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+			// 	}
+			// }
 
-			if (!isNaN(ct.formButtonBorderRadius)) {
-				formStyles += '\n.ltcw .btn { border-radius: ' + ct.formButtonBorderRadius + 'px; }';
-			}
+			// if (!isNaN(ct.formButtonBorderRadius)) {
+			// 	formStyles += '\n.ltw .btn { border-radius: ' + ct.formButtonBorderRadius + 'px; }';
+			// }
+
+
+			formStyles = ApplyFormStyles(ct, !hasCaptchaField);
 
 			var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
 			if (formStyles) {
@@ -313,7 +380,7 @@
 			wScript += mainScript;
 			wScriptDisplay += mainScriptDisplay;
 
-			wScript = wScript.replace(/\s+/gm, ' ');
+			// wScript = wScript.replace(/\s+/gm, ' ');
 			$scope.widgetScript = wScript;
 			$scope.widgetScriptDisplay = wScriptDisplay;
 			// $scope.widgetDisplay = $sce.trustAsHtml($scope.widgetScriptDisplay);
@@ -360,26 +427,69 @@
 				// window.console && console.log('service editForm currentForm: ', currentForm);
 				var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
 				angular.extend(settings, options);
-				window.console && console.log('settings', settings);
+				// window.console && console.log('settings', settings);
 
 				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope, $uibModalInstance, intanceOptions) => {
 
 					$scope.modForm = angular.copy(intanceOptions.currentForm);
-					$scope.borderTypes = angular.copy(ltp.formBorderTypeArray);
+					$scope.borderTypes = angular.copy(ltm.formBorderTypeArray);
+					$scope.formWidthUnits = angular.copy(ltm.widthUnit);
 					// window.console && console.log('$scope.borderTypes', $scope.borderTypes);
 					// $scope.borderTypes.push({ id: '', name: 'None' });
-					if (!$scope.modForm.template.formBorderType) {
-						$scope.modForm.template.formBorderType = ltp.formBorderType.none.id;
+
+					$scope.changeFormWidthUnit = ($event, unit) => {
+						$event.preventDefault();
+						$scope.modForm.formWidthUnit = unit.id;
+						window.console && console.log(unit, $scope.modForm.formWidthUnit);
+					};
+
+					$scope.borderTypeChange = () => {
+						// window.console && console.log('change: ', $scope.modForm.buildObject.formBorderType);
+						if ($scope.modForm.buildObject.formBorderType === ltm.formBorderType.none.id) {
+							$scope.showBorderRadius = false;
+						} else {
+							$scope.showBorderRadius = true;
+						}
+					};
+
+					if (!$scope.modForm.formWidthUnit) {
+						$scope.modForm.formWidthUnit = defaultFormWidthUnit.id;
 					}
 
+					if (!$scope.modForm.buildObject.formBorderType) {
+						$scope.modForm.buildObject.formBorderType = ltm.formBorderType.none.id;
+					}
+					$scope.borderTypeChange();
+
+					// $scope.$watch('modForm', (newValue, oldValue) => {
+					// 	var s2 = ApplyFormStyles($scope.modForm);
+					// 	window.console && console.log('watching: ', s2);
+					// });
+
 					$scope.saveClick = () => {
-						var newForm: IWidgetObject = angular.copy($scope.modForm);
+						var newForm: IWidgetFormObject = angular.copy($scope.modForm);
 						newForm.name = 'modified';
 						// ltm.hn.h2
 
-						if (!newForm.template.formBorderType || newForm.template.formBorderType === ltp.formBorderType.none.id) {
-							delete newForm.template.formBorderType;
+						window.console && console.log('newForm.formBorderRadius', newForm.formBorderRadius);
+						if (isNaN(newForm.formBorderRadius) || newForm.formBorderRadius === null) {
+							window.console && console.log('remove formBorderRadius');
+							delete newForm.formBorderRadius;
+						}
+
+						if (!newForm.formWidth) {
+							delete newForm.formWidth;
+							delete newForm.formWidthUnit;
+						}
+
+						if (newForm.formWidthUnit === defaultFormWidthUnit.id) {
+							delete newForm.formWidthUnit;
+						}
+
+						if (!newForm.buildObject.formBorderType || newForm.buildObject.formBorderType === ltm.formBorderType.none.id) {
+							delete newForm.buildObject.formBorderType;
 							delete newForm.formTitleBgColor;
+							delete newForm.formBorderRadius;
 						}
 						// intanceOptions.saveForm(newForm);
 						// cWidget = angular.copy($scope.modForm);
@@ -403,10 +513,10 @@
 				});
 
 				modalInstance.result.then((result) => {
-					window.console && console.log('modal save result', result);
+					// window.console && console.log('modal save result', result);
 					settings.saveForm(result);
 				}, (error) => {
-					window.console && console.log('modal close');
+					// window.console && console.log('modal close');
 				});
 			}
 		};
@@ -470,7 +580,7 @@
 							currentForm: angular.copy(scope.currentForm)
 						}
 						, saveForm: (updatedForm) => {
-							window.console && console.log('saveForm');
+							// window.console && console.log('saveForm');
 							scope.currentForm = updatedForm;
 							scope.selectedForm = {};
 							scope.RunWidgetScriptBuild(scope.currentForm);
@@ -506,14 +616,14 @@
 				<div class="form-group form-group-sm">
 					<label for="ltewBorderType" class="col-sm-2 control-label">Border Type</label>
 					<div class="col-sm-6">
-						<!-- <select name="ltewBorderType" id="ltewBorderType" class="form-control" data-ng-model="modForm.template.formBorderType" data-ng-options="btype.id as btype.name for btype in borderTypes">
+						<!-- <select name="ltewBorderType" id="ltewBorderType" class="form-control" data-ng-model="modForm.buildObject.formBorderType" data-ng-options="btype.id as btype.name for btype in borderTypes">
 							<option value="">None</option>
 						</select> -->
 						<div class="btn-group btn-group-sm">
-							<label class="btn btn-primary" data-ng-model="modForm.template.formBorderType" uib-btn-radio="btype.id" data-ng-repeat="btype in borderTypes track by btype.id">{{btype.name}}</label>
+							<label class="btn btn-primary" data-ng-model="modForm.buildObject.formBorderType" uib-btn-radio="btype.id" data-ng-repeat="btype in borderTypes track by btype.id">{{btype.name}}</label>
 						</div>
 					</div>
-					<div class="col-sm-4">{{modForm.template.formBorderType}}</div>
+					<div class="col-sm-4">{{modForm.buildObject.formBorderType}}</div>
 				</div>
 				<div class="form-group form-group-sm">
 					<label for="ltewBorderWidth" class="col-sm-2 control-label">Border Width</label>

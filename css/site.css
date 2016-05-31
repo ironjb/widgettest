@@ -58,3 +58,13 @@ body {
 .ltw-builder-tools .btn.btn-tool.btn-xs {
   border-radius: 3px;
 }
+.show-on-active-inline-block {
+  display: none;
+}
+.active.show-on-active-inline-block,
+.active .show-on-active-inline-block {
+  display: inline-block;
+}
+input.ng-invalid.ng-dirty {
+  border-color: #a94442;
+}

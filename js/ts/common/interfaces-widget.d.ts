@@ -6,7 +6,7 @@ interface IWidgets {
 
 interface IWidget {
 	allAvailableFields: IWidgetAvailableField[];
-	prebuiltForms?: IWidgetObject[];
+	prebuiltForms?: IWidgetFormObject[];
 }
 
 interface IWidgetAvailableField {
@@ -19,7 +19,7 @@ interface IWidgetAvailableField {
 	fieldTemplate?: IWidgetField;
 }
 
-interface IWidgetObject {
+interface IWidgetFormObject {
 	name: string;
 	formWidth?: number;
 	formWidthUnit?: string;
@@ -31,10 +31,10 @@ interface IWidgetObject {
 	formGroupSpacing?: number;
 	formFieldBorderRadius?: number;
 	formButtonBorderRadius?: number;
-	template?: IWidgetFormObject;
+	buildObject?: IWidgetFormBuildObject;
 }
 
-interface IWidgetFormObject {
+interface IWidgetFormBuildObject {
 	wrapperId?: string;
 	formId?: string;
 	errorMessageWrapperId?: string;

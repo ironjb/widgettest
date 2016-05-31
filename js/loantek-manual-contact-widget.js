@@ -52,22 +52,16 @@ var LoanTekWidgetHelpers;
         }
         return widthUnit;
     }());
-    var properties = (function () {
-        function properties() {
+    var helpers = (function () {
+        function helpers(jq) {
+            this.$ = jq;
             this.hsize = new hSizing;
             this.bootstrap = new bootstrap;
             this.formBorderType = new formBorderType;
-            this.formBorderTypeArray = methods.prototype.ConvertObjectToArray(this.formBorderType);
+            this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
             this.widthUnit = new widthUnit;
         }
-        return properties;
-    }());
-    LoanTekWidgetHelpers.properties = properties;
-    var methods = (function () {
-        function methods(jq) {
-            this.$ = jq;
-        }
-        methods.prototype.ConvertObjectToArray = function (theObj) {
+        helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
             for (var key in theObj) {
                 var objVal = theObj[key];
@@ -77,7 +71,7 @@ var LoanTekWidgetHelpers;
             }
             return objArray;
         };
-        methods.prototype.ConvertArrayToObject = function (theArray, theKey) {
+        helpers.prototype.ConvertArrayToObject = function (theArray, theKey) {
             theKey = theKey || 'id';
             var returnObj = {};
             for (var i = 0, l = theArray.length; i < l; i++) {
@@ -91,7 +85,7 @@ var LoanTekWidgetHelpers;
             window.console && console.log('returnObj', returnObj);
             return returnObj;
         };
-        methods.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
+        helpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
             for (var i = 0, l = theArray.length; i < l; i++) {
                 if (theArray[i][theKey] === theValue) {
                     return i;
@@ -99,7 +93,7 @@ var LoanTekWidgetHelpers;
             }
             return -1;
         };
-        methods.prototype.Interpolate = function (text, parameters, fn, regex) {
+        helpers.prototype.Interpolate = function (text, parameters, fn, regex) {
             text = text || '';
             parameters = parameters || {};
             fn = fn || function (x) { return x; };
@@ -119,7 +113,7 @@ var LoanTekWidgetHelpers;
                 return fn(rt);
             });
         };
-        methods.prototype.CreateElement = function () {
+        helpers.prototype.CreateElement = function () {
             var $ = this.$;
             var el = {
                 div: function () { return $('<div/>'); },
@@ -179,7 +173,7 @@ var LoanTekWidgetHelpers;
             };
             return el;
         };
-        methods.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
+        helpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
             $ = this.$;
             scrollSpeed = scrollSpeed || 200;
             topOffset = topOffset || 50;
@@ -187,9 +181,9 @@ var LoanTekWidgetHelpers;
                 scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
             }, scrollSpeed);
         };
-        return methods;
+        return helpers;
     }());
-    LoanTekWidgetHelpers.methods = methods;
+    LoanTekWidgetHelpers.helpers = helpers;
 })(LoanTekWidgetHelpers || (LoanTekWidgetHelpers = {}));
 var LoanTekBuildForm = (function () {
     function LoanTekBuildForm(options) {
@@ -200,7 +194,7 @@ var LoanTekBuildForm = (function () {
             var returnElement = null;
             switch (elementObj.element) {
                 case 'title':
-                    elementObj.nsize = elementObj.nsize || _thisM.ltp.hsize.default.id;
+                    elementObj.nsize = elementObj.nsize || _thisM.ltm.hsize.default.id;
                     returnElement = el.h(elementObj.nsize);
                     returnElement.html(elementObj.value);
                     break;
@@ -409,8 +403,7 @@ var LoanTekBuildForm = (function () {
             return s;
         };
         var _thisC = this;
-        _thisC.ltm = new LoanTekWidgetHelpers.methods(ltjQuery);
-        _thisC.ltp = new LoanTekWidgetHelpers.properties();
+        _thisC.ltm = new LoanTekWidgetHelpers.helpers(ltjQuery);
         var settings = {
             wrapperId: 'ltWidgetWrapper',
             formId: 'LtcwContactWidgetForm',
@@ -539,14 +532,14 @@ var LoanTekBuildForm = (function () {
             }
         });
         if (settings.formBorderType) {
-            if (settings.formBorderType === _thisC.ltp.formBorderType.well.id) {
+            if (settings.formBorderType === _thisC.ltm.formBorderType.well.id) {
                 var wellMain = el.div().addClass('well lt-widget-border');
                 if (settings.panelTitle) {
                     wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
                 }
                 returnForm = wellMain.append(returnForm);
             }
-            else if (settings.formBorderType === _thisC.ltp.formBorderType.panel.id) {
+            else if (settings.formBorderType === _thisC.ltm.formBorderType.panel.id) {
                 var panelMain, panelHeading, panelBody;
                 panelMain = el.div().addClass('panel panel-default lt-widget-border');
                 panelBody = el.div().addClass('panel-body').append(returnForm);
@@ -563,7 +556,7 @@ var LoanTekBuildForm = (function () {
         else if (settings.panelTitle) {
             returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
         }
-        var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+        var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltw container-fluid').empty().append(returnForm);
         if (settings.showBuilderTools) {
             widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
         }

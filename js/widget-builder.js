@@ -51,22 +51,16 @@ var LoanTekWidgetHelpers;
         }
         return widthUnit;
     }());
-    var properties = (function () {
-        function properties() {
+    var helpers = (function () {
+        function helpers(jq) {
+            this.$ = jq;
             this.hsize = new hSizing;
             this.bootstrap = new bootstrap;
             this.formBorderType = new formBorderType;
-            this.formBorderTypeArray = methods.prototype.ConvertObjectToArray(this.formBorderType);
+            this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
             this.widthUnit = new widthUnit;
         }
-        return properties;
-    }());
-    LoanTekWidgetHelpers.properties = properties;
-    var methods = (function () {
-        function methods(jq) {
-            this.$ = jq;
-        }
-        methods.prototype.ConvertObjectToArray = function (theObj) {
+        helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
             for (var key in theObj) {
                 var objVal = theObj[key];
@@ -76,7 +70,7 @@ var LoanTekWidgetHelpers;
             }
             return objArray;
         };
-        methods.prototype.ConvertArrayToObject = function (theArray, theKey) {
+        helpers.prototype.ConvertArrayToObject = function (theArray, theKey) {
             theKey = theKey || 'id';
             var returnObj = {};
             for (var i = 0, l = theArray.length; i < l; i++) {
@@ -90,7 +84,7 @@ var LoanTekWidgetHelpers;
             window.console && console.log('returnObj', returnObj);
             return returnObj;
         };
-        methods.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
+        helpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
             for (var i = 0, l = theArray.length; i < l; i++) {
                 if (theArray[i][theKey] === theValue) {
                     return i;
@@ -98,7 +92,7 @@ var LoanTekWidgetHelpers;
             }
             return -1;
         };
-        methods.prototype.Interpolate = function (text, parameters, fn, regex) {
+        helpers.prototype.Interpolate = function (text, parameters, fn, regex) {
             text = text || '';
             parameters = parameters || {};
             fn = fn || function (x) { return x; };
@@ -118,7 +112,7 @@ var LoanTekWidgetHelpers;
                 return fn(rt);
             });
         };
-        methods.prototype.CreateElement = function () {
+        helpers.prototype.CreateElement = function () {
             var $ = this.$;
             var el = {
                 div: function () { return $('<div/>'); },
@@ -178,7 +172,7 @@ var LoanTekWidgetHelpers;
             };
             return el;
         };
-        methods.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
+        helpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
             $ = this.$;
             scrollSpeed = scrollSpeed || 200;
             topOffset = topOffset || 50;
@@ -186,19 +180,17 @@ var LoanTekWidgetHelpers;
                 scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
             }, scrollSpeed);
         };
-        return methods;
+        return helpers;
     }());
-    LoanTekWidgetHelpers.methods = methods;
+    LoanTekWidgetHelpers.helpers = helpers;
 })(LoanTekWidgetHelpers || (LoanTekWidgetHelpers = {}));
 (function ($) {
     $('input textarea').placeholder();
     var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
-    var ltm = new LoanTekWidgetHelpers.methods($);
-    var ltp = new LoanTekWidgetHelpers.properties();
-    window.console && console.log('ltp', ltp.hsize.h1.id);
+    var ltm = new LoanTekWidgetHelpers.helpers($);
     var el = ltm.CreateElement();
     var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
-    var contactWidgetCSS = [
+    var ltWidgetCSS = [
         '/css/widget.css'
     ];
     var contactWidgetScripts = [
@@ -206,12 +198,58 @@ var LoanTekWidgetHelpers;
         '/js/lib/jquery.placeholder.min.js',
         '/js/loantek-manual-contact-widget.js'
     ];
+    var defaultFormWidthUnit = ltm.widthUnit.per;
+    var ApplyFormStyles = function (currentFormObject, excludeCaptchaField) {
+        var wrapId = currentFormObject.buildObject.wrapperId ? '#' + currentFormObject.buildObject.wrapperId : '';
+        excludeCaptchaField = excludeCaptchaField || true;
+        var returnStyles = '';
+        if (currentFormObject.formWidth) {
+            currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
+            returnStyles += '\n' + wrapId + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
+        }
+        if (currentFormObject.formBg) {
+            returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
+        }
+        if (!isNaN(currentFormObject.formBorderRadius)) {
+            var fbr = currentFormObject.formBorderRadius + '';
+            var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
+            returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+            if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+                returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+            }
+        }
+        if (currentFormObject.formBorderColor) {
+            returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+        }
+        if (currentFormObject.formTitleColor) {
+            returnStyles += '\n' + wrapId + '.ltw  .lt-widget-heading, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+        }
+        if (currentFormObject.formTitleBgColor) {
+            returnStyles += '\n' + wrapId + '.ltw  .lt-widget-heading, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+        }
+        if (!isNaN(currentFormObject.formGroupSpacing)) {
+            returnStyles += '\n' + wrapId + '.ltw  .form-group, ' + wrapId + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+        }
+        if (!isNaN(currentFormObject.formFieldBorderRadius)) {
+            var ffbr = currentFormObject.formFieldBorderRadius + '';
+            var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
+            returnStyles += '\n' + wrapId + '.ltw  .form-group .form-control, ' + wrapId + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+            if (!excludeCaptchaField) {
+                returnStyles += '\n' + wrapId + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+                returnStyles += '\n' + wrapId + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+            }
+        }
+        if (!isNaN(currentFormObject.formButtonBorderRadius)) {
+            returnStyles += '\n' + wrapId + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+        }
+        return returnStyles;
+    };
     widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', function ($scope) {
             var contactWidget = {
                 prebuiltForms: [
                     {
                         name: 'Default Contact Widget',
-                        template: {
+                        buildObject: {
                             panelTitle: 'Contact Us',
                             fields: [
                                 { field: 'clientid' },
@@ -231,7 +269,7 @@ var LoanTekWidgetHelpers;
                     {
                         name: 'Small Contact Widget',
                         formWidth: 380,
-                        formWidthUnit: ltp.widthUnit.px.id,
+                        formWidthUnit: ltm.widthUnit.px.id,
                         formBg: '#def',
                         formBorderRadius: 0,
                         formBorderColor: '#08f',
@@ -240,10 +278,10 @@ var LoanTekWidgetHelpers;
                         formGroupSpacing: 4,
                         formFieldBorderRadius: 0,
                         formButtonBorderRadius: 0,
-                        template: {
-                            formBorderType: ltp.formBorderType.panel.id,
+                        buildObject: {
+                            formBorderType: ltm.formBorderType.panel.id,
                             panelTitle: 'Contact Us',
-                            fieldSize: ltp.bootstrap.inputSizing.sm.id,
+                            fieldSize: ltm.bootstrap.inputSizing.sm.id,
                             fields: [
                                 { field: 'clientid' },
                                 { field: 'userid' },
@@ -278,9 +316,9 @@ var LoanTekWidgetHelpers;
             };
             var WidgetScriptBuild = function (currentFormObj) {
                 var ct = angular.copy(currentFormObj);
-                var cfo = angular.copy(ct.template);
-                var cfod = angular.copy(ct.template);
-                var wScript = '<style type="text/css">.ltcw {display:none;}</style>';
+                var cfo = angular.copy(ct.buildObject);
+                var cfod = angular.copy(ct.buildObject);
+                var wScript = '<style type="text/css">.ltw {display:none;}</style>';
                 var wScriptDisplay = wScript;
                 var hasCaptchaField = ltm.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
                 var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
@@ -288,51 +326,13 @@ var LoanTekWidgetHelpers;
                 cfod.showBuilderTools = true;
                 cfo.postDOMCallback = '#fn{postDOMFunctions}';
                 cfod.postDOMCallback = '#fn{postDOMFunctions}';
-                for (var iCss = 0, lCss = contactWidgetCSS.length; iCss < lCss; iCss++) {
-                    var cssHref = contactWidgetCSS[iCss];
+                for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
+                    var cssHref = ltWidgetCSS[iCss];
                     var cssLink = ltm.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
                     wScript += cssLink;
                     wScriptDisplay += cssLink;
                 }
-                if (ct.formWidth) {
-                    ct.formWidthUnit = ct.formWidthUnit || ltp.widthUnit.per.id;
-                    formStyles += '\n.ltcw { width: ' + ct.formWidth + ct.formWidthUnit + '; }';
-                }
-                if (ct.formBg) {
-                    formStyles += '\n.ltcw .lt-widget-border { background-color: ' + ct.formBg + '; }';
-                }
-                if (!isNaN(ct.formBorderRadius)) {
-                    var fbr = ct.formBorderRadius + '';
-                    var fbhr = ct.formBorderRadius - 1 < 0 ? '0' : (ct.formBorderRadius - 1) + '';
-                    formStyles += '\n.ltcw .lt-widget-border { border-radius: ' + fbr + 'px; }';
-                    if (ct.template.formBorderType === ltp.formBorderType.panel.id) {
-                        formStyles += '\n.ltcw .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
-                    }
-                }
-                if (ct.formBorderColor) {
-                    formStyles += '\n.ltcw .lt-widget-border, .ltcw .lt-widget-border .lt-widget-heading { border-color: ' + ct.formBorderColor + '; }';
-                }
-                if (ct.formTitleColor) {
-                    formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { color: ' + ct.formTitleColor + '; }';
-                }
-                if (ct.formTitleBgColor) {
-                    formStyles += '\n.ltcw .lt-widget-heading, .ltcw .lt-widget-border .lt-widget-heading  { background-color: ' + ct.formTitleBgColor + '; }';
-                }
-                if (!isNaN(ct.formGroupSpacing)) {
-                    formStyles += '\n.ltcw .form-group, .ltcw .alert { margin-bottom: ' + ct.formGroupSpacing + 'px; }';
-                }
-                if (!isNaN(ct.formFieldBorderRadius)) {
-                    var ffbr = ct.formFieldBorderRadius + '';
-                    var ffbhr = ct.formFieldBorderRadius - 1 < 0 ? '0' : (ct.formFieldBorderRadius - 1) + '';
-                    formStyles += '\n.ltcw .form-group .form-control, .ltcw .alert { border-radius: ' + ffbr + 'px; }';
-                    if (hasCaptchaField) {
-                        formStyles += '\n.ltcw .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
-                        formStyles += '\n.ltcw .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
-                    }
-                }
-                if (!isNaN(ct.formButtonBorderRadius)) {
-                    formStyles += '\n.ltcw .btn { border-radius: ' + ct.formButtonBorderRadius + 'px; }';
-                }
+                formStyles = ApplyFormStyles(ct, !hasCaptchaField);
                 var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
                 if (formStyles) {
                     wScript += ltm.Interpolate(styleWrap, { styles: formStyles });
@@ -394,7 +394,6 @@ var LoanTekWidgetHelpers;
                 mainScriptDisplay = ltm.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
                 wScript += mainScript;
                 wScriptDisplay += mainScriptDisplay;
-                wScript = wScript.replace(/\s+/gm, ' ');
                 $scope.widgetScript = wScript;
                 $scope.widgetScriptDisplay = wScriptDisplay;
                 ltm.ScrollToAnchor('widgetTop');
@@ -421,19 +420,49 @@ var LoanTekWidgetHelpers;
                 editForm: function (options) {
                     var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
                     angular.extend(settings, options);
-                    window.console && console.log('settings', settings);
                     var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, intanceOptions) {
                             $scope.modForm = angular.copy(intanceOptions.currentForm);
-                            $scope.borderTypes = angular.copy(ltp.formBorderTypeArray);
-                            if (!$scope.modForm.template.formBorderType) {
-                                $scope.modForm.template.formBorderType = ltp.formBorderType.none.id;
+                            $scope.borderTypes = angular.copy(ltm.formBorderTypeArray);
+                            $scope.formWidthUnits = angular.copy(ltm.widthUnit);
+                            $scope.changeFormWidthUnit = function ($event, unit) {
+                                $event.preventDefault();
+                                $scope.modForm.formWidthUnit = unit.id;
+                                window.console && console.log(unit, $scope.modForm.formWidthUnit);
+                            };
+                            $scope.borderTypeChange = function () {
+                                if ($scope.modForm.buildObject.formBorderType === ltm.formBorderType.none.id) {
+                                    $scope.showBorderRadius = false;
+                                }
+                                else {
+                                    $scope.showBorderRadius = true;
+                                }
+                            };
+                            if (!$scope.modForm.formWidthUnit) {
+                                $scope.modForm.formWidthUnit = defaultFormWidthUnit.id;
                             }
+                            if (!$scope.modForm.buildObject.formBorderType) {
+                                $scope.modForm.buildObject.formBorderType = ltm.formBorderType.none.id;
+                            }
+                            $scope.borderTypeChange();
                             $scope.saveClick = function () {
                                 var newForm = angular.copy($scope.modForm);
                                 newForm.name = 'modified';
-                                if (!newForm.template.formBorderType || newForm.template.formBorderType === ltp.formBorderType.none.id) {
-                                    delete newForm.template.formBorderType;
+                                window.console && console.log('newForm.formBorderRadius', newForm.formBorderRadius);
+                                if (isNaN(newForm.formBorderRadius) || newForm.formBorderRadius === null) {
+                                    window.console && console.log('remove formBorderRadius');
+                                    delete newForm.formBorderRadius;
+                                }
+                                if (!newForm.formWidth) {
+                                    delete newForm.formWidth;
+                                    delete newForm.formWidthUnit;
+                                }
+                                if (newForm.formWidthUnit === defaultFormWidthUnit.id) {
+                                    delete newForm.formWidthUnit;
+                                }
+                                if (!newForm.buildObject.formBorderType || newForm.buildObject.formBorderType === ltm.formBorderType.none.id) {
+                                    delete newForm.buildObject.formBorderType;
                                     delete newForm.formTitleBgColor;
+                                    delete newForm.formBorderRadius;
                                 }
                                 $uibModalInstance.close(newForm);
                             };
@@ -450,10 +479,8 @@ var LoanTekWidgetHelpers;
                         }
                     });
                     modalInstance.result.then(function (result) {
-                        window.console && console.log('modal save result', result);
                         settings.saveForm(result);
                     }, function (error) {
-                        window.console && console.log('modal close');
                     });
                 }
             };
@@ -482,7 +509,6 @@ var LoanTekWidgetHelpers;
                                 currentForm: angular.copy(scope.currentForm)
                             },
                             saveForm: function (updatedForm) {
-                                window.console && console.log('saveForm');
                                 scope.currentForm = updatedForm;
                                 scope.selectedForm = {};
                                 scope.RunWidgetScriptBuild(scope.currentForm);
@@ -495,6 +521,6 @@ var LoanTekWidgetHelpers;
         }]);
     angular.module('ltw.templates', []).run(['$templateCache', function ($templateCache) {
             $templateCache.put('template/widgetFormEditButton.html', "\n\t\t\t<button type=\"button\" class=\"btn btn-default btn-xs btn-tool\" data-ng-click=\"EditWigetForm();\"><span class=\"glyphicon glyphicon-pencil\"></span> Edit</button>\n\t\t");
-            $templateCache.put('template/modal/editForm.html', "\n\t\t<form class=\"form-horizontal\" data-ng-submit=\"saveClick();\">\n\t\t\t<div class=\"modal-header alert alert-info\">\n\t\t\t\t<h3 class=\"modal-title\">Edit Widget Form</h3>\n\t\t\t</div>\n\t\t\t<div class=\"modal-body\">\n\t\t\t\t<div class=\"form-group form-group-sm\">\n\t\t\t\t\t<label for=\"ltewBorderType\" class=\"col-sm-2 control-label\">Border Type</label>\n\t\t\t\t\t<div class=\"col-sm-6\">\n\t\t\t\t\t\t<!-- <select name=\"ltewBorderType\" id=\"ltewBorderType\" class=\"form-control\" data-ng-model=\"modForm.template.formBorderType\" data-ng-options=\"btype.id as btype.name for btype in borderTypes\">\n\t\t\t\t\t\t\t<option value=\"\">None</option>\n\t\t\t\t\t\t</select> -->\n\t\t\t\t\t\t<div class=\"btn-group btn-group-sm\">\n\t\t\t\t\t\t\t<label class=\"btn btn-primary\" data-ng-model=\"modForm.template.formBorderType\" uib-btn-radio=\"btype.id\" data-ng-repeat=\"btype in borderTypes track by btype.id\">{{btype.name}}</label>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"col-sm-4\">{{modForm.template.formBorderType}}</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"form-group form-group-sm\">\n\t\t\t\t\t<label for=\"ltewBorderWidth\" class=\"col-sm-2 control-label\">Border Width</label>\n\t\t\t\t\t<div class=\"col-sm-2\">\n\t\t\t\t\t\t<input type=\"number\" class=\"form-control\" id=\"ltewBorderWidth\" name=\"ltewBorderWidth\" />\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"modal-footer\">\n\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">Save</button>\n\t\t\t\t<button class=\"btn btn-default\" data-ng-click=\"cancelClick();\">Cancel</button>\n\t\t\t</div>\n\t\t</form>\n\t\t");
+            $templateCache.put('template/modal/editForm.html', "\n\t\t<form class=\"form-horizontal\" data-ng-submit=\"saveClick();\">\n\t\t\t<div class=\"modal-header alert alert-info\">\n\t\t\t\t<h3 class=\"modal-title\">Edit Widget Form</h3>\n\t\t\t</div>\n\t\t\t<div class=\"modal-body\">\n\t\t\t\t<div class=\"form-group form-group-sm\">\n\t\t\t\t\t<label for=\"ltewBorderType\" class=\"col-sm-2 control-label\">Border Type</label>\n\t\t\t\t\t<div class=\"col-sm-6\">\n\t\t\t\t\t\t<!-- <select name=\"ltewBorderType\" id=\"ltewBorderType\" class=\"form-control\" data-ng-model=\"modForm.buildObject.formBorderType\" data-ng-options=\"btype.id as btype.name for btype in borderTypes\">\n\t\t\t\t\t\t\t<option value=\"\">None</option>\n\t\t\t\t\t\t</select> -->\n\t\t\t\t\t\t<div class=\"btn-group btn-group-sm\">\n\t\t\t\t\t\t\t<label class=\"btn btn-primary\" data-ng-model=\"modForm.buildObject.formBorderType\" uib-btn-radio=\"btype.id\" data-ng-repeat=\"btype in borderTypes track by btype.id\">{{btype.name}}</label>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"col-sm-4\">{{modForm.buildObject.formBorderType}}</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"form-group form-group-sm\">\n\t\t\t\t\t<label for=\"ltewBorderWidth\" class=\"col-sm-2 control-label\">Border Width</label>\n\t\t\t\t\t<div class=\"col-sm-2\">\n\t\t\t\t\t\t<input type=\"number\" class=\"form-control\" id=\"ltewBorderWidth\" name=\"ltewBorderWidth\" />\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"modal-footer\">\n\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">Save</button>\n\t\t\t\t<button class=\"btn btn-default\" data-ng-click=\"cancelClick();\">Cancel</button>\n\t\t\t</div>\n\t\t</form>\n\t\t");
         }]);
 })(jQuery);

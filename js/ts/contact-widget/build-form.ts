@@ -3,14 +3,14 @@
 
 class LoanTekBuildForm {
 
-	private ltm: LoanTekWidgetHelpers.methods;
-	private ltp: LoanTekWidgetHelpers.properties;
+	private ltm: LoanTekWidgetHelpers.helpers;
+	// private ltp: LoanTekWidgetHelpers.properties;
 
-	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormObject) {
+	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormBuildObject) {
 		var _thisC = this;
-		_thisC.ltm = new LoanTekWidgetHelpers.methods(ltjQuery);
-		_thisC.ltp = new LoanTekWidgetHelpers.properties();
-		var settings: IWidgetFormObject = {
+		_thisC.ltm = new LoanTekWidgetHelpers.helpers(ltjQuery);
+		// _thisC.ltp = new LoanTekWidgetHelpers.properties();
+		var settings: IWidgetFormBuildObject = {
 			wrapperId: 'ltWidgetWrapper'
 			, formId: 'LtcwContactWidgetForm'
 			, errorMessageWrapperId: 'ltcwErrorMessageWrapper'
@@ -177,7 +177,7 @@ class LoanTekBuildForm {
 
 		// window.console && console.log('settings.formBorderType', settings.formBorderType);
 		if (settings.formBorderType) {
-			if (settings.formBorderType === _thisC.ltp.formBorderType.well.id) {
+			if (settings.formBorderType === _thisC.ltm.formBorderType.well.id) {
 				var wellMain = el.div().addClass('well lt-widget-border');
 
 				if (settings.panelTitle) {
@@ -186,7 +186,7 @@ class LoanTekBuildForm {
 
 				returnForm = wellMain.append(returnForm);
 				// returnForm = el.div().addClass('well').append(el.h(4).html(settings.panelTitle)).append(returnForm);
-			} else if (settings.formBorderType === _thisC.ltp.formBorderType.panel.id) {
+			} else if (settings.formBorderType === _thisC.ltm.formBorderType.panel.id) {
 				var panelMain, panelHeading, panelBody;
 				panelMain = el.div().addClass('panel panel-default lt-widget-border');
 				panelBody = el.div().addClass('panel-body').append(returnForm);
@@ -212,9 +212,9 @@ class LoanTekBuildForm {
 
 		// window.console && console.log('after form bordertype test', settings.wrapperId);
 
-		// window.console && console.log('ltjQuery("#ltWidgetWrapper")', ltjQuery('#ltWidgetWrapper').addClass('ltcw container-fluid').empty().append(returnForm));
+		// window.console && console.log('ltjQuery("#ltWidgetWrapper")', ltjQuery('#ltWidgetWrapper').addClass('ltw container-fluid').empty().append(returnForm));
 
-		var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltcw container-fluid').empty().append(returnForm);
+		var widgetWrapper = ltjQuery('#' + settings.wrapperId).addClass('ltw container-fluid').empty().append(returnForm);
 		if (settings.showBuilderTools) {
 			widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
 		}
@@ -259,7 +259,7 @@ class LoanTekBuildForm {
 		var returnElement = null;
 		switch (elementObj.element) {
 			case 'title':
-				elementObj.nsize = elementObj.nsize || _thisM.ltp.hsize.default.id;
+				elementObj.nsize = elementObj.nsize || _thisM.ltm.hsize.default.id;
 				returnElement = el.h(elementObj.nsize);
 				returnElement.html(elementObj.value);
 				break;
