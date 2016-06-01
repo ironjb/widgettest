@@ -60,6 +60,9 @@ var LoanTekWidgetHelpers;
             this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
             this.widthUnit = new widthUnit;
         }
+        helpers.prototype.isNumber = function (numCheck) {
+            return typeof numCheck === 'number';
+        };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
             for (var key in theObj) {
@@ -199,51 +202,69 @@ var LoanTekWidgetHelpers;
         '/js/loantek-manual-contact-widget.js'
     ];
     var defaultFormWidthUnit = ltm.widthUnit.per;
-    var ApplyFormStyles = function (currentFormObject, excludeCaptchaField, specifier) {
-        specifier = specifier || '';
-        excludeCaptchaField = excludeCaptchaField || true;
-        var returnStyles = '';
-        if (currentFormObject.formWidth) {
-            currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
-            returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
-        }
-        if (currentFormObject.formBg) {
-            returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
-        }
-        if (!isNaN(currentFormObject.formBorderRadius)) {
-            var fbr = currentFormObject.formBorderRadius + '';
-            var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
-            returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
-            if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
-                returnStyles += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+    var defaultBorderRadius = 4;
+    var ApplyFormStyles = (function () {
+        function ApplyFormStyles(currentFormObject, excludeCaptchaField, specifier) {
+            var _thisC = this;
+            specifier = specifier || '';
+            _thisC._specifier = specifier;
+            _thisC._borderType = currentFormObject.buildObject.formBorderType;
+            excludeCaptchaField = excludeCaptchaField || true;
+            var returnStyles = '';
+            if (currentFormObject.formWidth) {
+                currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
+                returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
             }
-        }
-        if (currentFormObject.formBorderColor) {
-            returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
-        }
-        if (currentFormObject.formTitleColor) {
-            returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
-        }
-        if (currentFormObject.formTitleBgColor) {
-            returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
-        }
-        if (!isNaN(currentFormObject.formGroupSpacing)) {
-            returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
-        }
-        if (!isNaN(currentFormObject.formFieldBorderRadius)) {
-            var ffbr = currentFormObject.formFieldBorderRadius + '';
-            var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
-            returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
-            if (!excludeCaptchaField) {
-                returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
-                returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+            if (currentFormObject.formBg) {
+                returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
             }
+            if (ltm.isNumber(currentFormObject.formBorderRadius)) {
+                returnStyles += _thisC.formBorderRadius(currentFormObject.formBorderRadius, _thisC._borderType);
+            }
+            if (currentFormObject.formBorderColor) {
+                returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+            }
+            if (currentFormObject.formTitleColor) {
+                returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+            }
+            if (currentFormObject.formTitleBgColor) {
+                returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+            }
+            if (ltm.isNumber(currentFormObject.formGroupSpacing)) {
+                returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+            }
+            if (ltm.isNumber(currentFormObject.formFieldBorderRadius)) {
+                var ffbr = currentFormObject.formFieldBorderRadius + '';
+                var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
+                returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+                if (!excludeCaptchaField) {
+                    returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+                    returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+                }
+            }
+            if (ltm.isNumber(currentFormObject.formButtonBorderRadius)) {
+                returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+            }
+            _thisC._returnStyles = returnStyles;
         }
-        if (!isNaN(currentFormObject.formButtonBorderRadius)) {
-            returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
-        }
-        return returnStyles;
-    };
+        ApplyFormStyles.prototype.getStyles = function () {
+            return this._returnStyles;
+        };
+        ApplyFormStyles.prototype.formBorderRadius = function (borderRadius, borderType, specifier) {
+            var _thisM = this;
+            var br = '';
+            var fbr = borderRadius + '';
+            var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+            specifier = specifier || _thisM._specifier;
+            borderType = borderType || _thisM._borderType;
+            br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+            if (borderType === ltm.formBorderType.panel.id) {
+                br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+            }
+            return br;
+        };
+        return ApplyFormStyles;
+    }());
     widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope', function ($scope) {
             var contactWidget = {
                 prebuiltForms: [
@@ -332,7 +353,7 @@ var LoanTekWidgetHelpers;
                     wScript += cssLink;
                     wScriptDisplay += cssLink;
                 }
-                formStyles = ApplyFormStyles(ct, !hasCaptchaField);
+                formStyles = new ApplyFormStyles(ct, !hasCaptchaField).getStyles();
                 var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
                 if (formStyles) {
                     wScript += ltm.Interpolate(styleWrap, { styles: formStyles });
@@ -446,14 +467,24 @@ var LoanTekWidgetHelpers;
                                 $scope.modForm.buildObject.formBorderType = ltm.formBorderType.none.id;
                             }
                             $scope.borderTypeChange();
-                            $scope.$watchCollection('modForm', function (newValue, oldValue) {
-                                $scope.previewStyles = ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                            var watchGroups = [
+                                'modForm.buildObject.formBorderType',
+                                'modForm.formBorderRadius'
+                            ];
+                            $scope.$watchGroup(watchGroups, function (newValue, oldValue) {
+                                var applyFormStyles = new ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                                var previewStyles = applyFormStyles.getStyles();
+                                if (!ltm.isNumber($scope.modForm.formBorderRadius)) {
+                                    window.console && console.log('border rad is null so needs to apply default border rad', $scope.modForm.formBorderRadius);
+                                    previewStyles += applyFormStyles.formBorderRadius(defaultBorderRadius);
+                                }
+                                $scope.previewStyles = previewStyles;
                             });
                             $scope.saveClick = function () {
                                 var newForm = angular.copy($scope.modForm);
                                 newForm.name = 'modified';
                                 window.console && console.log('newForm.formBorderRadius', newForm.formBorderRadius);
-                                if (isNaN(newForm.formBorderRadius) || newForm.formBorderRadius === null) {
+                                if (!ltm.isNumber(newForm.formBorderRadius)) {
                                     window.console && console.log('remove formBorderRadius');
                                     delete newForm.formBorderRadius;
                                 }

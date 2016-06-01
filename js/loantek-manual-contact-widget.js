@@ -61,6 +61,9 @@ var LoanTekWidgetHelpers;
             this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
             this.widthUnit = new widthUnit;
         }
+        helpers.prototype.isNumber = function (numCheck) {
+            return typeof numCheck === 'number';
+        };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
             for (var key in theObj) {

@@ -48,70 +48,188 @@
 		, '/js/loantek-manual-contact-widget.js'
 	];
 	var defaultFormWidthUnit = ltm.widthUnit.per;
+	var defaultBorderRadius: number = 4;
 
-	var ApplyFormStyles = (currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) => {
-		// formClass = formClass || '.ltw';
-		// window.console && console.log('form Id:', currentFormObject.buildObject.wrapperId);
-		// var specifier = currentFormObject.buildObject.wrapperId ? '#' + currentFormObject.buildObject.wrapperId : '';
-		specifier = specifier || '';
-		excludeCaptchaField = excludeCaptchaField || true;
-		var returnStyles = '';
-		if (currentFormObject.formWidth) {
-			currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
-			returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
-		}
+	class ApplyFormStyles {
+		private _returnStyles: string;
+		private _specifier: string;
+		private _borderType: string;
 
-		if (currentFormObject.formBg) {
-			returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
-		}
+		constructor(currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) {
+			var _thisC = this;
+			specifier = specifier || '';
+			_thisC._specifier = specifier;
+			_thisC._borderType = currentFormObject.buildObject.formBorderType;
+			excludeCaptchaField = excludeCaptchaField || true;
+			var returnStyles = '';
 
-		// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
-
-		if (!isNaN(currentFormObject.formBorderRadius)) {
-			var fbr = currentFormObject.formBorderRadius + '';
-			var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
-			returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
-			if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
-				returnStyles += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
-			}
-		}
-
-		if (currentFormObject.formBorderColor) {
-			// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
-			returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
-			// } else if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.well.id) {
-			// 	returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-color: ' + currentFormObject.formBorderColor + '}';
+			// function FormBorderRadius(borderRadius: number, borderType?: string): string {
+			// 	var br = '';
+			// 	var fbr = borderRadius + '';
+			// 	var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+			// 	br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			// 	if (borderType === ltm.formBorderType.panel.id) {
+			// 		br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+			// 	}
+			// 	return br;
 			// }
-		}
 
-		if (currentFormObject.formTitleColor) {
-			returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
-		}
-
-		if (currentFormObject.formTitleBgColor) {
-			returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
-		}
-
-		if (!isNaN(currentFormObject.formGroupSpacing)) {
-			returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
-		}
-
-		// window.console && console.log(currentFormObject.formFieldBorderRadius);
-		if (!isNaN(currentFormObject.formFieldBorderRadius)) {
-			var ffbr = currentFormObject.formFieldBorderRadius + '';
-			var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
-			returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
-			if (!excludeCaptchaField) {
-				returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
-				returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+			if (currentFormObject.formWidth) {
+				currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
+				returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
 			}
+
+			if (currentFormObject.formBg) {
+				returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
+			}
+
+			// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
+
+			if (ltm.isNumber(currentFormObject.formBorderRadius)/*!isNaN(currentFormObject.formBorderRadius) && currentFormObject.formBorderRadius !== null*/) {
+				// window.console && console.log('in !isNan currentFormObject.formBorderRadius', currentFormObject.formBorderRadius);
+				returnStyles += _thisC.formBorderRadius(currentFormObject.formBorderRadius, _thisC._borderType);
+				// var fbr = currentFormObject.formBorderRadius + '';
+				// var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
+				// returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+				// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+				// 	returnStyles += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+				// }
+			}
+
+			if (currentFormObject.formBorderColor) {
+				// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+				returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+				// } else if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.well.id) {
+				// 	returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-color: ' + currentFormObject.formBorderColor + '}';
+				// }
+			}
+
+			if (currentFormObject.formTitleColor) {
+				returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+			}
+
+			if (currentFormObject.formTitleBgColor) {
+				returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+			}
+
+			if (ltm.isNumber(currentFormObject.formGroupSpacing)/*!isNaN(currentFormObject.formGroupSpacing)*/) {
+				returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+			}
+
+			// window.console && console.log(currentFormObject.formFieldBorderRadius);
+			if (ltm.isNumber(currentFormObject.formFieldBorderRadius)) {
+				var ffbr = currentFormObject.formFieldBorderRadius + '';
+				var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
+				returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+				if (!excludeCaptchaField) {
+					returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+					returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+				}
+			}
+
+			if (ltm.isNumber(currentFormObject.formButtonBorderRadius)) {
+				returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+			}
+			_thisC._returnStyles = returnStyles;
+			// window.console && console.log('retStyles:\n\n', returnStyles, '\n\n end retStyles');
+			// return returnStyles;
 		}
 
-		if (!isNaN(currentFormObject.formButtonBorderRadius)) {
-			returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+		getStyles(): string {
+			return this._returnStyles;
 		}
-		return returnStyles;
-	};
+
+		formBorderRadius (borderRadius: number, borderType?: string, specifier?: string): string {
+			var _thisM = this;
+			var br = '';
+			var fbr = borderRadius + '';
+			var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+			specifier = specifier || _thisM._specifier;
+			borderType = borderType || _thisM._borderType;
+			br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			if (borderType === ltm.formBorderType.panel.id) {
+				br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+			}
+			return br;
+		}
+	}
+
+	// var ApplyFormStylesOld = (currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) => {
+	// 	// formClass = formClass || '.ltw';
+	// 	// window.console && console.log('form Id:', currentFormObject.buildObject.wrapperId);
+	// 	// var specifier = currentFormObject.buildObject.wrapperId ? '#' + currentFormObject.buildObject.wrapperId : '';
+	// 	specifier = specifier || '';
+	// 	excludeCaptchaField = excludeCaptchaField || true;
+	// 	var returnStyles = '';
+
+	// 	function FormBorderRadius (borderRadius: number, borderType?: string): string {
+	// 		var br = '';
+	// 		var fbr = borderRadius + '';
+	// 		var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+	// 		br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+	// 		if (borderType === ltm.formBorderType.panel.id) {
+	// 			br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+	// 		}
+	// 		return br;
+	// 	}
+
+	// 	if (currentFormObject.formWidth) {
+	// 		currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
+	// 		returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
+	// 	}
+
+	// 	if (currentFormObject.formBg) {
+	// 		returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
+	// 	}
+
+	// 	// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
+
+	// 	if (!isNaN(currentFormObject.formBorderRadius)) {
+	// 		FormBorderRadius(currentFormObject.formBorderRadius, currentFormObject.buildObject.formBorderType)
+	// 		// var fbr = currentFormObject.formBorderRadius + '';
+	// 		// var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
+	// 		// returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+	// 		// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+	// 		// 	returnStyles += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+	// 		// }
+	// 	}
+
+	// 	if (currentFormObject.formBorderColor) {
+	// 		// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
+	// 		returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+	// 		// } else if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.well.id) {
+	// 		// 	returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-color: ' + currentFormObject.formBorderColor + '}';
+	// 		// }
+	// 	}
+
+	// 	if (currentFormObject.formTitleColor) {
+	// 		returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+	// 	}
+
+	// 	if (currentFormObject.formTitleBgColor) {
+	// 		returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+	// 	}
+
+	// 	if (!isNaN(currentFormObject.formGroupSpacing)) {
+	// 		returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+	// 	}
+
+	// 	// window.console && console.log(currentFormObject.formFieldBorderRadius);
+	// 	if (!isNaN(currentFormObject.formFieldBorderRadius)) {
+	// 		var ffbr = currentFormObject.formFieldBorderRadius + '';
+	// 		var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
+	// 		returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+	// 		if (!excludeCaptchaField) {
+	// 			returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+	// 			returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+	// 		}
+	// 	}
+
+	// 	if (!isNaN(currentFormObject.formButtonBorderRadius)) {
+	// 		returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+	// 	}
+	// 	return returnStyles;
+	// };
 
 	widgetBuilderApp.controller('ContactWidgetBuilderController', ['$scope'/*, 'widgetServices', '$sce', '$timeout'*/, function($scope/*, widgetServices, $sce, $timeout*/) {
 		// $scope.myInfo = 'me';
@@ -272,7 +390,7 @@
 			// }
 
 
-			formStyles = ApplyFormStyles(ct, !hasCaptchaField);
+			formStyles = new ApplyFormStyles(ct, !hasCaptchaField).getStyles();
 
 			var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
 			if (formStyles) {
@@ -464,11 +582,26 @@
 					}
 					$scope.borderTypeChange();
 
-					$scope.$watchCollection('modForm', (newValue, oldValue) => {
-						$scope.previewStyles = ApplyFormStyles($scope.modForm, true, '.ltw-preview');
-						// window.console && console.log('previewStyles', $scope.previewStyles);
+					var watchGroups = [
+						'modForm.buildObject.formBorderType'
+						, 'modForm.formBorderRadius'
+					];
+
+					$scope.$watchGroup(watchGroups, (newValue, oldValue) => {
+						var applyFormStyles: ApplyFormStyles = new ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+						var previewStyles: string = applyFormStyles.getStyles();
+						// window.console && console.log('old/new', oldValue, newValue);
+						// window.console && console.log('previewStyles', previewStyles);
 						// var s2 = newValue;
 						// window.console && console.log('watching: ', s2, oldValue);
+
+						// Style Overrides
+						if (!ltm.isNumber($scope.modForm.formBorderRadius)/*isNaN($scope.modForm.formBorderRadius) || $scope.modForm.formBorderRadius === null*/) {
+							window.console && console.log('border rad is null so needs to apply default border rad', $scope.modForm.formBorderRadius);
+							previewStyles += applyFormStyles.formBorderRadius(defaultBorderRadius);
+						}
+
+						$scope.previewStyles = previewStyles;
 					});
 
 					$scope.saveClick = () => {
@@ -477,7 +610,7 @@
 						// ltm.hn.h2
 
 						window.console && console.log('newForm.formBorderRadius', newForm.formBorderRadius);
-						if (isNaN(newForm.formBorderRadius) || newForm.formBorderRadius === null) {
+						if (!ltm.isNumber(newForm.formBorderRadius)/*isNaN(newForm.formBorderRadius) || newForm.formBorderRadius === null*/) {
 							window.console && console.log('remove formBorderRadius');
 							delete newForm.formBorderRadius;
 						}

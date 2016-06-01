@@ -1,3 +1,12 @@
+interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
+interface IHelperNameId { id: string; name: string; }
+interface IHelperNameNumId { id: number; name: string; }
+
+interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHelperBsGridSizing; }
+interface IHelperBsInputSizing { sm: string; lg: string; }
+interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
+
+
 interface IWidgets {
 	contact?: IWidget;
 	quote?: IWidget;
