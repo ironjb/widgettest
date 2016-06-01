@@ -15,6 +15,7 @@ var LoanTekWidgetHelpers;
     }());
     var inputSizing = (function () {
         function inputSizing() {
+            this.default = { id: 'default', name: 'Default' };
             this.sm = { id: 'sm', name: 'Small' };
             this.lg = { id: 'lg', name: 'Large' };
         }
@@ -63,6 +64,9 @@ var LoanTekWidgetHelpers;
         }
         helpers.prototype.isNumber = function (numCheck) {
             return typeof numCheck === 'number';
+        };
+        helpers.prototype.isStringNullOrEmpty = function (stringCheck) {
+            return stringCheck === '' || typeof stringCheck !== 'string';
         };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
@@ -282,7 +286,9 @@ var LoanTekBuildForm = (function () {
                     returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 default:
+                    elementObj.value = elementObj.value || ' ';
                     returnElement = el.div();
+                    returnElement.html(elementObj.value);
                     break;
             }
             if (returnElement) {
@@ -458,6 +464,7 @@ var LoanTekBuildForm = (function () {
             submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
             title: { element: 'title' },
             label: { element: 'label', cols: 6 },
+            paragraph: { element: 'div' },
             captcha: { element: 'captcha' }
         };
         function ExtendFieldTemplate(eItem) {

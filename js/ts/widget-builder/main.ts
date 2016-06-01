@@ -256,6 +256,7 @@
 							, { field: 'company' }
 							, { field: 'state' }
 							, { field: 'comments' }
+							, { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph' }
 							// , { element: 'input', type: 'file' }
 							, { field: 'captcha' }
 							, { field: 'submit' }
@@ -611,8 +612,14 @@
 
 						window.console && console.log('newForm.formBorderRadius', newForm.formBorderRadius);
 						if (!ltm.isNumber(newForm.formBorderRadius)/*isNaN(newForm.formBorderRadius) || newForm.formBorderRadius === null*/) {
-							window.console && console.log('remove formBorderRadius');
+							// window.console && console.log('remove formBorderRadius');
 							delete newForm.formBorderRadius;
+						}
+
+						if (ltm.isStringNullOrEmpty(newForm.buildObject.panelTitle)) {
+							delete newForm.buildObject.panelTitle;
+							delete newForm.formTitleColor;
+							delete newForm.formTitleBgColor;
 						}
 
 						if (!newForm.formWidth) {

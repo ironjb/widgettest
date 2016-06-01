@@ -14,6 +14,7 @@ var LoanTekWidgetHelpers;
     }());
     var inputSizing = (function () {
         function inputSizing() {
+            this.default = { id: 'default', name: 'Default' };
             this.sm = { id: 'sm', name: 'Small' };
             this.lg = { id: 'lg', name: 'Large' };
         }
@@ -62,6 +63,9 @@ var LoanTekWidgetHelpers;
         }
         helpers.prototype.isNumber = function (numCheck) {
             return typeof numCheck === 'number';
+        };
+        helpers.prototype.isStringNullOrEmpty = function (stringCheck) {
+            return stringCheck === '' || typeof stringCheck !== 'string';
         };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
@@ -282,6 +286,7 @@ var LoanTekWidgetHelpers;
                                 { field: 'company' },
                                 { field: 'state' },
                                 { field: 'comments' },
+                                { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph' },
                                 { field: 'captcha' },
                                 { field: 'submit' }
                             ]
@@ -485,8 +490,12 @@ var LoanTekWidgetHelpers;
                                 newForm.name = 'modified';
                                 window.console && console.log('newForm.formBorderRadius', newForm.formBorderRadius);
                                 if (!ltm.isNumber(newForm.formBorderRadius)) {
-                                    window.console && console.log('remove formBorderRadius');
                                     delete newForm.formBorderRadius;
+                                }
+                                if (ltm.isStringNullOrEmpty(newForm.buildObject.panelTitle)) {
+                                    delete newForm.buildObject.panelTitle;
+                                    delete newForm.formTitleColor;
+                                    delete newForm.formTitleBgColor;
                                 }
                                 if (!newForm.formWidth) {
                                     delete newForm.formWidth;

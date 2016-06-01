@@ -22,9 +22,11 @@ namespace LoanTekWidgetHelpers {
 	}
 
 	class inputSizing {
+		public default: IHelperNameId;
 		public sm: IHelperNameId;
 		public lg: IHelperNameId;
 		constructor() {
+			this.default = { id: 'default', name: 'Default' }
 			this.sm = { id: 'sm', name: 'Small' };
 			this.lg = { id: 'lg', name: 'Large' };
 		}
@@ -171,6 +173,10 @@ namespace LoanTekWidgetHelpers {
 
 		isNumber(numCheck: any): boolean {
 			return typeof numCheck === 'number';
+		}
+
+		isStringNullOrEmpty(stringCheck: string): boolean {
+			return stringCheck === '' || typeof stringCheck !== 'string';
 		}
 
 		ConvertObjectToArray<T> (theObj: Object): T[] {

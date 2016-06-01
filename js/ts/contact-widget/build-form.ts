@@ -71,6 +71,7 @@ class LoanTekBuildForm {
 			submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
 			title: { element: 'title' },
 			label: { element: 'label', cols: 6 },
+			paragraph: { element: 'div' },
 			captcha: { element: 'captcha'/*, cssClass: 'lt-captcha'*/ }
 		};
 
@@ -270,6 +271,11 @@ class LoanTekBuildForm {
 				elementObj.value = elementObj.value || 'label';
 				returnElement.html(elementObj.value);
 				break;
+			// case 'p':
+			// 	elementObj.value = elementObj.value || ' ';
+			// 	returnElement = el.p();
+			// 	returnElement.html(elementObj.value);
+			// 	break;
 			case 'button':
 				returnElement = el.button(elementObj.type ? elementObj.type : 'button');
 				elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
@@ -359,7 +365,9 @@ class LoanTekBuildForm {
 				);
 				break;
 			default:
+				elementObj.value = elementObj.value || ' ';
 				returnElement = el.div();
+				returnElement.html(elementObj.value);
 				break;
 		}
 

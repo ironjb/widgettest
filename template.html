@@ -42,12 +42,17 @@
 								<label class="btn btn-primary"></label>
 							</div>
 						</div> -->
-						<div class="form-group form-group-sm" data-ng-disabled-NN="!showBorderRadius">
+						<div class="form-group form-group-sm" data-ng-show="showBorderRadius">
 							<label for="ltewBorderWidth" class="col-sm-4 control-label">Form Border Radius</label>
 							<div class="col-sm-4">
 								<input type="number" min="0" data-ng-disabled="!showBorderRadius" class="form-control" id="ltewBorderWidth" name="ltewBorderWidth" data-ng-model="modForm.formBorderRadius" data-ng-model-options="modelOptions" />
 							</div>
 						</div>
+						<div class="form-group form-group-sm">
+							<label for="ltewFormTitle" class="col-sm-4 control-label">Form Title</label>
+							<div class="col-sm-4"><input type="text" class="form-control" id="ltewFormTitle" name="ltewFormTitle" data-ng-model="modForm.buildObject.panelTitle" /></div>
+						</div>
+						<!-- .form-group.form-group-sm>label.col-sm-4.control-label[for=ltewSomeInput]{Label}+.col-sm-4>input.form-control#ltewSomeInput[name=ltewSomeInput type=text data-ng-model=modForm.something] -->
 					</div>
 					<div class="col-sm-4">
 						<h4>Preview:</h4>
@@ -55,20 +60,23 @@
 						<style type="text/css">{{previewStyles}}</style>
 						<div class="ltw ltw-preview" style="width:100%;">
 							<div class="panel panel-default lt-widget-border" data-ng-show="modForm.buildObject.formBorderType === borderType.panel.id">
-								<div class="panel-heading lt-widget-heading">{{modForm.buildObject.panelTitle}}</div>
+								<div class="panel-heading lt-widget-heading" data-ng-show="modForm.buildObject.panelTitle">{{modForm.buildObject.panelTitle}}</div>
 								<div class="panel-body">
 									panel contents
+									(.form-group>.col-sm-12>input.form-control[type=text placeholder="Field"])+(.form-group>.col-sm-12>textarea.form-control[placeholder="Text" rows=1])+(.form-group>.col-sm-12>select.form-control>option{Drop Down})+(.form-group>.col-sm-12>)+(.form-group>.col-sm-12>button.btn.btn-primary[type=button]{Button})
 								</div>
 							</div>
 							<div class="well lt-widget-border" data-ng-show="modForm.buildObject.formBorderType === borderType.well.id">
-								<h4 class="lt-widget-heading">{{modForm.buildObject.panelTitle}}</h4>
+								<h4 class="lt-widget-heading" data-ng-show="modForm.buildObject.panelTitle">{{modForm.buildObject.panelTitle}}</h4>
 								<div>
 									well content
 								</div>
 							</div>
 							<div data-ng-show="modForm.buildObject.formBorderType === borderType.none.id">
-								<h4 class="lt-widget-heading">{{modForm.buildObject.panelTitle}}</h4>
-								<div>none content</div>
+								<h4 class="lt-widget-heading" data-ng-show="modForm.buildObject.panelTitle">{{modForm.buildObject.panelTitle}}</h4>
+								<div>
+									none content
+								</div>
 							</div>
 						</div>
 					</div>

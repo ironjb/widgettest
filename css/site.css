@@ -47,6 +47,7 @@ body {
 }
 .ltw-builder-tools .ltw-tool-form-update {
   opacity: 0.3;
+  z-index: 2;
 }
 .ltw-builder-tools:hover .ltw-tool-form-update {
   opacity: 1;
