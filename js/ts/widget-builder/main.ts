@@ -49,19 +49,20 @@
 	];
 	var defaultFormWidthUnit = ltm.widthUnit.per;
 
-	var ApplyFormStyles = (currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean) => {
+	var ApplyFormStyles = (currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) => {
 		// formClass = formClass || '.ltw';
 		// window.console && console.log('form Id:', currentFormObject.buildObject.wrapperId);
-		var wrapId = currentFormObject.buildObject.wrapperId ? '#' + currentFormObject.buildObject.wrapperId : '';
+		// var specifier = currentFormObject.buildObject.wrapperId ? '#' + currentFormObject.buildObject.wrapperId : '';
+		specifier = specifier || '';
 		excludeCaptchaField = excludeCaptchaField || true;
 		var returnStyles = '';
 		if (currentFormObject.formWidth) {
 			currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || defaultFormWidthUnit.id;
-			returnStyles += '\n' + wrapId + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
+			returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
 		}
 
 		if (currentFormObject.formBg) {
-			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
+			returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
 		}
 
 		// window.console && console.log('ltm formBorder type 2', ltm.formBorderType2);
@@ -69,45 +70,45 @@
 		if (!isNaN(currentFormObject.formBorderRadius)) {
 			var fbr = currentFormObject.formBorderRadius + '';
 			var fbhr = currentFormObject.formBorderRadius - 1 < 0 ? '0' : (currentFormObject.formBorderRadius - 1) + '';
-			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
 			if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
-				returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+				returnStyles += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
 			}
 		}
 
 		if (currentFormObject.formBorderColor) {
 			// if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.panel.id) {
-			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+			returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
 			// } else if (currentFormObject.buildObject.formBorderType === ltm.formBorderType.well.id) {
-			// 	returnStyles += '\n' + wrapId + '.ltw  .lt-widget-border { border-color: ' + currentFormObject.formBorderColor + '}';
+			// 	returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { border-color: ' + currentFormObject.formBorderColor + '}';
 			// }
 		}
 
 		if (currentFormObject.formTitleColor) {
-			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-heading, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+			returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
 		}
 
 		if (currentFormObject.formTitleBgColor) {
-			returnStyles += '\n' + wrapId + '.ltw  .lt-widget-heading, ' + wrapId + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+			returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
 		}
 
 		if (!isNaN(currentFormObject.formGroupSpacing)) {
-			returnStyles += '\n' + wrapId + '.ltw  .form-group, ' + wrapId + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+			returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
 		}
 
 		// window.console && console.log(currentFormObject.formFieldBorderRadius);
 		if (!isNaN(currentFormObject.formFieldBorderRadius)) {
 			var ffbr = currentFormObject.formFieldBorderRadius + '';
 			var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
-			returnStyles += '\n' + wrapId + '.ltw  .form-group .form-control, ' + wrapId + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+			returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
 			if (!excludeCaptchaField) {
-				returnStyles += '\n' + wrapId + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
-				returnStyles += '\n' + wrapId + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+				returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+				returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
 			}
 		}
 
 		if (!isNaN(currentFormObject.formButtonBorderRadius)) {
-			returnStyles += '\n' + wrapId + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+			returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
 		}
 		return returnStyles;
 	};
@@ -432,10 +433,12 @@
 				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope, $uibModalInstance, intanceOptions) => {
 
 					$scope.modForm = angular.copy(intanceOptions.currentForm);
-					$scope.borderTypes = angular.copy(ltm.formBorderTypeArray);
+					$scope.borderTypeArray = angular.copy(ltm.formBorderTypeArray);
+					$scope.borderType = angular.copy(ltm.formBorderType);
 					$scope.formWidthUnits = angular.copy(ltm.widthUnit);
-					// window.console && console.log('$scope.borderTypes', $scope.borderTypes);
-					// $scope.borderTypes.push({ id: '', name: 'None' });
+					$scope.modelOptions = { updateOn: 'default blur', debounce: { default: 500, blur: 0 } };
+					// window.console && console.log('$scope.borderTypeArray', $scope.borderTypeArray);
+					// $scope.borderTypeArray.push({ id: '', name: 'None' });
 
 					$scope.changeFormWidthUnit = ($event, unit) => {
 						$event.preventDefault();
@@ -461,10 +464,12 @@
 					}
 					$scope.borderTypeChange();
 
-					// $scope.$watch('modForm', (newValue, oldValue) => {
-					// 	var s2 = ApplyFormStyles($scope.modForm);
-					// 	window.console && console.log('watching: ', s2);
-					// });
+					$scope.$watchCollection('modForm', (newValue, oldValue) => {
+						$scope.previewStyles = ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+						// window.console && console.log('previewStyles', $scope.previewStyles);
+						// var s2 = newValue;
+						// window.console && console.log('watching: ', s2, oldValue);
+					});
 
 					$scope.saveClick = () => {
 						var newForm: IWidgetFormObject = angular.copy($scope.modForm);

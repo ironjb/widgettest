@@ -20,21 +20,21 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-sm-3">
+							<div class="col-sm-4">
 								<div class="btn-group btn-group-sm"><label for="" class="btn btn-primary" data-ng-model="modForm.formWidthUnit" data-uib-btn-radio="fwunit.id" data-ng-repeat="fwunit in formWidthUnits track by fwunit.id"><span class="show-on-active-inline-block glyphicon glyphicon-ok"></span> {{fwunit.name}} </label></div>
 							</div>
 						</div>
 						<div class="form-group form-group-sm">
-							<label for="ltewBorderType" class="col-sm-2 control-label">Border Type</label>
+							<label for="ltewBorderType" class="col-sm-4 control-label">Border Type</label>
 							<div class="col-sm-6">
-								<!-- <select name="ltewBorderType" id="ltewBorderType" class="form-control" data-ng-model="modForm.buildObject.formBorderType" data-ng-options="btype.id as btype.name for btype in borderTypes">
+								<!-- <select name="ltewBorderType" id="ltewBorderType" class="form-control" data-ng-model="modForm.buildObject.formBorderType" data-ng-options="btype.id as btype.name for btype in borderTypeArray">
 									<option value="">None</option>
 								</select> -->
 								<div class="btn-group btn-group-sm">
-									<label class="btn btn-primary" data-ng-model="modForm.buildObject.formBorderType" data-ng-change="borderTypeChange();" uib-btn-radio="btype.id" data-ng-repeat="btype in borderTypes track by btype.id"><span class="show-on-active-inline-block glyphicon glyphicon-ok"></span> {{btype.name}} </label>
+									<label class="btn btn-primary" data-ng-model="modForm.buildObject.formBorderType" data-ng-change="borderTypeChange();" uib-btn-radio="btype.id" data-ng-repeat="btype in borderTypeArray track by btype.id"><span class="show-on-active-inline-block glyphicon glyphicon-ok"></span> {{btype.name}} </label>
 								</div>
 							</div>
-							<div class="col-sm-4">{{modForm.buildObject.formBorderType}}</div>
+							<div class="col-sm-2">{{modForm.buildObject.formBorderType}}</div>
 						</div>
 						<!-- <div class="form-group form-group-sm">
 							label.control-label.col-sm-2{Form Width}
@@ -43,33 +43,30 @@
 							</div>
 						</div> -->
 						<div class="form-group form-group-sm" data-ng-disabled-NN="!showBorderRadius">
-							<label for="ltewBorderWidth" class="col-sm-2 control-label">Form Border Radius</label>
-							<div class="col-sm-2">
-								<input type="number" min="0" data-ng-disabled="!showBorderRadius" class="form-control" id="ltewBorderWidth" name="ltewBorderWidth" data-ng-model="modForm.formBorderRadius" />
+							<label for="ltewBorderWidth" class="col-sm-4 control-label">Form Border Radius</label>
+							<div class="col-sm-4">
+								<input type="number" min="0" data-ng-disabled="!showBorderRadius" class="form-control" id="ltewBorderWidth" name="ltewBorderWidth" data-ng-model="modForm.formBorderRadius" data-ng-model-options="modelOptions" />
 							</div>
 						</div>
 					</div>
 					<div class="col-sm-4">
 						<h4>Preview:</h4>
 						<hr />
-						<div class="ltw" style="width:100%;">
-							<div>
-								<div class="panel panel-default lt-widget-border">
-									<div class="panel-heading lt-widget-heading">{{modForm.buildObject.panelTitle}}</div>
-									<div class="panel-body">
-										panel contents
-									</div>
+						<style type="text/css">{{previewStyles}}</style>
+						<div class="ltw ltw-preview" style="width:100%;">
+							<div class="panel panel-default lt-widget-border" data-ng-show="modForm.buildObject.formBorderType === borderType.panel.id">
+								<div class="panel-heading lt-widget-heading">{{modForm.buildObject.panelTitle}}</div>
+								<div class="panel-body">
+									panel contents
 								</div>
 							</div>
-							<div>
-								<div class="well lt-widget-border">
-									<h4 class="lt-widget-heading">{{modForm.buildObject.panelTitle}}</h4>
-									<div>
-										well content
-									</div>
+							<div class="well lt-widget-border" data-ng-show="modForm.buildObject.formBorderType === borderType.well.id">
+								<h4 class="lt-widget-heading">{{modForm.buildObject.panelTitle}}</h4>
+								<div>
+									well content
 								</div>
 							</div>
-							<div>
+							<div data-ng-show="modForm.buildObject.formBorderType === borderType.none.id">
 								<h4 class="lt-widget-heading">{{modForm.buildObject.panelTitle}}</h4>
 								<div>none content</div>
 							</div>

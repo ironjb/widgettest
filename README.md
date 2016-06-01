@@ -2,6 +2,35 @@
 
 
 
+## Installation
+
+Make sure nodejs is installed.
+
+The following NPM packages should be installed globally: http-server, bower, typescript
+
+To view your currently installed global npm packages, use the following:
+
+```bash
+npm list -g --depth=0
+```
+
+To install the packages, use the following:
+```bash
+sudo npm install -g http-server bower typescript
+```
+
+Now install needed dev dependencies
+```bash
+npm install
+```
+
+If you want to use [legacy bundling](http://stackoverflow.com/a/35227212) instead:
+```bash
+npm install --legacy-bundling
+```
+
+
+
 ## Typescript
 
 To compile on save changes, use the gulp task:
@@ -55,3 +84,8 @@ http://stackoverflow.com/questions/20297638/call-function-inside-sce-trustashtml
 
 http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
 
+
+
+## Angular
+
+[Alternative to Watching](https://www.accelebrate.com/blog/effective-strategies-avoiding-watches-angularjs/)
