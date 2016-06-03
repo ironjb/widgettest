@@ -8,18 +8,33 @@
 	gulp.task('copy', function () {
 		gulp.src([
 			'bower_components/jquery/dist/jquery.min.js',
-			'bower_components/jquery-placeholder/jquery.placeholder.min.js',
-			'bower_components/bootstrap/dist/js/bootstrap.min.js',
+			'bower_components/jquery-placeholder/jquery.placeholder.min.js'
+			])
+		.pipe(gulp.dest('js/lib/jquery'));
+
+		gulp.src([
+			'bower_components/jquery-1/dist/jquery.min.js'
+			])
+		.pipe(gulp.dest('js/lib/jquery-1'));
+
+		gulp.src([
+			'bower_components/bootstrap/dist/js/bootstrap.min.js'
+			])
+		.pipe(gulp.dest('js/lib/bootstrap'));
+
+		gulp.src([
 			'bower_components/angular/angular.min.js',
 			'bower_components/angular-animate/angular-animate.min.js',
 			'bower_components/angular-sanitize/angular-sanitize.min.js',
 			'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
 			])
-		.pipe(gulp.dest('js/lib'));
+		.pipe(gulp.dest('js/lib/angular'));
+
 		gulp.src([
 			'bower_components/bootstrap/dist/fonts/*'
 			])
 		.pipe(gulp.dest('fonts'));
+
 		gulp.src([
 			'bower_components/bootstrap/less/**'
 			])

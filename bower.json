@@ -12,8 +12,9 @@
     "tests"
   ],
   "devDependencies": {
-    "jquery": "1",
     "bootstrap": "3",
+    "jquery-1": "jquery#1",
+    "jquery": "2",
     "jquery-placeholder": "^2.3.1",
     "angular": "1",
     "angular-animate": "^1.5.5",
