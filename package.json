@@ -1,18 +1,32 @@
 {
   "name": "widgettest",
   "version": "1.0.0",
-  "description": "Test Contact Widget",
-  "main": "index.html",
+  "description": "Widget Test",
+  "main": "gulpfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.9",
+    "gulp-rename": "^1.2.2",
+    "gulp-typescript": "^2.13.6",
+    "gulp-uglify": "^1.5.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulpcopy": "bower install && gulp copy",
     "ts:compile": "gulp ts:compile",
-    "ts:watch": "gulp ts:watch"
+    "ts:watch": "gulp ts:watch",
+    "css:minify": "gulp css:minify",
+    "js:minify": "gulp js:minify"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ironjb/widgettest.git"
+  },
+  "author": "Joe Bell",
   "license": "ISC",
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-typescript": "^2.13.4"
-  }
+  "bugs": {
+    "url": "https://github.com/ironjb/widgettest/issues"
+  },
+  "homepage": "https://github.com/ironjb/widgettest#readme"
 }

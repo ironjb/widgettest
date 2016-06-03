@@ -1,6 +1,9 @@
 (function () {
 	var gulp = require('gulp');
 	var ts = require('gulp-typescript');
+	var cleanCSS = require('gulp-clean-css');
+	var uglify = require('gulp-uglify');
+	var rename = require('gulp-rename');
 
 	gulp.task('copy', function () {
 		gulp.src([
@@ -44,5 +47,19 @@
 		watcher.on('change', function(event) {
 			console.log('File [' + event.path + '] was ' + event.type + '!');
 		});
+	});
+
+	gulp.task('css:minify', function (details) {
+		return gulp.src(['./css/**/*.css', '!./css/**/*.min.css'])
+		.pipe(cleanCSS({compatibility: 'ie8'}))
+		.pipe(rename({suffix: '.min'}))
+		.pipe(gulp.dest('./css'));
+	});
+
+	gulp.task('js:minify', function() {
+		gulp.src(['js/**/*.js', '!js/**/*.min.js', '!js/lib/**'])
+		.pipe(uglify())
+		.pipe(rename({suffix: '.min'}))
+		.pipe(gulp.dest('js'));
 	});
 })();
