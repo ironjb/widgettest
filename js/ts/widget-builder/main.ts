@@ -1,8 +1,4 @@
-/// <reference path="../../../typings/jquery/jquery.d.ts" />
-/// <reference path="../../../typings/jquery.placeholder/jquery.placeholder.d.ts" />
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../../typings/angularjs/angular-animate.d.ts" />
-/// <reference path="../../../typings/angularjs/angular-sanitize.d.ts" />
+/// <reference path="../../../typings/tsd.d.ts" />
 /// <reference path="../common/interfaces-widget.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
