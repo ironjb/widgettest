@@ -1,0 +1,89 @@
+<html>
+<body>
+	<style type="text/css">.ltw {display:none;}</style>
+	<link rel="stylesheet" href="http://localhost:58477/Areas/Widgets/Content/lt-captcha.css">
+	<link rel="stylesheet" href="http://localhost:58477/Areas/Widgets/Content/widget.css">
+	<div id="ltWidgetWrapper"></div>
+
+	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
+	<script type="text/javascript" src="http://localhost:58477/Scripts/lib/jquery-1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://localhost:58477/Scripts/lib/jquery/jquery.placeholder.min.js"></script>
+	<script type="text/javascript" src="http://localhost:58477/Areas/Widgets/Scripts/common/ltCaptcha.js"></script>
+	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
+	<script type="text/javascript">
+	(function () {
+		// var ltCaptcha = new LoanTekCaptcha();
+		var ltCaptcha;
+		// var _ltCaptcha = function () {
+		// 	ltCaptcha = new LoanTekCaptcha();
+		// };
+
+		var postDOMFunctions = function () {
+			// ltjQuery('input, textarea').placeholder();
+			// _ltCaptcha();
+			ltCaptcha = new LoanTekCaptcha();
+		};
+
+		var externalValidators = function () {
+			// window.console && console.log('external validator');
+			return ltCaptcha.IsValidEntry();
+		};
+
+		// var loanTeckBuildOptions = {
+		// };
+		var loanTekManualContactWidgetBuildObject = {
+			showBuilderTools: true,
+			fieldSize: 'sm',
+			wrapperId: 'ltWidgetWrapper',
+			postDOMCallback: postDOMFunctions,
+			formId: 'LtcwContactWidgetForm',
+			// clientID: 1234, // add as hidden field???
+			// userID: 6789, // add as hidden field???
+			fields: [
+				{ field: 'clientid', value: 'test1234' }
+				, { field: 'firstname', placeholders: 'First', alttext: 'firstname alt text' }
+				, { field: 'label', cols: 2, value: 'Last Name' }
+				, { field: 'lastname', cols: 8, value: '' }
+				// , { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' }
+				, { field: 'email', values: 'email@mail.com' }
+				, { field: 'phone', values: '208-456-7890' }
+				, { field: 'company', values: 'LT' }
+				, { field: 'state', values: 'ID' }
+				, { field: 'comments', values: 'My Comments' }
+				// , { field: 'captcha' }
+				// , { field: 'submit' }
+
+				// { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true, cols: 2, style: { color: 'blue', fontWeight: 'bold' }, value: 'First' },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId2', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId3', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId4', value: 1234 },
+				// { element: 'input', type: 'hidden', id: 'ltcwClientId5', value: 1234 },
+				// { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true, cols: 6, value: 'Last' },
+				// { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true, cols: 6, value: 'email@mail.com' },
+				// { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}', cols: 6, value: '208-255-1795' },
+				// { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company', cols: 6, value: 'comp' },
+				// { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State', cols: 6, values: 'UT' },
+				// { element: 'textarea', id: 'ltcwComments', placeholders: 'Comments', cols: 12, rows: 4, value: 'my comments' },
+				// // { element: 'captcha' },
+				// { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit', size: 'lg', style: { color: 'blue', backgroundColor: '#add', borderRadius: '20px' } },
+				// { element: 'button', type: 'button', cols: 2 },
+				// { element: 'button', type: 'button', cols: 2 },
+				// { element: 'input', type: 'button', value: 'Enter', cssClass: 'btn-info', cols: 2 }
+			]
+		};
+		// LoanTekBuildForm(loanTekManualContactWidgetBuildObject, loanTeckBuildOptions);
+		LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
+
+		var loanTekManualContactWidgetOptions = {
+			// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
+			postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
+			// redirectUrl: 'http://www.google.com',
+			externalValidatorFunction: externalValidators,
+			successMessage: 'Yay!!! Successful POST'
+		};
+		LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+	})();
+	</script>
+</body>
+</html>
