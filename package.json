@@ -14,7 +14,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulpcopy": "bower install && gulp copy",
+    "ts:compilewidget": "gulp ts:compilewidget",
     "ts:compile": "gulp ts:compile",
+    "ts:watchwidget": "gulp ts:watchwidget",
     "ts:watch": "gulp ts:watch",
     "css:minify": "gulp css:minify",
     "js:minify": "gulp js:minify"

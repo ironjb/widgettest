@@ -44,7 +44,7 @@
 		.pipe(gulp.dest('css/less/bootstrap'));
 	});
 
-	gulp.task('ts:compile', function () {
+	gulp.task('ts:compilewidget', function () {
 		var tsWidgetBuilderProject = ts.createProject('js/ts/widget-builder/tsconfig.json');
 		var tsContactWidgetProject = ts.createProject('js/ts/contact-widget/tsconfig.json');
 		// Widget Builder
@@ -58,6 +58,18 @@
 		// dest() should be same as direcotry tsconfig.json is in since the tsconfig.json file is using "outFile"
 		tsWidgetBuilder.js.pipe(gulp.dest('js/ts/widget-builder'));
 		tsContactWidget.js.pipe(gulp.dest('js/ts/contact-widget'));
+	});
+
+	gulp.task('ts:compile', function () {
+		var tsProject = ts.createProject('./tsconfig.json');
+		// Widget Builder
+		var tsResult = tsProject.src()
+		.pipe(ts(tsProject));
+
+		// Contact Widget
+
+		// dest() should be same as direcotry tsconfig.json is in since the tsconfig.json file is using "outFile"
+		return tsResult.js.pipe(gulp.dest('./'));
 	});
 
 	// gulp.task('ts:compile', function () {
@@ -132,8 +144,15 @@
 	// 	// tsWidgetBuilder.js.pipe(gulp.dest('js/ts'));
 	// });
 
-	gulp.task('ts:watch', ['ts:compile'], function() {
+	gulp.task('ts:watchwidget', ['ts:compilewidget'], function() {
 		var watcher = gulp.watch('js/ts/**/*.ts', ['ts:compile']);
+		watcher.on('change', function(event) {
+			console.log('File [' + event.path + '] was ' + event.type + '!');
+		});
+	});
+
+	gulp.task('ts:watch', ['ts:compile'], function() {
+		var watcher = gulp.watch('js/**/*.ts', ['ts:compile']);
 		watcher.on('change', function(event) {
 			console.log('File [' + event.path + '] was ' + event.type + '!');
 		});

@@ -1,30 +1,71 @@
 <html>
 <body>
 	<style type="text/css">.ltw {display:none;}</style>
-	<link rel="stylesheet" href="http://localhost:58477/Areas/Widgets/Content/lt-captcha.css">
-	<link rel="stylesheet" href="http://localhost:58477/Areas/Widgets/Content/widget.css">
+	<!-- <link rel="stylesheet" href="http://localhost:58477/Areas/Widgets/Content/lt-captcha.css">
+	<link rel="stylesheet" href="http://localhost:58477/Areas/Widgets/Content/widget.css"> -->
+	<link rel="stylesheet" href="/css/widget.css">
 	<div id="ltWidgetWrapper"></div>
+	<div id="ltWidgetResults"></div>
+	<!-- <div class="row" id="ltcwSuccessMessageWrapper" style="display: none;">
+		<div class="col-sm-12">
+			<p id="ltcwSuccessMessage"></p>
+		</div>
+	</div> -->
 
 	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
-	<script type="text/javascript" src="http://localhost:58477/Scripts/lib/jquery-1/jquery.min.js"></script>
-	<script type="text/javascript" src="http://localhost:58477/Scripts/lib/jquery/jquery.placeholder.min.js"></script>
-	<script type="text/javascript" src="http://localhost:58477/Areas/Widgets/Scripts/common/ltCaptcha.js"></script>
-	<script type="text/javascript" src="http://localhost:58477/Areas/Widgets/Scripts/widget/widget.js"></script>
+	<script type="text/javascript" src="/js/lib/jquery-1/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/lib/jquery/jquery.placeholder.min.js"></script>
+	<script type="text/javascript" src="js/common/widget-helpers.js"></script>
+	<script type="text/javascript" src="js/common/lt-captcha.js"></script>
+	<script type="text/javascript" src="js/widget/widget.js"></script>
 	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script> -->
 	<script type="text/javascript">
 	(function () {
+		// jQuery no conflict
+		var ltjQuery = ltjQuery || jQuery.noConflict(true);
+
 		var ltCaptcha;
 		var postDOMFunctions = function () {
 			/*code ran after DOM created*/
-				ltCaptcha = new LoanTekCaptcha();
+				ltCaptcha = new LoanTekCaptcha(ltjQuery);
 		};
 		var externalValidators = function () {
 			return ltCaptcha.IsValidEntry();
 		};
-		var loanTekManualContactWidgetBuildObject = {"panelTitle":"Contact Us","fields":[{"field":"clientid"},{"field":"userid"},{"field":"firstname","cols":2},{"field":"lastname"},{"field":"email"},{"field":"phone"},{"field":"company"},{"field":"state"},{"field":"comments"},{"field":"paragraph","value":"This is a paragraph<br />This is a paragraph"},{"field":"captcha"},{"field":"submit"}],"postDOMCallback":postDOMFunctions};
-		LoanTekBuildForm(loanTekManualContactWidgetBuildObject);
-		var loanTekManualContactWidgetOptions = {"postUrl":"http://node-cors-server.herokuapp.com/simple-cors","externalValidatorFunction":externalValidators,"successMessage":"Yay!!! Successful POST"};
-		LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+		var ltHelpers = new LoanTekWidget.helpers(ltjQuery);
+
+		var ltwBuildObject = {
+			// showBuilderTools: true,
+			fieldSize: 'sm',
+			panelTitle: 'Contact Us',
+			fields: [
+				{field: 'clientid'}
+				, {field: 'userid'}
+				, {field: 'firstname', cols: 2}
+				, {field: 'lastname', cols: 6}
+				, {field: 'email'}
+				, {field: 'phone'}
+				, {field: 'company'}
+				, {field: 'state'}
+				, {field: 'comments'}
+				, {field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph'}
+				, {field: 'captcha'}
+				, {field: 'submit'}],
+			postDOMCallback: postDOMFunctions,
+			resultWrapId: 'ltWidgetResults',
+			rFormId: null,
+			rFieldSize: 'sm',
+			rFormBorderType: 'panel',
+			rPanelTitle: 'Results Title',
+			rFields: [
+				{field: 'resultmessage'}
+			]
+		};
+		// LoanTekBuildForm(ltwBuildObject);
+		var loanTekContactWidgetOptions = {"postUrl":"http://node-cors-server.herokuapp.com/simple-cors","externalValidatorFunction":externalValidators,"successMessage":"Yay!!! Successful POST"};
+
+		var ltWidgetFormBuild = new LoanTekWidget.FormBuild(ltjQuery, ltHelpers, ltwBuildObject, loanTekContactWidgetOptions);
+		// LoanTekManualContactWidget(loanTekContactWidgetOptions);
 	})();
 	</script>
 </body>
