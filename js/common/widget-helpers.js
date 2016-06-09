@@ -62,6 +62,7 @@ var LoanTekWidget;
     }());
     var helpers = (function () {
         function helpers(jq) {
+            window.console && console.log('helper constructed');
             this.$ = jq;
             this.hsize = new hSizing;
             this.bootstrap = new bootstrap;
@@ -69,6 +70,8 @@ var LoanTekWidget;
             this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
             this.widthUnit = new widthUnit;
             this.widgetType = new widgetType;
+            this.defaultFormWidthUnit = this.widthUnit.per;
+            this.defaultBorderRadius = 4;
         }
         helpers.prototype.isNumber = function (numCheck) {
             return typeof numCheck === 'number';

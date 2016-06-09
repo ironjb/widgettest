@@ -112,8 +112,11 @@ namespace LoanTekWidget {
 		public formBorderTypeArray: IHelperNameId[];
 		public widthUnit: widthUnit;
 		public widgetType: widgetType;
+		public defaultFormWidthUnit: IHelperNameId;
+		public defaultBorderRadius: number;
 
 		constructor(jq: JQueryStatic) {
+			window.console && console.log('helper constructed');
 			this.$ = jq;
 
 			this.hsize = new hSizing;
@@ -122,6 +125,8 @@ namespace LoanTekWidget {
 			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
 			this.widthUnit = new widthUnit;
 			this.widgetType = new widgetType;
+			this.defaultFormWidthUnit = this.widthUnit.per;
+			this.defaultBorderRadius = 4;
 		}
 
 		isNumber(numCheck: any): boolean {
