@@ -22,25 +22,6 @@ interface IWidgetFormBuildObject {
 	rFields?: IWidgetField[];
 }
 
-interface IWidgetField {
-	field?: string;
-	element?: string;
-	id?: string;
-	type?: string;
-	style?: Object;
-	placeholder?: string;
-	required?: boolean;
-	cols?: number;
-	rows?: number;
-	cssClass?: string;
-	value?: string;
-	size?: string;
-	pattern?: string;
-	alttext?: string;
-	tabindex?: number;
-	nsize?: number;
-}
-
 // Contact Widget Interfaces
 interface IContactWidgetData {
 	FileType: string;
@@ -183,26 +164,27 @@ namespace LoanTekWidget {
 
 			var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 
-			var fieldTemplates = {
-				clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function() { return 'LTWS' + new Date().getTime().toString() } },
-				userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
-				firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true },
-				lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true },
-				email: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true },
-				phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' },
-				company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company' },
-				state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State' },
-				comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
-				submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
-				title: { element: 'title' },
-				label: { element: 'label' },
-				paragraph: { element: 'div' },
-				resultmessage: { element: 'div', id: 'ltcwResultMessage' },
-				captcha: { element: 'captcha'/*, cssClass: 'lt-captcha'*/ }
-			};
+			// var fieldTemplates = {
+			// 	clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function() { return 'LTWS' + new Date().getTime().toString() } },
+			// 	userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
+			// 	firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true },
+			// 	lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true },
+			// 	email: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true },
+			// 	phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' },
+			// 	company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company' },
+			// 	state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State' },
+			// 	comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
+			// 	submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
+			// 	title: { element: 'title' },
+			// 	label: { element: 'label' },
+			// 	paragraph: { element: 'div' },
+			// 	resultmessage: { element: 'div', id: 'ltcwResultMessage' },
+			// 	captcha: { element: 'captcha' }
+			// };
 
 			function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
-				return $.extend({}, fieldTemplates[eItem.field], eItem);
+				// return $.extend({}, fieldTemplates[eItem.field], eItem);
+				return $.extend({}, lth.contactFields[eItem.field].fieldTemplate, eItem);
 			}
 
 			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
@@ -356,7 +338,7 @@ namespace LoanTekWidget {
 		CreateFormElement (elementObj: IWidgetField) {
 			var _thisM = this;
 			var el = _thisM._lth.CreateElement();
-			var returnElement = null;
+			var returnElement: JQuery = null;
 			switch (elementObj.element) {
 				case 'title':
 					elementObj.nsize = elementObj.nsize || _thisM._lth.hsize.default.id;
@@ -370,11 +352,11 @@ namespace LoanTekWidget {
 					elementObj.value = elementObj.value || 'label';
 					returnElement.html(elementObj.value);
 					break;
-				// case 'p':
-				// 	elementObj.value = elementObj.value || ' ';
-				// 	returnElement = el.p();
-				// 	returnElement.html(elementObj.value);
-				// 	break;
+				case 'p':
+					elementObj.value = elementObj.value || ' ';
+					returnElement = el.p();
+					returnElement.html(elementObj.value);
+					break;
 				case 'button':
 					returnElement = el.button(elementObj.type ? elementObj.type : 'button');
 					elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';

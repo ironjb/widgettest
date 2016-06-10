@@ -25,7 +25,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             saveForm: function (updatedForm) {
                                 scope.currentForm = updatedForm;
                                 scope.selectedForm = {};
-                                scope.RunWidgetScriptBuild(scope.currentForm);
+                                scope.WidgetScriptBuild(scope.currentForm);
                             }
                         };
                         widgetServices.editForm(formEditOptions);

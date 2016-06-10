@@ -8,6 +8,36 @@ interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHel
 interface IHelperBsInputSizing { sm: string; lg: string; }
 interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
 
+
+interface IWidgetAvailableField {
+	id?: string;
+	name: string;
+	isLTRequired?: boolean;
+	isIncluded?: boolean;
+	allowMultiples?: boolean;
+	hideFromList?: boolean;
+	fieldTemplate?: IWidgetField;
+}
+
+interface IWidgetField {
+	field?: string;
+	element?: string;
+	id?: string;
+	type?: string;
+	style?: Object;
+	placeholder?: string;
+	required?: boolean;
+	cols?: number;
+	rows?: number;
+	cssClass?: string;
+	value?: string;
+	size?: string;
+	pattern?: string;
+	alttext?: string;
+	tabindex?: number;
+	nsize?: number;
+}
+
 interface IState {
 	abbreviation: string;
 	name: string;
@@ -104,6 +134,41 @@ namespace LoanTekWidget {
 		}
 	}
 
+	class contactFields {
+		clientid: IWidgetAvailableField;
+		userid: IWidgetAvailableField;
+		firstname: IWidgetAvailableField;
+		lastname: IWidgetAvailableField;
+		email: IWidgetAvailableField;
+		phone: IWidgetAvailableField;
+		company: IWidgetAvailableField;
+		state: IWidgetAvailableField;
+		comments: IWidgetAvailableField;
+		captcha: IWidgetAvailableField;
+		submit: IWidgetAvailableField;
+		resultmessage: IWidgetAvailableField;
+		label: IWidgetAvailableField;
+		title: IWidgetAvailableField;
+		paragraph: IWidgetAvailableField;
+		constructor() {
+			this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' } };
+			this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' } };
+			this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true } };
+			this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true } };
+			this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true } };
+			this.phone = { id: 'phone', name: 'Phone', fieldTemplate: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' } };
+			this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company' } };
+			this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State' } };
+			this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 } };
+			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
+			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' } };
+			this.resultmessage = { id: 'resultmessage', name: 'Message Upon Submit', fieldTemplate: { element: 'div', id: 'ltcwResultMessage' } };
+			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label' } };
+			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title' } };
+			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p' } };
+		}
+	}
+
 	export class helpers {
 		private $: JQueryStatic;
 		public bootstrap: bootstrap;
@@ -114,6 +179,8 @@ namespace LoanTekWidget {
 		public widgetType: widgetType;
 		public defaultFormWidthUnit: IHelperNameId;
 		public defaultBorderRadius: number;
+		public contactFields: contactFields;
+		public contactFieldsArray: IWidgetAvailableField[];
 
 		constructor(jq: JQueryStatic) {
 			window.console && console.log('helper constructed');
@@ -127,6 +194,8 @@ namespace LoanTekWidget {
 			this.widgetType = new widgetType;
 			this.defaultFormWidthUnit = this.widthUnit.per;
 			this.defaultBorderRadius = 4;
+			this.contactFields = new contactFields;
+			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetAvailableField>(this.contactFields);
 		}
 
 		isNumber(numCheck: any): boolean {

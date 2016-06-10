@@ -50,25 +50,8 @@ var LoanTekWidget;
             }
             errorRow.append(el.col().append(el.div().addClass('alert alert-danger').append(errorMsg)));
             var returnForm = el.form().prop('id', settings.formId).append(errorRow);
-            var fieldTemplates = {
-                clientid: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: function () { return 'LTWS' + new Date().getTime().toString(); } },
-                userid: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' },
-                firstname: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true },
-                lastname: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true },
-                email: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true },
-                phone: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' },
-                company: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company' },
-                state: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State' },
-                comments: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 },
-                submit: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' },
-                title: { element: 'title' },
-                label: { element: 'label' },
-                paragraph: { element: 'div' },
-                resultmessage: { element: 'div', id: 'ltcwResultMessage' },
-                captcha: { element: 'captcha' }
-            };
             function ExtendFieldTemplate(eItem) {
-                return $.extend({}, fieldTemplates[eItem.field], eItem);
+                return $.extend({}, lth.contactFields[eItem.field].fieldTemplate, eItem);
             }
             $.each(settings.fields, function (i, elementItem) {
                 if (elementItem.field) {
@@ -197,6 +180,11 @@ var LoanTekWidget;
                         returnElement.addClass(elementObj.cssClass);
                     }
                     elementObj.value = elementObj.value || 'label';
+                    returnElement.html(elementObj.value);
+                    break;
+                case 'p':
+                    elementObj.value = elementObj.value || ' ';
+                    returnElement = el.p();
                     returnElement.html(elementObj.value);
                     break;
                 case 'button':

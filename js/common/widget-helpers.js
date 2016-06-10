@@ -60,6 +60,26 @@ var LoanTekWidget;
         }
         return widgetType;
     }());
+    var contactFields = (function () {
+        function contactFields() {
+            this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' } };
+            this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' } };
+            this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltcwFirstName', placeholder: 'First Name', required: true } };
+            this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltcwLastName', placeholder: 'Last Name', required: true } };
+            this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltcwEmail', placeholder: 'Email', required: true } };
+            this.phone = { id: 'phone', name: 'Phone', fieldTemplate: { element: 'input', type: 'tel', id: 'ltcwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' } };
+            this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltcwCompany', placeholder: 'Company' } };
+            this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltcwState', placeholder: 'Select a State' } };
+            this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltcwComments', placeholder: 'Comments', rows: 4 } };
+            this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
+            this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', cssClass: 'btn-primary', value: 'Submit' } };
+            this.resultmessage = { id: 'resultmessage', name: 'Message Upon Submit', fieldTemplate: { element: 'div', id: 'ltcwResultMessage' } };
+            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label' } };
+            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title' } };
+            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p' } };
+        }
+        return contactFields;
+    }());
     var helpers = (function () {
         function helpers(jq) {
             window.console && console.log('helper constructed');
@@ -72,6 +92,8 @@ var LoanTekWidget;
             this.widgetType = new widgetType;
             this.defaultFormWidthUnit = this.widthUnit.per;
             this.defaultBorderRadius = 4;
+            this.contactFields = new contactFields;
+            this.contactFieldsArray = this.ConvertObjectToArray(this.contactFields);
         }
         helpers.prototype.isNumber = function (numCheck) {
             return typeof numCheck === 'number';
