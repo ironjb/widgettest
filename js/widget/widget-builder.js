@@ -69,9 +69,29 @@ var LoanTekWidget;
                 ];
             }
             var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
-            widgetBuilderApp.controller('WidgetBuilderController', ['$scope', function ($scope) {
-                    window.console && console.log('widgetData: ', widgetData);
-                    window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
+            widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
+                    var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
+                    var ltWidgetCSS = [
+                        '/css/widget.css'
+                    ];
+                    var scriptsLocation = '/js/';
+                    var widgetScripts = [
+                        scriptsLocation + 'lib/jquery-1/jquery.min.js',
+                        scriptsLocation + 'lib/jquery/jquery.placeholder.min.js',
+                        scriptsLocation + 'common/lt-captcha.js',
+                        scriptsLocation + 'common/widget-helpers.js',
+                        scriptsLocation + 'widget/widget.js'
+                    ];
+                    var scriptHelpersCode = "\n\t\t\t\t\t/*window.console && console.log('jquery no conflict', jQuery.fn.jquery, jQuery);*/\n\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
+                    var scriptLoader = function () {
+                        var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
+                            var body = $('body')[0];
+                            var script = el.script().html(scriptHelpersCode)[0];
+                            body.appendChild(script);
+                            $scope.UpdateWidgetDisplay();
+                        });
+                        loadScripts.run();
+                    };
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
                     $scope.UsePrebuiltForm = UsePrebuildForm;
                     BuilderInit();
@@ -93,18 +113,6 @@ var LoanTekWidget;
                         var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
                         var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
                         var formStyles = '';
-                        var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
-                        var ltWidgetCSS = [
-                            '/css/widget.css'
-                        ];
-                        var scriptsLocation = '/js/';
-                        var widgetScripts = [
-                            scriptsLocation + 'lib/jquery-1/jquery.min.js',
-                            scriptsLocation + 'lib/jquery/jquery.placeholder.min.js',
-                            scriptsLocation + 'common/lt-captcha.js',
-                            scriptsLocation + 'common/widget-helpers.js',
-                            scriptsLocation + 'widget/widget.js'
-                        ];
                         cbod.showBuilderTools = true;
                         cbo.postDOMCallback = '#fn{postDOMFunctions}';
                         cbod.postDOMCallback = '#fn{postDOMFunctions}';
@@ -125,16 +133,12 @@ var LoanTekWidget;
                         wScriptDisplay += widgetWrapper;
                         for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
                             var scriptSrc = widgetScripts[iScript];
-                            window.console && console.log('scriptSrc', scriptSrc);
                             var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
                             wScript += scriptLink;
-                            wScriptDisplay += scriptLink;
                         }
                         var mainScript = '';
                         var mainScriptDisplay = '';
-                        var scriptHelpers = "\n\t\t\t\t\t\twindow.console && console.log('jquery no conflict', jQuery.fn.jquery, jQuery);\n\t\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\t\tvar lth = new LoanTekWidget.helpers(ltjq);";
-                        mainScript += scriptHelpers;
-                        mainScriptDisplay += scriptHelpers;
+                        mainScript += scriptHelpersCode;
                         var captchaVar = "\n\t\t\t\t\t\tvar ltCap;";
                         if (hasCaptchaField) {
                             mainScript += captchaVar;
@@ -168,7 +172,7 @@ var LoanTekWidget;
                         var ltWidgetOptionsWrap = "\n\t\t\t\t\t\tvar ltwo = #{cwow};";
                         mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
                         mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
-                        var contactWidget = "\n\t\t\t\t\t\tvar ltwfb = new LoanTekWidget.FormBuild(ltjq, lth, ltwbo, ltwo);";
+                        var contactWidget = "\n\t\t\t\t\t\tvar ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);";
                         mainScript += contactWidget;
                         mainScriptDisplay += contactWidget;
                         mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
@@ -179,10 +183,18 @@ var LoanTekWidget;
                         wScript += mainScript;
                         wScriptDisplay += mainScriptDisplay;
                         wScript = wScript.replace(/\s+/gm, ' ');
-                        $scope.widgetScript = wScript;
-                        $scope.widgetScriptDisplay = wScriptDisplay;
-                        lth.ScrollToAnchor('widgetTop');
-                        $scope.scriptChangedClass = 't' + new Date().getTime();
+                        $scope.UpdateWidgetDisplay = function () {
+                            $timeout(function () {
+                                $scope.widgetScript = wScript;
+                                $scope.widgetScriptDisplay = wScriptDisplay;
+                                lth.ScrollToAnchor('widgetTop');
+                                $scope.scriptChangedClass = 't' + new Date().getTime();
+                            });
+                        };
+                        scriptLoader();
+                        scriptLoader = function () {
+                            $scope.UpdateWidgetDisplay();
+                        };
                     }
                 }]);
         }

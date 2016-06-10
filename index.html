@@ -140,7 +140,11 @@
 	<script type="text/javascript" src="/js/lib/jquery/jquery.placeholder.min.js"></script>
 	<script type="text/javascript" src="/js/common/lt-captcha.js"></script>
 	<script type="text/javascript" src="/js/common/widget-helpers.js"></script>
-	<script type="text/javascript" src="/js/widget/widget.js"></script> -->
+	<script type="text/javascript" src="/js/widget/widget.js"></script>
+	<script id="LoanTekWidgetBuilderHelpers" type="text/javascript">
+		var ltjq = ltjq || jQuery.noConflict(true);
+		var lth = new LoanTekWidget.helpers(ltjq);
+	</script> -->
 
 	<!-- <script type="text/javascript">window.console && console.log('after', $.fn.jquery, 'ltjQuery', ltjQuery.fn.jquery);</script> -->
 

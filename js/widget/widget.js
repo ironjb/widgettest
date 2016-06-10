@@ -413,7 +413,6 @@ var LoanTekWidget;
                     widgetData.ClientDefinedIdentifier = $(settings.form_clientid).val();
                     widgetData.Reason = $(settings.form_comments).val();
                     widgetData.MiscData[0].Value = '';
-                    window.console && console.log('widgetData', widgetData);
                     var request = $.ajax({
                         url: settings.postUrl,
                         method: 'POST',

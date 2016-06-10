@@ -3,6 +3,64 @@
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 namespace LoanTekWidget {
+	export class LoadScriptsInSequence {
+		private _scriptSrcArray: string[];
+		private _scriptRootDirectory: string;
+		private _callbackFunction: Function;
+		private _lth: LoanTekWidget.helpers;
+		constructor(scriptSrcArray: string[], scriptRootDirectory?: string, callback?: Function) {
+			var _thisC = this;
+			_thisC._scriptSrcArray = scriptSrcArray || null;
+			_thisC._scriptRootDirectory = scriptRootDirectory || '';
+			_thisC._callbackFunction = callback || null;;
+
+			_thisC._lth = LoanTekWidgetHelper;
+		}
+
+		addSrc(src: string) {
+			this._scriptSrcArray.push(src);
+			return this;
+		}
+
+		run() {
+			var _thisC = this;
+			var $ = _thisC._lth.$;
+			var el = _thisC._lth.CreateElement();
+
+			var currentIndex = 0;
+			var lastIndex = this._scriptSrcArray.length - 1;
+			// var body = document.getElementsByTagName('body')[0];
+			var body = $('body')[0];
+
+			function loadScript(i: number) {
+				// window.console && console.log('\n\n\ncurrent index is: ', currentIndex);
+				var scriptSrc = _thisC._scriptSrcArray[i];
+				var script = el.script(_thisC._scriptRootDirectory + scriptSrc)[0];
+				script.onload = function() {
+					// window.console && console.log('script loaded: ', script);
+					if (currentIndex < lastIndex) {
+						currentIndex += 1;
+						// setTimeout(function() {
+						// window.console && console.log('going to load next script of index: ', currentIndex);
+						loadScript(currentIndex);
+						// }, 4000);
+					} else {
+						// window.console && console.log('not looping now. lastIndex is: ', lastIndex, currentIndex);
+						// window.console && console.log('this is where you would put callback');
+						if (_thisC._callbackFunction) {
+							_thisC._callbackFunction();
+						}
+					}
+				};
+				script.onerror = function(error) {
+					window.console && console.error('error getting script. mission aborted.', error);
+				};
+				// window.console && console.log('appended to body: ', script);
+				body.appendChild(script);
+			}
+			loadScript(currentIndex);
+		}
+	}
 	export class ApplyFormStyles {
 		private _returnStyles: string;
 		private _specifier: string;

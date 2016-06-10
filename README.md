@@ -89,3 +89,25 @@ http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-java
 ## Angular
 
 [Alternative to Watching](https://www.accelebrate.com/blog/effective-strategies-avoiding-watches-angularjs/)
+
+
+## How to load JavaScript Dynamically
+
+If you use jQuery to dynamically load other JavaScript resources like this:
+```javascript
+var script = $('<script />').attr('src', 'myScript.js');
+$('body').first().append(script);
+```
+
+you get an error something like:
+
+	Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help http://xhr.spec.whatwg.org/
+
+This code example from [unixpapa.com](http://unixpapa.com/js/dyna.html) explains how to deal with this in a better way
+```javascript
+var head= document.getElementsByTagName('head')[0];
+      var script= document.createElement('script');
+      script.type= 'text/javascript';
+      script.src= 'helper.js';
+      head.appendChild(script);
+```

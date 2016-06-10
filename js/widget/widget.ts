@@ -623,7 +623,7 @@ namespace LoanTekWidget {
 					widgetData.Reason = $(settings.form_comments).val();
 					widgetData.MiscData[0].Value = '';
 
-					window.console && console.log('widgetData', widgetData);
+					// window.console && console.log('widgetData', widgetData);
 
 					var request = $.ajax({
 						// url: 'http://node-cors-server.herokuapp.com/no-cors',

@@ -82,7 +82,6 @@ var LoanTekWidget;
     }());
     var helpers = (function () {
         function helpers(jq) {
-            window.console && console.log('helper constructed');
             this.$ = jq;
             this.hsize = new hSizing;
             this.bootstrap = new bootstrap;
@@ -118,11 +117,9 @@ var LoanTekWidget;
                 var obj = theArray[i];
                 var objectKey = obj[theKey];
                 if (objectKey) {
-                    window.console && console.log('objectKey', objectKey);
                     returnObj[objectKey] = obj;
                 }
             }
-            window.console && console.log('returnObj', returnObj);
             return returnObj;
         };
         helpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {

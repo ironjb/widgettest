@@ -29,6 +29,7 @@ interface IWidgetFormObject {
 interface IWidgetBuilderNgScope extends ng.IScope {
 	currentForm?: IWidgetFormObject;
 	UsePrebuiltForm?(): void;
+	UpdateWidgetDisplay?(): void;
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
@@ -122,10 +123,80 @@ namespace LoanTekWidget {
 			var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
-			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', function($scope: IWidgetBuilderNgScope) {
-				window.console && console.log('widgetData: ', widgetData);
-				window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
+			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function($scope: IWidgetBuilderNgScope, $timeout) {
+				// window.console && console.log('widgetData: ', widgetData);
+				// window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
+				var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
+				var ltWidgetCSS: string[] = [
+					'/css/widget.css'
+				];
+				var scriptsLocation = '/js/';
+				var widgetScripts: string[] = [
+					scriptsLocation + 'lib/jquery-1/jquery.min.js'
+					, scriptsLocation + 'lib/jquery/jquery.placeholder.min.js'
+					, scriptsLocation + 'common/lt-captcha.js'
+					, scriptsLocation + 'common/widget-helpers.js'
+					, scriptsLocation + 'widget/widget.js'
+				];
+				var scriptHelpersCode = `
+					/*window.console && console.log('jquery no conflict', jQuery.fn.jquery, jQuery);*/
+					var ltjq = ltjq || jQuery.noConflict(true);
+					var lthlpr = new LoanTekWidget.helpers(ltjq);`;
 
+				var scriptLoader = function() {
+					// var body = document.getElementsByTagName('body')[0];
+					// for (var i = 0, l = widgetScripts.length; i < l; i++) {
+					// 	var scriptSrc = widgetScripts[i];
+					// 	// var script = document.createElement('script');
+					// 	// script.type = 'text/javascript';
+					// 	// script.src = wwwRoot + scriptSrc;
+					// 	var script = el.script(wwwRoot + scriptSrc)[0];
+					// 	body.appendChild(script);
+					// }
+					// var scriptHelpers = el.script().html(scriptHelpersCode)[0];
+					// body.appendChild(scriptHelpers);
+					// function scriptLoader() {
+					// 	window.console && console.log('scripts should already be loaded');
+					// }
+
+					// var body = document.getElementsByTagName('body')[0];
+					// var currentIndex = 0;
+					// var lastIndex = widgetScripts.length - 1;
+					// function loadScript(i) {
+					// 	window.console && console.log('\n\n\ncurrent index is: ', currentIndex);
+					// 	var scriptSrc = widgetScripts[i];
+					// 	var script = el.script(wwwRoot + scriptSrc)[0];
+					// 	script.onload = function() {
+					// 		window.console && console.log('script loaded: ', script);
+					// 		if (currentIndex < lastIndex) {
+					// 			currentIndex += 1;
+					// 			// setTimeout(function() {
+					// 				window.console && console.log('going to load next script of index: ', currentIndex);
+					// 				loadScript(currentIndex);
+					// 			// }, 4000);
+					// 		} else {
+					// 			window.console && console.log('not looping now. lastIndex is: ', lastIndex, currentIndex);
+					// 			window.console && console.log('this is where you would put callback');
+					// 		}
+					// 	};
+					// 	window.console && console.log('appended to body: ', script);
+					// 	body.appendChild(script);
+					// }
+					// loadScript(currentIndex);
+
+					var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function() {
+						var body = $('body')[0];
+						var script = el.script().html(scriptHelpersCode)[0];
+						body.appendChild(script);
+						$scope.UpdateWidgetDisplay();
+					});
+
+					// loadScripts.addSrc('test.js');
+
+					// window.console && console.log('pre run loadScripts run to load ALL needed widget scripts', this);
+					loadScripts.run();
+					// window.console && console.log('loadScripts run to load ALL needed widget scripts', this);
+				};
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
 				BuilderInit();
@@ -141,6 +212,7 @@ namespace LoanTekWidget {
 					$scope.UsePrebuiltForm();
 				}
 
+
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
@@ -150,18 +222,6 @@ namespace LoanTekWidget {
 					var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
 					var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
 					var formStyles = '';
-					var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
-					var ltWidgetCSS: string[] = [
-						'/css/widget.css'
-					];
-					var scriptsLocation = '/js/';
-					var widgetScripts: string[] = [
-						scriptsLocation + 'lib/jquery-1/jquery.min.js'
-						, scriptsLocation + 'lib/jquery/jquery.placeholder.min.js'
-						, scriptsLocation + 'common/lt-captcha.js'
-						, scriptsLocation + 'common/widget-helpers.js'
-						, scriptsLocation + 'widget/widget.js'
-					];
 					cbod.showBuilderTools = true;
 					cbo.postDOMCallback = '#fn{postDOMFunctions}';
 					cbod.postDOMCallback = '#fn{postDOMFunctions}';
@@ -190,25 +250,25 @@ namespace LoanTekWidget {
 					// Add scripts
 					for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
 						var scriptSrc = widgetScripts[iScript];
-						window.console && console.log('scriptSrc', scriptSrc);
+						// window.console && console.log('scriptSrc', scriptSrc);
 						var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
 						wScript += scriptLink;
-						wScriptDisplay += scriptLink;
-						// DO NOT ADD for wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
+
+						// DO NOT ADD to wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
 						// Instead, each of these scripts should be added already to the builder page.
+						// wScriptDisplay += scriptLink;
 					}
+
+					// var sTest = el.script();
+					// window.console && console.log('stest', sTest);
 
 					// Build Main Script
 					var mainScript = '';
 					var mainScriptDisplay = '';
 
 					// Add jQuery and LoanTek Widget Helpers
-					var scriptHelpers = `
-						window.console && console.log('jquery no conflict', jQuery.fn.jquery, jQuery);
-						var ltjq = ltjq || jQuery.noConflict(true);
-						var lth = new LoanTekWidget.helpers(ltjq);`;
-					mainScript += scriptHelpers;
-					mainScriptDisplay += scriptHelpers;
+					mainScript += scriptHelpersCode;
+					// mainScriptDisplay += scriptHelpersCode;
 
 					// Captcha var
 					var captchaVar = `
@@ -267,7 +327,7 @@ namespace LoanTekWidget {
 
 					// Add Execution of Widget
 					var contactWidget = `
-						var ltwfb = new LoanTekWidget.FormBuild(ltjq, lth, ltwbo, ltwo);`;
+						var ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);`;
 					mainScript += contactWidget;
 					mainScriptDisplay += contactWidget;
 
@@ -286,14 +346,30 @@ namespace LoanTekWidget {
 					// Add Main Script to rest of code
 					wScript += mainScript;
 					wScriptDisplay += mainScriptDisplay;
-
 					wScript = wScript.replace(/\s+/gm, ' ');
-					$scope.widgetScript = wScript;
-					$scope.widgetScriptDisplay = wScriptDisplay;
 
-					// Scroll to top and indicate change
-					lth.ScrollToAnchor('widgetTop');
-					$scope.scriptChangedClass = 't' + new Date().getTime();
+					// Updates the page display and Script textbox
+					$scope.UpdateWidgetDisplay = function() {
+						// window.console && console.log('updateSCripts');
+						$timeout(function() {
+							$scope.widgetScript = wScript;
+							$scope.widgetScriptDisplay = wScriptDisplay;
+
+							// Scroll to top and indicate change
+							lth.ScrollToAnchor('widgetTop');
+							$scope.scriptChangedClass = 't' + new Date().getTime();
+						});
+					};
+
+					scriptLoader();
+
+					// Redifine 'scriptLoader' after it places needed script tags on page
+					scriptLoader = function() {
+						// window.console && console.log('loadScripts now ONLY loads updated scripts');
+						$scope.UpdateWidgetDisplay();
+					};
+
+					// $scope.UpdateWidgetScripts();
 				}
 			}]);
 		}

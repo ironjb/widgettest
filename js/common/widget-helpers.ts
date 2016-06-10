@@ -170,7 +170,7 @@ namespace LoanTekWidget {
 	}
 
 	export class helpers {
-		private $: JQueryStatic;
+		public $: JQueryStatic;
 		public bootstrap: bootstrap;
 		public hsize: hSizing;
 		public formBorderType: formBorderType;
@@ -183,7 +183,7 @@ namespace LoanTekWidget {
 		public contactFieldsArray: IWidgetAvailableField[];
 
 		constructor(jq: JQueryStatic) {
-			window.console && console.log('helper constructed');
+			// window.console && console.log('helper constructed');
 			this.$ = jq;
 
 			this.hsize = new hSizing;
@@ -224,11 +224,11 @@ namespace LoanTekWidget {
 				var obj = theArray[i];
 				var objectKey = obj[theKey];
 				if (objectKey) {
-					window.console && console.log('objectKey', objectKey);
+					// window.console && console.log('objectKey', objectKey);
 					returnObj[objectKey] = obj;
 				}
 			}
-			window.console && console.log('returnObj', returnObj);
+			// window.console && console.log('returnObj', returnObj);
 			return returnObj;
 		}
 
