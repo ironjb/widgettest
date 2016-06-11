@@ -68,9 +68,9 @@ var LoanTekWidget;
                     }
                 ];
             }
-            var widgetBuilderApp = angular.module('WidgetBuilder', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
-                    var wwwRoot = window.location.port === '8080' ? '' : '//www.loantek.com';
+                    var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
                     var ltWidgetCSS = [
                         '/css/widget.css'
                     ];
