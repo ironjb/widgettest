@@ -49,44 +49,44 @@ var LoanTekWidget;
         function ApplyFormStyles(currentFormObject, excludeCaptchaField, specifier) {
             var _thisC = this;
             var lth = LoanTekWidgetHelper;
-            specifier = specifier || '';
+            specifier = specifier || '.' + lth.defaultFormSpecifierClass;
             _thisC._specifier = specifier;
             _thisC._borderType = currentFormObject.buildObject.formBorderType;
             excludeCaptchaField = excludeCaptchaField || true;
             var returnStyles = '';
             if (currentFormObject.formWidth) {
-                currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || lth.defaultFormWidthUnit.id;
-                returnStyles += '\n' + specifier + '.ltw  { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
+                currentFormObject.formWidthUnit = currentFormObject.formWidthUnit || lth.widthUnit.getDefault().id;
+                returnStyles += '\n.ltw' + specifier + ' { width: ' + currentFormObject.formWidth + currentFormObject.formWidthUnit + '; }';
             }
             if (currentFormObject.formBg) {
-                returnStyles += '\n' + specifier + '.ltw  .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-border { background-color: ' + currentFormObject.formBg + '; }';
             }
             if (lth.isNumber(currentFormObject.formBorderRadius)) {
                 returnStyles += _thisC.formBorderRadius(currentFormObject.formBorderRadius, _thisC._borderType);
             }
             if (currentFormObject.formBorderColor) {
-                returnStyles += '\n' + specifier + '.ltw  .lt-widget-border, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-border, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading { border-color: ' + currentFormObject.formBorderColor + '; }';
             }
             if (currentFormObject.formTitleColor) {
-                returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { color: ' + currentFormObject.formTitleColor + '; }';
             }
             if (currentFormObject.formTitleBgColor) {
-                returnStyles += '\n' + specifier + '.ltw  .lt-widget-heading, ' + specifier + '.ltw  .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { background-color: ' + currentFormObject.formTitleBgColor + '; }';
             }
             if (lth.isNumber(currentFormObject.formGroupSpacing)) {
-                returnStyles += '\n' + specifier + '.ltw  .form-group, ' + specifier + '.ltw  .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
+                returnStyles += '\n.ltw' + specifier + ' .form-group, .ltw' + specifier + ' .alert { margin-bottom: ' + currentFormObject.formGroupSpacing + 'px; }';
             }
             if (lth.isNumber(currentFormObject.formFieldBorderRadius)) {
                 var ffbr = currentFormObject.formFieldBorderRadius + '';
                 var ffbhr = currentFormObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentFormObject.formFieldBorderRadius - 1) + '';
-                returnStyles += '\n' + specifier + '.ltw  .form-group .form-control, ' + specifier + '.ltw  .alert { border-radius: ' + ffbr + 'px; }';
+                returnStyles += '\n.ltw' + specifier + ' .form-group .form-control, .ltw' + specifier + ' .alert { border-radius: ' + ffbr + 'px; }';
                 if (!excludeCaptchaField) {
-                    returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
-                    returnStyles += '\n' + specifier + '.ltw  .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+                    returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+                    returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
                 }
             }
             if (lth.isNumber(currentFormObject.formButtonBorderRadius)) {
-                returnStyles += '\n' + specifier + '.ltw  .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
+                returnStyles += '\n.ltw' + specifier + ' .btn { border-radius: ' + currentFormObject.formButtonBorderRadius + 'px; }';
             }
             _thisC._returnStyles = returnStyles;
         }

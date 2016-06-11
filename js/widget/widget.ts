@@ -316,7 +316,7 @@ namespace LoanTekWidget {
 				returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 			}
 
-			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw container-fluid').empty().append(returnForm);
+			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass + ' container-fluid').empty().append(returnForm);
 			if (settings.showBuilderTools) {
 				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
 			}
@@ -341,7 +341,7 @@ namespace LoanTekWidget {
 			var returnElement: JQuery = null;
 			switch (elementObj.element) {
 				case 'title':
-					elementObj.nsize = elementObj.nsize || _thisM._lth.hsize.default.id;
+					elementObj.nsize = elementObj.nsize || _thisM._lth.hsize.getDefault().id;
 					returnElement = el.h(elementObj.nsize);
 					returnElement.html(elementObj.value);
 					break;

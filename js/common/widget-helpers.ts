@@ -56,7 +56,7 @@ namespace LoanTekWidget {
 		public h4: IHelperNameNumId;
 		public h5: IHelperNameNumId;
 		public h6: IHelperNameNumId;
-		public default: IHelperNameNumId;
+		// public default: IHelperNameNumId;
 		constructor() {
 			this.h1 = { id: 1, name: 'h1' };
 			this.h2 = { id: 2, name: 'h2' };
@@ -64,18 +64,26 @@ namespace LoanTekWidget {
 			this.h4 = { id: 4, name: 'h4' };
 			this.h5 = { id: 5, name: 'h5' };
 			this.h6 = { id: 6, name: 'h6' };
-			this.default = this.h4;
+			// this.default = this.h4;
+		}
+
+		getDefault(): IHelperNameNumId {
+			return this.h4;
 		}
 	}
 
 	class inputSizing {
-		public default: IHelperNameId;
 		public sm: IHelperNameId;
+		public md: IHelperNameId;
 		public lg: IHelperNameId;
 		constructor() {
-			this.default = { id: 'default', name: 'Default' }
 			this.sm = { id: 'sm', name: 'Small' };
+			this.md = { id: 'md', name: 'Medium' }
 			this.lg = { id: 'lg', name: 'Large' };
+		}
+
+		getDefault(): IHelperNameId {
+			return this.md;
 		}
 	}
 
@@ -84,13 +92,17 @@ namespace LoanTekWidget {
 		public sm: IHelperNameId;
 		public md: IHelperNameId;
 		public lg: IHelperNameId;
-		public default: IHelperNameId;
+		// public default: IHelperNameId;
 		constructor() {
 			this.xs = { id: 'xs', name: 'xs' };
 			this.sm = { id: 'sm', name: 'sm' };
 			this.md = { id: 'md', name: 'md' };
 			this.lg = { id: 'lg', name: 'lg' };
-			this.default = this.md;
+			// this.default = this.md;
+		}
+
+		getDefault(): IHelperNameId {
+			return this.md;
 		}
 	}
 
@@ -120,6 +132,10 @@ namespace LoanTekWidget {
 		constructor() {
 			this.px = { id: 'px', name: 'Pixels' };
 			this.per = { id: '%', name: 'Percent' };
+		}
+
+		getDefault(): IHelperNameId {
+			return this.per;
 		}
 	}
 
@@ -177,8 +193,11 @@ namespace LoanTekWidget {
 		public formBorderTypeArray: IHelperNameId[];
 		public widthUnit: widthUnit;
 		public widgetType: widgetType;
-		public defaultFormWidthUnit: IHelperNameId;
-		public defaultBorderRadius: number;
+		// public defaultFormWidthUnit: IHelperNameId;
+		// public defaultBorderRadius: number;
+		public defaultVerticalSpacing: number;
+		public defaultFormSpecifierClass: string;
+		public defaultResultSpecifierClass: string;
 		public contactFields: contactFields;
 		public contactFieldsArray: IWidgetAvailableField[];
 
@@ -192,8 +211,11 @@ namespace LoanTekWidget {
 			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
 			this.widthUnit = new widthUnit;
 			this.widgetType = new widgetType;
-			this.defaultFormWidthUnit = this.widthUnit.per;
-			this.defaultBorderRadius = 4;
+			// this.defaultFormWidthUnit = this.widthUnit.per;
+			// this.defaultBorderRadius = 4;
+			this.defaultVerticalSpacing = 15;
+			this.defaultFormSpecifierClass = 'ltwF';
+			this.defaultResultSpecifierClass = 'ltwR';
 			this.contactFields = new contactFields;
 			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetAvailableField>(this.contactFields);
 		}
@@ -204,6 +226,16 @@ namespace LoanTekWidget {
 
 		isStringNullOrEmpty(stringCheck: string): boolean {
 			return stringCheck === '' || typeof stringCheck !== 'string';
+		}
+
+		getDefaultBorderRadius(fieldSize: string = ''): number {
+			var rad = 4;
+			if (fieldSize === this.bootstrap.inputSizing.sm.id) {
+				rad = 3;
+			} else if ( fieldSize === this.bootstrap.inputSizing.lg.id) {
+				rad = 6;
+			}
+			return rad;
 		}
 
 		ConvertObjectToArray<T>(theObj: Object): T[] {

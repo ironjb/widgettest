@@ -34,7 +34,7 @@
 									<label class="btn btn-primary" data-ng-model="modForm.buildObject.formBorderType" data-ng-change="borderTypeChange();" uib-btn-radio="btype.id" data-ng-repeat="btype in borderTypeArray track by btype.id"><span class="show-on-active-inline-block glyphicon glyphicon-ok"></span> {{btype.name}} </label>
 								</div>
 							</div>
-							<div class="col-sm-2">{{modForm.buildObject.formBorderType}}</div>
+							<!-- <div class="col-sm-2">{{modForm.buildObject.formBorderType}}</div> -->
 						</div>
 						<!-- <div class="form-group form-group-sm">
 							label.control-label.col-sm-2{Form Width}
@@ -42,7 +42,7 @@
 								<label class="btn btn-primary"></label>
 							</div>
 						</div> -->
-						<div class="form-group form-group-sm" data-ng-show="showBorderRadius">
+						<div class="form-group form-group-sm ng-hide" data-ng-show="showBorderRadius">
 							<label for="ltewBorderWidth" class="col-sm-4 control-label">Form Border Radius</label>
 							<div class="col-sm-4">
 								<input type="number" min="0" data-ng-disabled="!showBorderRadius" class="form-control" id="ltewBorderWidth" name="ltewBorderWidth" data-ng-model="modForm.formBorderRadius" data-ng-model-options="modelOptions" />
@@ -52,30 +52,105 @@
 							<label for="ltewFormTitle" class="col-sm-4 control-label">Form Title</label>
 							<div class="col-sm-4"><input type="text" class="form-control" id="ltewFormTitle" name="ltewFormTitle" data-ng-model="modForm.buildObject.panelTitle" /></div>
 						</div>
-						<!-- .form-group.form-group-sm>label.col-sm-4.control-label[for=ltewSomeInput]{Label}+.col-sm-4>input.form-control#ltewSomeInput[name=ltewSomeInput type=text data-ng-model=modForm.something] -->
+						<div class="form-group form-group-sm">
+							<label for="ltewVerticalSpace" class="col-sm-4 control-label">Verticle Spacing</label>
+							<div class="col-sm-4"><input type="number" min="0" class="form-control" id="ltewVerticalSpace" name="ltewVerticalSpace" data-ng-model="modForm.formGroupSpacing" data-ng-model-options="modelOptions"></div>
+						</div>
+						<div class="form-group form-group-sm">
+							<label for="ltewFieldBorderRadius" class="col-sm-4 control-label">Field Border Radius</label>
+							<div class="col-sm-4"><input type="number" class="form-control" id="ltewFieldBorderRadius" name="ltewFieldBorderRadius" min="0" data-ng-model="modForm.formFieldBorderRadius" data-ng-model-options="modelOptions"></div>
+						</div>
+						<div class="form-group form-group-sm">
+							<label for="ltewBtnBorderRadius" class="col-sm-4 control-label">Button Border Radius</label>
+							<div class="col-sm-4"><input type="number" class="form-control" id="ltewBtnBorderRadius" name="ltewBtnBorderRadius" min="0" data-ng-model="modForm.formButtonBorderRadius" data-ng-model-options="modelOptions"></div>
+						</div>
+						<div class="form-group form-group-sm">
+							<label for="ltewFieldSize" class="col-sm-4 control-label">Field Size</label>
+							<div class="col-sm-8">
+								<div class="btn-group btn-group-sm">
+									<label class="btn btn-primary" data-ng-model="modForm.buildObject.fieldSize" data-ng-change="fieldSizeChange();" data-uib-btn-radio="fsize.id" data-ng-repeat="fsize in fieldSizeUnits"><span class="show-on-active-inline-block glyphicon glyphicon-ok"></span> {{fsize.name}}</label>
+								</div>
+							</div>
+						</div>
+						<!-- .form-group.form-group-sm>label.col-sm-4.control-label[for=ltewSomeInput]{Label}+.col-sm-4>input.form-control#ltewSomeInput[name=ltewSomeInput type=text data-ng-model=modForm.something data-ng-model-options=modelOptions] -->
 					</div>
 					<div class="col-sm-4">
 						<h4>Preview:</h4>
 						<hr />
 						<style type="text/css">{{previewStyles}}</style>
 						<div class="ltw ltw-preview" style="width:100%;">
-							<div class="panel panel-default lt-widget-border" data-ng-show="modForm.buildObject.formBorderType === borderType.panel.id">
+							<div class="panel panel-default lt-widget-border ng-hide" data-ng-show="modForm.buildObject.formBorderType === borderType.panel.id">
 								<div class="panel-heading lt-widget-heading" data-ng-show="modForm.buildObject.panelTitle">{{modForm.buildObject.panelTitle}}</div>
 								<div class="panel-body">
-									panel contents
-									(.form-group>.col-sm-12>input.form-control[type=text placeholder="Field"])+(.form-group>.col-sm-12>textarea.form-control[placeholder="Text" rows=1])+(.form-group>.col-sm-12>select.form-control>option{Drop Down})+(.form-group>.col-sm-12>)+(.form-group>.col-sm-12>button.btn.btn-primary[type=button]{Button})
+
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><input type="text" class="form-control" placeholder="Field"></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><textarea name="" id="" cols="30" rows="1" class="form-control" placeholder="Text"></textarea></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><select name="" id="" class="form-control">
+												<option value="">Drop Down</option>
+											</select></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12">
+											<p>paragraph text</p>
+										</div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><button class="btn btn-primary" data-ng-class="buttonSizeClass" type="button">Button</button></div>
+									</div>
+									<!-- (.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>input.form-control[type=text placeholder="Field"])+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>textarea.form-control[placeholder="Text" rows=1])+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>select.form-control>option{Drop Down})+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>p{paragraph text})+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>button.btn.btn-primary[type=button data-ng-class=buttonSizeClass]{Button}) -->
 								</div>
 							</div>
-							<div class="well lt-widget-border" data-ng-show="modForm.buildObject.formBorderType === borderType.well.id">
+							<div class="well lt-widget-border ng-hide" data-ng-show="modForm.buildObject.formBorderType === borderType.well.id">
 								<h4 class="lt-widget-heading" data-ng-show="modForm.buildObject.panelTitle">{{modForm.buildObject.panelTitle}}</h4>
 								<div>
-									well content
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><input type="text" class="form-control" placeholder="Field"></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><textarea name="" id="" cols="30" rows="1" class="form-control" placeholder="Text"></textarea></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><select name="" id="" class="form-control">
+												<option value="">Drop Down</option>
+											</select></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12">
+											<p>paragraph text</p>
+										</div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><button class="btn btn-primary" data-ng-class="buttonSizeClass" type="button">Button</button></div>
+									</div>
 								</div>
 							</div>
-							<div data-ng-show="modForm.buildObject.formBorderType === borderType.none.id">
+							<div class="ng-hide" data-ng-show="modForm.buildObject.formBorderType === borderType.none.id">
 								<h4 class="lt-widget-heading" data-ng-show="modForm.buildObject.panelTitle">{{modForm.buildObject.panelTitle}}</h4>
 								<div>
-									none content
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><input type="text" class="form-control" placeholder="Field"></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><textarea name="" id="" cols="30" rows="1" class="form-control" placeholder="Text"></textarea></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><select name="" id="" class="form-control">
+												<option value="">Drop Down</option>
+											</select></div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12">
+											<p>paragraph text</p>
+										</div>
+									</div>
+									<div class="form-group" data-ng-class="fieldSizeClass">
+										<div class="col-sm-12"><button class="btn btn-primary" data-ng-class="buttonSizeClass" type="button">Button</button></div>
+									</div>
 								</div>
 							</div>
 						</div>

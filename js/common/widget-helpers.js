@@ -8,16 +8,21 @@ var LoanTekWidget;
             this.h4 = { id: 4, name: 'h4' };
             this.h5 = { id: 5, name: 'h5' };
             this.h6 = { id: 6, name: 'h6' };
-            this.default = this.h4;
         }
+        hSizing.prototype.getDefault = function () {
+            return this.h4;
+        };
         return hSizing;
     }());
     var inputSizing = (function () {
         function inputSizing() {
-            this.default = { id: 'default', name: 'Default' };
             this.sm = { id: 'sm', name: 'Small' };
+            this.md = { id: 'md', name: 'Medium' };
             this.lg = { id: 'lg', name: 'Large' };
         }
+        inputSizing.prototype.getDefault = function () {
+            return this.md;
+        };
         return inputSizing;
     }());
     var gridSizing = (function () {
@@ -26,8 +31,10 @@ var LoanTekWidget;
             this.sm = { id: 'sm', name: 'sm' };
             this.md = { id: 'md', name: 'md' };
             this.lg = { id: 'lg', name: 'lg' };
-            this.default = this.md;
         }
+        gridSizing.prototype.getDefault = function () {
+            return this.md;
+        };
         return gridSizing;
     }());
     var bootstrap = (function () {
@@ -50,6 +57,9 @@ var LoanTekWidget;
             this.px = { id: 'px', name: 'Pixels' };
             this.per = { id: '%', name: 'Percent' };
         }
+        widthUnit.prototype.getDefault = function () {
+            return this.per;
+        };
         return widthUnit;
     }());
     var widgetType = (function () {
@@ -89,8 +99,9 @@ var LoanTekWidget;
             this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
             this.widthUnit = new widthUnit;
             this.widgetType = new widgetType;
-            this.defaultFormWidthUnit = this.widthUnit.per;
-            this.defaultBorderRadius = 4;
+            this.defaultVerticalSpacing = 15;
+            this.defaultFormSpecifierClass = 'ltwF';
+            this.defaultResultSpecifierClass = 'ltwR';
             this.contactFields = new contactFields;
             this.contactFieldsArray = this.ConvertObjectToArray(this.contactFields);
         }
@@ -99,6 +110,17 @@ var LoanTekWidget;
         };
         helpers.prototype.isStringNullOrEmpty = function (stringCheck) {
             return stringCheck === '' || typeof stringCheck !== 'string';
+        };
+        helpers.prototype.getDefaultBorderRadius = function (fieldSize) {
+            if (fieldSize === void 0) { fieldSize = ''; }
+            var rad = 4;
+            if (fieldSize === this.bootstrap.inputSizing.sm.id) {
+                rad = 3;
+            }
+            else if (fieldSize === this.bootstrap.inputSizing.lg.id) {
+                rad = 6;
+            }
+            return rad;
         };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
