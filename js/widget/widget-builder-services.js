@@ -1,7 +1,7 @@
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function () {
     var lth = LoanTekWidgetHelper;
-    var ltWidgetServices = angular.module('ltw.services', []);
+    var ltWidgetServices = angular.module('ltw.services', ['ngSanitize']);
     ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal) {
             var widgetMethods = {
                 editForm: function (options) {
@@ -108,7 +108,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             };
                         }];
                     var modalInstance = $uibModal.open({
-                        templateUrl: '/template.html?t=' + new Date().getTime(),
+                        templateUrl: 'template/modal/editForm.html',
                         controller: modalCtrl,
                         size: settings.modalSize,
                         resolve: {
@@ -118,6 +118,35 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     modalInstance.result.then(function (result) {
                         settings.saveForm(result);
                     }, function (error) {
+                    });
+                },
+                confirmModal: function (confirmInfo) {
+                    window.console && console.log(confirmInfo);
+                    var settings = { confirmSize: 'sm', backdrop: true, onConfirm: null, onCancel: null };
+                    angular.extend(settings, confirmInfo);
+                    var _thisController = ['$scope', '$uibModalInstance', 'confirmOptions', function ($scope, $uibModalInstance, confirmOptions) {
+                            var confirmOptDefaults = { message: '', title: 'Confirm:', headerStyle: 'alert alert-warning', okBtnText: 'OK', cancelBtnText: 'Cancel' };
+                            $scope.mdlSettings = angular.extend(confirmOptDefaults, confirmOptions);
+                            $scope.okClick = function () {
+                                $uibModalInstance.close();
+                            };
+                            $scope.cancelClick = function () {
+                                $uibModalInstance.dismiss();
+                            };
+                        }];
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'template/widget/confirmModal.html',
+                        controller: _thisController,
+                        size: settings.confirmSize,
+                        backdrop: settings.backdrop,
+                        resolve: {
+                            confirmOptions: function () { return confirmInfo.confirmOptions; }
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                        settings.onConfirm();
+                    }, function () {
+                        settings.onCancel();
                     });
                 }
             };

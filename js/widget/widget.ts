@@ -246,7 +246,16 @@ namespace LoanTekWidget {
 					if (settings.showBuilderTools) {
 						// cell.append(el.div().html('Edit helper ' + elementItem.element));
 						// cell.attr('data-lt-widget-tool', `{ field: '` + elementItem.field + `' }`);
-						cell.attr('data-ng-click', 'testFun();');
+						// cell.attr('data-ng-click', 'testFun();');
+						var passData = { index: i/*, element: elementItem.element, type: elementItem.type*/ };
+						var passString = JSON.stringify(passData);
+						// window.console && console.log('passData', passData, passString);
+						cell.addClass('ltw-builder-tools-field').prepend(
+							el.div().addClass('ltw-tool-field-update')
+								.attr('data-lt-field-edit-tool', passString)
+								.attr('data-lt-edit-tool-current-form', 'currentForm')
+								.attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild')
+						);
 					}
 
 					row.append(cell);

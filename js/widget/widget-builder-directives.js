@@ -17,7 +17,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 restrict: 'A',
                 templateUrl: 'template/widgetFormEditButton.html',
                 link: function (scope, elem, attrs) {
-                    scope.EditWigetForm = function () {
+                    scope.EditWidgetForm = function () {
                         var formEditOptions = {
                             instanceOptions: {
                                 currentForm: angular.copy(scope.currentForm)
@@ -29,6 +29,30 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                         };
                         widgetServices.editForm(formEditOptions);
+                    };
+                }
+            };
+        }]);
+    widgetDirectives.directive('ltFieldEditTool', ['widgetServices', function (widgetServices) {
+            return {
+                restrict: 'A',
+                scope: {
+                    toolInfo: '=ltFieldEditTool',
+                    currentForm: '=ltEditToolCurrentForm',
+                    buildScript: '=ltEditToolBuildScript'
+                },
+                templateUrl: 'template/widgetFieldEditButtons.html',
+                link: function (scope, elem, attrs) {
+                    scope.RemoveWidgetField = function () {
+                        var confirmInfo = { confirmOptions: { message: 'Are you sure you want to delete?' }, onConfirm: null, onCancel: null };
+                        confirmInfo.onConfirm = function () {
+                            delete scope.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
+                            scope.buildScript(scope.currentForm);
+                        };
+                        confirmInfo.onCancel = function () { };
+                        widgetServices.confirmModal(confirmInfo);
+                    };
+                    scope.EditWidgetField = function () {
                     };
                 }
             };

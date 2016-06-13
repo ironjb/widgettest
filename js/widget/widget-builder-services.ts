@@ -22,7 +22,7 @@ interface IWidgetEditFormNgScope extends ng.IScope {
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function() {
 	var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
-	var ltWidgetServices = angular.module('ltw.services', []);
+	var ltWidgetServices = angular.module('ltw.services', ['ngSanitize']);
 	ltWidgetServices.factory('widgetServices', ['$uibModal', ($uibModal) => {
 		var widgetMethods = {
 			editForm: (options) => {
@@ -156,8 +156,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				}];
 
 				var modalInstance = $uibModal.open({
-					// templateUrl: 'template/modal/editForm.html'
-					templateUrl: '/template.html?t=' + new Date().getTime()
+					templateUrl: 'template/modal/editForm.html'
+					// templateUrl: '/template.html?t=' + new Date().getTime()
 					, controller: modalCtrl
 					, size: settings.modalSize
 					, resolve: {
@@ -170,6 +170,62 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					settings.saveForm(result);
 				}, (error) => {
 					// window.console && console.log('modal close');
+				});
+			},
+			/**
+			 * Confirm Modal: Based off the Angular UI Bootstrap modal (http://angular-ui.github.io/bootstrap/#/modal)
+			 * Allows the creation of a popup modal to make a confirmation similar to window.confirm()
+			 * @param  {object} confirmInfo [the following object is an example of what can be passed for confirmInfo]
+			 	{
+					confirmSize: 'sm',									// options: ['sm' | 'md' | 'lg'], default: 'sm'
+					backdrop: true,										// options: [true | false | 'static'], default: true		('static' - backdrop is present but modal window is not closed when clicking outside of the modal window)
+					confirmOptions: {
+						message: '',									// [text or html allowed], default: ''
+						title: 'Confirm:',								// [text only allowed], default: 'Conform:'
+						headerStyle: 'alert alert-warning',				// options: ['alert alert-success' | 'alert alert-info' | 'alert alert-warning' | 'alert alert-danger'], default 'alert alert-warning'
+						okBtnText: 'OK',								// [text only], default: 'OK'
+						cancelBtnText: 'Cancel'							// [text only], default: 'Cancel'
+					},
+					onConfirm: function () {
+						// code to perform on Confirm
+					},
+					onCancel: function () {
+						// code to perform on Cancel
+					}
+				}
+			 *
+			 * @return {none}             no return type
+			 */
+			confirmModal: function(confirmInfo) {
+				window.console && console.log(confirmInfo);
+				var settings = { confirmSize: 'sm', backdrop: true, onConfirm: null, onCancel: null };
+				angular.extend(settings, confirmInfo);
+
+				var _thisController = ['$scope', '$uibModalInstance', 'confirmOptions', function($scope, $uibModalInstance, confirmOptions) {
+					var confirmOptDefaults = { message: '', title: 'Confirm:', headerStyle: 'alert alert-warning', okBtnText: 'OK', cancelBtnText: 'Cancel' };
+					$scope.mdlSettings = angular.extend(confirmOptDefaults, confirmOptions)
+					$scope.okClick = function() {
+						$uibModalInstance.close();
+					};
+					$scope.cancelClick = function() {
+						$uibModalInstance.dismiss();
+					};
+				}];
+				var modalInstance = $uibModal.open({
+					// templateUrl: '/IgcConstruction/Home/AngularTemplates/confirmModal',
+					templateUrl: 'template/widget/confirmModal.html',
+					controller: _thisController,
+					size: settings.confirmSize,
+					backdrop: settings.backdrop,
+					resolve: {
+						confirmOptions: function() { return confirmInfo.confirmOptions }
+					}
+				});
+
+				modalInstance.result.then(function() {
+					settings.onConfirm();
+				}, function() {
+					settings.onCancel();
 				});
 			}
 		};

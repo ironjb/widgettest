@@ -37,17 +37,18 @@ body {
   -webkit-animation-iteration-count: 2;
           animation-iteration-count: 2;
 }
-.ltw-tool-form-update {
-  position: absolute;
-  top: -5px;
-  right: 0;
-}
 .ltw-builder-tools {
   position: relative;
 }
 .ltw-builder-tools .ltw-tool-form-update {
+  position: absolute;
+  top: -5px;
+  left: 0;
   opacity: 0.3;
   z-index: 2;
+  width: 100%;
+  height: 0px;
+  /* right: 0; */
 }
 .ltw-builder-tools:hover .ltw-tool-form-update {
   opacity: 1;
@@ -58,6 +59,25 @@ body {
 .ltw-builder-tools .btn.btn-tool.btn-sm,
 .ltw-builder-tools .btn.btn-tool.btn-xs {
   border-radius: 3px;
+}
+.ltw-builder-tools .edit-tool-right {
+  float: right;
+  margin-left: 5px;
+}
+.ltw-builder-tools-field {
+  position: relative;
+}
+.ltw-builder-tools-field .ltw-tool-field-update {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  opacity: 0.3;
+  z-index: 2;
+  width: 100%;
+  height: 0px;
+}
+.ltw-builder-tools-field:hover .ltw-tool-field-update {
+  opacity: 1;
 }
 .show-on-active-inline-block {
   display: none;

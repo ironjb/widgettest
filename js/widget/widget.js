@@ -103,7 +103,12 @@ var LoanTekWidget;
                         }
                     }
                     if (settings.showBuilderTools) {
-                        cell.attr('data-ng-click', 'testFun();');
+                        var passData = { index: i };
+                        var passString = JSON.stringify(passData);
+                        cell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
+                            .attr('data-lt-field-edit-tool', passString)
+                            .attr('data-lt-edit-tool-current-form', 'currentForm')
+                            .attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild'));
                     }
                     row.append(cell);
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;

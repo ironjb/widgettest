@@ -4,9 +4,6 @@
 	var cleanCSS = require('gulp-clean-css');
 	var uglify = require('gulp-uglify');
 	var rename = require('gulp-rename');
-	// var foreach = require('gulp-foreach');
-	// var debug = require('gulp-debug');
-	// var flatmap = require('gulp-flatmap');
 
 	gulp.task('copy', function () {
 		gulp.src([
@@ -62,87 +59,12 @@
 
 	gulp.task('ts:compile', function () {
 		var tsProject = ts.createProject('./tsconfig.json');
-		// Widget Builder
 		var tsResult = tsProject.src()
 		.pipe(ts(tsProject));
 
-		// Contact Widget
-
-		// dest() should be same as direcotry tsconfig.json is in since the tsconfig.json file is using "outFile"
+		// dest() should be same as direcotry tsconfig.json. Should also have "outDir" in tsconfig.json file to help output files to correct directories.
 		return tsResult.js.pipe(gulp.dest('./'));
 	});
-
-	// gulp.task('ts:compile', function () {
-	// 	var tsWidgetBuilderProject = ts.createProject('js/ts/tsconfig.json');
-	// 	var tsWidgetBuilder = tsWidgetBuilderProject.src()
-	// 	.pipe(ts(tsWidgetBuilderProject));
-
-	// 	// dest() should be same as direcotry tsconfig.json is in since the tsconfig.json file is using "outFile"
-	// 	tsWidgetBuilder.js.pipe(gulp.dest('js/ts'));
-
-
-	// 	// return gulp.src('js/ts/**/tsconfig.json')
-	// 	// .pipe(foreach(function(stream, file) {
-	// 	// 	console.log('file++++++++++++++++++++++++++++++++++++++++++++++++', stream);
-	// 	// 	// var tsProject = ts.createProject();
-	// 	// 	return stream
-	// 	// 	// .pipe(debug())
-	// 	// 	.pipe(rename({suffix: '.minblah_' + file}));
-	// 	// 	// .pipe(doSomethingWithEachFileIndividually());
-	// 	// 	// .pipe(concat(file.name));
-	// 	// }))
-	// 	// .pipe(gulp.dest('js/ts'));
-
-	// 	// return gulp.src('js/ts/**/tsconfig.json')
-	// 	// .pipe(foreach(function(stream, file) {
-	// 	// 	console.log('file++++++++++++++++++++++++++++++++++++++++++++++++', file.path);
-	// 	// 	var tsProject = ts.createProject(file.path);
-	// 	// 	console.log(tsProject.config);
-	// 	// 	// var tsResult = tsProject.src()
-	// 	// 	// .pipe(ts(tsProject));
-	// 	// 	return stream
-	// 	// 	// .pipe(debug())
-	// 	// 	// .pipe(rename({suffix: '.minblah_' + file}));
-	// 	// 	.pipe(ts(tsProject));
-	// 	// 	// .pipe(doSomethingWithEachFileIndividually());
-	// 	// 	// .pipe(concat(file.name));
-	// 	// }))
-	// 	// .pipe(gulp.dest('js/ts/test2'));
-
-	// 	// return gulp.src('js/ts/**/tsconfig.json')
-	// 	// .pipe(debug())
-	// 	// pipe(gulp.dest('dist/test1/test2'));
-	// 	// return gulp.src('js/ts/**.ts')
-	// 	// .pipe(foreach(function(stream, file){
-	// 	//  	return stream
-	// 	// 	// .pipe(compileTypescript(file.name))
-	// 	// 	.pipe(concat(file.name));
-	// 	// }))
-	// 	// .pipe(gulp.dest('dist/test1/tes2/test3'));
-
-	// 	// function compileTypescript(filename) {
-	// 	// 	return filename;
-	// 	// }
-
-	// 	// return gulp.src('js/ts/**/tsconfig.json')
-	// 	// .pipe(foreach(function(stream, file) {
-	// 	// 	return stream;
-	// 	// 	// .pipe(compileTypescript())
-	// 	// 	// .pipe(file.name);
-	// 	// }))
-	// 	// .pipe(gulp.dest('dist/js/ts'));
-
-	// 	// function compileTypescript() {
-	// 	// 	// console.log(filename);
-	// 	// }
-
-	// 	// var tsProject = ts.createProject('js/ts/**/tsconfig.json');
-	// 	// var tsWidgetBuilder = tsProject.src()
-	// 	// .pipe(ts(tsProject));
-
-	// 	// // dest() should be same as direcotry tsconfig.json is in since the tsconfig.json file is using "outFile"
-	// 	// tsWidgetBuilder.js.pipe(gulp.dest('js/ts'));
-	// });
 
 	gulp.task('ts:watchwidget', ['ts:compilewidget'], function() {
 		var watcher = gulp.watch('js/ts/**/*.ts', ['ts:compile']);
@@ -170,5 +92,9 @@
 		.pipe(uglify())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('js'));
+	});
+
+	gulp.task('default', function () {
+		// place code for your default task here
 	});
 })();
