@@ -26,6 +26,12 @@ interface IWidgetFormObject {
 	buildObject?: IWidgetFormBuildObject;
 }
 
+interface IWidgetEditFieldData {
+	widgetTypeLower?: string;
+	currentForm?: IWidgetFormObject;
+	buildScript?(widgetFormObject: IWidgetFormObject): void;
+}
+
 interface IWidgetBuilderNgScope extends ng.IScope {
 	currentForm?: IWidgetFormObject;
 	UsePrebuiltForm?(): void;
@@ -34,8 +40,10 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
 	widgetScript?: string;
+	// WidgetType?: string;
 	widgetScriptDisplay?: string;
 	scriptChangedClass?: string;
+	EditFieldData?: IWidgetEditFieldData;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -153,6 +161,7 @@ namespace LoanTekWidget {
 
 					loadScripts.run();
 				};
+				// $scope.WidgetType = widgetData.WidgetType.toLowerCase();
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
 				BuilderInit();
@@ -160,6 +169,11 @@ namespace LoanTekWidget {
 				function UsePrebuildForm() {
 					$scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];		// selects first template if not selected already
 					$scope.currentForm = angular.copy($scope.selectedForm);
+					$scope.EditFieldData = {
+						widgetTypeLower: widgetData.WidgetType.toLowerCase()
+						, currentForm: $scope.currentForm
+						, buildScript: $scope.WidgetScriptBuild
+					};
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 

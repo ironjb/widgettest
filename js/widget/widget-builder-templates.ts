@@ -6,7 +6,7 @@
 			<button type="button" class="btn btn-default btn-xs btn-tool edit-tool-right" data-ng-click="EditWidgetForm();"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
 		`);
 		$templateCache.put('template/widgetFieldEditButtons.html', `
-			<button type="button" class="btn btn-danger btn-xs btn-tool edit-tool-right" data-ng-click="RemoveWidgetField();"><span class="glyphicon glyphicon-trash"></span></button>
+			<button type="button" class="btn btn-danger btn-xs btn-tool edit-tool-right ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove"><span class="glyphicon glyphicon-trash"></span></button>
 			<button type="button" class="btn btn-default btn-xs btn-tool edit-tool-right" data-ng-click="EditWidgetField();"><span class="glyphicon glyphicon-pencil"></span></button>
 		`);
 		$templateCache.put('template/widget/confirmModal.html',`

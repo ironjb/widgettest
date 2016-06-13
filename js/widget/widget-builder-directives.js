@@ -1,5 +1,6 @@
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function () {
+    var lth = LoanTekWidgetHelper;
     var widgetDirectives = angular.module('ltw.directives', []);
     widgetDirectives.directive('ltCompileCode', ['$compile', function ($compile) {
             return {
@@ -38,16 +39,28 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 restrict: 'A',
                 scope: {
                     toolInfo: '=ltFieldEditTool',
-                    currentForm: '=ltEditToolCurrentForm',
-                    buildScript: '=ltEditToolBuildScript'
+                    fieldData: '=ltFieldEditToolData'
                 },
                 templateUrl: 'template/widgetFieldEditButtons.html',
                 link: function (scope, elem, attrs) {
+                    var currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
+                    var currentField;
+                    if (scope.fieldData.widgetTypeLower === 'quotewidget') {
+                    }
+                    else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
+                    }
+                    else {
+                        currentField = lth.contactFields[currentFieldName];
+                    }
+                    scope.showRemove = false;
+                    if (!currentField.isLTRequired) {
+                        scope.showRemove = true;
+                    }
                     scope.RemoveWidgetField = function () {
                         var confirmInfo = { confirmOptions: { message: 'Are you sure you want to delete?' }, onConfirm: null, onCancel: null };
                         confirmInfo.onConfirm = function () {
-                            delete scope.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
-                            scope.buildScript(scope.currentForm);
+                            delete scope.fieldData.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
+                            scope.fieldData.buildScript(scope.fieldData.currentForm);
                         };
                         confirmInfo.onCancel = function () { };
                         widgetServices.confirmModal(confirmInfo);

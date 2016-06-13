@@ -253,8 +253,9 @@ namespace LoanTekWidget {
 						cell.addClass('ltw-builder-tools-field').prepend(
 							el.div().addClass('ltw-tool-field-update')
 								.attr('data-lt-field-edit-tool', passString)
-								.attr('data-lt-edit-tool-current-form', 'currentForm')
-								.attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild')
+								.attr('data-lt-field-edit-tool-data', 'EditFieldData')
+								// .attr('data-lt-edit-tool-current-form', 'currentForm')
+								// .attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild')
 						);
 					}
 

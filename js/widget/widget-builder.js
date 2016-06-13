@@ -98,6 +98,11 @@ var LoanTekWidget;
                     function UsePrebuildForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];
                         $scope.currentForm = angular.copy($scope.selectedForm);
+                        $scope.EditFieldData = {
+                            widgetTypeLower: widgetData.WidgetType.toLowerCase(),
+                            currentForm: $scope.currentForm,
+                            buildScript: $scope.WidgetScriptBuild
+                        };
                         $scope.WidgetScriptBuild($scope.currentForm);
                     }
                     function BuilderInit() {
