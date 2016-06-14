@@ -6,22 +6,26 @@
 	var rename = require('gulp-rename');
 
 	gulp.task('copy', function () {
+		// Copy jQuery
 		gulp.src([
 			'bower_components/jquery/dist/jquery.min.js',
 			'bower_components/jquery-placeholder/jquery.placeholder.min.js'
 			])
 		.pipe(gulp.dest('js/lib/jquery'));
 
+		// Copy jQuery 1.X
 		gulp.src([
 			'bower_components/jquery-1/dist/jquery.min.js'
 			])
 		.pipe(gulp.dest('js/lib/jquery-1'));
 
+		// Copy bootstrap .js
 		gulp.src([
 			'bower_components/bootstrap/dist/js/bootstrap.min.js'
 			])
 		.pipe(gulp.dest('js/lib/bootstrap'));
 
+		// Copy Angular
 		gulp.src([
 			'bower_components/angular/angular.min.js',
 			'bower_components/angular-animate/angular-animate.min.js',
@@ -30,11 +34,31 @@
 			])
 		.pipe(gulp.dest('js/lib/angular'));
 
+		// Copy angular-bootstrap-colorpicker .js file
+		gulp.src([
+			'bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js'
+			])
+		.pipe(gulp.dest('js/lib/angular-bootstrap-colorpicker'));
+
+		// Copy angular-bootstrap-colorpicker css file
+		gulp.src([
+			'bower_components/angular-bootstrap-colorpicker/css/colorpicker.min.css'
+			])
+		.pipe(gulp.dest('css/lib/angular-bootstrap-colorpicker/css'));
+
+		// Copy angular-bootstrap-colorpicker img files
+		gulp.src([
+			'bower_components/angular-bootstrap-colorpicker/img/*'
+			])
+		.pipe(gulp.dest('css/lib/angular-bootstrap-colorpicker/img'));
+
+		// Copy bootstrap fonts
 		gulp.src([
 			'bower_components/bootstrap/dist/fonts/*'
 			])
 		.pipe(gulp.dest('fonts'));
 
+		// Copy bootstrap LESS files
 		gulp.src([
 			'bower_components/bootstrap/less/**'
 			])

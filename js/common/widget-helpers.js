@@ -32,15 +32,31 @@ var LoanTekWidget;
             this.md = { id: 'md', name: 'md' };
             this.lg = { id: 'lg', name: 'lg' };
         }
-        gridSizing.prototype.getDefault = function () {
-            return this.md;
-        };
         return gridSizing;
+    }());
+    var gridColumns = (function () {
+        function gridColumns() {
+            this.n1 = { id: 1, name: '1/12th' };
+            this.n2 = { id: 2, name: '1/6th' };
+            this.n3 = { id: 3, name: '1/4th' };
+            this.n4 = { id: 4, name: '1/3rd' };
+            this.n5 = { id: 5, name: '5/12ths' };
+            this.n6 = { id: 6, name: '1/2' };
+            this.n7 = { id: 7, name: '7/12ths' };
+            this.n8 = { id: 8, name: '2/3rds' };
+            this.n9 = { id: 9, name: '3/4ths' };
+            this.n10 = { id: 10, name: '5/6ths' };
+            this.n11 = { id: 11, name: '11/12ths' };
+            this.n12 = { id: 12, name: 'full' };
+        }
+        return gridColumns;
     }());
     var bootstrap = (function () {
         function bootstrap() {
             this.inputSizing = new inputSizing;
             this.gridSizing = new gridSizing;
+            this.gridColumns = new gridColumns;
+            this.gridColumnsArray = helpers.prototype.ConvertObjectToArray(this.gridColumns);
         }
         return bootstrap;
     }());
@@ -126,7 +142,7 @@ var LoanTekWidget;
             var objArray = [];
             for (var key in theObj) {
                 var objVal = theObj[key];
-                if (objVal) {
+                if (objVal && typeof objVal !== 'function') {
                     objArray.push(objVal);
                 }
             }

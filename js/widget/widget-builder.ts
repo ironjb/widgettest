@@ -29,6 +29,7 @@ interface IWidgetFormObject {
 interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
 	currentForm?: IWidgetFormObject;
+	clearSelectedForm?(): void;
 	buildScript?(widgetFormObject: IWidgetFormObject): void;
 }
 
@@ -37,6 +38,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	UsePrebuiltForm?(): void;
 	UpdateWidgetDisplay?(): void;
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
+	ClearSelectedForm?(): void;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
 	widgetScript?: string;
@@ -128,7 +130,7 @@ namespace LoanTekWidget {
 			}
 
 			// Angular App
-			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
 			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function($scope: IWidgetBuilderNgScope, $timeout) {
@@ -164,6 +166,7 @@ namespace LoanTekWidget {
 				// $scope.WidgetType = widgetData.WidgetType.toLowerCase();
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
+				$scope.ClearSelectedForm = ClearSelectedForm;
 				BuilderInit();
 
 				function UsePrebuildForm() {
@@ -172,6 +175,7 @@ namespace LoanTekWidget {
 					$scope.EditFieldData = {
 						widgetTypeLower: widgetData.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm
+						, clearSelectedForm: $scope.ClearSelectedForm
 						, buildScript: $scope.WidgetScriptBuild
 					};
 					$scope.WidgetScriptBuild($scope.currentForm);
@@ -182,6 +186,9 @@ namespace LoanTekWidget {
 					$scope.UsePrebuiltForm();
 				}
 
+				function ClearSelectedForm() {
+					$scope.selectedForm = { name: 'modified' };
+				}
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);

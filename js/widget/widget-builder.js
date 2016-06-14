@@ -68,7 +68,7 @@ var LoanTekWidget;
                     }
                 ];
             }
-            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
                     var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
                     var ltWidgetCSS = [
@@ -94,6 +94,7 @@ var LoanTekWidget;
                     };
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
                     $scope.UsePrebuiltForm = UsePrebuildForm;
+                    $scope.ClearSelectedForm = ClearSelectedForm;
                     BuilderInit();
                     function UsePrebuildForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];
@@ -101,6 +102,7 @@ var LoanTekWidget;
                         $scope.EditFieldData = {
                             widgetTypeLower: widgetData.WidgetType.toLowerCase(),
                             currentForm: $scope.currentForm,
+                            clearSelectedForm: $scope.ClearSelectedForm,
                             buildScript: $scope.WidgetScriptBuild
                         };
                         $scope.WidgetScriptBuild($scope.currentForm);
@@ -108,6 +110,9 @@ var LoanTekWidget;
                     function BuilderInit() {
                         $scope.widgetObject = angular.copy(widgetObj);
                         $scope.UsePrebuiltForm();
+                    }
+                    function ClearSelectedForm() {
+                        $scope.selectedForm = { name: 'modified' };
                     }
                     function WidgetScriptBuild(currentFormObj) {
                         var cfo = angular.copy(currentFormObj);

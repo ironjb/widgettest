@@ -3,11 +3,12 @@
 
 interface IWidgetEditFormNgScope extends ng.IScope {
 	modForm: IWidgetFormObject;
-	showBorderRadius: boolean;
+	isBorderTypeNone: boolean;
+	isBorderTypePanel: boolean;
 	previewStyles: string;
 	fieldSizeClass: string;
 	buttonSizeClass: string;
-	borderTypeArray: Object[];
+	// borderTypeArray: Object[];
 	modelOptions: Object;
 	borderType: Object;
 	formWidthUnits: Object;
@@ -17,6 +18,9 @@ interface IWidgetEditFormNgScope extends ng.IScope {
 	fieldSizeChange(): void;
 	saveClick(): void;
 	cancelClick(): void;
+	// removeFormBorderColor(): void;
+	// removeFormTitleColor(): void;
+	removeFormItem(itemName: string): void;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -32,7 +36,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFormNgScope, $uibModalInstance, intanceOptions) => {
 
 					$scope.modForm = angular.copy(intanceOptions.currentForm);
-					$scope.borderTypeArray = angular.copy(lth.formBorderTypeArray);
+					// $scope.borderTypeArray = angular.copy(lth.formBorderTypeArray);
 					$scope.borderType = angular.copy(lth.formBorderType);
 					$scope.formWidthUnits = angular.copy(lth.widthUnit);
 					$scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
@@ -44,11 +48,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						// window.console && console.log(unit, $scope.modForm.formWidthUnit);
 					};
 
+					// window.console && console.log(lth.bootstrap.gridColumns.asArray());
+
 					$scope.borderTypeChange = () => {
 						if ($scope.modForm.buildObject.formBorderType === lth.formBorderType.none.id) {
-							$scope.showBorderRadius = false;
+							$scope.isBorderTypeNone = true;
 						} else {
-							$scope.showBorderRadius = true;
+							$scope.isBorderTypeNone = false;
+						}
+
+						if ($scope.modForm.buildObject.formBorderType === lth.formBorderType.panel.id) {
+							$scope.isBorderTypePanel = true;
+						} else {
+							$scope.isBorderTypePanel = false;
 						}
 					};
 
@@ -83,7 +95,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					var watchGroups = [
 						'modForm.buildObject.formBorderType'
 						, 'modForm.buildObject.fieldSize'
+						, 'modForm.formBg'
+						, 'modForm.formBorderColor'
 						, 'modForm.formBorderRadius'
+						, 'modForm.formTitleColor'
+						, 'modForm.formTitleBgColor'
 						, 'modForm.formGroupSpacing'
 						, 'modForm.formFieldBorderRadius'
 						, 'modForm.formButtonBorderRadius'
@@ -93,14 +109,40 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
 						var previewStyles: string = applyFormStyles.getStyles();
 
+						// window.console && console.log('isBorderTypePanel: ', $scope.isBorderTypePanel);
+
 						// Style Overrides
 						if (!lth.isNumber($scope.modForm.formBorderRadius)) {
 							// window.console && console.log('border rad is null so needs to apply default border rad', $scope.modForm.formBorderRadius);
 							// previewStyles += applyFormStyles.formBorderRadius(lth.defaultBorderRadius);
 						}
 
+						// if (!$scope.isBorderTypePanel) {
+						// 	$scope.removeFormItem('formTitleBgColor');
+						// }
+
 						$scope.previewStyles = previewStyles;
 					});
+
+					// $scope.removeFormBorderColor = () => {
+					// 	delete $scope.modForm.formBorderColor;
+					// };
+
+					// $scope.removeFormTitleColor = () => {
+					// 	delete $scope.modForm.formTitleColor;
+					// };
+
+					$scope.removeFormItem = (itemName) => {
+						switch (itemName) {
+							case "value":
+								// code...
+								break;
+
+							default:
+								delete $scope.modForm[itemName];
+								break;
+						}
+					};
 
 					$scope.saveClick = () => {
 						var newForm: IWidgetFormObject = angular.copy($scope.modForm);
@@ -142,10 +184,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 							delete newForm.buildObject.fieldSize;
 						}
 
+						if (newForm.buildObject.formBorderType === lth.formBorderType.well.id) {
+							// delete newForm.formTitleBgColor;
+						}
+
 						if (!newForm.buildObject.formBorderType || newForm.buildObject.formBorderType === lth.formBorderType.none.id) {
 							delete newForm.buildObject.formBorderType;
-							delete newForm.formTitleBgColor;
+							// delete newForm.formTitleBgColor;
+							delete newForm.formBg;
 							delete newForm.formBorderRadius;
+							delete newForm.formBorderColor;
 						}
 						$uibModalInstance.close(newForm);
 					};

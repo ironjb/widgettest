@@ -91,6 +91,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						delete scope.fieldData.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
 						// window.console && console.log('ok to remove', scope.currentForm.buildObject.fields);
 
+						scope.fieldData.clearSelectedForm();
 						scope.fieldData.buildScript(scope.fieldData.currentForm);
 					};
 					confirmInfo.onCancel = function() { };
@@ -99,6 +100,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				scope.EditWidgetField = () => {
+					if (currentField.fieldTemplate.element === 'input') {
+						// TODO: modal for updating input fields
+					}
 					// window.console && console.log('scope.toolInfo', scope.toolInfo);
 					// var formEditOptions = {
 					// 	instanceOptions: {

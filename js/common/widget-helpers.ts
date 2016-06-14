@@ -101,17 +101,58 @@ namespace LoanTekWidget {
 			// this.default = this.md;
 		}
 
-		getDefault(): IHelperNameId {
-			return this.md;
+		// getDefault(): IHelperNameId {
+		// 	return this.md;
+		// }
+	}
+
+	class gridColumns {
+		public n1: IHelperNameNumId;
+		public n2: IHelperNameNumId;
+		public n3: IHelperNameNumId;
+		public n4: IHelperNameNumId;
+		public n5: IHelperNameNumId;
+		public n6: IHelperNameNumId;
+		public n7: IHelperNameNumId;
+		public n8: IHelperNameNumId;
+		public n9: IHelperNameNumId;
+		public n10: IHelperNameNumId;
+		public n11: IHelperNameNumId;
+		public n12: IHelperNameNumId;
+		constructor() {
+			this.n1 = { id: 1, name: '1/12th' }
+			this.n2 = { id: 2, name: '1/6th' }
+			this.n3 = { id: 3, name: '1/4th' }
+			this.n4 = { id: 4, name: '1/3rd' }
+			this.n5 = { id: 5, name: '5/12ths' }
+			this.n6 = { id: 6, name: '1/2' }
+			this.n7 = { id: 7, name: '7/12ths' }
+			this.n8 = { id: 8, name: '2/3rds' }
+			this.n9 = { id: 9, name: '3/4ths' }
+			this.n10 = { id: 10, name: '5/6ths' }
+			this.n11 = { id: 11, name: '11/12ths' }
+			this.n12 = { id: 12, name: 'full' }
 		}
+
+		// getDefault(): IHelperNameNumId {
+		// 	return this.n12;
+		// }
+
+		// asArray(): IHelperNameNumId[] {
+		// 	return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
+		// }
 	}
 
 	class bootstrap {
 		public inputSizing: inputSizing;
 		public gridSizing: gridSizing;
+		public gridColumns: gridColumns;
+		public gridColumnsArray: IHelperNameNumId[];
 		constructor() {
 			this.inputSizing = new inputSizing;
 			this.gridSizing = new gridSizing;
+			this.gridColumns = new gridColumns;
+			this.gridColumnsArray = helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this.gridColumns);
 		}
 	}
 
@@ -242,7 +283,7 @@ namespace LoanTekWidget {
 			var objArray = [];
 			for (var key in theObj) {
 				var objVal = theObj[key];
-				if (objVal) {
+				if (objVal && typeof objVal !== 'function') {
 					objArray.push(objVal);
 				}
 			}
