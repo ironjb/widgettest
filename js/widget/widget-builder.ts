@@ -7,7 +7,8 @@ interface IWidgetModelData {
 }
 
 interface IWidget {
-	allAvailableFields: IWidgetAvailableField[];
+	allAvailableFieldsObject?: Object;
+	allAvailableFieldsArray: IWidgetAvailableField[];
 	prebuiltForms?: IWidgetFormObject[];
 }
 
@@ -39,13 +40,17 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	UpdateWidgetDisplay?(): void;
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
 	ClearSelectedForm?(): void;
+	isAvailableFieldShown?(fieldId: string): boolean;
+	addField?(fieldId: string): void;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
 	widgetScript?: string;
 	// WidgetType?: string;
 	widgetScriptDisplay?: string;
 	scriptChangedClass?: string;
-	EditFieldData?: IWidgetEditFieldData;
+	editFieldData?: IWidgetEditFieldData;
+	allAvailableFieldsObject?: Object;
+	allAvailableFieldsArray?: IWidgetAvailableField[];
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -60,14 +65,15 @@ namespace LoanTekWidget {
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allAvailableFields: null, prebuiltForms: null };
+			var widgetObj: IWidget = { allAvailableFieldsObject:null, allAvailableFieldsArray: null, prebuiltForms: null };
 
 			if (widgetData.WidgetType.toLowerCase() === 'quotewidget') {
 				// TODO: code for quote widget
 			} else if (widgetData.WidgetType.toLowerCase() === 'ratewidget') {
 				// TODO: code for rate widget
 			} else {
-				widgetObj.allAvailableFields = lth.contactFieldsArray;
+				widgetObj.allAvailableFieldsObject = lth.contactFields;
+				widgetObj.allAvailableFieldsArray = lth.contactFieldsArray;
 				// TODO: 'prebuiltForms' should eventually get it's data from 'widgetData' that is passed in from the MVC Model.
 				widgetObj.prebuiltForms = [
 					{
@@ -91,6 +97,7 @@ namespace LoanTekWidget {
 								// , { element: 'input', type: 'file' }
 								, { field: 'captcha' }
 								, { field: 'submit' }
+								, { field: 'comments' }
 							]
 						}
 					},
@@ -164,20 +171,37 @@ namespace LoanTekWidget {
 					loadScripts.run();
 				};
 				// $scope.WidgetType = widgetData.WidgetType.toLowerCase();
+				$scope.allAvailableFieldsObject = angular.copy(widgetObj.allAvailableFieldsObject);
+				$scope.allAvailableFieldsArray = angular.copy(widgetObj.allAvailableFieldsArray);
+
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
 				$scope.ClearSelectedForm = ClearSelectedForm;
+				$scope.addField = addField;
+				$scope.isAvailableFieldShown = isAvailableFieldShown;
 				BuilderInit();
+
+				function addField(fieldId: string) {
+					// window.console && console.log('fieldId', fieldId, $scope.allAvailableFieldsObject[fieldId]);
+					var fieldToAdd = { field: $scope.allAvailableFieldsObject[fieldId].id };
+					// window.console && console.log(fieldToAdd);
+					// var newForm: IWidgetFormObject = angular.copy($scope.currentForm);
+					// window.console && console.log('newForm.buildObject.fields', newForm.buildObject.fields);
+					// newForm.buildObject.fields.push(fieldToAdd);
+					// window.console && console.log('newForm.buildObject.fields', newForm.buildObject.fields);
+					// // window.console && console.log(newForm);
+					// $scope.currentForm = angular.copy(newForm);
+					$scope.currentForm.buildObject.fields.push(fieldToAdd);
+					$scope.WidgetScriptBuild($scope.currentForm);
+				}
+
+				function isAvailableFieldShown(fieldId: string): boolean {
+					return !$scope.allAvailableFieldsObject[fieldId].hideFromList;
+				}
 
 				function UsePrebuildForm() {
 					$scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];		// selects first template if not selected already
 					$scope.currentForm = angular.copy($scope.selectedForm);
-					$scope.EditFieldData = {
-						widgetTypeLower: widgetData.WidgetType.toLowerCase()
-						, currentForm: $scope.currentForm
-						, clearSelectedForm: $scope.ClearSelectedForm
-						, buildScript: $scope.WidgetScriptBuild
-					};
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 
@@ -191,6 +215,13 @@ namespace LoanTekWidget {
 				}
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
+					$scope.editFieldData = {
+						widgetTypeLower: widgetData.WidgetType.toLowerCase()
+						, currentForm: $scope.currentForm
+						, clearSelectedForm: $scope.ClearSelectedForm
+						, buildScript: $scope.WidgetScriptBuild
+					};
+					window.console && console.log('in widgetscriptbuild', currentFormObj);
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
@@ -333,7 +364,7 @@ namespace LoanTekWidget {
 							$scope.widgetScriptDisplay = wScriptDisplay;
 
 							// Scroll to top and indicate change
-							lth.ScrollToAnchor('widgetTop');
+							// lth.ScrollToAnchor('widgetTop');
 							$scope.scriptChangedClass = 't' + new Date().getTime();
 						});
 					};

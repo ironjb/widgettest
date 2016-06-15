@@ -80,14 +80,33 @@
 								</div>
 							</div>
 							<div class="panel panel-default">
-								<div class="panel-heading" data-ng-click="isCollapsedFields = !isCollapsedFields">
-									<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+								<div class="panel-heading" data-ng-click="isCollapsedTemplates = !isCollapsedTemplates">
+									<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedTemplates &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
-								<div data-uib-collapse="isCollapsedFields">
+								<div data-uib-collapse="isCollapsedTemplates">
 									<div class="panel-body">
 										<div class="form-group form-group-sm">
 											<div class="col-sm-12">
 												<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltForm();" data-ng-model="selectedForm" data-ng-options="pform.name for pform in widgetObject.prebuiltForms"></select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-default">
+								<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
+									<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+								</div>
+								<div data-uib-collapse="isCollapsedAvailableFields">
+									<div class="panel-body">
+										<div class="form-group form-group-sm">
+											<div class="col-sm-12">
+												<div class="list-group">
+													<div class="list-group-item" data-ng-repeat="aField in allAvailableFieldsArray" data-ng-show="isAvailableFieldShown(aField.id);">
+														<button class="btn btn-default btn-xs pull-right" type="button" data-ng-click="addField(aField.id)"><span class="glyphicon glyphicon-plus"></span></button>
+														{{aField.name}}
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>

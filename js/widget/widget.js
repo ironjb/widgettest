@@ -107,7 +107,7 @@ var LoanTekWidget;
                         var passString = JSON.stringify(passData);
                         cell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
                             .attr('data-lt-field-edit-tool', passString)
-                            .attr('data-lt-field-edit-tool-data', 'EditFieldData'));
+                            .attr('data-lt-field-edit-tool-data', 'editFieldData'));
                     }
                     row.append(cell);
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;

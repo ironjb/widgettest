@@ -7,13 +7,14 @@ var LoanTekWidget;
             var lth = LoanTekWidgetHelper;
             var el = lth.CreateElement();
             $('input textarea').placeholder();
-            var widgetObj = { allAvailableFields: null, prebuiltForms: null };
+            var widgetObj = { allAvailableFieldsObject: null, allAvailableFieldsArray: null, prebuiltForms: null };
             if (widgetData.WidgetType.toLowerCase() === 'quotewidget') {
             }
             else if (widgetData.WidgetType.toLowerCase() === 'ratewidget') {
             }
             else {
-                widgetObj.allAvailableFields = lth.contactFieldsArray;
+                widgetObj.allAvailableFieldsObject = lth.contactFields;
+                widgetObj.allAvailableFieldsArray = lth.contactFieldsArray;
                 widgetObj.prebuiltForms = [
                     {
                         name: 'Default Contact Widget',
@@ -31,7 +32,8 @@ var LoanTekWidget;
                                 { field: 'comments' },
                                 { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph' },
                                 { field: 'captcha' },
-                                { field: 'submit' }
+                                { field: 'submit' },
+                                { field: 'comments' }
                             ]
                         }
                     },
@@ -92,19 +94,25 @@ var LoanTekWidget;
                         });
                         loadScripts.run();
                     };
+                    $scope.allAvailableFieldsObject = angular.copy(widgetObj.allAvailableFieldsObject);
+                    $scope.allAvailableFieldsArray = angular.copy(widgetObj.allAvailableFieldsArray);
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
                     $scope.UsePrebuiltForm = UsePrebuildForm;
                     $scope.ClearSelectedForm = ClearSelectedForm;
+                    $scope.addField = addField;
+                    $scope.isAvailableFieldShown = isAvailableFieldShown;
                     BuilderInit();
+                    function addField(fieldId) {
+                        var fieldToAdd = { field: $scope.allAvailableFieldsObject[fieldId].id };
+                        $scope.currentForm.buildObject.fields.push(fieldToAdd);
+                        $scope.WidgetScriptBuild($scope.currentForm);
+                    }
+                    function isAvailableFieldShown(fieldId) {
+                        return !$scope.allAvailableFieldsObject[fieldId].hideFromList;
+                    }
                     function UsePrebuildForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];
                         $scope.currentForm = angular.copy($scope.selectedForm);
-                        $scope.EditFieldData = {
-                            widgetTypeLower: widgetData.WidgetType.toLowerCase(),
-                            currentForm: $scope.currentForm,
-                            clearSelectedForm: $scope.ClearSelectedForm,
-                            buildScript: $scope.WidgetScriptBuild
-                        };
                         $scope.WidgetScriptBuild($scope.currentForm);
                     }
                     function BuilderInit() {
@@ -115,6 +123,13 @@ var LoanTekWidget;
                         $scope.selectedForm = { name: 'modified' };
                     }
                     function WidgetScriptBuild(currentFormObj) {
+                        $scope.editFieldData = {
+                            widgetTypeLower: widgetData.WidgetType.toLowerCase(),
+                            currentForm: $scope.currentForm,
+                            clearSelectedForm: $scope.ClearSelectedForm,
+                            buildScript: $scope.WidgetScriptBuild
+                        };
+                        window.console && console.log('in widgetscriptbuild', currentFormObj);
                         var cfo = angular.copy(currentFormObj);
                         var cbo = angular.copy(cfo.buildObject);
                         var cbod = angular.copy(cfo.buildObject);
@@ -197,7 +212,6 @@ var LoanTekWidget;
                             $timeout(function () {
                                 $scope.widgetScript = wScript;
                                 $scope.widgetScriptDisplay = wScriptDisplay;
-                                lth.ScrollToAnchor('widgetTop');
                                 $scope.scriptChangedClass = 't' + new Date().getTime();
                             });
                         };
