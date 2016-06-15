@@ -220,6 +220,31 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// window.console && console.log('modal close');
 				});
 			},
+			editField:(options) => {
+				var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
+				angular.extend(settings, options);
+
+				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFormNgScope, $uibModalInstance, intanceOptions) => {
+					//
+				}];
+
+				var modalInstance = $uibModal.open({
+					templateUrl: 'template/modal/editForm.html'
+					// templateUrl: '/template.html?t=' + new Date().getTime()
+					, controller: modalCtrl
+					, size: settings.modalSize
+					, resolve: {
+						instanceOptions: () => { return settings.instanceOptions }
+					}
+				});
+
+				modalInstance.result.then((result) => {
+					// window.console && console.log('modal save result', result);
+					settings.saveForm(result);
+				}, (error) => {
+					// window.console && console.log('modal close');
+				});
+			},
 			/**
 			 * Confirm Modal: Based off the Angular UI Bootstrap modal (http://angular-ui.github.io/bootstrap/#/modal)
 			 * Allows the creation of a popup modal to make a confirmation similar to window.confirm()

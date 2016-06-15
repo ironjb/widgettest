@@ -67,8 +67,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         widgetServices.confirmModal(confirmInfo);
                     };
                     scope.EditWidgetField = function () {
+                        var fieldEditOptions = {
+                            instanceOptions: {
+                                currentForm: angular.copy(scope.fieldData.currentForm)
+                            },
+                            saveForm: function (updatedForm) {
+                                scope.fieldData.currentForm = updatedForm;
+                                scope.fieldData.clearSelectedForm();
+                                scope.fieldData.buildScript(scope.fieldData.currentForm);
+                            }
+                        };
                         if (currentField.fieldTemplate.element === 'input') {
                         }
+                        widgetServices.editField(fieldEditOptions);
                     };
                 }
             };

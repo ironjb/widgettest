@@ -100,21 +100,22 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				scope.EditWidgetField = () => {
+					var fieldEditOptions = {
+						instanceOptions: {
+							currentForm: angular.copy(scope.fieldData.currentForm)
+						}
+						, saveForm: (updatedForm) => {
+							scope.fieldData.currentForm = updatedForm;
+							scope.fieldData.clearSelectedForm();
+							scope.fieldData.buildScript(scope.fieldData.currentForm);
+						}
+					};
+
 					if (currentField.fieldTemplate.element === 'input') {
 						// TODO: modal for updating input fields
 					}
-					// window.console && console.log('scope.toolInfo', scope.toolInfo);
-					// var formEditOptions = {
-					// 	instanceOptions: {
-					// 		currentForm: angular.copy(scope.currentForm)
-					// 	}
-					// 	, saveForm: (updatedForm) => {
-					// 		scope.currentForm = updatedForm;
-					// 		scope.selectedForm = {};
-					// 		scope.WidgetScriptBuild(scope.currentForm);
-					// 	}
-					// };
-					// widgetServices.editForm(formEditOptions);
+
+					widgetServices.editField(fieldEditOptions);
 				};
 			}
 		};

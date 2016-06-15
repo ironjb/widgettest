@@ -141,6 +141,24 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     }, function (error) {
                     });
                 },
+                editField: function (options) {
+                    var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
+                    angular.extend(settings, options);
+                    var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, intanceOptions) {
+                        }];
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'template/modal/editForm.html',
+                        controller: modalCtrl,
+                        size: settings.modalSize,
+                        resolve: {
+                            instanceOptions: function () { return settings.instanceOptions; }
+                        }
+                    });
+                    modalInstance.result.then(function (result) {
+                        settings.saveForm(result);
+                    }, function (error) {
+                    });
+                },
                 confirmModal: function (confirmInfo) {
                     window.console && console.log(confirmInfo);
                     var settings = { confirmSize: 'sm', backdrop: true, onConfirm: null, onCancel: null };

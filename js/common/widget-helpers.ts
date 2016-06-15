@@ -36,6 +36,13 @@ interface IWidgetField {
 	alttext?: string;
 	tabindex?: number;
 	nsize?: number;
+
+	color?: string;
+	fontSize?: number;
+	backgroundColor?: string;
+	borderRadius?: number;
+	borderColor?: string;
+	padding?: number;
 }
 
 interface IState {

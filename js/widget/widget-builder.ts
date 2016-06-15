@@ -86,18 +86,17 @@ namespace LoanTekWidget {
 								{ field: 'clientid' }
 								, { field: 'userid' }
 								// , { field: 'title', value: 'Contact Us', nsize: 5 }
-								, { field: 'firstname', cols: 2 }
+								, { field: 'firstname', cols: 4 }
 								, { field: 'lastname' }
-								, { field: 'email' }
+								, { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 }
 								, { field: 'phone' }
 								, { field: 'company' }
-								, { field: 'state' }
+								, { field: 'state', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 10 }
 								, { field: 'comments' }
-								, { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph' }
+								, { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph', color: '#069', borderColor: '#069', borderRadius: 4, padding: 8, backgroundColor: '#9CF' }
 								// , { element: 'input', type: 'file' }
 								, { field: 'captcha' }
 								, { field: 'submit' }
-								, { field: 'comments' }
 							]
 						}
 					},

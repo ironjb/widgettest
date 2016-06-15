@@ -467,6 +467,38 @@ namespace LoanTekWidget {
 					returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
 				}
 
+				if (elementObj.color) {
+					returnElement.css({ color: elementObj.color });
+				}
+
+				if (elementObj.fontSize) {
+					returnElement.css({ fontSize: elementObj.fontSize + 'px' });
+				}
+
+				if (elementObj.backgroundColor) {
+					returnElement.css({ backgroundColor: elementObj.backgroundColor });
+				}
+
+				if (_thisM._lth.isNumber(elementObj.borderRadius)) {
+					returnElement.css({ borderRadius: elementObj.borderRadius + 'px' });
+				}
+
+				if (elementObj.borderColor) {
+					switch (elementObj.element) {
+						case 'p':
+						case 'div':
+							returnElement.css({ borderWidth: '1px', borderStyle: 'solid' });
+							break;
+						default:
+							break;
+					}
+					returnElement.css({ borderColor: elementObj.borderColor });
+				}
+
+				if (_thisM._lth.isNumber(elementObj.padding)) {
+					returnElement.css({ padding: elementObj.padding + 'px' });
+				}
+
 				if (elementObj.style) {
 					returnElement.css(elementObj.style);
 				}
