@@ -98,6 +98,7 @@ var LoanTekWidget;
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
                     $scope.UsePrebuiltForm = UsePrebuildForm;
                     $scope.ClearSelectedForm = ClearSelectedForm;
+                    $scope.SetCurrentForm = SetCurrentForm;
                     $scope.addField = addField;
                     $scope.isAvailableFieldShown = isAvailableFieldShown;
                     BuilderInit();
@@ -121,14 +122,18 @@ var LoanTekWidget;
                     function ClearSelectedForm() {
                         $scope.selectedForm = { name: 'modified' };
                     }
+                    function SetCurrentForm(currentForm) {
+                        $scope.currentForm = currentForm;
+                    }
                     function WidgetScriptBuild(currentFormObj) {
                         $scope.editFieldData = {
                             widgetTypeLower: widgetData.WidgetType.toLowerCase(),
                             currentForm: $scope.currentForm,
                             clearSelectedForm: $scope.ClearSelectedForm,
+                            setCurrentForm: $scope.SetCurrentForm,
                             buildScript: $scope.WidgetScriptBuild
                         };
-                        window.console && console.log('in widgetscriptbuild', currentFormObj);
+                        window.console && console.log('in widgetscriptbuild. editFieldData.currentForm', $scope.editFieldData.currentForm);
                         var cfo = angular.copy(currentFormObj);
                         var cbo = angular.copy(cfo.buildObject);
                         var cbod = angular.copy(cfo.buildObject);

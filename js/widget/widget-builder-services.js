@@ -7,8 +7,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 editForm: function (options) {
                     var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
                     angular.extend(settings, options);
-                    var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, intanceOptions) {
-                            $scope.modForm = angular.copy(intanceOptions.currentForm);
+                    var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
+                            $scope.modForm = angular.copy(instanceOptions.currentForm);
                             $scope.borderType = angular.copy(lth.formBorderType);
                             $scope.formWidthUnits = angular.copy(lth.widthUnit);
                             $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
@@ -142,12 +142,84 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     });
                 },
                 editField: function (options) {
-                    var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
+                    var settings = { modalSize: 'lg' };
                     angular.extend(settings, options);
-                    var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, intanceOptions) {
+                    var modalCtrl;
+                    var modelOptions = { updateOn: 'default blur', debounce: { default: 500, blur: 0 } };
+                    var removeFieldItem = function (field, itemName) {
+                        switch (itemName) {
+                            case "value":
+                                break;
+                            default:
+                                delete field[itemName];
+                                break;
+                        }
+                    };
+                    modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
+                            $scope.modelOptions = modelOptions;
+                            $scope.modForm = angular.copy(instanceOptions.currentForm);
+                            $scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];
+                            $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
+                            if (lth.isStringNullOrEmpty($scope.modField.size)) {
+                                window.console && console.log('set size');
+                                $scope.modField.size = lth.bootstrap.inputSizing.getDefault().id;
+                            }
+                            $scope.fieldSizeChange = function () {
+                                if ($scope.modField.size === lth.bootstrap.inputSizing.sm.id) {
+                                    $scope.fieldSizeClass = 'input-sm';
+                                    $scope.buttonSizeClass = 'btn-sm';
+                                }
+                                else if ($scope.modField.size === lth.bootstrap.inputSizing.lg.id) {
+                                    $scope.fieldSizeClass = 'input-lg';
+                                    $scope.buttonSizeClass = 'btn-lg';
+                                }
+                                else {
+                                    $scope.fieldSizeClass = '';
+                                    $scope.buttonSizeClass = '';
+                                }
+                            };
+                            var watchList = [
+                                'modField.fontSize',
+                                'modField.color',
+                                'modField.backgroundColor',
+                                'modField.backgroundColor',
+                                'modField.borderColor',
+                                'modField.borderRadius',
+                                'modField.padding'
+                            ];
+                            $scope.$watchGroup(watchList, function (newValue) {
+                                var newStyle = {};
+                                if ($scope.modField.fontSize) {
+                                    newStyle.fontSize = $scope.modField.fontSize + 'px';
+                                }
+                                if ($scope.modField.color) {
+                                    newStyle.color = $scope.modField.color;
+                                }
+                                if ($scope.modField.backgroundColor) {
+                                    newStyle.backgroundColor = $scope.modField.backgroundColor;
+                                }
+                                if ($scope.modField.borderColor) {
+                                    newStyle.borderColor = $scope.modField.borderColor;
+                                }
+                                if (lth.isNumber($scope.modField.borderRadius)) {
+                                    newStyle.borderRadius = $scope.modField.borderRadius + 'px';
+                                }
+                                if (lth.isNumber($scope.modField.padding)) {
+                                    newStyle.padding = $scope.modField.padding + 'px';
+                                }
+                                $scope.fieldStyle = newStyle;
+                            });
+                            $scope.removeFieldItem = function (itemName) { removeFieldItem($scope.modField, itemName); };
+                            $scope.saveClick = function () {
+                                var newForm = angular.copy($scope.modForm);
+                                $uibModalInstance.close(newForm);
+                            };
+                            $scope.cancelClick = function () {
+                                $uibModalInstance.dismiss();
+                            };
                         }];
                     var modalInstance = $uibModal.open({
-                        templateUrl: 'template/modal/editForm.html',
+                        templateUrl: '/template.html?t=' + new Date().getTime(),
                         controller: modalCtrl,
                         size: settings.modalSize,
                         resolve: {

@@ -2,11 +2,25 @@
 /// <reference path="../common/widget-helpers.ts" />
 
 interface IWidgetDirectiveFieldEditToolNgScope extends ng.IScope {
+	currentFieldName?: string;
 	toolInfo?: { index: number; }
 	fieldData?: IWidgetEditFieldData;
+	currentAvailableField?: IWidgetAvailableField;
 	showRemove?: boolean;
 	RemoveWidgetField?(): void;
 	EditWidgetField?(): void;
+}
+
+interface IFieldEditOptions {
+	modalSize?: string;
+	fieldType?: string;
+	instanceOptions?: IFieldEditModalInstanceOptions;
+	saveForm?(updatedForm: IWidgetFormObject): void;
+}
+
+interface IFieldEditModalInstanceOptions {
+	currentForm: IWidgetFormObject;
+	currentFieldIndex?: number;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -45,7 +59,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 		};
 	}]);
-	widgetDirectives.directive('ltFieldEditTool', [/*'$parse', */'widgetServices', function(/*$parse, */widgetServices) {
+	widgetDirectives.directive('ltFieldEditTool', [/*'$parse', */'$timeout', 'widgetServices', function(/*$parse, */$timeout, widgetServices) {
 		return {
 			restrict: 'A'
 			, scope: {
@@ -65,23 +79,23 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				// window.console && console.log('toolInfo', scope.toolInfo);
 				// window.console && console.log('fieldData', scope.fieldData);
 				// window.console && console.log('buildScript', scope.buildScript);
-				var currentFieldName: string = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
-				var currentField: IWidgetAvailableField;
+				scope.currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
+				// scope.currentAvailableField;
 
 				if (scope.fieldData.widgetTypeLower === 'quotewidget') {
 					// get quotewidget fields
 				} else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
 					// get ratewidget fields
 				} else {
-					currentField = lth.contactFields[currentFieldName];
+					scope.currentAvailableField = lth.contactFields[scope.currentFieldName];
 				}
 
 				scope.showRemove = false;
-				if (!currentField.isLTRequired) {
+				if (!scope.currentAvailableField.isLTRequired) {
 					scope.showRemove = true;
 				}
 
-				// window.console && console.log(currentField);
+				// window.console && console.log(currentAvailableField);
 
 				scope.RemoveWidgetField = () => {
 					var confirmInfo = { confirmOptions: { message: 'Are you sure you want to delete?' }, onConfirm: null, onCancel: null };
@@ -100,20 +114,39 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				scope.EditWidgetField = () => {
-					var fieldEditOptions = {
+					var fieldEditOptions: IFieldEditOptions = {
 						instanceOptions: {
-							currentForm: angular.copy(scope.fieldData.currentForm)
+							currentForm: angular.copy(scope.fieldData.currentForm),
+							currentFieldIndex: scope.toolInfo.index
 						}
 						, saveForm: (updatedForm) => {
-							scope.fieldData.currentForm = updatedForm;
-							scope.fieldData.clearSelectedForm();
-							scope.fieldData.buildScript(scope.fieldData.currentForm);
+							// $timeout(function () {
+								// scope.fieldData.currentForm = updatedForm;  // < - update this to a call a function from WidgetBuilder that will set the currentForm
+								scope.fieldData.setCurrentForm(updatedForm);
+								scope.fieldData.clearSelectedForm();
+								scope.fieldData.buildScript(updatedForm);
+							// }, 500);
 						}
 					};
+					// var currentAvailableField = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index];
+					// var cf
+					// window.console && console.log('cf', cf);
+					var el = scope.currentAvailableField.fieldTemplate.element;
+					var ty = scope.currentAvailableField.fieldTemplate.type;
+					window.console && console.log('el', el, 'ty', ty);
 
-					if (currentField.fieldTemplate.element === 'input') {
+					if (el === 'input') {
 						// TODO: modal for updating input fields
+						if (ty === 'button') {
+							fieldEditOptions.fieldType = 'input_button';
+						} else {
+							fieldEditOptions.fieldType = 'input_text';
+						}
+					} else {
+						//
 					}
+
+					window.console && console.log(fieldEditOptions.fieldType);
 
 					widgetServices.editField(fieldEditOptions);
 				};

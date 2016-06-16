@@ -31,6 +31,7 @@ interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
 	currentForm?: IWidgetFormObject;
 	clearSelectedForm?(): void;
+	setCurrentForm?(currentForm: IWidgetFormObject): void;
 	buildScript?(widgetFormObject: IWidgetFormObject): void;
 }
 
@@ -40,6 +41,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	UpdateWidgetDisplay?(): void;
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
 	ClearSelectedForm?(): void;
+	SetCurrentForm?(currentForm: IWidgetFormObject): void;
 	isAvailableFieldShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
 	selectedForm?: IWidgetFormObject;
@@ -176,6 +178,7 @@ namespace LoanTekWidget {
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
 				$scope.ClearSelectedForm = ClearSelectedForm;
+				$scope.SetCurrentForm = SetCurrentForm;
 				$scope.addField = addField;
 				$scope.isAvailableFieldShown = isAvailableFieldShown;
 				BuilderInit();
@@ -213,14 +216,19 @@ namespace LoanTekWidget {
 					$scope.selectedForm = { name: 'modified' };
 				}
 
+				function SetCurrentForm(currentForm: IWidgetFormObject) {
+					$scope.currentForm = currentForm;
+				}
+
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					$scope.editFieldData = {
 						widgetTypeLower: widgetData.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm
 						, clearSelectedForm: $scope.ClearSelectedForm
+						, setCurrentForm: $scope.SetCurrentForm
 						, buildScript: $scope.WidgetScriptBuild
 					};
-					window.console && console.log('in widgetscriptbuild', currentFormObj);
+					window.console && console.log('in widgetscriptbuild. editFieldData.currentForm', $scope.editFieldData.currentForm);
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);

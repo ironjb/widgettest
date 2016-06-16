@@ -23,6 +23,29 @@ interface IWidgetEditFormNgScope extends ng.IScope {
 	removeFormItem(itemName: string): void;
 }
 
+interface IWidgetFieldStyle {
+	fontSize?: string;
+	color?: string;
+	backgroundColor?: string;
+	borderColor?: string;
+	borderRadius?: string;
+	padding?: string
+}
+
+interface IWidgetEditFieldNgScope extends ng.IScope {
+	fieldSizeClass: string;
+	buttonSizeClass: string;
+	fieldStyle: IWidgetFieldStyle;
+	modForm: IWidgetFormObject;
+	modField: IWidgetField;
+	modelOptions: Object;
+	fieldSizeUnits: Object;
+	fieldSizeChange(): void;
+	removeFieldItem(itemName: string): void;
+	saveClick(): void;
+	cancelClick(): void;
+}
+
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function() {
 	var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
@@ -33,9 +56,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
 				angular.extend(settings, options);
 
-				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFormNgScope, $uibModalInstance, intanceOptions) => {
+				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFormNgScope, $uibModalInstance, instanceOptions) => {
 
-					$scope.modForm = angular.copy(intanceOptions.currentForm);
+					$scope.modForm = angular.copy(instanceOptions.currentForm);
 					// $scope.borderTypeArray = angular.copy(lth.formBorderTypeArray);
 					$scope.borderType = angular.copy(lth.formBorderType);
 					$scope.formWidthUnits = angular.copy(lth.widthUnit);
@@ -220,17 +243,102 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// window.console && console.log('modal close');
 				});
 			},
-			editField:(options) => {
-				var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
+			editField: (options: IFieldEditOptions) => {
+				var settings: IFieldEditOptions = { modalSize: 'lg' };
 				angular.extend(settings, options);
+				// var templateUrl: string;
+				var modalCtrl: [string | Function];
+				var modelOptions = { updateOn: 'default blur', debounce: { default: 500, blur: 0 } };
+				var removeFieldItem = function(field: IWidgetField, itemName: string) {
+					switch (itemName) {
+						case "value":
+							// code...
+							break;
 
-				var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFormNgScope, $uibModalInstance, intanceOptions) => {
-					//
+						default:
+							delete field[itemName];
+							break;
+					}
+				};
+				// templateUrl = '/template.html?t=' + new Date().getTime();
+				// templateUrl = 'template/modal/editField.html';
+				modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFieldNgScope, $uibModalInstance, instanceOptions: IFieldEditModalInstanceOptions) => {
+					$scope.modelOptions = modelOptions;
+					$scope.modForm = angular.copy(instanceOptions.currentForm);
+					$scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];
+					$scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
+
+					if (lth.isStringNullOrEmpty($scope.modField.size)) {
+						window.console && console.log('set size');
+						$scope.modField.size = lth.bootstrap.inputSizing.getDefault().id;
+					}
+
+					$scope.fieldSizeChange = function() {
+						if ($scope.modField.size === lth.bootstrap.inputSizing.sm.id) {
+							$scope.fieldSizeClass = 'input-sm';
+							$scope.buttonSizeClass = 'btn-sm';
+						}
+						else if ($scope.modField.size === lth.bootstrap.inputSizing.lg.id) {
+							$scope.fieldSizeClass = 'input-lg';
+							$scope.buttonSizeClass = 'btn-lg';
+						} else {
+							$scope.fieldSizeClass = '';
+							$scope.buttonSizeClass = '';
+						}
+					};
+
+					var watchList = [
+						'modField.fontSize'
+						, 'modField.color'
+						, 'modField.backgroundColor'
+						, 'modField.backgroundColor'
+						, 'modField.borderColor'
+						, 'modField.borderRadius'
+						, 'modField.padding'
+					];
+					$scope.$watchGroup(watchList, (newValue) => {
+						// window.console && console.log('modField updated', newValue);
+						var newStyle: IWidgetFieldStyle = {};
+
+						if ($scope.modField.fontSize) {
+							newStyle.fontSize = $scope.modField.fontSize + 'px';
+						}
+						if ($scope.modField.color) {
+							newStyle.color = $scope.modField.color;
+						}
+						if ($scope.modField.backgroundColor) {
+							newStyle.backgroundColor = $scope.modField.backgroundColor;
+						}
+						if ($scope.modField.borderColor) {
+							newStyle.borderColor = $scope.modField.borderColor;
+						}
+						if (lth.isNumber($scope.modField.borderRadius)) {
+							newStyle.borderRadius = $scope.modField.borderRadius + 'px';
+						}
+						if (lth.isNumber($scope.modField.padding)) {
+							newStyle.padding = $scope.modField.padding + 'px';
+						}
+
+						// window.console && console.log('newStyle', newStyle);
+						$scope.fieldStyle = newStyle;
+					});
+
+					$scope.removeFieldItem = (itemName) => { removeFieldItem($scope.modField, itemName); };
+
+					$scope.saveClick = () => {
+						var newForm: IWidgetFormObject = angular.copy($scope.modForm);
+						$uibModalInstance.close(newForm);
+					};
+
+					$scope.cancelClick = () => {
+						$uibModalInstance.dismiss();
+					};
 				}];
 
 				var modalInstance = $uibModal.open({
-					templateUrl: 'template/modal/editForm.html'
-					// templateUrl: '/template.html?t=' + new Date().getTime()
+					// templateUrl: templateUrl
+					templateUrl: '/template.html?t=' + new Date().getTime()
+					// templateUrl = 'template/modal/editField.html'
 					, controller: modalCtrl
 					, size: settings.modalSize
 					, resolve: {

@@ -34,7 +34,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 }
             };
         }]);
-    widgetDirectives.directive('ltFieldEditTool', ['widgetServices', function (widgetServices) {
+    widgetDirectives.directive('ltFieldEditTool', ['$timeout', 'widgetServices', function ($timeout, widgetServices) {
             return {
                 restrict: 'A',
                 scope: {
@@ -43,17 +43,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 },
                 templateUrl: 'template/widgetFieldEditButtons.html',
                 link: function (scope, elem, attrs) {
-                    var currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
-                    var currentField;
+                    scope.currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
                     if (scope.fieldData.widgetTypeLower === 'quotewidget') {
                     }
                     else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
                     }
                     else {
-                        currentField = lth.contactFields[currentFieldName];
+                        scope.currentAvailableField = lth.contactFields[scope.currentFieldName];
                     }
                     scope.showRemove = false;
-                    if (!currentField.isLTRequired) {
+                    if (!scope.currentAvailableField.isLTRequired) {
                         scope.showRemove = true;
                     }
                     scope.RemoveWidgetField = function () {
@@ -69,16 +68,29 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     scope.EditWidgetField = function () {
                         var fieldEditOptions = {
                             instanceOptions: {
-                                currentForm: angular.copy(scope.fieldData.currentForm)
+                                currentForm: angular.copy(scope.fieldData.currentForm),
+                                currentFieldIndex: scope.toolInfo.index
                             },
                             saveForm: function (updatedForm) {
-                                scope.fieldData.currentForm = updatedForm;
+                                scope.fieldData.setCurrentForm(updatedForm);
                                 scope.fieldData.clearSelectedForm();
-                                scope.fieldData.buildScript(scope.fieldData.currentForm);
+                                scope.fieldData.buildScript(updatedForm);
                             }
                         };
-                        if (currentField.fieldTemplate.element === 'input') {
+                        var el = scope.currentAvailableField.fieldTemplate.element;
+                        var ty = scope.currentAvailableField.fieldTemplate.type;
+                        window.console && console.log('el', el, 'ty', ty);
+                        if (el === 'input') {
+                            if (ty === 'button') {
+                                fieldEditOptions.fieldType = 'input_button';
+                            }
+                            else {
+                                fieldEditOptions.fieldType = 'input_text';
+                            }
                         }
+                        else {
+                        }
+                        window.console && console.log(fieldEditOptions.fieldType);
                         widgetServices.editField(fieldEditOptions);
                     };
                 }
