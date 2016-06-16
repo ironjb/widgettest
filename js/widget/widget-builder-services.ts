@@ -337,8 +337,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 				var modalInstance = $uibModal.open({
 					// templateUrl: templateUrl
-					templateUrl: '/template.html?t=' + new Date().getTime()
-					// templateUrl = 'template/modal/editField.html'
+					// templateUrl: '/template.html?t=' + new Date().getTime()
+					templateUrl: 'template/modal/editField.html'
 					, controller: modalCtrl
 					, size: settings.modalSize
 					, resolve: {

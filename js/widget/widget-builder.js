@@ -72,18 +72,29 @@ var LoanTekWidget;
             var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
                     var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
-                    var ltWidgetCSS = [
-                        '/css/widget.css'
-                    ];
-                    var scriptsLocation = '/js/';
-                    var widgetScripts = [
-                        scriptsLocation + 'lib/jquery-1/jquery.min.js',
-                        scriptsLocation + 'lib/jquery/jquery.placeholder.min.js',
-                        scriptsLocation + 'common/lt-captcha.js',
-                        scriptsLocation + 'common/widget-helpers.js',
-                        scriptsLocation + 'widget/widget.js'
-                    ];
-                    var scriptHelpersCode = "\n\t\t\t\t\t/*window.console && console.log('jquery no conflict', jQuery.fn.jquery, jQuery);*/\n\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
+                    var ltWidgetCSS = ['/Content/widget/css'];
+                    var widgetScripts = ['/bundles/widget/widget'];
+                    if (window.location.port === '8080') {
+                        ltWidgetCSS = ['/css/widget.css'];
+                        widgetScripts = [
+                            '/js/lib/jquery-1/jquery.min.js',
+                            '/js/lib/jquery/jquery.placeholder.min.js',
+                            '/js/common/lt-captcha.js',
+                            '/js/common/widget-helpers.js',
+                            '/js/widget/widget.js'
+                        ];
+                    }
+                    if (window.location.port === '58477') {
+                        ltWidgetCSS = ['/Areas/Widgets/Content/widget.css'];
+                        widgetScripts = [
+                            '/Scripts/lib/jquery-1/jquery.min.js',
+                            '/Scripts/lib/jquery/jquery.placeholder.min.js',
+                            '/Areas/Widgets/Scripts/common/lt-captcha.js',
+                            '/Areas/Widgets/Scripts/common/widget-helpers.js',
+                            '/Areas/Widgets/Scripts/widget/widget.js'
+                        ];
+                    }
+                    var scriptHelpersCode = "\n\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
                     var scriptLoader = function () {
                         var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
                             var body = $('body')[0];

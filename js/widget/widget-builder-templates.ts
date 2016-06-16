@@ -233,6 +233,100 @@
 				</div>
 			</form>
 		`);
+		$templateCache.put('template/modal/editField.html', `
+			<form class="form-horizontal" data-ng-submit="saveClick();">
+				<div class="modal-header alert alert-info">
+					<h3 class="modal-title">Edit Widget Field</h3>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-8">
+							<!-- .form-group.form-group-sm>label.col-sm-2.control-label[for=ltewFieldWidth]{Form Width}+.col-sm-2>input.form-control#ltewFieldWidth[type=number name=ltewFieldWidth data-ng-model=modForm.formWidth] -->
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldFontSize" class="col-sm-4 control-label">Font Size</label>
+								<div class="col-sm-4">
+									<input type="number" min="8" max="32" class="form-control" id="ltewFieldFontSize" name="ltewFieldFontSize" data-ng-model="modField.fontSize" data-ng-model-options="modelOptions" />
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldFontColor" class="col-sm-4 control-label">Font Color</label>
+								<div class="col-sm-4">
+									<div class="input-group input-group-sm">
+										<span class="input-group-addon" data-ng-style="{ backgroundColor: modField.color, borderColor: modField.color }">&nbsp; &nbsp;</span>
+										<input type="text" class="form-control" id="ltewFieldFontColor" name="ltewFieldFontColor" data-ng-model="modField.color" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent="true" />
+										<span class="input-group-btn">
+											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeFieldItem('color');"><span class="glyphicon glyphicon-remove"></span></button>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldBgColor" class="col-sm-4 control-label">Background Color</label>
+								<div class="col-sm-4">
+									<div class="input-group input-group-sm">
+										<span class="input-group-addon" data-ng-style="{ backgroundColor: modField.backgroundColor, borderColor: modField.backgroundColor }">&nbsp; &nbsp;</span>
+										<input type="text" class="form-control" id="ltewFieldBgColor" name="ltewFieldBgColor" data-ng-model="modField.backgroundColor" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent="true" />
+										<span class="input-group-btn">
+											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeFieldItem('backgroundColor');"><span class="glyphicon glyphicon-remove"></span></button>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldBorderColor" class="col-sm-4 control-label">Border Color</label>
+								<div class="col-sm-4">
+									<div class="input-group input-group-sm">
+										<span class="input-group-addon" data-ng-style="{ backgroundColor: modField.borderColor, borderColor: modField.borderColor }">&nbsp; &nbsp;</span>
+										<input type="text" class="form-control" id="ltewFieldBorderColor" name="ltewFieldBorderColor" data-ng-model="modField.borderColor" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent="true" />
+										<span class="input-group-btn">
+											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeFieldItem('borderColor');"><span class="glyphicon glyphicon-remove"></span></button>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldBorderRadius" class="col-sm-4 control-label">Border Radius</label>
+								<div class="col-sm-4">
+									<input type="number" min="0" class="form-control" id="ltewFieldBorderRadius" name="ltewFieldBorderRadius" data-ng-model="modField.borderRadius" data-ng-model-options="modelOptions" />
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldPadding" class="col-sm-4 control-label">Padding</label>
+								<div class="col-sm-4">
+									<input type="number" min="0" class="form-control" id="ltewFieldPadding" name="ltewFieldPadding" data-ng-model="modField.padding" data-ng-model-options="modelOptions" />
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewFieldSize" class="col-sm-4 control-label">Field Size</label>
+								<div class="col-sm-8">
+									<div class="btn-group btn-group-sm">
+										<label class="btn btn-primary" data-ng-model="modField.size" data-ng-change="fieldSizeChange();" data-uib-btn-radio="fsize.id" data-ng-repeat="fsize in fieldSizeUnits"><span class="show-on-active-inline-block glyphicon glyphicon-ok"></span> {{fsize.name}}</label>
+									</div>
+								</div>
+							</div>
+							<!-- .form-group.form-group-sm>label.col-sm-4.control-label[for=ltewSomeInput]{Label}+.col-sm-4>input.form-control#ltewSomeInput[name=ltewSomeInput type=text data-ng-model=modForm.something data-ng-model-options=modelOptions] -->
+						</div>
+						<div class="col-sm-4">
+							<h4>Preview:</h4>
+							<hr />
+							<!-- <style type="text/css">{{previewStyles}}</style> -->
+							<div class="ltw ltw-preview" style="width:100%;">
+								<div class="form-group">
+									<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" placeholder="Field Placeholder Text" value="Field Text" /></div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" placeholder="placeholder text doesn't change color" /></div>
+								</div>
+								<!-- (.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>input.form-control[type=text placeholder="Field"])+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>textarea.form-control[placeholder="Text" rows=1])+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>select.form-control>option{Drop Down})+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>p{paragraph text})+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>button.btn.btn-primary[type=button data-ng-class=buttonSizeClass]{Button}) -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-sm btn-primary" type="submit">Save</button>
+					<button class="btn btn-sm btn-default" data-ng-click="cancelClick();">Cancel</button>
+				</div>
+			</form>
+		`);
 	}]);
 })();
-

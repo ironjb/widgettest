@@ -145,19 +145,32 @@ namespace LoanTekWidget {
 				// window.console && console.log('widgetData: ', widgetData);
 				// window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
-				var ltWidgetCSS: string[] = [
-					'/css/widget.css'
-				];
-				var scriptsLocation = '/js/';
-				var widgetScripts: string[] = [
-					scriptsLocation + 'lib/jquery-1/jquery.min.js'
-					, scriptsLocation + 'lib/jquery/jquery.placeholder.min.js'
-					, scriptsLocation + 'common/lt-captcha.js'
-					, scriptsLocation + 'common/widget-helpers.js'
-					, scriptsLocation + 'widget/widget.js'
-				];
+				var ltWidgetCSS: string[] = ['/Content/widget/css'];
+				var widgetScripts: string[] = ['/bundles/widget/widget'];
+
+				if (window.location.port === '8080') {
+					ltWidgetCSS = ['/css/widget.css'];
+					widgetScripts = [
+						'/js/lib/jquery-1/jquery.min.js'
+						, '/js/lib/jquery/jquery.placeholder.min.js'
+						, '/js/common/lt-captcha.js'
+						, '/js/common/widget-helpers.js'
+						, '/js/widget/widget.js'
+					]
+				}
+
+				if (window.location.port === '58477') {
+					ltWidgetCSS = ['/Areas/Widgets/Content/widget.css'];
+					widgetScripts = [
+						'/Scripts/lib/jquery-1/jquery.min.js'
+						, '/Scripts/lib/jquery/jquery.placeholder.min.js'
+						, '/Areas/Widgets/Scripts/common/lt-captcha.js'
+						, '/Areas/Widgets/Scripts/common/widget-helpers.js'
+						, '/Areas/Widgets/Scripts/widget/widget.js'
+					]
+				}
+
 				var scriptHelpersCode = `
-					/*window.console && console.log('jquery no conflict', jQuery.fn.jquery, jQuery);*/
 					var ltjq = ltjq || jQuery.noConflict(true);
 					var lthlpr = new LoanTekWidget.helpers(ltjq);`;
 
