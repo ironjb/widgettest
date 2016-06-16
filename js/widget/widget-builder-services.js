@@ -155,6 +155,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 break;
                         }
                     };
+                    settings.instanceOptions.fieldType = settings.fieldType;
                     modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
                             $scope.modelOptions = modelOptions;
                             $scope.modForm = angular.copy(instanceOptions.currentForm);
@@ -207,6 +208,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 if (lth.isNumber($scope.modField.padding)) {
                                     newStyle.padding = $scope.modField.padding + 'px';
                                 }
+                                if (instanceOptions.fieldType === 'p' && newStyle.borderColor) {
+                                    newStyle.borderWidth = '1px';
+                                    newStyle.borderStyle = 'solid';
+                                }
                                 $scope.fieldStyle = newStyle;
                             });
                             $scope.removeFieldItem = function (itemName) { removeFieldItem($scope.modField, itemName); };
@@ -219,7 +224,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             };
                         }];
                     var modalInstance = $uibModal.open({
-                        templateUrl: 'template/modal/editField.html',
+                        templateUrl: '/template.html?t=' + new Date().getTime(),
                         controller: modalCtrl,
                         size: settings.modalSize,
                         resolve: {

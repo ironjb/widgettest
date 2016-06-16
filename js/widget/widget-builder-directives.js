@@ -79,7 +79,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         };
                         var el = scope.currentAvailableField.fieldTemplate.element;
                         var ty = scope.currentAvailableField.fieldTemplate.type;
-                        window.console && console.log('el', el, 'ty', ty);
                         if (el === 'input') {
                             if (ty === 'button') {
                                 fieldEditOptions.fieldType = 'input_button';
@@ -89,8 +88,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                         }
                         else {
+                            fieldEditOptions.fieldType = el;
                         }
-                        window.console && console.log(fieldEditOptions.fieldType);
                         widgetServices.editField(fieldEditOptions);
                     };
                 }

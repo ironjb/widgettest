@@ -19,6 +19,7 @@ interface IFieldEditOptions {
 }
 
 interface IFieldEditModalInstanceOptions {
+	fieldType?: string;
 	currentForm: IWidgetFormObject;
 	currentFieldIndex?: number;
 }
@@ -131,9 +132,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// var currentAvailableField = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index];
 					// var cf
 					// window.console && console.log('cf', cf);
+
 					var el = scope.currentAvailableField.fieldTemplate.element;
 					var ty = scope.currentAvailableField.fieldTemplate.type;
-					window.console && console.log('el', el, 'ty', ty);
+					// window.console && console.log('el', el, 'ty', ty);
 
 					if (el === 'input') {
 						// TODO: modal for updating input fields
@@ -142,12 +144,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						} else {
 							fieldEditOptions.fieldType = 'input_text';
 						}
+					// } else if (el === 'p') {
+					// 	fieldEditOptions.fieldType = 'paragraph';
 					} else {
-						//
+						fieldEditOptions.fieldType = el;
 					}
 
-					window.console && console.log(fieldEditOptions.fieldType);
-
+					// window.console && console.log(fieldEditOptions.fieldType);
 					widgetServices.editField(fieldEditOptions);
 				};
 			}

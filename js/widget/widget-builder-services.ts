@@ -29,6 +29,8 @@ interface IWidgetFieldStyle {
 	backgroundColor?: string;
 	borderColor?: string;
 	borderRadius?: string;
+	borderWidth?: string;
+	borderStyle?: string;
 	padding?: string
 }
 
@@ -260,6 +262,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 							break;
 					}
 				};
+				settings.instanceOptions.fieldType = settings.fieldType;
+
 				// templateUrl = '/template.html?t=' + new Date().getTime();
 				// templateUrl = 'template/modal/editField.html';
 				modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFieldNgScope, $uibModalInstance, instanceOptions: IFieldEditModalInstanceOptions) => {
@@ -318,6 +322,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						if (lth.isNumber($scope.modField.padding)) {
 							newStyle.padding = $scope.modField.padding + 'px';
 						}
+						if (instanceOptions.fieldType === 'p' && newStyle.borderColor) {
+							newStyle.borderWidth = '1px';
+							newStyle.borderStyle = 'solid';
+						}
 
 						// window.console && console.log('newStyle', newStyle);
 						$scope.fieldStyle = newStyle;
@@ -337,8 +345,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 				var modalInstance = $uibModal.open({
 					// templateUrl: templateUrl
-					// templateUrl: '/template.html?t=' + new Date().getTime()
-					templateUrl: 'template/modal/editField.html'
+					templateUrl: '/template.html?t=' + new Date().getTime()
+					// templateUrl: 'template/modal/editField.html'
 					, controller: modalCtrl
 					, size: settings.modalSize
 					, resolve: {

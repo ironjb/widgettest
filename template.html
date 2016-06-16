@@ -68,6 +68,7 @@
 									</div>
 								</div>
 							</div>
+							.form-group.form-group-sm>label.col-sm-4.control-label[for=ltewFieldValue]{Text}+.col-sm-4>input.form-control#ltewFieldValue[name=ltewFieldValue type=text data-ng-model=modForm.something data-ng-model-options=modelOptions]
 							<!-- .form-group.form-group-sm>label.col-sm-4.control-label[for=ltewSomeInput]{Label}+.col-sm-4>input.form-control#ltewSomeInput[name=ltewSomeInput type=text data-ng-model=modForm.something data-ng-model-options=modelOptions] -->
 						</div>
 						<div class="col-sm-4">
@@ -76,10 +77,21 @@
 							<!-- <style type="text/css">{{previewStyles}}</style> -->
 							<div class="ltw ltw-preview" style="width:100%;">
 								<div class="form-group">
-									<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" placeholder="Field Placeholder Text" value="Field Text" /></div>
+									<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="Field Placeholder Text" value="Field Text" /></div>
 								</div>
 								<div class="form-group">
-									<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" placeholder="placeholder text doesn't change color" /></div>
+									<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color" /></div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12"><textarea class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color">Textarea</textarea></div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12"><button class="btn btn-primary" type="button" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass">Button</button></div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</span></p>
+									</div>
 								</div>
 								<!-- (.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>input.form-control[type=text placeholder="Field"])+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>textarea.form-control[placeholder="Text" rows=1])+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>select.form-control>option{Drop Down})+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>p{paragraph text})+(.form-group[data-ng-class=fieldSizeClass]>.col-sm-12>button.btn.btn-primary[type=button data-ng-class=buttonSizeClass]{Button}) -->
 							</div>
