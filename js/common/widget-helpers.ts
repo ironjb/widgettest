@@ -9,7 +9,7 @@ interface IHelperBsInputSizing { sm: string; lg: string; }
 interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
 
 
-interface IWidgetAvailableField {
+interface IWidgetFieldOptions {
 	id?: string;
 	name: string;
 	isLTRequired?: boolean;
@@ -65,17 +65,21 @@ namespace LoanTekWidget {
 		public h6: IHelperNameNumId;
 		// public default: IHelperNameNumId;
 		constructor() {
-			this.h1 = { id: 1, name: 'h1' };
-			this.h2 = { id: 2, name: 'h2' };
-			this.h3 = { id: 3, name: 'h3' };
-			this.h4 = { id: 4, name: 'h4' };
-			this.h5 = { id: 5, name: 'h5' };
-			this.h6 = { id: 6, name: 'h6' };
+			this.h1 = { id: 1, name: 'Heading 1' };
+			this.h2 = { id: 2, name: 'Heading 2' };
+			this.h3 = { id: 3, name: 'Heading 3' };
+			this.h4 = { id: 4, name: 'Heading 4' };
+			this.h5 = { id: 5, name: 'Heading 5' };
+			this.h6 = { id: 6, name: 'Heading 6' };
 			// this.default = this.h4;
 		}
 
 		getDefault(): IHelperNameNumId {
 			return this.h4;
+		}
+
+		asArray(): IHelperNameNumId[] {
+			return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
 		}
 	}
 
@@ -127,27 +131,27 @@ namespace LoanTekWidget {
 		public n11: IHelperNameNumId;
 		public n12: IHelperNameNumId;
 		constructor() {
-			this.n1 = { id: 1, name: '1/12th' }
-			this.n2 = { id: 2, name: '1/6th' }
+			// this.n1 = { id: 1, name: '1/12th' }
+			// this.n2 = { id: 2, name: '1/6th' }
 			this.n3 = { id: 3, name: '1/4th' }
 			this.n4 = { id: 4, name: '1/3rd' }
-			this.n5 = { id: 5, name: '5/12ths' }
+			// this.n5 = { id: 5, name: '5/12ths' }
 			this.n6 = { id: 6, name: '1/2' }
-			this.n7 = { id: 7, name: '7/12ths' }
+			// this.n7 = { id: 7, name: '7/12ths' }
 			this.n8 = { id: 8, name: '2/3rds' }
 			this.n9 = { id: 9, name: '3/4ths' }
-			this.n10 = { id: 10, name: '5/6ths' }
-			this.n11 = { id: 11, name: '11/12ths' }
-			this.n12 = { id: 12, name: 'full' }
+			// this.n10 = { id: 10, name: '5/6ths' }
+			// this.n11 = { id: 11, name: '11/12ths' }
+			this.n12 = { id: 12, name: 'Full Width' }
 		}
 
-		// getDefault(): IHelperNameNumId {
-		// 	return this.n12;
-		// }
+		getDefault(): IHelperNameNumId {
+			return this.n12;
+		}
 
-		// asArray(): IHelperNameNumId[] {
-		// 	return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
-		// }
+		asArray(): IHelperNameNumId[] {
+			return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
+		}
 	}
 
 	class bootstrap {
@@ -199,21 +203,21 @@ namespace LoanTekWidget {
 	}
 
 	class contactFields {
-		clientid: IWidgetAvailableField;
-		userid: IWidgetAvailableField;
-		firstname: IWidgetAvailableField;
-		lastname: IWidgetAvailableField;
-		email: IWidgetAvailableField;
-		phone: IWidgetAvailableField;
-		company: IWidgetAvailableField;
-		state: IWidgetAvailableField;
-		comments: IWidgetAvailableField;
-		captcha: IWidgetAvailableField;
-		submit: IWidgetAvailableField;
-		resultmessage: IWidgetAvailableField;
-		label: IWidgetAvailableField;
-		title: IWidgetAvailableField;
-		paragraph: IWidgetAvailableField;
+		clientid: IWidgetFieldOptions;
+		userid: IWidgetFieldOptions;
+		firstname: IWidgetFieldOptions;
+		lastname: IWidgetFieldOptions;
+		email: IWidgetFieldOptions;
+		phone: IWidgetFieldOptions;
+		company: IWidgetFieldOptions;
+		state: IWidgetFieldOptions;
+		comments: IWidgetFieldOptions;
+		captcha: IWidgetFieldOptions;
+		submit: IWidgetFieldOptions;
+		resultmessage: IWidgetFieldOptions;
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
 		constructor() {
 			this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' } };
 			this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' } };
@@ -247,7 +251,7 @@ namespace LoanTekWidget {
 		public defaultFormSpecifierClass: string;
 		public defaultResultSpecifierClass: string;
 		public contactFields: contactFields;
-		public contactFieldsArray: IWidgetAvailableField[];
+		public contactFieldsArray: IWidgetFieldOptions[];
 
 		constructor(jq: JQueryStatic) {
 			// window.console && console.log('helper constructed');
@@ -265,7 +269,7 @@ namespace LoanTekWidget {
 			this.defaultFormSpecifierClass = 'ltwF';
 			this.defaultResultSpecifierClass = 'ltwR';
 			this.contactFields = new contactFields;
-			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetAvailableField>(this.contactFields);
+			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
 		}
 
 		isNumber(numCheck: any): boolean {
@@ -460,12 +464,5 @@ namespace LoanTekWidget {
 			};
 			return s;
 		}
-
-		// ContactFields(): IWidgetAvailableField[] {
-		// 	var contactFields: IWidgetAvailableField[] = [
-		// 		{ id: 'ltcwClientId', name: 'Client ID', isLTRequired: true, fieldTemplate: {}  }
-		// 	];
-		// 	return contactFields;
-		// }
 	}
 }

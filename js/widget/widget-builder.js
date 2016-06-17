@@ -7,14 +7,14 @@ var LoanTekWidget;
             var lth = LoanTekWidgetHelper;
             var el = lth.CreateElement();
             $('input textarea').placeholder();
-            var widgetObj = { allAvailableFieldsObject: null, allAvailableFieldsArray: null, prebuiltForms: null };
+            var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
             if (widgetData.WidgetType.toLowerCase() === 'quotewidget') {
             }
             else if (widgetData.WidgetType.toLowerCase() === 'ratewidget') {
             }
             else {
-                widgetObj.allAvailableFieldsObject = lth.contactFields;
-                widgetObj.allAvailableFieldsArray = lth.contactFieldsArray;
+                widgetObj.allFieldsObject = lth.contactFields;
+                widgetObj.allFieldsOptionsArray = lth.contactFieldsArray;
                 widgetObj.prebuiltForms = [
                     {
                         name: 'Default Contact Widget',
@@ -23,7 +23,8 @@ var LoanTekWidget;
                             fields: [
                                 { field: 'clientid' },
                                 { field: 'userid' },
-                                { field: 'firstname', cols: 4 },
+                                { field: 'label', cols: 4, size: 'sm', value: 'First Name' },
+                                { field: 'firstname', cols: 8 },
                                 { field: 'lastname' },
                                 { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 },
                                 { field: 'phone' },
@@ -104,22 +105,22 @@ var LoanTekWidget;
                         });
                         loadScripts.run();
                     };
-                    $scope.allAvailableFieldsObject = angular.copy(widgetObj.allAvailableFieldsObject);
-                    $scope.allAvailableFieldsArray = angular.copy(widgetObj.allAvailableFieldsArray);
+                    $scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
+                    $scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
                     $scope.UsePrebuiltForm = UsePrebuildForm;
                     $scope.ClearSelectedForm = ClearSelectedForm;
                     $scope.SetCurrentForm = SetCurrentForm;
                     $scope.addField = addField;
-                    $scope.isAvailableFieldShown = isAvailableFieldShown;
+                    $scope.isFieldOptionShown = isFieldOptionShown;
                     BuilderInit();
                     function addField(fieldId) {
-                        var fieldToAdd = { field: $scope.allAvailableFieldsObject[fieldId].id };
+                        var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
                         $scope.currentForm.buildObject.fields.push(fieldToAdd);
                         $scope.WidgetScriptBuild($scope.currentForm);
                     }
-                    function isAvailableFieldShown(fieldId) {
-                        return !$scope.allAvailableFieldsObject[fieldId].hideFromList;
+                    function isFieldOptionShown(fieldId) {
+                        return !$scope.allFieldsObject[fieldId].hideFromList;
                     }
                     function UsePrebuildForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];

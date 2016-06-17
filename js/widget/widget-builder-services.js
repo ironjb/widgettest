@@ -155,14 +155,27 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 break;
                         }
                     };
-                    settings.instanceOptions.fieldType = settings.fieldType;
+                    settings.instanceOptions.fieldOptions = settings.fieldOptions;
                     modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
                             $scope.modelOptions = modelOptions;
                             $scope.modForm = angular.copy(instanceOptions.currentForm);
                             $scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];
                             $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
+                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                            var previewStyles = applyFormStyles.getStyles();
+                            var el = instanceOptions.fieldOptions.fieldTemplate.element;
+                            var ty = instanceOptions.fieldOptions.fieldTemplate.type;
+                            $scope.previewStyles = previewStyles;
+                            $scope.gridColumnsArray = lth.bootstrap.gridColumns.asArray();
+                            $scope.headingArray = lth.hsize.asArray();
+                            window.console && console.log($scope.modField.size, $scope.modForm.buildObject.fieldSize);
+                            if (!$scope.modField.size && $scope.modForm.buildObject.fieldSize) {
+                                $scope.modField.size = $scope.modForm.buildObject.fieldSize;
+                            }
+                            if (!$scope.modField.cols) {
+                                $scope.modField.cols = lth.bootstrap.gridColumns.getDefault().id;
+                            }
                             if (lth.isStringNullOrEmpty($scope.modField.size)) {
-                                window.console && console.log('set size');
                                 $scope.modField.size = lth.bootstrap.inputSizing.getDefault().id;
                             }
                             $scope.fieldSizeChange = function () {
@@ -175,10 +188,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                     $scope.buttonSizeClass = 'btn-lg';
                                 }
                                 else {
-                                    $scope.fieldSizeClass = '';
-                                    $scope.buttonSizeClass = '';
+                                    $scope.fieldSizeClass = 'input-md';
+                                    $scope.buttonSizeClass = 'btn-md';
                                 }
                             };
+                            $scope.fieldSizeChange();
                             var watchList = [
                                 'modField.fontSize',
                                 'modField.color',
@@ -208,7 +222,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 if (lth.isNumber($scope.modField.padding)) {
                                     newStyle.padding = $scope.modField.padding + 'px';
                                 }
-                                if (instanceOptions.fieldType === 'p' && newStyle.borderColor) {
+                                if ((el === 'p' || el === 'div') && newStyle.borderColor) {
                                     newStyle.borderWidth = '1px';
                                     newStyle.borderStyle = 'solid';
                                 }
@@ -216,6 +230,18 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             });
                             $scope.removeFieldItem = function (itemName) { removeFieldItem($scope.modField, itemName); };
                             $scope.saveClick = function () {
+                                if ($scope.modField.cols === lth.bootstrap.gridColumns.getDefault().id) {
+                                    delete $scope.modField.cols;
+                                }
+                                if ($scope.modField.size === $scope.modForm.buildObject.fieldSize) {
+                                    delete $scope.modField.size;
+                                }
+                                if ($scope.modField.size === lth.bootstrap.inputSizing.getDefault().id && !$scope.modForm.buildObject.fieldSize) {
+                                    delete $scope.modField.size;
+                                }
+                                if (lth.isStringNullOrEmpty($scope.modField.placeholder)) {
+                                    delete $scope.modField.placeholder;
+                                }
                                 var newForm = angular.copy($scope.modForm);
                                 $uibModalInstance.close(newForm);
                             };

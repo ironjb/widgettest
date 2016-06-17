@@ -7,8 +7,8 @@ interface IWidgetModelData {
 }
 
 interface IWidget {
-	allAvailableFieldsObject?: Object;
-	allAvailableFieldsArray: IWidgetAvailableField[];
+	allFieldsObject?: Object;
+	allFieldsOptionsArray: IWidgetFieldOptions[];
 	prebuiltForms?: IWidgetFormObject[];
 }
 
@@ -42,7 +42,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
 	ClearSelectedForm?(): void;
 	SetCurrentForm?(currentForm: IWidgetFormObject): void;
-	isAvailableFieldShown?(fieldId: string): boolean;
+	isFieldOptionShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
@@ -51,8 +51,8 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	widgetScriptDisplay?: string;
 	scriptChangedClass?: string;
 	editFieldData?: IWidgetEditFieldData;
-	allAvailableFieldsObject?: Object;
-	allAvailableFieldsArray?: IWidgetAvailableField[];
+	allFieldsObject?: Object;
+	allFieldsOptionsArray?: IWidgetFieldOptions[];
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -67,15 +67,15 @@ namespace LoanTekWidget {
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allAvailableFieldsObject:null, allAvailableFieldsArray: null, prebuiltForms: null };
+			var widgetObj: IWidget = { allFieldsObject:null, allFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.WidgetType.toLowerCase() === 'quotewidget') {
 				// TODO: code for quote widget
 			} else if (widgetData.WidgetType.toLowerCase() === 'ratewidget') {
 				// TODO: code for rate widget
 			} else {
-				widgetObj.allAvailableFieldsObject = lth.contactFields;
-				widgetObj.allAvailableFieldsArray = lth.contactFieldsArray;
+				widgetObj.allFieldsObject = lth.contactFields;
+				widgetObj.allFieldsOptionsArray = lth.contactFieldsArray;
 				// TODO: 'prebuiltForms' should eventually get it's data from 'widgetData' that is passed in from the MVC Model.
 				widgetObj.prebuiltForms = [
 					{
@@ -88,7 +88,8 @@ namespace LoanTekWidget {
 								{ field: 'clientid' }
 								, { field: 'userid' }
 								// , { field: 'title', value: 'Contact Us', nsize: 5 }
-								, { field: 'firstname', cols: 4 }
+								, { field: 'label', cols: 4, size: 'sm', value: 'First Name' }
+								, { field: 'firstname', cols: 8 }
 								, { field: 'lastname' }
 								, { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 }
 								, { field: 'phone' }
@@ -185,20 +186,20 @@ namespace LoanTekWidget {
 					loadScripts.run();
 				};
 				// $scope.WidgetType = widgetData.WidgetType.toLowerCase();
-				$scope.allAvailableFieldsObject = angular.copy(widgetObj.allAvailableFieldsObject);
-				$scope.allAvailableFieldsArray = angular.copy(widgetObj.allAvailableFieldsArray);
+				$scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
+				$scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
 
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
 				$scope.ClearSelectedForm = ClearSelectedForm;
 				$scope.SetCurrentForm = SetCurrentForm;
 				$scope.addField = addField;
-				$scope.isAvailableFieldShown = isAvailableFieldShown;
+				$scope.isFieldOptionShown = isFieldOptionShown;
 				BuilderInit();
 
 				function addField(fieldId: string) {
-					// window.console && console.log('fieldId', fieldId, $scope.allAvailableFieldsObject[fieldId]);
-					var fieldToAdd = { field: $scope.allAvailableFieldsObject[fieldId].id };
+					// window.console && console.log('fieldId', fieldId, $scope.allFieldsObject[fieldId]);
+					var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
 					// window.console && console.log(fieldToAdd);
 					// var newForm: IWidgetFormObject = angular.copy($scope.currentForm);
 					// window.console && console.log('newForm.buildObject.fields', newForm.buildObject.fields);
@@ -210,8 +211,8 @@ namespace LoanTekWidget {
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 
-				function isAvailableFieldShown(fieldId: string): boolean {
-					return !$scope.allAvailableFieldsObject[fieldId].hideFromList;
+				function isFieldOptionShown(fieldId: string): boolean {
+					return !$scope.allFieldsObject[fieldId].hideFromList;
 				}
 
 				function UsePrebuildForm() {

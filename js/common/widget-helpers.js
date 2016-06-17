@@ -2,15 +2,18 @@ var LoanTekWidget;
 (function (LoanTekWidget) {
     var hSizing = (function () {
         function hSizing() {
-            this.h1 = { id: 1, name: 'h1' };
-            this.h2 = { id: 2, name: 'h2' };
-            this.h3 = { id: 3, name: 'h3' };
-            this.h4 = { id: 4, name: 'h4' };
-            this.h5 = { id: 5, name: 'h5' };
-            this.h6 = { id: 6, name: 'h6' };
+            this.h1 = { id: 1, name: 'Heading 1' };
+            this.h2 = { id: 2, name: 'Heading 2' };
+            this.h3 = { id: 3, name: 'Heading 3' };
+            this.h4 = { id: 4, name: 'Heading 4' };
+            this.h5 = { id: 5, name: 'Heading 5' };
+            this.h6 = { id: 6, name: 'Heading 6' };
         }
         hSizing.prototype.getDefault = function () {
             return this.h4;
+        };
+        hSizing.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
         };
         return hSizing;
     }());
@@ -36,19 +39,19 @@ var LoanTekWidget;
     }());
     var gridColumns = (function () {
         function gridColumns() {
-            this.n1 = { id: 1, name: '1/12th' };
-            this.n2 = { id: 2, name: '1/6th' };
             this.n3 = { id: 3, name: '1/4th' };
             this.n4 = { id: 4, name: '1/3rd' };
-            this.n5 = { id: 5, name: '5/12ths' };
             this.n6 = { id: 6, name: '1/2' };
-            this.n7 = { id: 7, name: '7/12ths' };
             this.n8 = { id: 8, name: '2/3rds' };
             this.n9 = { id: 9, name: '3/4ths' };
-            this.n10 = { id: 10, name: '5/6ths' };
-            this.n11 = { id: 11, name: '11/12ths' };
-            this.n12 = { id: 12, name: 'full' };
+            this.n12 = { id: 12, name: 'Full Width' };
         }
+        gridColumns.prototype.getDefault = function () {
+            return this.n12;
+        };
+        gridColumns.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
         return gridColumns;
     }());
     var bootstrap = (function () {

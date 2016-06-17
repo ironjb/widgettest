@@ -49,10 +49,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
                     }
                     else {
-                        scope.currentAvailableField = lth.contactFields[scope.currentFieldName];
+                        scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
                     }
                     scope.showRemove = false;
-                    if (!scope.currentAvailableField.isLTRequired) {
+                    if (!scope.currentFieldOptions.isLTRequired) {
                         scope.showRemove = true;
                     }
                     scope.RemoveWidgetField = function () {
@@ -71,25 +71,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 currentForm: angular.copy(scope.fieldData.currentForm),
                                 currentFieldIndex: scope.toolInfo.index
                             },
+                            fieldOptions: scope.currentFieldOptions,
                             saveForm: function (updatedForm) {
                                 scope.fieldData.setCurrentForm(updatedForm);
                                 scope.fieldData.clearSelectedForm();
                                 scope.fieldData.buildScript(updatedForm);
                             }
                         };
-                        var el = scope.currentAvailableField.fieldTemplate.element;
-                        var ty = scope.currentAvailableField.fieldTemplate.type;
-                        if (el === 'input') {
-                            if (ty === 'button') {
-                                fieldEditOptions.fieldType = 'input_button';
-                            }
-                            else {
-                                fieldEditOptions.fieldType = 'input_text';
-                            }
-                        }
-                        else {
-                            fieldEditOptions.fieldType = el;
-                        }
                         widgetServices.editField(fieldEditOptions);
                     };
                 }

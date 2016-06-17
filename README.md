@@ -111,3 +111,10 @@ var head= document.getElementsByTagName('head')[0];
       script.src= 'helper.js';
       head.appendChild(script);
 ```
+
+
+## Drag and Drop
+
+http://codef0rmer.github.io/angular-dragdrop/#!/
+https://github.com/marceljuenemann/angular-drag-and-drop-lists
+http://ngmodules.org/modules/ngDraggable

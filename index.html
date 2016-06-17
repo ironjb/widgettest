@@ -103,9 +103,9 @@
 										<div class="form-group form-group-sm">
 											<div class="col-sm-12">
 												<div class="list-group">
-													<div class="list-group-item" data-ng-repeat="aField in allAvailableFieldsArray" data-ng-show="isAvailableFieldShown(aField.id);">
+													<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray" data-ng-show="isFieldOptionShown(aField.id);">
 														<button class="btn btn-default btn-xs pull-right" type="button" data-ng-click="addField(aField.id)"><span class="glyphicon glyphicon-plus"></span></button>
-														{{aField.name}}
+														<span data-ng-bind="aField.name"></span>
 													</div>
 												</div>
 											</div>
