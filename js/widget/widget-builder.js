@@ -8,9 +8,9 @@ var LoanTekWidget;
             var el = lth.CreateElement();
             $('input textarea').placeholder();
             var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
-            if (widgetData.WidgetType.toLowerCase() === 'quotewidget') {
+            if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
             }
-            else if (widgetData.WidgetType.toLowerCase() === 'ratewidget') {
+            else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'ratewidget') {
             }
             else {
                 widgetObj.allFieldsObject = lth.contactFields;
@@ -139,7 +139,7 @@ var LoanTekWidget;
                     }
                     function WidgetScriptBuild(currentFormObj) {
                         $scope.editFieldData = {
-                            widgetTypeLower: widgetData.WidgetType.toLowerCase(),
+                            widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase(),
                             currentForm: $scope.currentForm,
                             clearSelectedForm: $scope.ClearSelectedForm,
                             setCurrentForm: $scope.SetCurrentForm,

@@ -91,3 +91,12 @@ body {
 input.ng-invalid.ng-dirty {
   border-color: #a94442;
 }
+.resize-none {
+  resize: none;
+}
+.resize-vertical {
+  resize: vertical;
+}
+.resize-horizontal {
+  resize: horizontal;
+}

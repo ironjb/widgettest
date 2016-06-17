@@ -2,8 +2,11 @@
 /// <reference path="../common/widget-helpers.ts" />
 
 interface IWidgetModelData {
-	WidgetType: string;
-	Id?: number;
+	modelWidget: {
+		WidgetType: string;
+		Id?: number;
+	};
+	widgetTemplates: IWidgetFormObject[];
 }
 
 interface IWidget {
@@ -69,9 +72,9 @@ namespace LoanTekWidget {
 
 			var widgetObj: IWidget = { allFieldsObject:null, allFieldsOptionsArray: null, prebuiltForms: null };
 
-			if (widgetData.WidgetType.toLowerCase() === 'quotewidget') {
+			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
 				// TODO: code for quote widget
-			} else if (widgetData.WidgetType.toLowerCase() === 'ratewidget') {
+			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'ratewidget') {
 				// TODO: code for rate widget
 			} else {
 				widgetObj.allFieldsObject = lth.contactFields;
@@ -236,7 +239,7 @@ namespace LoanTekWidget {
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					$scope.editFieldData = {
-						widgetTypeLower: widgetData.WidgetType.toLowerCase()
+						widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm
 						, clearSelectedForm: $scope.ClearSelectedForm
 						, setCurrentForm: $scope.SetCurrentForm

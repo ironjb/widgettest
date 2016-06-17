@@ -41,6 +41,7 @@ interface IWidgetEditFieldNgScope extends ng.IScope {
 	fieldStyle: IWidgetFieldStyle;
 	modForm: IWidgetFormObject;
 	modField: IWidgetField;
+	fieldOptions: IWidgetFieldOptions;
 	modelOptions: Object;
 	fieldSizeUnits: Object;
 	gridColumnsArray: IHelperNameNumId[];
@@ -286,11 +287,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					var previewStyles: string = applyFormStyles.getStyles();
 					var el = instanceOptions.fieldOptions.fieldTemplate.element;
 					var ty = instanceOptions.fieldOptions.fieldTemplate.type;
+					$scope.fieldOptions = instanceOptions.fieldOptions;
 					$scope.previewStyles = previewStyles;
 					$scope.gridColumnsArray = lth.bootstrap.gridColumns.asArray();
 					$scope.headingArray = lth.hsize.asArray();
 
-					window.console && console.log($scope.modField.size, $scope.modForm.buildObject.fieldSize);
+					// window.console && console.log($scope.modField.size, $scope.modForm.buildObject.fieldSize);
 					if (!$scope.modField.size && $scope.modForm.buildObject.fieldSize) {
 						$scope.modField.size = $scope.modForm.buildObject.fieldSize;
 					}
@@ -302,6 +304,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if (lth.isStringNullOrEmpty($scope.modField.size)) {
 						// window.console && console.log('set size');
 						$scope.modField.size = lth.bootstrap.inputSizing.getDefault().id;
+					}
+
+					if (el === 'title' && !lth.isNumber($scope.modField.nsize)) {
+						$scope.modField.nsize = lth.hsize.getDefault().id;
 					}
 
 					$scope.fieldSizeChange = function() {
@@ -378,6 +384,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						}
 						if ($scope.modField.size === lth.bootstrap.inputSizing.getDefault().id && !$scope.modForm.buildObject.fieldSize) {
 							delete $scope.modField.size;
+						}
+						if ($scope.modField.nsize === lth.hsize.getDefault().id) {
+							delete $scope.modField.nsize;
 						}
 						if (lth.isStringNullOrEmpty($scope.modField.placeholder)) {
 							delete $scope.modField.placeholder;

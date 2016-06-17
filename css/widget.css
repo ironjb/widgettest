@@ -3860,6 +3860,7 @@
 }
 .ltw .lt-captcha {
   max-width: 330px;
+  min-width: 240px;
   /* captcha01.png */
   /* captcha02.png */
   /* captcha03.png */
