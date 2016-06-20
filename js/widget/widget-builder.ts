@@ -45,7 +45,8 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
 	ClearSelectedForm?(): void;
 	SetCurrentForm?(currentForm: IWidgetFormObject): void;
-	isFieldOptionShown?(fieldId: string): boolean;
+	// isFieldOptionShown?(fieldId: string): boolean;
+	// isAddFieldButtonShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
@@ -93,7 +94,7 @@ namespace LoanTekWidget {
 								// , { field: 'title', value: 'Contact Us', nsize: 5 }
 								, { field: 'label', cols: 4, size: 'sm', value: 'First Name' }
 								, { field: 'firstname', cols: 8 }
-								, { field: 'lastname' }
+								// , { field: 'lastname' }
 								, { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 }
 								, { field: 'phone' }
 								, { field: 'company' }
@@ -197,8 +198,19 @@ namespace LoanTekWidget {
 				$scope.ClearSelectedForm = ClearSelectedForm;
 				$scope.SetCurrentForm = SetCurrentForm;
 				$scope.addField = addField;
-				$scope.isFieldOptionShown = isFieldOptionShown;
+				// $scope.isFieldOptionShown = isFieldOptionShown;
+				// $scope.isAddFieldButtonShown = isAddFieldButtonShown;
 				BuilderInit();
+
+				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], (newValue) => {
+					window.console && console.log('currentForm Updated: ', newValue);
+					for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
+						var field = $scope.allFieldsOptionsArray[i];
+						var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
+						// window.console && console.log('index: ', cIndex, field);
+						field.isIncluded = !!(cIndex >= 0);
+					}
+				});;
 
 				function addField(fieldId: string) {
 					// window.console && console.log('fieldId', fieldId, $scope.allFieldsObject[fieldId]);
@@ -214,9 +226,22 @@ namespace LoanTekWidget {
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 
-				function isFieldOptionShown(fieldId: string): boolean {
-					return !$scope.allFieldsObject[fieldId].hideFromList;
-				}
+				// function isFieldOptionShown(fieldId: string): boolean {
+				// 	return !$scope.allFieldsObject[fieldId].hideFromList;
+				// }
+
+				// function isAddFieldButtonShown(fieldId: string): boolean {
+				// 	var showAddBtn: boolean = true;
+				// 	// var cField: IWidgetField = null;
+				// 	var relatedCurrentFieldIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', fieldId);
+				// 	if (relatedCurrentFieldIndex >= 0) {
+				// 		// cField = $scope.currentForm.buildObject.fields[relatedCurrentFieldIndex];
+				// 		// window.console && console.log('afo', $scope.allFieldsObject[fieldId].allowMultiples);
+				// 		showAddBtn = !!$scope.allFieldsObject[fieldId].allowMultiples;
+				// 	}
+				// 	// window.console && console.log(fieldId, showAddBtn, relatedCurrentFieldIndex);
+				// 	return showAddBtn;
+				// }
 
 				function UsePrebuildForm() {
 					$scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];		// selects first template if not selected already
@@ -245,7 +270,7 @@ namespace LoanTekWidget {
 						, setCurrentForm: $scope.SetCurrentForm
 						, buildScript: $scope.WidgetScriptBuild
 					};
-					window.console && console.log('in widgetscriptbuild. editFieldData.currentForm', $scope.editFieldData.currentForm);
+					// window.console && console.log('in widgetscriptbuild. editFieldData.currentForm', $scope.editFieldData.currentForm);
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);

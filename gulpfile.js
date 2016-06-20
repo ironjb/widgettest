@@ -63,6 +63,12 @@
 			'bower_components/bootstrap/less/**'
 			])
 		.pipe(gulp.dest('css/less/bootstrap'));
+
+		// Copy angular-dragdrop .js file
+		gulp.src([
+			'bower_components/angular-dragdrop/src/angular-dragdrop.min.js'
+			])
+		.pipe(gulp.dest('js/lib/angular-dragdrop'));
 	});
 
 	gulp.task('ts:compilewidget', function () {

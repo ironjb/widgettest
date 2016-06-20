@@ -40,7 +40,7 @@
 				<form action="" class="form-horizontal">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="panel panel-default">
+							<!-- <div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
 									<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
@@ -48,12 +48,12 @@
 									<div class="panel-body">
 										<div class="row">
 											<div class="col-sm-12">
-												<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change" rows="2" readonly="readonly"></textarea>
+												<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
+							</div> -->
 							<!-- <pre style="white-space: pre-wrap;">{{currentForm}}</pre> -->
 							<div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
@@ -103,8 +103,10 @@
 										<div class="form-group form-group-sm">
 											<div class="col-sm-12">
 												<div class="list-group">
-													<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray" data-ng-show="isFieldOptionShown(aField.id);">
-														<button class="btn btn-default btn-xs pull-right" type="button" data-ng-click="addField(aField.id)"><span class="glyphicon glyphicon-plus"></span></button>
+													<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | orderBy: 'allowMultiples'" data-ng-show="!aField.hideFromList">
+														<button class="btn btn-default btn-xs pull-right" type="button" data-ng-click="addField(aField.id);" data-ng-show="aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-plus"></span></button>
+														<span class="pull-right small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
+														<span class="pull-right small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
 														<span data-ng-bind="aField.name"></span>
 													</div>
 												</div>
@@ -119,23 +121,25 @@
 				</form>
 			</div>
 			<div class="col-sm-8">
-				<!-- <div class="panel panel-default">
+				<div class="panel panel-default">
 					<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
 						<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 					</div>
 					<div data-uib-collapse="isCollapsedScriptCopy">
 						<div class="panel-body">
-							<div class="form-group form-group-sm">
-								<div class="col-sm-6">
-									<textarea data-ng-model="widgetScript" class="form-control" style="font-size: 0.7em;" rows="20" readonly="readonly"></textarea>
+							<form action="" class="form-horizontal">
+								<div class="form-group">
+									<div class="col-sm-12">
+										<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
+									</div>
 								</div>
-								<div class="col-sm-6">
-									<textarea data-ng-model="widgetScriptDisplay" class="form-control" style="font-size: 0.7em;" rows="20" readonly="readonly"></textarea>
+								<div class="row">
+									<div class="col-sm-12"><button class="btn btn-default btn-sm" type="button">Demo</button></div>
 								</div>
-							</div>
+							</form>
 						</div>
 					</div>
-				</div> -->
+				</div>
 				<div class="row">
 					<div data-lt-compile-code="widgetScriptDisplay"></div>
 				</div>
@@ -155,6 +159,7 @@
 	<script type="text/javascript" src="/js/lib/angular/angular-sanitize.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular/ui-bootstrap-tpls.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
+	<script type="text/javascript" src="/js/lib/angular-dragdrop/angular-dragdrop.min.js"></script>
 
 	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->
 

@@ -25,7 +25,6 @@ var LoanTekWidget;
                                 { field: 'userid' },
                                 { field: 'label', cols: 4, size: 'sm', value: 'First Name' },
                                 { field: 'firstname', cols: 8 },
-                                { field: 'lastname' },
                                 { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 },
                                 { field: 'phone' },
                                 { field: 'company' },
@@ -112,15 +111,20 @@ var LoanTekWidget;
                     $scope.ClearSelectedForm = ClearSelectedForm;
                     $scope.SetCurrentForm = SetCurrentForm;
                     $scope.addField = addField;
-                    $scope.isFieldOptionShown = isFieldOptionShown;
                     BuilderInit();
+                    $scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], function (newValue) {
+                        window.console && console.log('currentForm Updated: ', newValue);
+                        for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
+                            var field = $scope.allFieldsOptionsArray[i];
+                            var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
+                            field.isIncluded = !!(cIndex >= 0);
+                        }
+                    });
+                    ;
                     function addField(fieldId) {
                         var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
                         $scope.currentForm.buildObject.fields.push(fieldToAdd);
                         $scope.WidgetScriptBuild($scope.currentForm);
-                    }
-                    function isFieldOptionShown(fieldId) {
-                        return !$scope.allFieldsObject[fieldId].hideFromList;
                     }
                     function UsePrebuildForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];
@@ -145,7 +149,6 @@ var LoanTekWidget;
                             setCurrentForm: $scope.SetCurrentForm,
                             buildScript: $scope.WidgetScriptBuild
                         };
-                        window.console && console.log('in widgetscriptbuild. editFieldData.currentForm', $scope.editFieldData.currentForm);
                         var cfo = angular.copy(currentFormObj);
                         var cbo = angular.copy(cfo.buildObject);
                         var cbod = angular.copy(cfo.buildObject);

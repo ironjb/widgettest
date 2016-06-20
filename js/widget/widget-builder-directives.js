@@ -59,6 +59,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         var confirmInfo = { confirmOptions: { message: 'Are you sure you want to delete?' }, onConfirm: null, onCancel: null };
                         confirmInfo.onConfirm = function () {
                             delete scope.fieldData.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
+                            scope.fieldData.setCurrentForm(angular.copy(scope.fieldData.currentForm));
                             scope.fieldData.clearSelectedForm();
                             scope.fieldData.buildScript(scope.fieldData.currentForm);
                         };

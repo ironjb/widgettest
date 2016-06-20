@@ -108,6 +108,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						delete scope.fieldData.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
 						// window.console && console.log('ok to remove', scope.currentForm.buildObject.fields);
 
+						scope.fieldData.setCurrentForm(angular.copy(scope.fieldData.currentForm));
 						scope.fieldData.clearSelectedForm();
 						scope.fieldData.buildScript(scope.fieldData.currentForm);
 					};

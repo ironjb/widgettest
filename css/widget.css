@@ -3988,3 +3988,12 @@
 .ltw .visible-contents-on-hover:hover > * {
   visibility: visible;
 }
+.ltw .resize-none {
+  resize: none;
+}
+.ltw .resize-vertical {
+  resize: vertical;
+}
+.ltw .resize-horizontal {
+  resize: horizontal;
+}
