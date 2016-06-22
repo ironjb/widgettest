@@ -254,9 +254,31 @@ namespace LoanTekWidget {
 							el.div().addClass('ltw-tool-field-update')
 								.attr('data-lt-field-edit-tool', passString)
 								.attr('data-lt-field-edit-tool-data', 'editFieldData')
+								// .attr('data-ui-draggable', 'true')
 								// .attr('data-lt-edit-tool-current-form', 'currentForm')
 								// .attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild')
+								// .prepend(
+								// 	el.div().addClass('drag-handle btn btn-default btn-xs').attr('style','').text('+')
+								// )
+								// .append(
+								// 	el.div().addClass('btn btn-default btn-xs btn-tool edit-tool-rights drag-handle')
+								// 	// .attr('data-ui-draggable', 'true')
+								// 	// .attr('data-drag', passData.index)
+								// 	// .attr('data-drag-channel', 'fieldschannel')
+								// 	.append(
+								// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
+								// 	)
+								// )
 						);
+
+						cell.attr('data-ui-draggable', 'true');//.attr('data-drag-handle-Class','drag-handle'); //attr('data-ui-on-Drop', 'onDrop($event,$data);')
+						// cell.attr('data-drag', '{ passData: ' + JSON.stringify(passData) + '}');
+						cell.attr('data-drag', passData.index);
+						cell.attr('data-drag-handle-class', 'drag-handle');
+						cell.attr('data-drag-channel', 'fieldschannel');
+
+						cell.attr('data-ui-on-drop', 'onDrop('+ passData.index + ', $data);');
+						cell.attr('data-drop-channel', 'fieldschannel');
 					}
 
 					row.append(cell);

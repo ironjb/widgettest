@@ -25,12 +25,13 @@ var LoanTekWidget;
                                 { field: 'userid' },
                                 { field: 'label', cols: 4, size: 'sm', value: 'First Name' },
                                 { field: 'firstname', cols: 8 },
-                                { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 },
+                                { field: 'lastname' },
+                                { field: 'email' },
                                 { field: 'phone' },
                                 { field: 'company' },
-                                { field: 'state', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 10 },
+                                { field: 'state' },
                                 { field: 'comments' },
-                                { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph', color: '#069', borderColor: '#069', borderRadius: 4, padding: 8, backgroundColor: '#9CF' },
+                                { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph' },
                                 { field: 'captcha' },
                                 { field: 'submit' }
                             ]
@@ -55,12 +56,12 @@ var LoanTekWidget;
                             fields: [
                                 { field: 'clientid' },
                                 { field: 'userid' },
-                                { field: 'firstname', cols: 12 },
-                                { field: 'lastname', cols: 12 },
-                                { field: 'email', cols: 12 },
-                                { field: 'phone', cols: 12 },
-                                { field: 'company', cols: 12 },
-                                { field: 'state', cols: 12 },
+                                { field: 'firstname' },
+                                { field: 'lastname' },
+                                { field: 'email' },
+                                { field: 'phone' },
+                                { field: 'company' },
+                                { field: 'state' },
                                 { field: 'comments' },
                                 { field: 'captcha' },
                                 { field: 'submit' }
@@ -69,7 +70,7 @@ var LoanTekWidget;
                     }
                 ];
             }
-            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ang-drag-drop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
                     var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
                     var ltWidgetCSS = ['/Content/widget/css'];
@@ -111,16 +112,24 @@ var LoanTekWidget;
                     $scope.ClearSelectedForm = ClearSelectedForm;
                     $scope.SetCurrentForm = SetCurrentForm;
                     $scope.addField = addField;
+                    $scope.FilterAvailableFields = FilterAvailableFields;
+                    $scope.onDrop = onDrop;
                     BuilderInit();
                     $scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], function (newValue) {
-                        window.console && console.log('currentForm Updated: ', newValue);
                         for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
                             var field = $scope.allFieldsOptionsArray[i];
                             var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
                             field.isIncluded = !!(cIndex >= 0);
                         }
                     });
-                    ;
+                    function onDrop(index, data) {
+                        window.console && console.log('onDrop index', index, 'data', data);
+                    }
+                    function FilterAvailableFields(value, index, array) {
+                        var isInList = true;
+                        isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
+                        return isInList;
+                    }
                     function addField(fieldId) {
                         var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
                         $scope.currentForm.buildObject.fields.push(fieldToAdd);

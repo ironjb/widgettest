@@ -65,13 +65,15 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 	widgetDirectives.directive('ltFieldEditTool', [/*'$parse', */'$timeout', 'widgetServices', function(/*$parse, */$timeout, widgetServices) {
 		return {
 			restrict: 'A'
+			// , transclude: true
 			, scope: {
 				toolInfo: '=ltFieldEditTool'
 				, fieldData: '=ltFieldEditToolData'
 				// , currentForm: '=ltEditToolCurrentForm'
 				// , buildScript: '=ltEditToolBuildScript'
 			}
-			, templateUrl: 'template/widgetFieldEditButtons.html'
+			// , templateUrl: 'template/widgetFieldEditButtons.html'
+			, templateUrl: '/template.html?t=' + new Date().getTime()
 			, link: (scope: IWidgetDirectiveFieldEditToolNgScope, elem, attrs) => {
 				// var _ltFieldsEditTool = $parse(attrs.toolInfo);
 				// var ltFieldsEditTool = _ltFieldsEditTool(scope);

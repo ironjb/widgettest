@@ -108,6 +108,12 @@ var LoanTekWidget;
                         cell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
                             .attr('data-lt-field-edit-tool', passString)
                             .attr('data-lt-field-edit-tool-data', 'editFieldData'));
+                        cell.attr('data-ui-draggable', 'true');
+                        cell.attr('data-drag', passData.index);
+                        cell.attr('data-drag-handle-class', 'drag-handle');
+                        cell.attr('data-drag-channel', 'fieldschannel');
+                        cell.attr('data-ui-on-drop', 'onDrop(' + passData.index + ', $data);');
+                        cell.attr('data-drop-channel', 'fieldschannel');
                     }
                     row.append(cell);
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;

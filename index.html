@@ -98,15 +98,19 @@
 								<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
 									<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
+								 <!-- data-ng-show="!aField.hideFromList &amp;&amp; !(!!aField.isIncluded &amp;&amp; !aField.allowMultiples)" -->
 								<div data-uib-collapse="isCollapsedAvailableFields">
 									<div class="panel-body">
 										<div class="form-group form-group-sm">
 											<div class="col-sm-12">
 												<div class="list-group">
-													<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | orderBy: 'allowMultiples'" data-ng-show="!aField.hideFromList">
-														<button class="btn btn-default btn-xs pull-right" type="button" data-ng-click="addField(aField.id);" data-ng-show="aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-plus"></span></button>
-														<span class="pull-right small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
-														<span class="pull-right small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
+													<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
+														<div class="pull-right">
+															<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
+															<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
+															<a class="btn btn-default btn-xs" data-ui-draggable="true" data-drag-channel="fieldschannel" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+															<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+														</div>
 														<span data-ng-bind="aField.name"></span>
 													</div>
 												</div>
@@ -159,7 +163,7 @@
 	<script type="text/javascript" src="/js/lib/angular/angular-sanitize.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular/ui-bootstrap-tpls.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
-	<script type="text/javascript" src="/js/lib/angular-dragdrop/angular-dragdrop.min.js"></script>
+	<script type="text/javascript" src="/js/lib/angular-native-dragdrop/draganddrop.min.js"></script>
 
 	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->
 

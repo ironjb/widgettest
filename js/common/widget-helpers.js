@@ -212,6 +212,7 @@ var LoanTekWidget;
                     return returnStyle;
                 },
                 p: function () { return $('<p/>'); },
+                a: function () { return $('<a/>'); },
                 span: function () { return $('<span/>'); },
                 h: function (headNumber) {
                     if (headNumber === void 0) { headNumber = 3; }

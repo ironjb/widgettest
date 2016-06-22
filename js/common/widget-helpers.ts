@@ -372,6 +372,7 @@ namespace LoanTekWidget {
 					return returnStyle;
 				}
 				, p: () => { return $('<p/>'); }
+				, a: () => { return $('<a/>'); }
 				, span: () => { return $('<span/>'); }
 				, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
 				, form: () => { return $('<form/>').addClass('form-horizontal'); },

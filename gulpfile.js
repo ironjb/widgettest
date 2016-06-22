@@ -64,11 +64,12 @@
 			])
 		.pipe(gulp.dest('css/less/bootstrap'));
 
-		// Copy angular-dragdrop .js file
+		// Copy angular-native-dragdrop .js file
 		gulp.src([
-			'bower_components/angular-dragdrop/src/angular-dragdrop.min.js'
+			// 'bower_components/angular-native-dragdrop/draganddrop.js',
+			'bower_components/angular-native-dragdrop/draganddrop.min.js'
 			])
-		.pipe(gulp.dest('js/lib/angular-dragdrop'));
+		.pipe(gulp.dest('js/lib/angular-native-dragdrop'));
 	});
 
 	gulp.task('ts:compilewidget', function () {

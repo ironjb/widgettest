@@ -45,9 +45,13 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
 	ClearSelectedForm?(): void;
 	SetCurrentForm?(currentForm: IWidgetFormObject): void;
+	FilterAvailableFields?(value, index, array): boolean;
 	// isFieldOptionShown?(fieldId: string): boolean;
 	// isAddFieldButtonShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
+	onDrop?(newIndex: number, data: any): void;
+	// list1?: any;
+	// list2?: any;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
 	widgetScript?: string;
@@ -94,13 +98,13 @@ namespace LoanTekWidget {
 								// , { field: 'title', value: 'Contact Us', nsize: 5 }
 								, { field: 'label', cols: 4, size: 'sm', value: 'First Name' }
 								, { field: 'firstname', cols: 8 }
-								// , { field: 'lastname' }
-								, { field: 'email', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10 }
+								, { field: 'lastname' }
+								, { field: 'email'/*, color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 18, padding: 10*/ }
 								, { field: 'phone' }
 								, { field: 'company' }
-								, { field: 'state', color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 10 }
+								, { field: 'state'/*, color: 'blue', borderRadius: 0, borderColor: 'green', backgroundColor: 'lightgreen', fontSize: 10*/ }
 								, { field: 'comments' }
-								, { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph', color: '#069', borderColor: '#069', borderRadius: 4, padding: 8, backgroundColor: '#9CF' }
+								, { field: 'paragraph', value: 'This is a paragraph<br />This is a paragraph'/*, color: '#069', borderColor: '#069', borderRadius: 4, padding: 8, backgroundColor: '#9CF'*/ }
 								// , { element: 'input', type: 'file' }
 								, { field: 'captcha' }
 								, { field: 'submit' }
@@ -127,12 +131,12 @@ namespace LoanTekWidget {
 							fields: [
 								{ field: 'clientid' }
 								, { field: 'userid' }
-								, { field: 'firstname', cols: 12 }
-								, { field: 'lastname', cols: 12 }
-								, { field: 'email', cols: 12 }
-								, { field: 'phone', cols: 12 }
-								, { field: 'company', cols: 12 }
-								, { field: 'state', cols: 12 }
+								, { field: 'firstname' }
+								, { field: 'lastname' }
+								, { field: 'email' }
+								, { field: 'phone' }
+								, { field: 'company' }
+								, { field: 'state' }
 								, { field: 'comments' }
 								, { field: 'captcha' }
 								, { field: 'submit' }
@@ -143,7 +147,7 @@ namespace LoanTekWidget {
 			}
 
 			// Angular App
-			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ang-drag-drop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
 			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function($scope: IWidgetBuilderNgScope, $timeout) {
@@ -152,6 +156,8 @@ namespace LoanTekWidget {
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
 				var ltWidgetCSS: string[] = ['/Content/widget/css'];
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
+				// $scope.list1 = { title: 'AngularJS - Drag Me' };
+				// $scope.list2 = {};
 
 				if (window.location.port === '8080') {
 					ltWidgetCSS = ['/css/widget.css'];
@@ -198,19 +204,32 @@ namespace LoanTekWidget {
 				$scope.ClearSelectedForm = ClearSelectedForm;
 				$scope.SetCurrentForm = SetCurrentForm;
 				$scope.addField = addField;
+				$scope.FilterAvailableFields = FilterAvailableFields;
+				$scope.onDrop = onDrop;
 				// $scope.isFieldOptionShown = isFieldOptionShown;
 				// $scope.isAddFieldButtonShown = isAddFieldButtonShown;
 				BuilderInit();
 
 				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], (newValue) => {
-					window.console && console.log('currentForm Updated: ', newValue);
+					// window.console && console.log('currentForm Updated: ', newValue);
 					for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
 						var field = $scope.allFieldsOptionsArray[i];
 						var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
 						// window.console && console.log('index: ', cIndex, field);
 						field.isIncluded = !!(cIndex >= 0);
 					}
-				});;
+				});
+
+				function onDrop(index: any, data: any) {
+					window.console && console.log('onDrop index', index, 'data', data);
+				}
+
+				function FilterAvailableFields(value, index, array): boolean {
+					var isInList = true;
+					// window.console && console.log('filter', value, index, array);
+					isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
+					return isInList;
+				}
 
 				function addField(fieldId: string) {
 					// window.console && console.log('fieldId', fieldId, $scope.allFieldsObject[fieldId]);
