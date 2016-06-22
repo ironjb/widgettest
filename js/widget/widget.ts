@@ -137,7 +137,7 @@ namespace LoanTekWidget {
 			var isLastField: boolean = false;
 			var isHidden: boolean = false;
 			var isLabel: boolean;
-			var cell = null;
+			var cell: JQuery = null;
 			var fieldsLength = settings.fields.length;
 			var nextFieldCols: number;
 			var nextIndex: number;
@@ -271,14 +271,20 @@ namespace LoanTekWidget {
 								// )
 						);
 
-						cell.attr('data-ui-draggable', 'true');//.attr('data-drag-handle-Class','drag-handle'); //attr('data-ui-on-Drop', 'onDrop($event,$data);')
-						// cell.attr('data-drag', '{ passData: ' + JSON.stringify(passData) + '}');
-						cell.attr('data-drag', passData.index);
-						cell.attr('data-drag-handle-class', 'drag-handle');
-						cell.attr('data-drag-channel', 'fieldschannel');
+						// cell.attr('data-ui-draggable', 'true');//.attr('data-drag-handle-Class','drag-handle'); //attr('data-ui-on-Drop', 'onDrop($event,$data);')
+						// // cell.attr('data-drag', '{ passData: ' + JSON.stringify(passData) + '}');
+						// cell.attr('data-drag', passData.index);
+						// cell.attr('data-drag-handle-class', 'drag-handle');
+						// cell.attr('data-drag-channel', 'fieldschannel');
 
-						cell.attr('data-ui-on-drop', 'onDrop('+ passData.index + ', $data);');
-						cell.attr('data-drop-channel', 'fieldschannel');
+						// cell.attr('data-ui-on-drop', 'onDrop('+ passData.index + ', $data);');
+						// cell.attr('data-drop-channel', 'fieldschannel');
+						// cell.attr('data-drop-validate', 'onDropValidation(' + passData.index + ', $data);');
+
+						// cell.prepend(el.div().addClass('move-hover'));
+
+						cell.attr('data-drop','true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop($index, #{pdi})' }`, { pdi: passData.index }));
 					}
 
 					row.append(cell);

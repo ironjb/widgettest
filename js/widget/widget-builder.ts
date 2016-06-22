@@ -49,9 +49,10 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	// isFieldOptionShown?(fieldId: string): boolean;
 	// isAddFieldButtonShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
-	onDrop?(newIndex: number, data: any): void;
-	// list1?: any;
-	// list2?: any;
+	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, newIndex: number, data: any): void;
+	onDropValidation?(newIndex: number, data: any): boolean;
+	list1?: any;
+	list2?: any;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
 	widgetScript?: string;
@@ -147,7 +148,7 @@ namespace LoanTekWidget {
 			}
 
 			// Angular App
-			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ang-drag-drop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
 			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function($scope: IWidgetBuilderNgScope, $timeout) {
@@ -156,8 +157,8 @@ namespace LoanTekWidget {
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
 				var ltWidgetCSS: string[] = ['/Content/widget/css'];
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
-				// $scope.list1 = { title: 'AngularJS - Drag Me' };
-				// $scope.list2 = {};
+				$scope.list1 = { title: 'AngularJS - Drag Me' };
+				$scope.list2 = {};
 
 				if (window.location.port === '8080') {
 					ltWidgetCSS = ['/css/widget.css'];
@@ -206,6 +207,7 @@ namespace LoanTekWidget {
 				$scope.addField = addField;
 				$scope.FilterAvailableFields = FilterAvailableFields;
 				$scope.onDrop = onDrop;
+				$scope.onDropValidation = onDropValidation;
 				// $scope.isFieldOptionShown = isFieldOptionShown;
 				// $scope.isAddFieldButtonShown = isAddFieldButtonShown;
 				BuilderInit();
@@ -220,8 +222,13 @@ namespace LoanTekWidget {
 					}
 				});
 
-				function onDrop(index: any, data: any) {
-					window.console && console.log('onDrop index', index, 'data', data);
+				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, index: any, data: any) {
+					window.console && console.log('onDrop index', index, 'data', data, 'ui', ui);
+				}
+
+				function onDropValidation(index: any, data: any): boolean {
+					// window.console && console.log('onDropValidate index', index, 'data', data);
+					return index !== data;
 				}
 
 				function FilterAvailableFields(value, index, array): boolean {

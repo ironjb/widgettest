@@ -9,7 +9,8 @@
 		// Copy jQuery
 		gulp.src([
 			'bower_components/jquery/dist/jquery.min.js',
-			'bower_components/jquery-placeholder/jquery.placeholder.min.js'
+			'bower_components/jquery-placeholder/jquery.placeholder.min.js',
+			'bower_components/jQuery-ui/jquery-ui.min.js'
 			])
 		.pipe(gulp.dest('js/lib/jquery'));
 
@@ -30,7 +31,8 @@
 			'bower_components/angular/angular.min.js',
 			'bower_components/angular-animate/angular-animate.min.js',
 			'bower_components/angular-sanitize/angular-sanitize.min.js',
-			'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
+			'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+			'bower_components/angular-dragdrop/src/angular-dragdrop.min.js'
 			])
 		.pipe(gulp.dest('js/lib/angular'));
 
@@ -64,12 +66,12 @@
 			])
 		.pipe(gulp.dest('css/less/bootstrap'));
 
-		// Copy angular-native-dragdrop .js file
-		gulp.src([
-			// 'bower_components/angular-native-dragdrop/draganddrop.js',
-			'bower_components/angular-native-dragdrop/draganddrop.min.js'
-			])
-		.pipe(gulp.dest('js/lib/angular-native-dragdrop'));
+		// // Copy angular-native-dragdrop .js file
+		// gulp.src([
+		// 	// 'bower_components/angular-native-dragdrop/draganddrop.js',
+		// 	'bower_components/angular-native-dragdrop/draganddrop.min.js'
+		// 	])
+		// .pipe(gulp.dest('js/lib/angular-native-dragdrop'));
 	});
 
 	gulp.task('ts:compilewidget', function () {

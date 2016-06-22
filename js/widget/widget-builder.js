@@ -70,11 +70,13 @@ var LoanTekWidget;
                     }
                 ];
             }
-            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ang-drag-drop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
+            var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
                     var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
                     var ltWidgetCSS = ['/Content/widget/css'];
                     var widgetScripts = ['/bundles/widget/widget'];
+                    $scope.list1 = { title: 'AngularJS - Drag Me' };
+                    $scope.list2 = {};
                     if (window.location.port === '8080') {
                         ltWidgetCSS = ['/css/widget.css'];
                         widgetScripts = [
@@ -114,6 +116,7 @@ var LoanTekWidget;
                     $scope.addField = addField;
                     $scope.FilterAvailableFields = FilterAvailableFields;
                     $scope.onDrop = onDrop;
+                    $scope.onDropValidation = onDropValidation;
                     BuilderInit();
                     $scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], function (newValue) {
                         for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
@@ -122,8 +125,11 @@ var LoanTekWidget;
                             field.isIncluded = !!(cIndex >= 0);
                         }
                     });
-                    function onDrop(index, data) {
-                        window.console && console.log('onDrop index', index, 'data', data);
+                    function onDrop(event, ui, index, data) {
+                        window.console && console.log('onDrop index', index, 'data', data, 'ui', ui);
+                    }
+                    function onDropValidation(index, data) {
+                        return index !== data;
                     }
                     function FilterAvailableFields(value, index, array) {
                         var isInList = true;

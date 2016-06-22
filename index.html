@@ -40,6 +40,15 @@
 				<form action="" class="form-horizontal">
 					<div class="row">
 						<div class="col-sm-12">
+							<!-- <div class="btn btn-primary" data-drag="true" jqyoui-draggable="{animate:true,placeholder:true}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list1" ng-hidse="!list1.title">{{list1.title}}</div>
+
+
+							<div class="thumbnail" data-drop="true" data-jqyoui-options ng-model="list2" jqyoui-droppable style='height:50px;'>
+							<div class="btn btn-success" data-jqyoui-options ng-hide="!list2.title">{{list2.title}}</div>
+							</div>
+							{{list1}}
+							{{list2}} -->
+
 							<!-- <div class="panel panel-default">
 								<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
 									<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
@@ -98,7 +107,7 @@
 								<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
 									<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 								</div>
-								 <!-- data-ng-show="!aField.hideFromList &amp;&amp; !(!!aField.isIncluded &amp;&amp; !aField.allowMultiples)" -->
+								<!-- data-ng-show="!aField.hideFromList &amp;&amp; !(!!aField.isIncluded &amp;&amp; !aField.allowMultiples)" -->
 								<div data-uib-collapse="isCollapsedAvailableFields">
 									<div class="panel-body">
 										<div class="form-group form-group-sm">
@@ -108,7 +117,7 @@
 														<div class="pull-right">
 															<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
 															<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
-															<a class="btn btn-default btn-xs" data-ui-draggable="true" data-drag-channel="fieldschannel" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+															<a class="btn btn-default btn-xs" data-ui-draggable="true" data-drag="aField.id" data-drag-channel="fieldschannel" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
 															<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
 														</div>
 														<span data-ng-bind="aField.name"></span>
@@ -156,6 +165,7 @@
 
 	<script type="text/javascript" src="/js/lib/jquery/jquery.min.js"></script>
 	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script> -->
+	<script type="text/javascript" src="/js/lib/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/js/lib/jquery/jquery.placeholder.min.js"></script>
 	<script type="text/javascript" src="/js/lib/bootstrap/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular/angular.min.js"></script>
@@ -163,7 +173,8 @@
 	<script type="text/javascript" src="/js/lib/angular/angular-sanitize.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular/ui-bootstrap-tpls.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
-	<script type="text/javascript" src="/js/lib/angular-native-dragdrop/draganddrop.min.js"></script>
+	<!-- <script type="text/javascript" src="/js/lib/angular-native-dragdrop/draganddrop.min.js"></script> -->
+	<script type="text/javascript" src="/js/lib/angular/angular-dragdrop.min.js"></script>
 
 	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->
 

@@ -1,5 +1,7 @@
 			<div class="pull-right">
-				<a class="btn btn-default btn-xs btn-tool drag-handle" data-ui-draggableX="true" data-drag-channelX="A" data-dragX="{{::toolInfo.index}}"><span class="glyphicon glyphicon-move drag-handle"></span></a>
+				<a class="btn btn-default btn-xs btn-tool" data-jqyoui-draggable="{index:{{::toolInfo.index}}}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true"><span class="glyphicon glyphicon-move"></span></a>
+				<!-- <a class="btn btn-default btn-xs btn-tool drag-handleX"><span class="glyphicon glyphicon-move drag-handleX"></span></a> -->
+				<!-- <a class="btn btn-default btn-xs btn-tool" data-ui-draggable="true" data-drag-channel="fieldschannel" data-drag="{{::toolInfo.index}}"><span class="glyphicon glyphicon-move"></span></a> -->
 				<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetField();"><span class="glyphicon glyphicon-pencil"></span></button>
 				<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove"><span class="glyphicon glyphicon-trash"></span></button>
 			</div>
