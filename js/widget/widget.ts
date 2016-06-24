@@ -196,14 +196,14 @@ namespace LoanTekWidget {
 				}
 			});
 
-			$.each(settings.fields, (i, elementItem) => {
+			$.each(settings.fields, (fieldIndex, elementItem) => {
 				isHidden = elementItem.type === 'hidden';
 				elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
 				elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
-				isLastField = i >= fieldsLength - 1;
+				isLastField = fieldIndex >= fieldsLength - 1;
 				isLabel = elementItem.element === 'label';
 
-				nextIndex = i + 1;
+				nextIndex = fieldIndex + 1;
 				do {
 					// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
 					isNextHidden = settings.fields[nextIndex] && settings.fields[nextIndex].type === 'hidden';
@@ -247,7 +247,7 @@ namespace LoanTekWidget {
 						// cell.append(el.div().html('Edit helper ' + elementItem.element));
 						// cell.attr('data-lt-widget-tool', `{ field: '` + elementItem.field + `' }`);
 						// cell.attr('data-ng-click', 'testFun();');
-						var passData = { index: i/*, element: elementItem.element, type: elementItem.type*/ };
+						var passData = { index: fieldIndex/*, element: elementItem.element, type: elementItem.type*/ };
 						var passString = JSON.stringify(passData);
 						// window.console && console.log('passData', passData, passString);
 						cell.addClass('ltw-builder-tools-field').prepend(
@@ -269,6 +269,15 @@ namespace LoanTekWidget {
 								// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
 								// 	)
 								// )
+								// .append(
+								// el.div().addClass('btn btn-default btn-xs btn-tool field-channel')
+								// 	.attr('data-drag', 'true')
+								// 	.attr('data-jqyoui-draggable', lth.Interpolate(`{onStart:'onDragStart(#{dragIndex})'}`,{ dragIndex: passData.index}))
+								// 	.attr('data-jqyoui-options', `{revert: 'invalid', helper: 'clone'}`)
+								// 	.append(
+								// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
+								// 	)
+								// )
 						);
 
 						// cell.attr('data-ui-draggable', 'true');//.attr('data-drag-handle-Class','drag-handle'); //attr('data-ui-on-Drop', 'onDrop($event,$data);')
@@ -281,10 +290,11 @@ namespace LoanTekWidget {
 						// cell.attr('data-drop-channel', 'fieldschannel');
 						// cell.attr('data-drop-validate', 'onDropValidation(' + passData.index + ', $data);');
 
-						// cell.prepend(el.div().addClass('move-hover'));
+						cell.prepend(el.div().addClass('move-hover'));
 
 						cell.attr('data-drop','true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop($index, #{pdi})' }`, { pdi: passData.index }));
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: fieldIndex }))
+							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
 					}
 
 					row.append(cell);
@@ -298,7 +308,12 @@ namespace LoanTekWidget {
 						// On Hover... show leftover space
 						if (settings.showBuilderTools) {
 							row.append(
-								el.col(remainingColSpace).addClass('hidden-xs').append(
+								el.col(remainingColSpace).addClass('hidden-xs')
+								.attr('data-drop', 'true')
+								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space})' }`, { pdi: fieldIndex, space: remainingColSpace }))
+								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+								.prepend(el.div().addClass('move-hover'))
+								.append(
 									el.formGroup(elementItem.size).append(
 										el.col().append(
 											el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')

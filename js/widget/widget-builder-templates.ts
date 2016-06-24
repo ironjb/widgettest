@@ -8,8 +8,11 @@
 			</div>
 		`);
 		$templateCache.put('template/widgetFieldEditButtons.html', `
-			<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove"><span class="glyphicon glyphicon-trash"></span></button>
-			<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetField();"><span class="glyphicon glyphicon-pencil"></span></button>
+			<div class="pull-right">
+				<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStartDir({index: toolInfo.index})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true"><span class="glyphicon glyphicon-move"></span></a>
+				<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetField();"><span class="glyphicon glyphicon-pencil"></span></button>
+				<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove"><span class="glyphicon glyphicon-trash"></span></button>
+			</div>
 		`);
 		$templateCache.put('template/widget/confirmModal.html',`
 			<div class="modal-header" data-ng-class="mdlSettings.headerStyle">

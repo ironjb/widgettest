@@ -9,6 +9,7 @@ interface IWidgetDirectiveFieldEditToolNgScope extends ng.IScope {
 	showRemove?: boolean;
 	RemoveWidgetField?(): void;
 	EditWidgetField?(): void;
+	onDragStartDir: IWidgetOnDragStart;
 }
 
 interface IFieldEditOptions {
@@ -72,8 +73,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				// , currentForm: '=ltEditToolCurrentForm'
 				// , buildScript: '=ltEditToolBuildScript'
 			}
-			// , templateUrl: 'template/widgetFieldEditButtons.html'
-			, templateUrl: '/template.html?t=' + new Date().getTime()
+			, templateUrl: 'template/widgetFieldEditButtons.html'
+			// , templateUrl: '/template.html?t=' + new Date().getTime()
 			, link: (scope: IWidgetDirectiveFieldEditToolNgScope, elem, attrs) => {
 				// var _ltFieldsEditTool = $parse(attrs.toolInfo);
 				// var ltFieldsEditTool = _ltFieldsEditTool(scope);
@@ -84,6 +85,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				// window.console && console.log('toolInfo', scope.toolInfo);
 				// window.console && console.log('fieldData', scope.fieldData);
 				// window.console && console.log('buildScript', scope.buildScript);
+				scope.onDragStartDir = scope.fieldData.onDragStart;
+
 				scope.currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
 				// scope.currentFieldOptions;
 

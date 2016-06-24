@@ -58,13 +58,13 @@ var LoanTekWidget;
                     settings.fields[i] = ExtendFieldTemplate(elementItem);
                 }
             });
-            $.each(settings.fields, function (i, elementItem) {
+            $.each(settings.fields, function (fieldIndex, elementItem) {
                 isHidden = elementItem.type === 'hidden';
                 elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
                 elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
-                isLastField = i >= fieldsLength - 1;
+                isLastField = fieldIndex >= fieldsLength - 1;
                 isLabel = elementItem.element === 'label';
-                nextIndex = i + 1;
+                nextIndex = fieldIndex + 1;
                 do {
                     isNextHidden = settings.fields[nextIndex] && settings.fields[nextIndex].type === 'hidden';
                     nextFieldCols = (settings.fields[nextIndex] && settings.fields[nextIndex].cols) ? settings.fields[nextIndex].cols : isNextHidden ? 0 : COLUMNS_IN_ROW;
@@ -103,13 +103,15 @@ var LoanTekWidget;
                         }
                     }
                     if (settings.showBuilderTools) {
-                        var passData = { index: i };
+                        var passData = { index: fieldIndex };
                         var passString = JSON.stringify(passData);
                         cell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
                             .attr('data-lt-field-edit-tool', passString)
                             .attr('data-lt-field-edit-tool-data', 'editFieldData'));
+                        cell.prepend(el.div().addClass('move-hover'));
                         cell.attr('data-drop', 'true')
-                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop($index, #{pdi})' }", { pdi: passData.index }));
+                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }", { pdi: fieldIndex }))
+                            .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}");
                     }
                     row.append(cell);
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -117,7 +119,12 @@ var LoanTekWidget;
                         isTimeToAddRow = true;
                         remainingColSpace = COLUMNS_IN_ROW - columnCount;
                         if (settings.showBuilderTools) {
-                            row.append(el.col(remainingColSpace).addClass('hidden-xs').append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
+                            row.append(el.col(remainingColSpace).addClass('hidden-xs')
+                                .attr('data-drop', 'true')
+                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space})' }", { pdi: fieldIndex, space: remainingColSpace }))
+                                .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}")
+                                .prepend(el.div().addClass('move-hover'))
+                                .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
                         }
                     }
                     else {

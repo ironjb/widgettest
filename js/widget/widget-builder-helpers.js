@@ -1,6 +1,26 @@
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 var LoanTekWidget;
 (function (LoanTekWidget) {
+    var BuilderHelpers = (function () {
+        function BuilderHelpers() {
+        }
+        BuilderHelpers.prototype.arrayMove = function (arr, oldIndex, newIndex) {
+            while (oldIndex < 0) {
+                oldIndex += arr.length;
+            }
+            while (newIndex < 0) {
+                newIndex += arr.length;
+            }
+            if (newIndex >= arr.length) {
+                newIndex = arr.length;
+            }
+            window.console && console.log('oldIndex', oldIndex, 'newIndex', newIndex);
+            arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+            return arr;
+        };
+        return BuilderHelpers;
+    }());
+    LoanTekWidget.BuilderHelpers = BuilderHelpers;
     var LoadScriptsInSequence = (function () {
         function LoadScriptsInSequence(scriptSrcArray, scriptRootDirectory, callback) {
             var _thisC = this;

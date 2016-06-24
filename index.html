@@ -117,7 +117,8 @@
 														<div class="pull-right">
 															<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
 															<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
-															<a class="btn btn-default btn-xs" data-ui-draggable="true" data-drag="aField.id" data-drag-channel="fieldschannel" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+															<!-- <a class="btn btn-default btn-xs" data-ui-draggable="true" data-drag="aField.id" data-drag-channel="fieldschannel" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a> -->
+															<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
 															<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
 														</div>
 														<span data-ng-bind="aField.name"></span>
@@ -174,6 +175,7 @@
 	<script type="text/javascript" src="/js/lib/angular/ui-bootstrap-tpls.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
 	<!-- <script type="text/javascript" src="/js/lib/angular-native-dragdrop/draganddrop.min.js"></script> -->
+	<!-- <script type="text/javascript" src="/bower_components/angular-dragdrop/src/angular-dragdrop.js"></script> -->
 	<script type="text/javascript" src="/js/lib/angular/angular-dragdrop.min.js"></script>
 
 	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->

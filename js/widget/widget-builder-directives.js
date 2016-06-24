@@ -41,8 +41,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     toolInfo: '=ltFieldEditTool',
                     fieldData: '=ltFieldEditToolData'
                 },
-                templateUrl: '/template.html?t=' + new Date().getTime(),
+                templateUrl: 'template/widgetFieldEditButtons.html',
                 link: function (scope, elem, attrs) {
+                    scope.onDragStartDir = scope.fieldData.onDragStart;
                     scope.currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
                     if (scope.fieldData.widgetTypeLower === 'quotewidget') {
                     }

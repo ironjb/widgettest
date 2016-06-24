@@ -30,10 +30,20 @@ interface IWidgetFormObject {
 	buildObject?: IWidgetFormBuildObject;
 }
 
+interface IWidgetOnDragStart {
+	(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
+}
+
+interface IWidgetOnDragStartData {
+	index?: number;
+	field?: string;
+}
+
 interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
 	currentForm?: IWidgetFormObject;
 	clearSelectedForm?(): void;
+	onDragStart: IWidgetOnDragStart;
 	setCurrentForm?(currentForm: IWidgetFormObject): void;
 	buildScript?(widgetFormObject: IWidgetFormObject): void;
 }
@@ -49,10 +59,11 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	// isFieldOptionShown?(fieldId: string): boolean;
 	// isAddFieldButtonShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
-	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, newIndex: number, data: any): void;
-	onDropValidation?(newIndex: number, data: any): boolean;
-	list1?: any;
-	list2?: any;
+	onDragStart: IWidgetOnDragStart;
+	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, columns?: number): void;
+	// onDropValidation?(newIndex: number, data: any): boolean;
+	// list1?: any;
+	// list2?: any;
 	selectedForm?: IWidgetFormObject;
 	widgetObject?: IWidget;
 	widgetScript?: string;
@@ -62,6 +73,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	editFieldData?: IWidgetEditFieldData;
 	allFieldsObject?: Object;
 	allFieldsOptionsArray?: IWidgetFieldOptions[];
+	dragData?: IWidgetOnDragStartData;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -72,6 +84,7 @@ namespace LoanTekWidget {
 		constructor($: JQueryStatic, widgetData: IWidgetModelData) {
 			var _thisC = this;
 			var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
+			var ltbh: LoanTekWidget.BuilderHelpers = new LoanTekWidget.BuilderHelpers();
 			var el = lth.CreateElement();
 
 			$('input textarea').placeholder();
@@ -157,8 +170,8 @@ namespace LoanTekWidget {
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
 				var ltWidgetCSS: string[] = ['/Content/widget/css'];
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
-				$scope.list1 = { title: 'AngularJS - Drag Me' };
-				$scope.list2 = {};
+				// $scope.list1 = { title: 'AngularJS - Drag Me' };
+				// $scope.list2 = {};
 
 				if (window.location.port === '8080') {
 					ltWidgetCSS = ['/css/widget.css'];
@@ -206,8 +219,9 @@ namespace LoanTekWidget {
 				$scope.SetCurrentForm = SetCurrentForm;
 				$scope.addField = addField;
 				$scope.FilterAvailableFields = FilterAvailableFields;
+				$scope.onDragStart = onDragStart;
 				$scope.onDrop = onDrop;
-				$scope.onDropValidation = onDropValidation;
+				// $scope.onDropValidation = onDropValidation;
 				// $scope.isFieldOptionShown = isFieldOptionShown;
 				// $scope.isAddFieldButtonShown = isAddFieldButtonShown;
 				BuilderInit();
@@ -222,14 +236,42 @@ namespace LoanTekWidget {
 					}
 				});
 
-				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, index: any, data: any) {
-					window.console && console.log('onDrop index', index, 'data', data, 'ui', ui);
+				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData) {
+					window.console && console.log('dragStart data', data);
+					$scope.dragData = data;
 				}
 
-				function onDropValidation(index: any, data: any): boolean {
-					// window.console && console.log('onDropValidate index', index, 'data', data);
-					return index !== data;
+				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, currentIndex: number, columns: number) {
+					// window.console && console.log('onDrop index: ', index, 'dragData: ', $scope.dragData);
+					if ($scope.dragData.field) {
+						window.console && console.log('add new field ', $scope.dragData.field, ' to ', currentIndex);
+						var newField: IWidgetField = { field: $scope.dragData.field };
+						if (columns) {
+							newField.cols = columns;
+						}
+						$scope.currentForm.buildObject.fields.splice(currentIndex + 1, 0, newField);
+						$scope.WidgetScriptBuild($scope.currentForm);
+					} else if (lth.isNumber($scope.dragData.index)) {
+						// window.console && console.log('move field from ', $scope.dragData.index, ' to ', currentIndex);
+						// window.console && console.log(JSON.stringify($scope.currentForm.buildObject.fields[$scope.dragData.index]));
+
+						// window.console && console.log(JSON.stringify($scope.currentForm.buildObject.fields,null,'\t'));
+						var newIndex = $scope.dragData.index;
+						// if (currentIndex > newIndex) {
+						// 	newIndex += 1;
+						// }
+						ltbh.arrayMove($scope.currentForm.buildObject.fields, newIndex, currentIndex);
+						// window.console && console.log(JSON.stringify($scope.currentForm.buildObject.fields).replace(/\},/g,'},\n'));
+						$scope.WidgetScriptBuild($scope.currentForm);
+					} else {
+						window.console && console.error('No Data Passed from Draggable!!');
+					}
 				}
+
+				// function onDropValidation(index: any, data: any): boolean {
+				// 	// window.console && console.log('onDropValidate index', index, 'data', data);
+				// 	return index !== data;
+				// }
 
 				function FilterAvailableFields(value, index, array): boolean {
 					var isInList = true;
@@ -293,6 +335,7 @@ namespace LoanTekWidget {
 						widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm
 						, clearSelectedForm: $scope.ClearSelectedForm
+						, onDragStart: $scope.onDragStart
 						, setCurrentForm: $scope.SetCurrentForm
 						, buildScript: $scope.WidgetScriptBuild
 					};

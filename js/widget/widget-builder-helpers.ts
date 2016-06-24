@@ -3,6 +3,28 @@
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 namespace LoanTekWidget {
+	export class BuilderHelpers {
+
+		constructor() {
+			// code...
+		}
+
+		arrayMove(arr: any[], oldIndex: number, newIndex: number): any[] {
+			while (oldIndex < 0) {
+				oldIndex += arr.length;
+			}
+			while (newIndex < 0) {
+				newIndex += arr.length;
+			}
+			if (newIndex >= arr.length) {
+				newIndex = arr.length;
+			}
+			window.console && console.log('oldIndex', oldIndex, 'newIndex', newIndex);
+
+			arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+			return arr;
+		}
+	}
 	export class LoadScriptsInSequence {
 		private _scriptSrcArray: string[];
 		private _scriptRootDirectory: string;
