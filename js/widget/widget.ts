@@ -134,6 +134,7 @@ namespace LoanTekWidget {
 			var row = null;
 			var isSingleRow: boolean;
 			var isTimeToAddRow: boolean = false;
+			var isSpaceLeftOver: boolean = false;
 			var isLastField: boolean = false;
 			var isHidden: boolean = false;
 			var isLabel: boolean;
@@ -235,89 +236,142 @@ namespace LoanTekWidget {
 						} else {
 							cell = el.col().append(_thisC.CreateFormElement(elementItem));
 						}
-					} else {
-						if (isLabel) {
-							cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(_thisC.CreateFormElement(elementItem)));
-						} else {
-							cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(el.col().append(_thisC.CreateFormElement(elementItem))));
+
+						if (settings.showBuilderTools) {
+							appendBuilderTools(cell);
+							appendMoveTools(cell);
 						}
+					} else {
+						var innerCell: JQuery;
+						if (isLabel) {
+							innerCell = _thisC.CreateFormElement(elementItem);
+						} else {
+							innerCell = el.col().append(_thisC.CreateFormElement(elementItem));
+						}
+
+						window.console && console.log(innerCell);
+
+						if (settings.showBuilderTools) {
+							appendBuilderTools(innerCell);
+							appendMoveTools(innerCell);
+						}
+						window.console && console.log(innerCell);
+
+						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
 					}
 
-					if (settings.showBuilderTools) {
-						// cell.append(el.div().html('Edit helper ' + elementItem.element));
-						// cell.attr('data-lt-widget-tool', `{ field: '` + elementItem.field + `' }`);
-						// cell.attr('data-ng-click', 'testFun();');
-						var passData = { index: fieldIndex/*, element: elementItem.element, type: elementItem.type*/ };
+					function appendBuilderTools(currentCell) {
+						var passData = { index: fieldIndex };
 						var passString = JSON.stringify(passData);
-						// window.console && console.log('passData', passData, passString);
-						cell.addClass('ltw-builder-tools-field').prepend(
+						currentCell.addClass('ltw-builder-tools-field').prepend(
 							el.div().addClass('ltw-tool-field-update')
 								.attr('data-lt-field-edit-tool', passString)
 								.attr('data-lt-field-edit-tool-data', 'editFieldData')
-								// .attr('data-ui-draggable', 'true')
-								// .attr('data-lt-edit-tool-current-form', 'currentForm')
-								// .attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild')
-								// .prepend(
-								// 	el.div().addClass('drag-handle btn btn-default btn-xs').attr('style','').text('+')
-								// )
-								// .append(
-								// 	el.div().addClass('btn btn-default btn-xs btn-tool edit-tool-rights drag-handle')
-								// 	// .attr('data-ui-draggable', 'true')
-								// 	// .attr('data-drag', passData.index)
-								// 	// .attr('data-drag-channel', 'fieldschannel')
-								// 	.append(
-								// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
-								// 	)
-								// )
-								// .append(
-								// el.div().addClass('btn btn-default btn-xs btn-tool field-channel')
-								// 	.attr('data-drag', 'true')
-								// 	.attr('data-jqyoui-draggable', lth.Interpolate(`{onStart:'onDragStart(#{dragIndex})'}`,{ dragIndex: passData.index}))
-								// 	.attr('data-jqyoui-options', `{revert: 'invalid', helper: 'clone'}`)
-								// 	.append(
-								// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
-								// 	)
-								// )
 						);
 
-						// cell.attr('data-ui-draggable', 'true');//.attr('data-drag-handle-Class','drag-handle'); //attr('data-ui-on-Drop', 'onDrop($event,$data);')
-						// // cell.attr('data-drag', '{ passData: ' + JSON.stringify(passData) + '}');
-						// cell.attr('data-drag', passData.index);
-						// cell.attr('data-drag-handle-class', 'drag-handle');
-						// cell.attr('data-drag-channel', 'fieldschannel');
+						if (!isSingleRow) {
+							currentCell.addClass('ltw-builder-tools-multi-cell-row');
+						}
+					}
 
-						// cell.attr('data-ui-on-drop', 'onDrop('+ passData.index + ', $data);');
-						// cell.attr('data-drop-channel', 'fieldschannel');
-						// cell.attr('data-drop-validate', 'onDropValidation(' + passData.index + ', $data);');
+					function appendMoveTools(currentCell) {
+						currentCell.prepend(el.div().addClass('move-hover'));
 
-						cell.prepend(el.div().addClass('move-hover'));
-
-						cell.attr('data-drop','true')
+						currentCell.attr('data-drop','true')
 							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: fieldIndex }))
 							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
 					}
 
-					row.append(cell);
+					// if (settings.showBuilderTools) {
+					// 	// cell.append(el.div().html('Edit helper ' + elementItem.element));
+					// 	// cell.attr('data-lt-widget-tool', `{ field: '` + elementItem.field + `' }`);
+					// 	// cell.attr('data-ng-click', 'testFun();');
+					// 	var passData = { index: fieldIndex/*, element: elementItem.element, type: elementItem.type*/ };
+					// 	var passString = JSON.stringify(passData);
+					// 	// window.console && console.log('passData', passData, passString);
+					// 	cell.addClass('ltw-builder-tools-field').prepend(
+					// 		el.div().addClass('ltw-tool-field-update')
+					// 			.attr('data-lt-field-edit-tool', passString)
+					// 			.attr('data-lt-field-edit-tool-data', 'editFieldData')
+					// 			// .attr('data-ui-draggable', 'true')
+					// 			// .attr('data-lt-edit-tool-current-form', 'currentForm')
+					// 			// .attr('data-lt-edit-tool-build-script', 'WidgetScriptBuild')
+					// 			// .prepend(
+					// 			// 	el.div().addClass('drag-handle btn btn-default btn-xs').attr('style','').text('+')
+					// 			// )
+					// 			// .append(
+					// 			// 	el.div().addClass('btn btn-default btn-xs btn-tool edit-tool-rights drag-handle')
+					// 			// 	// .attr('data-ui-draggable', 'true')
+					// 			// 	// .attr('data-drag', passData.index)
+					// 			// 	// .attr('data-drag-channel', 'fieldschannel')
+					// 			// 	.append(
+					// 			// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
+					// 			// 	)
+					// 			// )
+					// 			// .append(
+					// 			// el.div().addClass('btn btn-default btn-xs btn-tool field-channel')
+					// 			// 	.attr('data-drag', 'true')
+					// 			// 	.attr('data-jqyoui-draggable', lth.Interpolate(`{onStart:'onDragStart(#{dragIndex})'}`,{ dragIndex: passData.index}))
+					// 			// 	.attr('data-jqyoui-options', `{revert: 'invalid', helper: 'clone'}`)
+					// 			// 	.append(
+					// 			// 		el.span().addClass('glyphicon glyphicon-move drag-handle')
+					// 			// 	)
+					// 			// )
+					// 	);
+
+					// 	if (!isSingleRow) {
+					// 		cell.addClass('ltw-builder-tools-multi-cell-row');
+					// 	}
+
+					// 	// cell.attr('data-ui-draggable', 'true');//.attr('data-drag-handle-Class','drag-handle'); //attr('data-ui-on-Drop', 'onDrop($event,$data);')
+					// 	// // cell.attr('data-drag', '{ passData: ' + JSON.stringify(passData) + '}');
+					// 	// cell.attr('data-drag', passData.index);
+					// 	// cell.attr('data-drag-handle-class', 'drag-handle');
+					// 	// cell.attr('data-drag-channel', 'fieldschannel');
+
+					// 	// cell.attr('data-ui-on-drop', 'onDrop('+ passData.index + ', $data);');
+					// 	// cell.attr('data-drop-channel', 'fieldschannel');
+					// 	// cell.attr('data-drop-validate', 'onDropValidation(' + passData.index + ', $data);');
+
+					// 	cell.prepend(el.div().addClass('move-hover'));
+
+					// 	cell.attr('data-drop','true')
+					// 		.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: fieldIndex }))
+					// 		.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
+					// }
 
 					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+					isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
 
-					if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
+					/*if (settings.showBuilderTools && !isTimeToAddRow && !isSpaceLeftOver) {
+						cell.append(
+							el.div().addClass('move-between-cells')
+							.attr('data-drop', 'true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover', activeClass: 'on-drag-active'}`)
+							// .prepend(el.div().addClass('move-hover'))
+						);
+					}*/
+
+					row.append(cell);
+
+					if (isSpaceLeftOver) {
 						isTimeToAddRow = true;
 						remainingColSpace = COLUMNS_IN_ROW - columnCount;
 
-						// On Hover... show leftover space
+						// On move hover... show leftover space
 						if (settings.showBuilderTools) {
 							row.append(
 								el.col(remainingColSpace).addClass('hidden-xs')
-								.attr('data-drop', 'true')
-								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space})' }`, { pdi: fieldIndex, space: remainingColSpace }))
-								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
-								.prepend(el.div().addClass('move-hover'))
 								.append(
 									el.formGroup(elementItem.size).append(
 										el.col().append(
-											el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')
+											el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->')
 										)
+										.attr('data-drop', 'true')
+										.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: remainingColSpace, isPh: 'true' }))
+										.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+										.prepend(el.div().addClass('move-hover'))
 									)
 								)
 							);
@@ -329,6 +383,20 @@ namespace LoanTekWidget {
 
 					if (isTimeToAddRow) {
 						returnForm.append(row);
+
+						/*if (settings.showBuilderTools) {
+							returnForm.append(
+								el.div()
+								.addClass('move-between-rows-wrapper')
+								.attr('data-drop', 'true')
+								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+								.append(
+									el.div().addClass('move-between-rows')
+								)
+							);
+						}*/
+
 						row = null;
 						columnCount = 0;
 					}

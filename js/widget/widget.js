@@ -29,6 +29,7 @@ var LoanTekWidget;
             var row = null;
             var isSingleRow;
             var isTimeToAddRow = false;
+            var isSpaceLeftOver = false;
             var isLastField = false;
             var isHidden = false;
             var isLabel;
@@ -93,38 +94,56 @@ var LoanTekWidget;
                         else {
                             cell = el.col().append(_thisC.CreateFormElement(elementItem));
                         }
+                        if (settings.showBuilderTools) {
+                            appendBuilderTools(cell);
+                            appendMoveTools(cell);
+                        }
                     }
                     else {
+                        var innerCell;
                         if (isLabel) {
-                            cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(_thisC.CreateFormElement(elementItem)));
+                            innerCell = _thisC.CreateFormElement(elementItem);
                         }
                         else {
-                            cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(el.col().append(_thisC.CreateFormElement(elementItem))));
+                            innerCell = el.col().append(_thisC.CreateFormElement(elementItem));
                         }
+                        window.console && console.log(innerCell);
+                        if (settings.showBuilderTools) {
+                            appendBuilderTools(innerCell);
+                            appendMoveTools(innerCell);
+                        }
+                        window.console && console.log(innerCell);
+                        cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
                     }
-                    if (settings.showBuilderTools) {
+                    function appendBuilderTools(currentCell) {
                         var passData = { index: fieldIndex };
                         var passString = JSON.stringify(passData);
-                        cell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
+                        currentCell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
                             .attr('data-lt-field-edit-tool', passString)
                             .attr('data-lt-field-edit-tool-data', 'editFieldData'));
-                        cell.prepend(el.div().addClass('move-hover'));
-                        cell.attr('data-drop', 'true')
+                        if (!isSingleRow) {
+                            currentCell.addClass('ltw-builder-tools-multi-cell-row');
+                        }
+                    }
+                    function appendMoveTools(currentCell) {
+                        currentCell.prepend(el.div().addClass('move-hover'));
+                        currentCell.attr('data-drop', 'true')
                             .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }", { pdi: fieldIndex }))
                             .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}");
                     }
-                    row.append(cell);
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
-                    if (columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW) {
+                    isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
+                    row.append(cell);
+                    if (isSpaceLeftOver) {
                         isTimeToAddRow = true;
                         remainingColSpace = COLUMNS_IN_ROW - columnCount;
                         if (settings.showBuilderTools) {
                             row.append(el.col(remainingColSpace).addClass('hidden-xs')
+                                .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->'))
                                 .attr('data-drop', 'true')
-                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space})' }", { pdi: fieldIndex, space: remainingColSpace }))
+                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }", { pdi: fieldIndex, space: remainingColSpace, isPh: 'true' }))
                                 .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}")
-                                .prepend(el.div().addClass('move-hover'))
-                                .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-info visible-on-hover').html('<!-- cols: ' + remainingColSpace + ' -->')))));
+                                .prepend(el.div().addClass('move-hover')))));
                         }
                     }
                     else {

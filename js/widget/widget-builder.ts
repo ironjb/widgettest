@@ -60,7 +60,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	// isAddFieldButtonShown?(fieldId: string): boolean;
 	addField?(fieldId: string): void;
 	onDragStart: IWidgetOnDragStart;
-	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, columns?: number): void;
+	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, columns?: number, isPlaceholder?: boolean): void;
 	// onDropValidation?(newIndex: number, data: any): boolean;
 	// list1?: any;
 	// list2?: any;
@@ -241,27 +241,35 @@ namespace LoanTekWidget {
 					$scope.dragData = data;
 				}
 
-				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, currentIndex: number, columns: number) {
+				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, dropIndex: number, columns?: number, isPlaceholder?: boolean) {
 					// window.console && console.log('onDrop index: ', index, 'dragData: ', $scope.dragData);
 					if ($scope.dragData.field) {
-						window.console && console.log('add new field ', $scope.dragData.field, ' to ', currentIndex);
+						window.console && console.log('add new field ', $scope.dragData.field, ' to ', dropIndex);
 						var newField: IWidgetField = { field: $scope.dragData.field };
 						if (columns) {
 							newField.cols = columns;
 						}
-						$scope.currentForm.buildObject.fields.splice(currentIndex + 1, 0, newField);
+						$scope.currentForm.buildObject.fields.splice(dropIndex + 1, 0, newField);
+						$scope.ClearSelectedForm();
 						$scope.WidgetScriptBuild($scope.currentForm);
 					} else if (lth.isNumber($scope.dragData.index)) {
-						// window.console && console.log('move field from ', $scope.dragData.index, ' to ', currentIndex);
+						// window.console && console.log('move field from ', $scope.dragData.index, ' to ', dropIndex);
 						// window.console && console.log(JSON.stringify($scope.currentForm.buildObject.fields[$scope.dragData.index]));
 
 						// window.console && console.log(JSON.stringify($scope.currentForm.buildObject.fields,null,'\t'));
-						var newIndex = $scope.dragData.index;
-						// if (currentIndex > newIndex) {
-						// 	newIndex += 1;
-						// }
-						ltbh.arrayMove($scope.currentForm.buildObject.fields, newIndex, currentIndex);
+						var previousIndex = $scope.dragData.index;
+						if (previousIndex > dropIndex && isPlaceholder) {
+							dropIndex += 1;
+						}
+
+						ltbh.arrayMove($scope.currentForm.buildObject.fields, previousIndex, dropIndex);
+
+						if (columns) {
+							$scope.currentForm.buildObject.fields[dropIndex].cols = columns;
+						}
+
 						// window.console && console.log(JSON.stringify($scope.currentForm.buildObject.fields).replace(/\},/g,'},\n'));
+						$scope.ClearSelectedForm();
 						$scope.WidgetScriptBuild($scope.currentForm);
 					} else {
 						window.console && console.error('No Data Passed from Draggable!!');

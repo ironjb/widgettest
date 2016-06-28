@@ -21,6 +21,10 @@ namespace LoanTekWidget {
 			}
 			window.console && console.log('oldIndex', oldIndex, 'newIndex', newIndex);
 
+			// if (oldIndex > newIndex) {
+			// 	newIndex += 1;
+			// }
+
 			arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
 			return arr;
 		}

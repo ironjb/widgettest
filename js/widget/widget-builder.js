@@ -128,19 +128,27 @@ var LoanTekWidget;
                         window.console && console.log('dragStart data', data);
                         $scope.dragData = data;
                     }
-                    function onDrop(event, ui, currentIndex, columns) {
+                    function onDrop(event, ui, dropIndex, columns, isPlaceholder) {
                         if ($scope.dragData.field) {
-                            window.console && console.log('add new field ', $scope.dragData.field, ' to ', currentIndex);
+                            window.console && console.log('add new field ', $scope.dragData.field, ' to ', dropIndex);
                             var newField = { field: $scope.dragData.field };
                             if (columns) {
                                 newField.cols = columns;
                             }
-                            $scope.currentForm.buildObject.fields.splice(currentIndex + 1, 0, newField);
+                            $scope.currentForm.buildObject.fields.splice(dropIndex + 1, 0, newField);
+                            $scope.ClearSelectedForm();
                             $scope.WidgetScriptBuild($scope.currentForm);
                         }
                         else if (lth.isNumber($scope.dragData.index)) {
-                            var newIndex = $scope.dragData.index;
-                            ltbh.arrayMove($scope.currentForm.buildObject.fields, newIndex, currentIndex);
+                            var previousIndex = $scope.dragData.index;
+                            if (previousIndex > dropIndex && isPlaceholder) {
+                                dropIndex += 1;
+                            }
+                            ltbh.arrayMove($scope.currentForm.buildObject.fields, previousIndex, dropIndex);
+                            if (columns) {
+                                $scope.currentForm.buildObject.fields[dropIndex].cols = columns;
+                            }
+                            $scope.ClearSelectedForm();
                             $scope.WidgetScriptBuild($scope.currentForm);
                         }
                         else {
