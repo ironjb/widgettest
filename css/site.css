@@ -7,7 +7,7 @@ body {
 .code-sm {
   font-size: 0.7em;
 }
-@-webkit-keyframes example {
+@-webkit-keyframes codechange {
   10% {
     background-color: #dddddd;
   }
@@ -18,7 +18,7 @@ body {
     background-color: #dddddd;
   }
 }
-@keyframes example {
+@keyframes codechange {
   10% {
     background-color: #dddddd;
   }
@@ -30,8 +30,8 @@ body {
   }
 }
 .code-change.ng-animate {
-  -webkit-animation-name: example;
-          animation-name: example;
+  -webkit-animation-name: codechange;
+          animation-name: codechange;
   -webkit-animation-duration: 1s;
           animation-duration: 1s;
   -webkit-animation-iteration-count: 2;
@@ -214,4 +214,60 @@ input.ng-invalid.ng-dirty {
 }
 .resize-horizontal {
   resize: horizontal;
+}
+.lt-spinner {
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spinner 1s linear infinite;
+          animation: spinner 1s linear infinite;
+}
+.lt-spinner img {
+  width: 100%;
+}
+@-webkit-keyframes spinner {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+@keyframes spinner {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+.modal-header.alert {
+  margin-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.modal-processing {
+  padding: 20px 10px;
+  margin-bottom: 100px;
+  background-color: #FFFFFF;
+  border: 2px solid #000000;
+}
+.modal-processing h3 {
+  margin: 5px 0;
+  font-size: 18px;
+}
+.modal-processing img {
+  width: 64px;
+  padding-right: 20px;
+}
+@media (min-width: 768px) {
+  .modal-processing {
+    padding: 40px;
+  }
+  .modal-processing h3 {
+    font-size: 24px;
+  }
 }

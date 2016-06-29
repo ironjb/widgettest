@@ -167,7 +167,7 @@ namespace LoanTekWidget {
 			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
-			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope: IWidgetBuilderNgScope, $timeout) {
+			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'widgetServices', function ($scope: IWidgetBuilderNgScope, $timeout, widgetServices: IWidgetNgServices) {
 				// window.console && console.log('widgetData: ', widgetData);
 				// window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
@@ -242,7 +242,22 @@ namespace LoanTekWidget {
 				});
 
 				function SaveWidget () {
-					// TODO: do code to save widget
+					var saveData = {
+						ID: null,
+						ScriptText: $scope.currentForm
+					};
+
+					var postData = {
+						httpOptions: { method: 'POST', url: '/Widgets/Builder/Save', data: saveData },
+						onSuccessFunction: function (result) {
+							window.console && console.log('success save result', result);
+						},
+						onErrorFunction: function (error) {
+							window.console && console.log('error save result', error);
+						}
+					};
+
+					widgetServices.dataProcessingModal([postData]);
 				}
 
 				function DeleteWidget () {

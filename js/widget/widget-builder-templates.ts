@@ -2,6 +2,12 @@
 
 (function() {
 	angular.module('ltw.templates', []).run(['$templateCache', function($templateCache) {
+		$templateCache.put('template/modal-template/empty.html',`
+			<div modal-render="{{$isRendered}}" tabindex="-1" role="dialog" class="modal vertical-center" modal-animation-class="fade"
+				ng-class="{in: animate}" ng-style="{'z-index': 1050 + index*10, display: 'block'}" ng-click="close($event)">
+				<div class="modal-dialog" ng-class="size ? 'modal-' + size : ''"><div class="modal-content-empty" ng-transclude></div></div>
+			</div>
+		`);
 		$templateCache.put('template/widgetFormEditButton.html', `
 			<div class="pull-right">
 				<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetForm();"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
@@ -14,7 +20,7 @@
 				<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove"><span class="glyphicon glyphicon-trash"></span></button>
 			</div>
 		`);
-		$templateCache.put('template/widget/confirmModal.html',`
+		$templateCache.put('template/modal/confirm.html',`
 			<div class="modal-header" data-ng-class="mdlSettings.headerStyle">
 				<h3 class="modal-title">{{mdlSettings.title}}</h3>
 			</div>
@@ -24,6 +30,22 @@
 			<div class="modal-footer">
 				<button class="btn btn-primary" data-ng-click="okClick();" autofocus="autofocus">{{mdlSettings.okBtnText}}</button>
 				<button class="btn btn-default" data-ng-click="cancelClick();">{{mdlSettings.cancelBtnText}}</button>
+			</div>
+		`);
+		$templateCache.put('template/modal/ok.html',`
+			<div class="modal-header" data-ng-class="settings.okStyle">
+				<h3 class="modal-title">{{settings.okTitle}}</h3>
+			</div>
+			<div class="modal-body">
+				<div data-ng-bind-html="settings.okMessage"></div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" id="okModalButton" data-ng-click="okClick();" autofocus><span class="glyphicon glyphicon-ok"></span> <span data-ng-bind="settings.okButtonText"></span></button>
+			</div>
+		`);
+		$templateCache.put('template/modal/spinner.html',`
+			<div class="modal-processing text-center">
+				<h3><img src="/Content/images/spinner.gif" alt="" /> Processing</h3>
 			</div>
 		`);
 		$templateCache.put('template/modal/editForm.html', `

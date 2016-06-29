@@ -72,7 +72,7 @@ var LoanTekWidget;
                 ];
             }
             var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
-            widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope, $timeout) {
+            widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'widgetServices', function ($scope, $timeout, widgetServices) {
                     var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
                     var ltWidgetCSS = ['/Content/widget/css'];
                     var widgetScripts = ['/bundles/widget/widget'];
@@ -109,6 +109,8 @@ var LoanTekWidget;
                     $scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
                     $scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
+                    $scope.SaveWidget = SaveWidget;
+                    $scope.DeleteWidget = DeleteWidget;
                     $scope.UsePrebuiltForm = UsePrebuildForm;
                     $scope.ClearSelectedForm = ClearSelectedForm;
                     $scope.SetCurrentForm = SetCurrentForm;
@@ -124,6 +126,24 @@ var LoanTekWidget;
                             field.isIncluded = !!(cIndex >= 0);
                         }
                     });
+                    function SaveWidget() {
+                        var saveData = {
+                            ID: null,
+                            ScriptText: $scope.currentForm
+                        };
+                        var postData = {
+                            httpOptions: { method: 'POST', url: '/Widgets/Builder/Save', data: saveData },
+                            onSuccessFunction: function (result) {
+                                window.console && console.log('success save result', result);
+                            },
+                            onErrorFunction: function (error) {
+                                window.console && console.log('error save result', error);
+                            }
+                        };
+                        widgetServices.dataProcessingModal([postData]);
+                    }
+                    function DeleteWidget() {
+                    }
                     function onDragStart(event, ui, data) {
                         window.console && console.log('dragStart data', data);
                         $scope.dragData = data;
