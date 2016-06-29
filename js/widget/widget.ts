@@ -249,13 +249,13 @@ namespace LoanTekWidget {
 							innerCell = el.col().append(_thisC.CreateFormElement(elementItem));
 						}
 
-						window.console && console.log(innerCell);
+						// window.console && console.log(innerCell);
 
 						if (settings.showBuilderTools) {
 							appendBuilderTools(innerCell);
 							appendMoveTools(innerCell);
 						}
-						window.console && console.log(innerCell);
+						// window.console && console.log(innerCell);
 
 						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
 					}

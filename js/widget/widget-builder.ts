@@ -50,6 +50,8 @@ interface IWidgetEditFieldData {
 
 interface IWidgetBuilderNgScope extends ng.IScope {
 	currentForm?: IWidgetFormObject;
+	SaveWidget?(): void;
+	DeleteWidget?(): void;
 	UsePrebuiltForm?(): void;
 	UpdateWidgetDisplay?(): void;
 	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
@@ -69,6 +71,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	widgetScript?: string;
 	// WidgetType?: string;
 	widgetScriptDisplay?: string;
+	widgetScriptParse?: string;
 	scriptChangedClass?: string;
 	editFieldData?: IWidgetEditFieldData;
 	allFieldsObject?: Object;
@@ -89,7 +92,7 @@ namespace LoanTekWidget {
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allFieldsObject:null, allFieldsOptionsArray: null, prebuiltForms: null };
+			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
 				// TODO: code for quote widget
@@ -164,7 +167,7 @@ namespace LoanTekWidget {
 			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
-			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function($scope: IWidgetBuilderNgScope, $timeout) {
+			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', function ($scope: IWidgetBuilderNgScope, $timeout) {
 				// window.console && console.log('widgetData: ', widgetData);
 				// window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
@@ -185,7 +188,7 @@ namespace LoanTekWidget {
 				}
 
 				if (window.location.port === '58477') {
-					ltWidgetCSS = ['/Areas/Widgets/Content/widget.css'];
+					ltWidgetCSS = ['/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
 					widgetScripts = [
 						'/Scripts/lib/jquery-1/jquery.min.js'
 						, '/Scripts/lib/jquery/jquery.placeholder.min.js'
@@ -199,8 +202,8 @@ namespace LoanTekWidget {
 					var ltjq = ltjq || jQuery.noConflict(true);
 					var lthlpr = new LoanTekWidget.helpers(ltjq);`;
 
-				var scriptLoader = function() {
-					var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function() {
+				var scriptLoader = function () {
+					var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
 						var body = $('body')[0];
 						var script = el.script().html(scriptHelpersCode)[0];
 						body.appendChild(script);
@@ -214,6 +217,8 @@ namespace LoanTekWidget {
 				$scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
 
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
+				$scope.SaveWidget = SaveWidget;
+				$scope.DeleteWidget = DeleteWidget;
 				$scope.UsePrebuiltForm = UsePrebuildForm;
 				$scope.ClearSelectedForm = ClearSelectedForm;
 				$scope.SetCurrentForm = SetCurrentForm;
@@ -235,6 +240,14 @@ namespace LoanTekWidget {
 						field.isIncluded = !!(cIndex >= 0);
 					}
 				});
+
+				function SaveWidget () {
+					// TODO: do code to save widget
+				}
+
+				function DeleteWidget () {
+					// TODO: do code to delete widget
+				}
 
 				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData) {
 					window.console && console.log('dragStart data', data);
@@ -483,11 +496,19 @@ namespace LoanTekWidget {
 					wScript = wScript.replace(/\s+/gm, ' ');
 
 					// Updates the page display and Script textbox
-					$scope.UpdateWidgetDisplay = function() {
+					$scope.UpdateWidgetDisplay = function () {
 						// window.console && console.log('updateSCripts');
-						$timeout(function() {
+						$timeout(function () {
 							$scope.widgetScript = wScript;
 							$scope.widgetScriptDisplay = wScriptDisplay;
+
+							var widgetEncode = encodeURIComponent($scope.widgetScript);
+							// var widgetDecode = decodeURIComponent(widgetEncode);
+							// var jsonStr = JSON.stringify({ jstring: $scope.widgetScript });
+							// window.console && console.log('encode widgetScript', widgetEncode);
+							// window.console && console.log('decode widgetScript', widgetDecode);
+							// window.console && console.log('json widgetScript', jsonStr);
+							$scope.widgetScriptParse = widgetEncode;
 
 							// Scroll to top and indicate change
 							// lth.ScrollToAnchor('widgetTop');
@@ -498,7 +519,7 @@ namespace LoanTekWidget {
 					scriptLoader();
 
 					// Redifine 'scriptLoader' after it places needed script tags on page
-					scriptLoader = function() {
+					scriptLoader = function () {
 						// window.console && console.log('loadScripts now ONLY loads updated scripts');
 						$scope.UpdateWidgetDisplay();
 					};

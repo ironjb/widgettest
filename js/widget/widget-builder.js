@@ -87,7 +87,7 @@ var LoanTekWidget;
                         ];
                     }
                     if (window.location.port === '58477') {
-                        ltWidgetCSS = ['/Areas/Widgets/Content/widget.css'];
+                        ltWidgetCSS = ['/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
                         widgetScripts = [
                             '/Scripts/lib/jquery-1/jquery.min.js',
                             '/Scripts/lib/jquery/jquery.placeholder.min.js',
@@ -271,6 +271,8 @@ var LoanTekWidget;
                             $timeout(function () {
                                 $scope.widgetScript = wScript;
                                 $scope.widgetScriptDisplay = wScriptDisplay;
+                                var widgetEncode = encodeURIComponent($scope.widgetScript);
+                                $scope.widgetScriptParse = widgetEncode;
                                 $scope.scriptChangedClass = 't' + new Date().getTime();
                             });
                         };
