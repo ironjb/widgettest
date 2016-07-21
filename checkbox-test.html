@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>checbox test</title>
+</head>
+<body>test
+	<form action="">
+		<input type="checkbox" class="checkbox-opener" data-checkbox-open-selector=".open-me" />
+		<div id="openMe" class="open-me" style="display:none;">div 1 is open</div>
+		<div class="open-me" style="display:none;">div 2 is open</div>
+		<div class="open-me" style="display:none;">div 3 is open</div>
+	</form>
+<script type="text/javascript">
+// Polyfill for querySelectorAll for IE7
+// http://www.codecouch.com/2012/05/adding-document-queryselectorall-support-to-ie-7/
+if (!document.querySelectorAll) {
+	// had to wrap in if statement because it was causing IE11 to break.
+	(function(d,s){d=document,s=d.createStyleSheet();d.querySelectorAll=function(r,c,i,j,a){a=d.all,c=[],r=r.replace(/\[for\b/gi,'[htmlFor').split(',');for(i=r.length;i--;){s.addRule(r[i],'k:v');for(j=a.length;j--;)a[j].currentStyle.k&&c.push(a[j]);s.removeRule(0)}return c}})()
+}
+
+var checkboxOpenList = document.querySelectorAll('.checkbox-opener');
+for (var i = checkboxOpenList.length - 1; i >= 0; i--) {
+	var checkbox = checkboxOpenList[i];
+	var cbOpenSelector = checkbox.getAttribute('data-checkbox-open-selector');
+	var selectToOpenList = document.querySelectorAll(cbOpenSelector);
+	for (var i2 = selectToOpenList.length - 1; i2 >= 0; i2--) {
+		var selectToOpen = selectToOpenList[i2];
+		if (checkbox.checked) {
+			selectToOpen.style.display = 'block';
+		} else {
+			selectToOpen.style.display = 'none';
+		}
+	}
+
+	if (checkbox.addEventListener) {
+		checkbox.addEventListener('change', function() {ToggleSection(checkbox, cbOpenSelector);}, false);
+	} else {
+		checkbox.attachEvent('onclick', function() {ToggleSection(checkbox, cbOpenSelector);});
+	}
+}
+function ToggleSection(checkbox, selector) {
+	var selectedList = document.querySelectorAll(selector);
+	for (var i = selectedList.length - 1; i >= 0; i--) {
+		var sElem = selectedList[i];
+		if (checkbox.checked) {
+			sElem.style.display = 'block';
+		} else {
+			sElem.style.display = 'none';
+		}
+	}
+}
+</script>
+</body>
+</html>
