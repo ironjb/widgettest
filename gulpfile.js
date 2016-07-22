@@ -66,6 +66,12 @@
 			])
 		.pipe(gulp.dest('css/less/bootstrap'));
 
+		// Copy papaparse
+		gulp.src([
+			'bower_components/papaparse/papaparse.min.js'
+			])
+		.pipe(gulp.dest('js/lib/papaparse'));
+
 		// // Copy angular-native-dragdrop .js file
 		// gulp.src([
 		// 	// 'bower_components/angular-native-dragdrop/draganddrop.js',

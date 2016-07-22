@@ -6,3 +6,4 @@
 /// <reference path="angularjs/angular.d.ts" />
 /// <reference path="jquery.placeholder/jquery.placeholder.d.ts" />
 /// <reference path="jqueryui/jqueryui.d.ts" />
+/// <reference path="papaparse/papaparse.d.ts" />
