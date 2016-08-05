@@ -72,12 +72,44 @@
 			])
 		.pipe(gulp.dest('js/lib/papaparse'));
 
-		// // Copy angular-native-dragdrop .js file
+		// // Metronic Bootstrap SASS
 		// gulp.src([
-		// 	// 'bower_components/angular-native-dragdrop/draganddrop.js',
-		// 	'bower_components/angular-native-dragdrop/draganddrop.min.js'
+		// 	'metronic_assets/theme/sass/**'
 		// 	])
-		// .pipe(gulp.dest('js/lib/angular-native-dragdrop'));
+		// .pipe(gulp.dest('Content/metronic/sass'));
+
+		// Metronic styles/theme
+		gulp.src([
+			'metronic_assets/theme/assets/global/css/**.min.css'
+			])
+		.pipe(gulp.dest('Content/lib/metronic/global/css'));
+		gulp.src([
+			'metronic_assets/theme/assets/global/img/*.*'
+			])
+		.pipe(gulp.dest('Content/lib/metronic/global/img'));
+		gulp.src([
+			'metronic_assets/theme/assets/layouts/layout/**/layout.min.css',
+			'metronic_assets/theme/assets/layouts/layout/**/default.min.css'
+			// ,'metronic_assets/theme/assets/layouts/layout/**/*.png'
+			// ,'metronic_assets/theme/assets/layouts/layout/**/*.gif'
+			// ,'metronic_assets/theme/assets/layouts/layout/**/*.jpg'
+			// ,'metronic_assets/theme/assets/layouts/layout/**/*.jpeg'
+			// ,'!metronic_assets/theme/assets/layouts/layout/**/avatar*'
+			// ,'!metronic_assets/theme/assets/layouts/layout/**/photo*'
+			])
+		.pipe(gulp.dest('Content/lib/metronic/layouts/layout'));
+
+		// Metronic Bootstrap plugin
+		gulp.src([
+			'metronic_assets/theme/assets/global/plugins/bootstrap/**'
+			])
+		.pipe(gulp.dest('Content/lib/metronic/global/plugins/bootstrap'));
+
+		// Copy bootstrap-fileinput plugin
+		gulp.src([
+			'metronic_assets/theme/assets/global/plugins/bootstrap-fileinput/**'
+			])
+		.pipe(gulp.dest('Content/lib/metronic/global/plugins/bootstrap-fileinput'));
 	});
 
 	gulp.task('ts:compilewidget', function () {
