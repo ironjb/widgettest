@@ -449,7 +449,7 @@ namespace LoanTekWidgetTest {
 						};`;
 					if (hasCaptchaField) {
 						postDomCode += `
-							ltCap = new LoanTekCaptcha(ltjq);`;
+							ltCap = new LoanTekCaptchaTest(ltjq);`;
 					}
 					mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
 					mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });

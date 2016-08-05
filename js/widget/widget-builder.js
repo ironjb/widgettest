@@ -250,7 +250,7 @@ var LoanTekWidgetTest;
                         }
                         var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\t\t\t\t\t\tvar pdfun = function () {\n\t\t\t\t\t\t\t#{code}\n\t\t\t\t\t\t};";
                         if (hasCaptchaField) {
-                            postDomCode += "\n\t\t\t\t\t\t\tltCap = new LoanTekCaptcha(ltjq);";
+                            postDomCode += "\n\t\t\t\t\t\t\tltCap = new LoanTekCaptchaTest(ltjq);";
                         }
                         mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
                         mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
