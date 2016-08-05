@@ -25,12 +25,12 @@
 		var ltjQuery = ltjQuery || jQuery.noConflict(true);
 
 		// LoanTekWidget helpers
-		var ltHelpers = new LoanTekWidget.helpers(ltjQuery);
+		var ltHelpers = new LoanTekWidgetTest.helpers(ltjQuery);
 
 		var ltCaptcha;
 		var postDOMFunctions = function () {
 			/*code ran after DOM created*/
-				ltCaptcha = new LoanTekCaptcha(ltjQuery);
+				ltCaptcha = new LoanTekCaptchaTest(ltjQuery);
 		};
 		var externalValidators = function () {
 			return ltCaptcha.IsValidEntry();
@@ -68,7 +68,7 @@
 		// LoanTekBuildForm(ltwBuildObject);
 		var loanTekContactWidgetOptions = {"postUrl":"http://node-cors-server.herokuapp.com/simple-cors","externalValidatorFunction":externalValidators,"successMessage":"Yay!!! Successful POST"};
 
-		var ltWidgetFormBuild = new LoanTekWidget.FormBuild(ltjQuery, ltHelpers, ltwBuildObject, loanTekContactWidgetOptions);
+		var ltWidgetFormBuild = new LoanTekWidgetTest.FormBuild(ltjQuery, ltHelpers, ltwBuildObject, loanTekContactWidgetOptions);
 		// LoanTekManualContactWidget(loanTekContactWidgetOptions);
 	})();
 	</script>

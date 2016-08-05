@@ -13,13 +13,17 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gulpcopy": "bower install && gulp copy",
+    "copy": "bower install && gulp copy",
     "ts:compilewidget": "gulp ts:compilewidget",
     "ts:compile": "gulp ts:compile",
     "ts:watchwidget": "gulp ts:watchwidget",
     "ts:watch": "gulp ts:watch",
     "css:minify": "gulp css:minify",
-    "js:minify": "gulp js:minify"
+    "js:minify": "gulp js:minify",
+    "copy:global:fromTfs": "gulp copy:global:fromTfs",
+    "copy:global:toTfs": "gulp copy:global:toTfs",
+    "copy:widgets:fromTfs": "gulp copy:widgets:fromTfs",
+    "copy:widgets:toTfs": "gulp copy:widgets:toTfs"
   },
   "repository": {
     "type": "git",

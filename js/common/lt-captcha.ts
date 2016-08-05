@@ -1,16 +1,17 @@
-/// <reference path="../../typings/jquery/jquery.d.ts" />
-interface ICaptchaSettings {
-	imgId: string;
-	inputId: string;
-	resetId: string;
-	errorMsgId: string;
-	backgroundClasses: string[];
-	fontClasses: string[];
-	characters: string;
-	characterLength: number;
+/// <reference path="../../Scripts/typings/jquery/jquery.d.ts" />
+declare namespace IW {
+	interface ICaptchaSettings {
+		imgId: string;
+		inputId: string;
+		resetId: string;
+		errorMsgId: string;
+		backgroundClasses: string[];
+		fontClasses: string[];
+		characters: string;
+		characterLength: number;
+	}
 }
-
-class LoanTekCaptcha {
+class LoanTekCaptchaTest {
 
 	private _randomCodeString: string;
 	private _charArray: string[];
@@ -19,9 +20,9 @@ class LoanTekCaptcha {
 	private _capImg: JQuery;
 	private _capSpan: () => JQuery;
 
-	constructor(cjq: JQueryStatic, options?: ICaptchaSettings) {
+	constructor(cjq: JQueryStatic, options?: IW.ICaptchaSettings) {
 		var _thisC = this;
-		var settings: ICaptchaSettings = {
+		var settings: IW.ICaptchaSettings = {
 			imgId: 'ltCaptchaImg',
 			inputId: 'ltCaptchaInput',
 			resetId: 'ltCaptchaReset',
@@ -55,7 +56,7 @@ class LoanTekCaptcha {
 		});
 	}
 
-	SetRandomCaptcha(settings: ICaptchaSettings) {
+	SetRandomCaptcha(settings: IW.ICaptchaSettings) {
 		var _thisM = this;
 		var randomChar: string;
 		var randomCharIndex: number;
@@ -74,7 +75,7 @@ class LoanTekCaptcha {
 		_thisM.SetCaptchaImg(settings, randomCodeArray);
 	}
 
-	SetCaptchaImg(settings: ICaptchaSettings, codeArray: string[]) {
+	SetCaptchaImg(settings: IW.ICaptchaSettings, codeArray: string[]) {
 		var _thisM = this;
 		var randomBackgroundIndex: number = _thisM.GetRandomIndexNumber(settings.backgroundClasses.length);
 		var randomFontIndex: number;

@@ -1,115 +1,117 @@
 /// <reference path="../common/widget-helpers.ts" />
 
-interface IWidgetFormBuildObject {
-	wrapperId?: string;
-	formId?: string;
-	widgetType?: string;
-	errorMessageWrapperId?: string;
-	errrorMessageId?: string;
-	showBuilderTools?: boolean;
-	postDOMCallback?: any;
+declare namespace IW {
+	interface IWidgetFormBuildObject {
+		wrapperId?: string;
+		formId?: string;
+		widgetType?: string;
+		errorMessageWrapperId?: string;
+		errrorMessageId?: string;
+		showBuilderTools?: boolean;
+		postDOMCallback?: any;
 
-	fieldSize?: string;
-	formBorderType?: string;
-	panelTitle?: string;
-	fields: IWidgetField[];
+		fieldSize?: string;
+		formBorderType?: string;
+		panelTitle?: string;
+		fields: IWidgetField[];
 
-	resultWrapId?: string;
-	rFormId?: string;
-	rFieldSize?: string;
-	rFormBorderType?: string;
-	rPanelTitle?: string;
-	rFields?: IWidgetField[];
+		resultWrapId?: string;
+		rFormId?: string;
+		rFieldSize?: string;
+		rFormBorderType?: string;
+		rPanelTitle?: string;
+		rFields?: IWidgetField[];
+	}
+
+	// Contact Widget Interfaces
+	interface IContactWidgetData {
+		FileType: string;
+		Reason: string;
+		Source: {
+			Active: boolean;
+			Alias: string;
+			Id: number;
+			SourceType: string;
+			Name: string;
+			SubName: string;
+		};
+		NotifyUserOfNewLead: boolean;
+		SendNewLeadInitialWelcomeMessage: boolean;
+		ClientDefinedIdentifier: string;
+		ClientId: number;
+		Persons: {
+			PersonCategoryType: string;
+			PersonType: string;
+			Addresses: {
+				State: string;
+			}[];
+			ContactMethods: {
+				ContactType: string;
+				Address?: string;
+				Number?: string;
+			}[];
+			Assets: {
+				AssetType: string;
+				CompanyName: string;
+			}[];
+			FirstName: string;
+			LastName: string;
+		}[];
+		MiscData: {
+			Name: string;
+			Value: string;
+		}[];
+	}
+
+	// interface IContactWidgetSource {
+	// 	Active: boolean;
+	// 	Alias: string;
+	// 	Id: number;
+	// 	SourceType: string;
+	// 	Name: string;
+	// 	SubName: string;
+	// }
+
+	// interface IContactWidgetPersonAddress {
+	// 	State: string;
+	// }
+
+	// interface IContactWidgetContactMethod {
+	// 	ContactType: string;
+	// 	Address?: string;
+	// 	Number?: string;
+	// }
+
+	// interface IContactWidgetAsset {
+	// 	AssetType: string;
+	// 	CompanyName: string;
+	// }
+
+	// interface IContactWidgetPerson {
+	// 	PersonCategoryType: string;
+	// 	PersonType: string;
+	// 	Addresses: IContactWidgetPersonAddress[];
+	// 	ContactMethods: IContactWidgetContactMethod[];
+	// 	Assets: IContactWidgetAsset[];
+	// 	FirstName: string;
+	// 	LastName: string;
+	// }
+
+	// interface IContactWidgetMiscData {
+	// 	Name: string;
+	// 	Value: string;
+	// }
 }
 
-// Contact Widget Interfaces
-interface IContactWidgetData {
-	FileType: string;
-	Reason: string;
-	Source: {
-		Active: boolean;
-		Alias: string;
-		Id: number;
-		SourceType: string;
-		Name: string;
-		SubName: string;
-	};
-	NotifyUserOfNewLead: boolean;
-	SendNewLeadInitialWelcomeMessage: boolean;
-	ClientDefinedIdentifier: string;
-	ClientId: number;
-	Persons: {
-		PersonCategoryType: string;
-		PersonType: string;
-		Addresses: {
-			State: string;
-		}[];
-		ContactMethods: {
-			ContactType: string;
-			Address?: string;
-			Number?: string;
-		}[];
-		Assets: {
-			AssetType: string;
-			CompanyName: string;
-		}[];
-		FirstName: string;
-		LastName: string;
-	}[];
-	MiscData: {
-		Name: string;
-		Value: string;
-	}[];
-}
-
-// interface IContactWidgetSource {
-// 	Active: boolean;
-// 	Alias: string;
-// 	Id: number;
-// 	SourceType: string;
-// 	Name: string;
-// 	SubName: string;
-// }
-
-// interface IContactWidgetPersonAddress {
-// 	State: string;
-// }
-
-// interface IContactWidgetContactMethod {
-// 	ContactType: string;
-// 	Address?: string;
-// 	Number?: string;
-// }
-
-// interface IContactWidgetAsset {
-// 	AssetType: string;
-// 	CompanyName: string;
-// }
-
-// interface IContactWidgetPerson {
-// 	PersonCategoryType: string;
-// 	PersonType: string;
-// 	Addresses: IContactWidgetPersonAddress[];
-// 	ContactMethods: IContactWidgetContactMethod[];
-// 	Assets: IContactWidgetAsset[];
-// 	FirstName: string;
-// 	LastName: string;
-// }
-
-// interface IContactWidgetMiscData {
-// 	Name: string;
-// 	Value: string;
-// }
-
-namespace LoanTekWidget {
+namespace LoanTekWidgetTest {
 	export class FormBuild {
-		private _lth: LoanTekWidget.helpers;
+		private _lth: LoanTekWidgetTest.helpers;
 		private _$: JQueryStatic;
-		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options: IWidgetFormBuildObject, readyOptions?: any) {
+		constructor($: JQueryStatic, lth: LoanTekWidgetTest.helpers, options: IW.IWidgetFormBuildObject, readyOptions?: any) {
 			var _thisC = this;
 			_thisC._lth = lth;
 			_thisC._$ = $;
-			var settings: IWidgetFormBuildObject = {
+			var settings: IW.IWidgetFormBuildObject = {
 				wrapperId: 'ltWidgetWrapper'
 				, formId: 'ltWidgetForm'
 				, widgetType: lth.widgetType.contact.id
@@ -712,7 +714,7 @@ namespace LoanTekWidget {
 
 			$(() => {
 
-				var widgetData: IContactWidgetData = {
+				var widgetData: IW.IContactWidgetData = {
 					"FileType": "SalesLead",
 					"Reason": "FORM_VALUE_Comments",
 					"Source": {

@@ -1,5 +1,5 @@
-/// <reference path="../../../typings/jquery/jquery.d.ts" />
-/// <reference path="../../../typings/jquery.placeholder/jquery.placeholder.d.ts" />
+/// <reference path="../../../Scripts//typings/jquery/jquery.d.ts" />
+/// <reference path="../../../Scripts//typings/jquery.placeholder/jquery.placeholder.d.ts" />
 /// <reference path="../common/jquery-noconflict.ts" />
 /// <reference path="build-form.ts" />
 /// <reference path="captcha.ts" />
@@ -7,59 +7,60 @@
 /**
  * LoanTek Manual Contact Widget
  */
+declare namespace tsIW {
+	interface ISource {
+		Active: boolean;
+		Alias: string;
+		Id: number;
+		SourceType: string;
+		Name: string;
+		SubName: string;
+	}
 
-interface ISource {
-	Active: boolean;
-	Alias: string;
-	Id: number;
-	SourceType: string;
-	Name: string;
-	SubName: string;
+	interface IPersonAddress {
+		State: string;
+	}
+
+	interface IContactMethod {
+		ContactType: string;
+		Address?: string;
+		Number?: string;
+	}
+
+	interface IAsset {
+		AssetType: string;
+		CompanyName: string;
+	}
+
+	interface IPerson {
+		PersonCategoryType: string;
+		PersonType: string;
+		Addresses: IPersonAddress[];
+		ContactMethods: IContactMethod[];
+		Assets: IAsset[];
+		FirstName: string;
+		LastName: string;
+	}
+
+	interface IMiscData {
+		Name: string;
+		Value: string;
+	}
+
+	interface IWidgetData {
+		FileType: string;
+		Reason: string;
+		Source: ISource;
+		NotifyUserOfNewLead: boolean;
+		SendNewLeadInitialWelcomeMessage: boolean;
+		ClientDefinedIdentifier: string;
+		ClientId: number;
+		Persons: IPerson[];
+		MiscData: IMiscData[];
+	}
 }
 
-interface IPersonAddress {
-	State: string;
-}
-
-interface IContactMethod {
-	ContactType: string;
-	Address?: string;
-	Number?: string;
-}
-
-interface IAsset {
-	AssetType: string;
-	CompanyName: string;
-}
-
-interface IPerson {
-	PersonCategoryType: string;
-	PersonType: string;
-	Addresses: IPersonAddress[];
-	ContactMethods: IContactMethod[];
-	Assets: IAsset[];
-	FirstName: string;
-	LastName: string;
-}
-
-interface IMiscData {
-	Name: string;
-	Value: string;
-}
-
-interface IWidgetData {
-	FileType: string;
-	Reason: string;
-	Source: ISource;
-	NotifyUserOfNewLead: boolean;
-	SendNewLeadInitialWelcomeMessage: boolean;
-	ClientDefinedIdentifier: string;
-	ClientId: number;
-	Persons: IPerson[];
-	MiscData: IMiscData[];
-}
-
-class LoanTekManualContactWidget {
+class LoanTekManualContactWidgetTest {
 
 	constructor(options) {
 		var settings = {
@@ -91,7 +92,7 @@ class LoanTekManualContactWidget {
 
 		ltjQuery(() => {
 
-			var widgetData: IWidgetData = {
+			var widgetData: tsIW.IWidgetData = {
 				"FileType": "SalesLead",
 				"Reason": "FORM_VALUE_Comments",
 				"Source": {

@@ -1,4 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../Scripts/typings/tsd.d.ts" />
 
 (function() {
 	angular.module('ltw.templates', []).run(['$templateCache', function($templateCache) {

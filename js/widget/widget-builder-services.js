@@ -1,6 +1,6 @@
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
 (function () {
-    var lth = LoanTekWidgetHelper;
+    var lth = LoanTekWidgetHelperTest;
     var ltWidgetServices = angular.module('ltw.services', ['ngSanitize']);
     ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal) {
             var widgetMethods = {};
@@ -69,7 +69,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             'modForm.formButtonBorderRadius'
                         ];
                         $scope.$watchGroup(watchGroups, function (newValue, oldValue) {
-                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                            var applyFormStyles = new LoanTekWidgetTest.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
                             var previewStyles = applyFormStyles.getStyles();
                             if (!lth.isNumber($scope.modForm.formBorderRadius)) {
                             }
@@ -161,7 +161,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         $scope.modForm = angular.copy(instanceOptions.currentForm);
                         $scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];
                         $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
-                        var applyFormStyles = new LoanTekWidget.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                        var applyFormStyles = new LoanTekWidgetTest.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
                         var previewStyles = applyFormStyles.getStyles();
                         var el = instanceOptions.fieldOptions.fieldTemplate.element;
                         var ty = instanceOptions.fieldOptions.fieldTemplate.type;

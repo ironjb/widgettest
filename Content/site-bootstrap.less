@@ -1,0 +1,34 @@
+@import "less/bootstrap/bootstrap.less";
+@icon-font-path: "/fonts/";
+
+//** Breadcrumb background color
+@breadcrumb-bg:				#f7f7f7;
+//** Breadcrumb text color
+@breadcrumb-color:			#888;
+//** Text color of current page in the breadcrumb
+@breadcrumb-active-color:	@gray-light;
+//** Textual separator for between breadcrumb elements
+@breadcrumb-separator:		"/";
+
+@breadcrumb-li-margin-right: 6px;
+
+///////////////////////////////////
+// Modified Bootstrap Breadcrumb //
+///////////////////////////////////
+.lt-breadcrumb {
+	.lt-breadcrumb-home-icon {
+		margin-right: @breadcrumb-li-margin-right;
+	}
+	color: @breadcrumb-color;
+	> li {
+		margin-right: @breadcrumb-li-margin-right;
+		+ li:before {
+			content: '\f105';
+			font-family: FontAwesome;
+			margin-right: @breadcrumb-li-margin-right + 4;
+		}
+	}
+	a {
+		color: @breadcrumb-color;
+	}
+}

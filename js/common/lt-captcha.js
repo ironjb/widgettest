@@ -1,5 +1,5 @@
-var LoanTekCaptcha = (function () {
-    function LoanTekCaptcha(cjq, options) {
+var LoanTekCaptchaTest = (function () {
+    function LoanTekCaptchaTest(cjq, options) {
         var _this = this;
         this.Validate = function () {
             return _this.IsValidEntry();
@@ -30,7 +30,7 @@ var LoanTekCaptcha = (function () {
             _thisC.IsValidEntry();
         });
     }
-    LoanTekCaptcha.prototype.SetRandomCaptcha = function (settings) {
+    LoanTekCaptchaTest.prototype.SetRandomCaptcha = function (settings) {
         var _thisM = this;
         var randomChar;
         var randomCharIndex;
@@ -46,7 +46,7 @@ var LoanTekCaptcha = (function () {
         }
         _thisM.SetCaptchaImg(settings, randomCodeArray);
     };
-    LoanTekCaptcha.prototype.SetCaptchaImg = function (settings, codeArray) {
+    LoanTekCaptchaTest.prototype.SetCaptchaImg = function (settings, codeArray) {
         var _thisM = this;
         var randomBackgroundIndex = _thisM.GetRandomIndexNumber(settings.backgroundClasses.length);
         var randomFontIndex;
@@ -64,16 +64,16 @@ var LoanTekCaptcha = (function () {
             _thisM._capImg.append(_thisM._capSpan().addClass('captcha-alpha ' + randomFont).css({ backgroundPosition: pos }));
         }
     };
-    LoanTekCaptcha.prototype.GetCaptchaInputValue = function () {
+    LoanTekCaptchaTest.prototype.GetCaptchaInputValue = function () {
         return this._captchaInput.val();
     };
-    LoanTekCaptcha.prototype.SetCaptchaInputValue = function (newText) {
+    LoanTekCaptchaTest.prototype.SetCaptchaInputValue = function (newText) {
         this._captchaInput.val(newText);
     };
-    LoanTekCaptcha.prototype.GetRandomIndexNumber = function (objLen) {
+    LoanTekCaptchaTest.prototype.GetRandomIndexNumber = function (objLen) {
         return Math.floor(Math.random() * objLen);
     };
-    LoanTekCaptcha.prototype.GetAlphaPositions = function () {
+    LoanTekCaptchaTest.prototype.GetAlphaPositions = function () {
         return {
             alpha_position_A: { x: 0, y: 0 },
             alpha_position_B: { x: 0, y: -50 },
@@ -139,7 +139,7 @@ var LoanTekCaptcha = (function () {
             alpha_position_9: { x: -100, y: -450 }
         };
     };
-    LoanTekCaptcha.prototype.IsValidEntry = function () {
+    LoanTekCaptchaTest.prototype.IsValidEntry = function () {
         var doesEntryMatch = false;
         doesEntryMatch = this._randomCodeString.toLowerCase() === this.GetCaptchaInputValue().toLowerCase().replace(/\s+/g, '');
         if (!doesEntryMatch) {
@@ -150,5 +150,5 @@ var LoanTekCaptcha = (function () {
         }
         return doesEntryMatch;
     };
-    return LoanTekCaptcha;
+    return LoanTekCaptchaTest;
 }());

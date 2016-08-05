@@ -1,35 +1,37 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
-interface IWidgetDirectiveFieldEditToolNgScope extends ng.IScope {
-	currentFieldName?: string;
-	toolInfo?: { index: number; }
-	fieldData?: IWidgetEditFieldData;
-	currentFieldOptions?: IWidgetFieldOptions;
-	showRemove?: boolean;
-	RemoveWidgetField?(): void;
-	EditWidgetField?(): void;
-	onDragStartDir: IWidgetOnDragStart;
+declare namespace IW {
+	interface IWidgetDirectiveFieldEditToolNgScope extends ng.IScope {
+		currentFieldName?: string;
+		toolInfo?: { index: number; }
+		fieldData?: IW.IWidgetEditFieldData;
+		currentFieldOptions?: IW.IWidgetFieldOptions;
+		showRemove?: boolean;
+		RemoveWidgetField?(): void;
+		EditWidgetField?(): void;
+		onDragStartDir: IW.IWidgetOnDragStart;
+	}
+
+	interface IFieldEditOptions {
+		modalSize?: string;
+		// fieldType?: string;
+		fieldOptions?: IW.IWidgetFieldOptions;
+		instanceOptions?: IW.IFieldEditModalInstanceOptions;
+		saveForm?(updatedForm: IW.IWidgetFormObject): void;
+	}
+
+	interface IFieldEditModalInstanceOptions {
+		// fieldType?: string;
+		fieldOptions?: IW.IWidgetFieldOptions;
+		currentForm: IW.IWidgetFormObject;
+		currentFieldIndex?: number;
+	}
 }
 
-interface IFieldEditOptions {
-	modalSize?: string;
-	// fieldType?: string;
-	fieldOptions?: IWidgetFieldOptions;
-	instanceOptions?: IFieldEditModalInstanceOptions;
-	saveForm?(updatedForm: IWidgetFormObject): void;
-}
-
-interface IFieldEditModalInstanceOptions {
-	// fieldType?: string;
-	fieldOptions?: IWidgetFieldOptions;
-	currentForm: IWidgetFormObject;
-	currentFieldIndex?: number;
-}
-
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
 (function() {
-	var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
+	var lth: LoanTekWidgetTest.helpers = LoanTekWidgetHelperTest;
 	var widgetDirectives = angular.module('ltw.directives', []);
 	widgetDirectives.directive('ltCompileCode', [/*'$parse', */'$compile', function(/*$parse, */$compile) {
 		return {
@@ -75,7 +77,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 			, templateUrl: 'template/widgetFieldEditButtons.html'
 			// , templateUrl: '/template.html?t=' + new Date().getTime()
-			, link: (scope: IWidgetDirectiveFieldEditToolNgScope, elem, attrs) => {
+			, link: (scope: IW.IWidgetDirectiveFieldEditToolNgScope, elem, attrs) => {
 				// var _ltFieldsEditTool = $parse(attrs.toolInfo);
 				// var ltFieldsEditTool = _ltFieldsEditTool(scope);
 				// window.console && console.log(ltFieldsEditTool);

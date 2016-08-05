@@ -1,0 +1,29 @@
+/**
+ * LoanTek Widget
+ *
+ * IMPORTANT!!!
+ * You must first compile widget-bootstrap.less first before compiling this file
+ * Also, after widget-bootstrap.less is compiled, you must @import using the non-minified version
+ *
+ */
+
+// Core variables and mixins
+@import '../../../Content/less/bootstrap/variables.less';
+@import '../../../Content/less/bootstrap/mixins.less';
+
+.ltw {
+	display: block;
+	font-family: @font-family-base;
+	font-size: @font-size-base;
+	@import (less) url('widget-bootstrap.css');
+	/*@import 'captcha.less';*/
+
+	.placeholder-text { color: @input-color-placeholder; }
+
+	.visible-on-hover {
+		.opacity(0);
+		&:hover {
+			.opacity(1);
+		}
+	}
+}

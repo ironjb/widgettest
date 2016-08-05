@@ -1,0 +1,208 @@
+@import 'less/bootstrap/variables.less';
+@import 'less/bootstrap/mixins.less';
+
+@spinner-color: #ffffff;
+
+body {
+	padding-top: 75px;
+	padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+/*.body-content {
+	padding-left: 15px;
+	padding-right: 15px;
+}*/
+
+/* Override the default bootstrap behavior where horizontal description lists
+	will truncate terms that are too long to fit in the left column
+*/
+.dl-horizontal dt {
+	white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+/*input,
+select,
+textarea {
+	max-width: 280px;
+}*/
+
+
+//////////////////////
+// custom bootstrap //
+//////////////////////
+.navbar {
+	min-height:75px;
+}
+/*.panel-heading {
+	cursor:pointer;
+}*/
+
+.form-horizontal {
+	.form-group-sm {
+		.checkbox {
+			padding-top: 3px;
+		}
+	}
+	.control-label {
+		&.text-left {
+			text-align: left;
+		}
+	}
+}
+
+.table-no-heading {
+	tbody {
+		> tr {
+			&:first-child {
+				> td {
+					border-top: none;
+				}
+			}
+		}
+	}
+}
+
+
+////////////
+// custom //
+////////////
+.logo {
+	background-image: url('https://www.loantek.com/assets/img/logo-loantek.com_invert.png');
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: 1px;
+	display: block;
+	width: 250px;
+	max-height: 70px;
+	margin-top:10px;
+}
+
+.page-bar {
+	padding:10px;
+	background-color: #f7f7f7;
+	margin-bottom: 15px;
+	.page-breadcrumb {
+		margin: 0;
+		padding: 0;
+		li, li>a {
+			display: inline-block;
+			color: #888;
+			margin: 0;
+			padding: 0;
+			margin-right:12px;
+		}
+		.fa {
+			padding-right:4px;
+		}
+	}
+
+}
+
+.pre-code {
+	white-space: pre-wrap;
+}
+
+.spinner-color {
+	color: @spinner-color;
+}
+
+.lt-no-bottom-margin {
+	margin-bottom: 0px;
+}
+
+// limits resizing of <textarea>
+.resize {
+	&-none {
+		resize: none;
+	}
+	&-vertical {
+		resize: vertical;
+	}
+	&-horizontal {
+		resize: horizontal;
+	}
+}
+
+.under-construction {
+	pointer-events:none;
+	cursor:not-allowed;
+	opacity: .5;
+}
+
+
+///////////
+// Modal //
+///////////
+.lt-spinner {
+	width: 100px;
+	height: 100px;
+	animation: spinner 1s linear infinite;
+	img {
+		width: 100%;
+	}
+}
+
+@keyframes spinner {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+.modal-header {
+	&.alert {
+		margin-bottom:0;
+		.border-bottom-radius(0);
+	}
+}
+
+.modal-processing {
+	padding: 20px 10px;
+	margin-bottom:100px;
+	background-color: #FFFFFF;
+	border: 2px solid #000000;
+	h3 {
+		margin: 5px 0;
+		font-size: @font-size-h4
+	}
+	img {
+		width: 64px;
+		padding-right:20px;
+	}
+}
+
+@media (min-width: @screen-sm-min) {
+	.modal-processing {
+		padding: 40px;
+		h3 {
+			font-size: @font-size-h3;
+		}
+	}
+}
+
+
+/////////////
+// Angular //
+/////////////
+.ng-hide {
+	//display:none;
+	.opacity(0);
+}
+
+.animate-ng-hide {
+	.opacity(1);
+	//display: inherit;
+	//&&-block {
+	//	display: block;
+	//}
+	//&&-inline {
+	//	display: inline;
+	//}
+	//&&-inline-block {
+	//	display: inline-block;
+	//}
+	&.ng-hide {
+		.opacity(0);
+	}
+	.transition(all ease-in-out 0.2s);
+}

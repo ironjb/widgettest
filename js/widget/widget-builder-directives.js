@@ -1,6 +1,6 @@
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
 (function () {
-    var lth = LoanTekWidgetHelper;
+    var lth = LoanTekWidgetHelperTest;
     var widgetDirectives = angular.module('ltw.directives', []);
     widgetDirectives.directive('ltCompileCode', ['$compile', function ($compile) {
             return {

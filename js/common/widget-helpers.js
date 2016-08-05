@@ -1,5 +1,5 @@
-var LoanTekWidget;
-(function (LoanTekWidget) {
+var LoanTekWidgetTest;
+(function (LoanTekWidgetTest) {
     var hSizing = (function () {
         function hSizing() {
             this.h1 = { id: 1, name: 'Heading 1' };
@@ -320,5 +320,5 @@ var LoanTekWidget;
         };
         return helpers;
     }());
-    LoanTekWidget.helpers = helpers;
-})(LoanTekWidget || (LoanTekWidget = {}));
+    LoanTekWidgetTest.helpers = helpers;
+})(LoanTekWidgetTest || (LoanTekWidgetTest = {}));

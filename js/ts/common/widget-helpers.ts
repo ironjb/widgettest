@@ -1,15 +1,15 @@
-/// <reference path="../../../typings/jquery/jquery.d.ts" />
+/// <reference path="../../../Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="interfaces-widget.d.ts" />
 
-namespace LoanTekWidgetHelpers {
+namespace LoanTekWidgetHelpersTest {
 	class hSizing {
-		public h1: IHelperNameNumId;
-		public h2: IHelperNameNumId;
-		public h3: IHelperNameNumId;
-		public h4: IHelperNameNumId;
-		public h5: IHelperNameNumId;
-		public h6: IHelperNameNumId;
-		public default: IHelperNameNumId;
+		public h1: tsIW.IHelperNameNumId;
+		public h2: tsIW.IHelperNameNumId;
+		public h3: tsIW.IHelperNameNumId;
+		public h4: tsIW.IHelperNameNumId;
+		public h5: tsIW.IHelperNameNumId;
+		public h6: tsIW.IHelperNameNumId;
+		public default: tsIW.IHelperNameNumId;
 		constructor() {
 			this.h1 = { id: 1, name: 'h1' };
 			this.h2 = { id: 2, name: 'h2' };
@@ -22,9 +22,9 @@ namespace LoanTekWidgetHelpers {
 	}
 
 	class inputSizing {
-		public default: IHelperNameId;
-		public sm: IHelperNameId;
-		public lg: IHelperNameId;
+		public default: tsIW.IHelperNameId;
+		public sm: tsIW.IHelperNameId;
+		public lg: tsIW.IHelperNameId;
 		constructor() {
 			this.default = { id: 'default', name: 'Default' }
 			this.sm = { id: 'sm', name: 'Small' };
@@ -33,11 +33,11 @@ namespace LoanTekWidgetHelpers {
 	}
 
 	class gridSizing {
-		public xs: IHelperNameId;
-		public sm: IHelperNameId;
-		public md: IHelperNameId;
-		public lg: IHelperNameId;
-		public default: IHelperNameId;
+		public xs: tsIW.IHelperNameId;
+		public sm: tsIW.IHelperNameId;
+		public md: tsIW.IHelperNameId;
+		public lg: tsIW.IHelperNameId;
+		public default: tsIW.IHelperNameId;
 		constructor() {
 			this.xs = { id: 'xs', name: 'xs' };
 			this.sm = { id: 'sm', name: 'sm' };
@@ -57,9 +57,9 @@ namespace LoanTekWidgetHelpers {
 	}
 
 	class formBorderType {
-		public panel: IHelperNameId;
-		public well: IHelperNameId;
-		public none: IHelperNameId;
+		public panel: tsIW.IHelperNameId;
+		public well: tsIW.IHelperNameId;
+		public none: tsIW.IHelperNameId;
 		constructor() {
 			this.panel = { id: 'panel', name: 'Panel' };
 			this.well = { id: 'well', name: 'Well' };
@@ -68,8 +68,8 @@ namespace LoanTekWidgetHelpers {
 	}
 
 	class widthUnit {
-		px: IHelperNameId;
-		per: IHelperNameId;
+		px: tsIW.IHelperNameId;
+		per: tsIW.IHelperNameId;
 		constructor() {
 			this.px = { id: 'px', name: 'Pixels' };
 			this.per = { id: '%', name: 'Percent' };
@@ -80,14 +80,14 @@ namespace LoanTekWidgetHelpers {
 	// 	public bootstrap: bootstrap;
 	// 	public hsize: hSizing;
 	// 	public formBorderType: formBorderType;
-	// 	public formBorderTypeArray: IHelperNameId[];
+	// 	public formBorderTypeArray: tsIW.IHelperNameId[];
 	// 	public widthUnit: widthUnit;
 	// 	constructor() {
-	// 		// var mthd = methods.prototype.ConvertObjectToArray<IHelperNameId>();
+	// 		// var mthd = methods.prototype.ConvertObjectToArray<tsIW.IHelperNameId>();
 	// 		this.hsize = new hSizing;
 	// 		this.bootstrap = new bootstrap;
 	// 		this.formBorderType = new formBorderType;
-	// 		this.formBorderTypeArray = methods.prototype.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+	// 		this.formBorderTypeArray = methods.prototype.ConvertObjectToArray<tsIW.IHelperNameId>(this.formBorderType);
 	// 		this.widthUnit = new widthUnit;
 	// 	}
 	// }
@@ -97,7 +97,7 @@ namespace LoanTekWidgetHelpers {
 		public bootstrap: bootstrap;
 		public hsize: hSizing;
 		public formBorderType: formBorderType;
-		public formBorderTypeArray: IHelperNameId[];
+		public formBorderTypeArray: tsIW.IHelperNameId[];
 		public widthUnit: widthUnit;
 
 		constructor(jq: JQueryStatic) {
@@ -106,7 +106,7 @@ namespace LoanTekWidgetHelpers {
 			this.hsize = new hSizing;
 			this.bootstrap = new bootstrap;
 			this.formBorderType = new formBorderType;
-			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+			this.formBorderTypeArray = this.ConvertObjectToArray<tsIW.IHelperNameId>(this.formBorderType);
 			this.widthUnit = new widthUnit;
 		}
 
@@ -151,7 +151,7 @@ namespace LoanTekWidgetHelpers {
 		// 	, per: '%'
 		// };
 
-		// formBorderTypeArray: IHelperNameId[] = [
+		// formBorderTypeArray: tsIW.IHelperNameId[] = [
 		// 	{ id: 'panel', name: 'Panel' }
 		// 	, { id: 'well', name: 'Well' }
 		// ];
@@ -169,7 +169,7 @@ namespace LoanTekWidgetHelpers {
 		// 	, none: { id: 'none', name: 'None'}
 		// };
 
-		// formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+		// formBorderTypeArray = this.ConvertObjectToArray<tsIW.IHelperNameId>(this.formBorderType);
 
 		isNumber(numCheck: any): boolean {
 			return typeof numCheck === 'number';

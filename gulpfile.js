@@ -78,38 +78,96 @@
 		// 	])
 		// .pipe(gulp.dest('Content/metronic/sass'));
 
-		// Metronic styles/theme
-		gulp.src([
-			'metronic_assets/theme/assets/global/css/**.min.css'
-			])
-		.pipe(gulp.dest('Content/lib/metronic/global/css'));
-		gulp.src([
-			'metronic_assets/theme/assets/global/img/*.*'
-			])
-		.pipe(gulp.dest('Content/lib/metronic/global/img'));
-		gulp.src([
-			'metronic_assets/theme/assets/layouts/layout/**/layout.min.css',
-			'metronic_assets/theme/assets/layouts/layout/**/default.min.css'
-			// ,'metronic_assets/theme/assets/layouts/layout/**/*.png'
-			// ,'metronic_assets/theme/assets/layouts/layout/**/*.gif'
-			// ,'metronic_assets/theme/assets/layouts/layout/**/*.jpg'
-			// ,'metronic_assets/theme/assets/layouts/layout/**/*.jpeg'
-			// ,'!metronic_assets/theme/assets/layouts/layout/**/avatar*'
-			// ,'!metronic_assets/theme/assets/layouts/layout/**/photo*'
-			])
-		.pipe(gulp.dest('Content/lib/metronic/layouts/layout'));
+		// // Metronic styles/theme
+		// gulp.src([
+		// 	'metronic_assets/theme/assets/global/css/**.min.css'
+		// 	])
+		// .pipe(gulp.dest('Content/lib/metronic/global/css'));
+		// gulp.src([
+		// 	'metronic_assets/theme/assets/global/img/*.*'
+		// 	])
+		// .pipe(gulp.dest('Content/lib/metronic/global/img'));
+		// gulp.src([
+		// 	'metronic_assets/theme/assets/layouts/layout/**/layout.min.css',
+		// 	'metronic_assets/theme/assets/layouts/layout/**/default.min.css'
+		// 	// ,'metronic_assets/theme/assets/layouts/layout/**/*.png'
+		// 	// ,'metronic_assets/theme/assets/layouts/layout/**/*.gif'
+		// 	// ,'metronic_assets/theme/assets/layouts/layout/**/*.jpg'
+		// 	// ,'metronic_assets/theme/assets/layouts/layout/**/*.jpeg'
+		// 	// ,'!metronic_assets/theme/assets/layouts/layout/**/avatar*'
+		// 	// ,'!metronic_assets/theme/assets/layouts/layout/**/photo*'
+		// 	])
+		// .pipe(gulp.dest('Content/lib/metronic/layouts/layout'));
 
-		// Metronic Bootstrap plugin
-		gulp.src([
-			'metronic_assets/theme/assets/global/plugins/bootstrap/**'
-			])
-		.pipe(gulp.dest('Content/lib/metronic/global/plugins/bootstrap'));
+		// // Metronic Bootstrap plugin
+		// gulp.src([
+		// 	'metronic_assets/theme/assets/global/plugins/bootstrap/**'
+		// 	])
+		// .pipe(gulp.dest('Content/lib/metronic/global/plugins/bootstrap'));
 
-		// Copy bootstrap-fileinput plugin
+		// // Copy bootstrap-fileinput plugin
+		// gulp.src([
+		// 	'metronic_assets/theme/assets/global/plugins/bootstrap-fileinput/**'
+		// 	])
+		// .pipe(gulp.dest('Content/lib/metronic/global/plugins/bootstrap-fileinput'));
+	});
+
+	gulp.task('copy:global:fromTfs', function () {
 		gulp.src([
-			'metronic_assets/theme/assets/global/plugins/bootstrap-fileinput/**'
+			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Content/**'
 			])
-		.pipe(gulp.dest('Content/lib/metronic/global/plugins/bootstrap-fileinput'));
+		.pipe(gulp.dest('Content'));
+
+		gulp.src([
+			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/common/**'
+			])
+		.pipe(gulp.dest('Scripts/common'));
+
+		gulp.src([
+			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/lib/**'
+			])
+		.pipe(gulp.dest('Scripts/lib'));
+	});
+
+	gulp.task('copy:global:toTfs', function () {
+		gulp.src([
+			'Content/**'
+			])
+		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Content'));
+
+		gulp.src([
+			'Scripts/common/**'
+			])
+		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/common'));
+
+		gulp.src([
+			'Scripts/lib/**'
+			])
+		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/lib'));
+	});
+
+	gulp.task('copy:widgets:fromTfs', ['copy:global:fromTfs'], function () {
+		gulp.src([
+			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Areas/Widgets/Content/**'
+			])
+		.pipe(gulp.dest('Areas/Widgets/Content'));
+
+		gulp.src([
+			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Areas/Widgets/Scripts/**'
+			])
+		.pipe(gulp.dest('Areas/Widgets/Scripts'));
+	});
+
+	gulp.task('copy:widgets:toTfs', ['copy:global:toTfs'], function () {
+		gulp.src([
+			'Areas/Widgets/Content/**'
+			])
+		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Areas/Widgets/Content'));
+
+		gulp.src([
+			'Areas/Widgets/Scripts/**'
+			])
+		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Areas/Widgets/Scripts'));
 	});
 
 	gulp.task('ts:compilewidget', function () {

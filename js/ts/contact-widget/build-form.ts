@@ -1,16 +1,16 @@
 /// <reference path="../common/interfaces-widget.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
-class LoanTekBuildForm {
+class LoanTekBuildFormTest {
 
-	private ltm: LoanTekWidgetHelpers.helpers;
-	// private ltp: LoanTekWidgetHelpers.properties;
+	private ltm: LoanTekWidgetHelpersTest.helpers;
+	// private ltp: LoanTekWidgetHelpersTest.properties;
 
-	constructor(/*formObj: IWidgetFormObject, */options: IWidgetFormBuildObject) {
+	constructor(/*formObj: IWidgetFormObject, */options: tsIW.IWidgetFormBuildObject) {
 		var _thisC = this;
-		_thisC.ltm = new LoanTekWidgetHelpers.helpers(ltjQuery);
-		// _thisC.ltp = new LoanTekWidgetHelpers.properties();
-		var settings: IWidgetFormBuildObject = {
+		_thisC.ltm = new LoanTekWidgetHelpersTest.helpers(ltjQuery);
+		// _thisC.ltp = new LoanTekWidgetHelpersTest.properties();
+		var settings: tsIW.IWidgetFormBuildObject = {
 			wrapperId: 'ltWidgetWrapper'
 			, formId: 'LtcwContactWidgetForm'
 			, errorMessageWrapperId: 'ltcwErrorMessageWrapper'
@@ -75,7 +75,7 @@ class LoanTekBuildForm {
 			captcha: { element: 'captcha'/*, cssClass: 'lt-captcha'*/ }
 		};
 
-		function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
+		function ExtendFieldTemplate(eItem: tsIW.IWidgetField): tsIW.IWidgetField {
 			return ltjQuery.extend({}, fieldTemplates[eItem.field], eItem);
 		}
 
@@ -254,7 +254,7 @@ class LoanTekBuildForm {
 	// 	return el;
 	// }
 
-	CreateFormElement = (elementObj: IWidgetField) => {
+	CreateFormElement = (elementObj: tsIW.IWidgetField) => {
 		var _thisM = this;
 		var el = _thisM.ltm.CreateElement();
 		var returnElement = null;
@@ -327,8 +327,8 @@ class LoanTekBuildForm {
 				if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 				break;
 			case 'captcha':
-				var captchaInputObj: IWidgetField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
-				var captchaResetBtnObj: IWidgetField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+				var captchaInputObj: tsIW.IWidgetField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
+				var captchaResetBtnObj: tsIW.IWidgetField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
 				if (elementObj.size) {
 					captchaInputObj.size = elementObj.size;
 					captchaResetBtnObj.size = elementObj.size;
@@ -445,8 +445,8 @@ class LoanTekBuildForm {
 		return returnElement;
 	}
 
-	US_States = (): IStates => {
-		var s: IStates = {
+	US_States = (): tsIW.IStates => {
+		var s: tsIW.IStates = {
 			country: 'USA',
 			states: [
 				{ abbreviation: 'AL', name: 'Alabama' },

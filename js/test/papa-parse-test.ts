@@ -1,7 +1,7 @@
-/// <reference path="../../typings/jquery/jquery.d.ts" />
-/// <reference path="../../typings/papaparse/papaparse.d.ts" />
+/// <reference path="../../Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="../../Scripts/typings/papaparse/papaparse.d.ts" />
 
-namespace LoanTekTest {
+namespace LoanTekPapaParseTest {
 	var $ = jQuery;
 	var fileInputElement: any = $('#csvFile')[0];
 

@@ -1,98 +1,100 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
-interface IWidgetModelData {
-	modelWidget: {
-		WidgetType: string;
-		Id?: number;
-	};
-	widgetTemplates: IWidgetFormObject[];
+declare namespace IW {
+	interface IWidgetModelData {
+		modelWidget: {
+			WidgetType: string;
+			Id?: number;
+		};
+		widgetTemplates: IWidgetFormObject[];
+	}
+
+	interface IWidget {
+		allFieldsObject?: Object;
+		allFieldsOptionsArray: IW.IWidgetFieldOptions[];
+		prebuiltForms?: IWidgetFormObject[];
+	}
+
+	interface IWidgetFormObject {
+		name: string;
+		formWidth?: number;
+		formWidthUnit?: string;
+		formBg?: string;
+		formBorderRadius?: number;
+		formBorderColor?: string;
+		formTitleColor?: string;
+		formTitleBgColor?: string;
+		formGroupSpacing?: number;
+		formFieldBorderRadius?: number;
+		formButtonBorderRadius?: number;
+		buildObject?: IWidgetFormBuildObject;
+	}
+
+	interface IWidgetOnDragStart {
+		(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
+	}
+
+	interface IWidgetOnDragStartData {
+		index?: number;
+		field?: string;
+	}
+
+	interface IWidgetEditFieldData {
+		widgetTypeLower?: string;
+		currentForm?: IWidgetFormObject;
+		clearSelectedForm?(): void;
+		onDragStart: IWidgetOnDragStart;
+		setCurrentForm?(currentForm: IWidgetFormObject): void;
+		buildScript?(widgetFormObject: IWidgetFormObject): void;
+	}
+
+	interface IWidgetBuilderNgScope extends ng.IScope {
+		currentForm?: IWidgetFormObject;
+		SaveWidget?(): void;
+		DeleteWidget?(): void;
+		UsePrebuiltForm?(): void;
+		UpdateWidgetDisplay?(): void;
+		WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
+		ClearSelectedForm?(): void;
+		SetCurrentForm?(currentForm: IWidgetFormObject): void;
+		FilterAvailableFields?(value, index, array): boolean;
+		// isFieldOptionShown?(fieldId: string): boolean;
+		// isAddFieldButtonShown?(fieldId: string): boolean;
+		addField?(fieldId: string): void;
+		onDragStart: IWidgetOnDragStart;
+		onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, columns?: number, isPlaceholder?: boolean): void;
+		// onDropValidation?(newIndex: number, data: any): boolean;
+		// list1?: any;
+		// list2?: any;
+		selectedForm?: IWidgetFormObject;
+		widgetObject?: IWidget;
+		widgetScript?: string;
+		// WidgetType?: string;
+		widgetScriptDisplay?: string;
+		widgetScriptParse?: string;
+		scriptChangedClass?: string;
+		editFieldData?: IWidgetEditFieldData;
+		allFieldsObject?: Object;
+		allFieldsOptionsArray?: IW.IWidgetFieldOptions[];
+		dragData?: IWidgetOnDragStartData;
+	}
 }
 
-interface IWidget {
-	allFieldsObject?: Object;
-	allFieldsOptionsArray: IWidgetFieldOptions[];
-	prebuiltForms?: IWidgetFormObject[];
-}
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
 
-interface IWidgetFormObject {
-	name: string;
-	formWidth?: number;
-	formWidthUnit?: string;
-	formBg?: string;
-	formBorderRadius?: number;
-	formBorderColor?: string;
-	formTitleColor?: string;
-	formTitleBgColor?: string;
-	formGroupSpacing?: number;
-	formFieldBorderRadius?: number;
-	formButtonBorderRadius?: number;
-	buildObject?: IWidgetFormBuildObject;
-}
-
-interface IWidgetOnDragStart {
-	(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
-}
-
-interface IWidgetOnDragStartData {
-	index?: number;
-	field?: string;
-}
-
-interface IWidgetEditFieldData {
-	widgetTypeLower?: string;
-	currentForm?: IWidgetFormObject;
-	clearSelectedForm?(): void;
-	onDragStart: IWidgetOnDragStart;
-	setCurrentForm?(currentForm: IWidgetFormObject): void;
-	buildScript?(widgetFormObject: IWidgetFormObject): void;
-}
-
-interface IWidgetBuilderNgScope extends ng.IScope {
-	currentForm?: IWidgetFormObject;
-	SaveWidget?(): void;
-	DeleteWidget?(): void;
-	UsePrebuiltForm?(): void;
-	UpdateWidgetDisplay?(): void;
-	WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
-	ClearSelectedForm?(): void;
-	SetCurrentForm?(currentForm: IWidgetFormObject): void;
-	FilterAvailableFields?(value, index, array): boolean;
-	// isFieldOptionShown?(fieldId: string): boolean;
-	// isAddFieldButtonShown?(fieldId: string): boolean;
-	addField?(fieldId: string): void;
-	onDragStart: IWidgetOnDragStart;
-	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, columns?: number, isPlaceholder?: boolean): void;
-	// onDropValidation?(newIndex: number, data: any): boolean;
-	// list1?: any;
-	// list2?: any;
-	selectedForm?: IWidgetFormObject;
-	widgetObject?: IWidget;
-	widgetScript?: string;
-	// WidgetType?: string;
-	widgetScriptDisplay?: string;
-	widgetScriptParse?: string;
-	scriptChangedClass?: string;
-	editFieldData?: IWidgetEditFieldData;
-	allFieldsObject?: Object;
-	allFieldsOptionsArray?: IWidgetFieldOptions[];
-	dragData?: IWidgetOnDragStartData;
-}
-
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
-
-namespace LoanTekWidget {
+namespace LoanTekWidgetTest {
 	export class WidgetBuilder {
 
-		constructor($: JQueryStatic, widgetData: IWidgetModelData) {
+		constructor($: JQueryStatic, widgetData: IW.IWidgetModelData) {
 			var _thisC = this;
-			var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
-			var ltbh: LoanTekWidget.BuilderHelpers = new LoanTekWidget.BuilderHelpers();
+			var lth: LoanTekWidgetTest.helpers = LoanTekWidgetHelperTest;
+			var ltbh: LoanTekWidgetTest.BuilderHelpers = new LoanTekWidgetTest.BuilderHelpers();
 			var el = lth.CreateElement();
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
+			var widgetObj: IW.IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
 				// TODO: code for quote widget
@@ -167,7 +169,7 @@ namespace LoanTekWidget {
 			var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
-			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'widgetServices', function ($scope: IWidgetBuilderNgScope, $timeout, widgetServices: IWidgetNgServices) {
+			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'widgetServices', function ($scope: IW.IWidgetBuilderNgScope, $timeout, widgetServices: IW.IWidgetNgServices) {
 				// window.console && console.log('widgetData: ', widgetData);
 				// window.console && console.log('formBorderTypeArray', lth.contactFieldsArray);
 				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
@@ -200,10 +202,10 @@ namespace LoanTekWidget {
 
 				var scriptHelpersCode = `
 					var ltjq = ltjq || jQuery.noConflict(true);
-					var lthlpr = new LoanTekWidget.helpers(ltjq);`;
+					var lthlpr = new LoanTekWidgetTest.helpers(ltjq);`;
 
 				var scriptLoader = function () {
-					var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
+					var loadScripts = new LoanTekWidgetTest.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
 						var body = $('body')[0];
 						var script = el.script().html(scriptHelpersCode)[0];
 						body.appendChild(script);
@@ -264,7 +266,7 @@ namespace LoanTekWidget {
 					// TODO: do code to delete widget
 				}
 
-				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData) {
+				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IW.IWidgetOnDragStartData) {
 					window.console && console.log('dragStart data', data);
 					$scope.dragData = data;
 				}
@@ -273,7 +275,7 @@ namespace LoanTekWidget {
 					// window.console && console.log('onDrop index: ', index, 'dragData: ', $scope.dragData);
 					if ($scope.dragData.field) {
 						window.console && console.log('add new field ', $scope.dragData.field, ' to ', dropIndex);
-						var newField: IWidgetField = { field: $scope.dragData.field };
+						var newField: IW.IWidgetField = { field: $scope.dragData.field };
 						if (columns) {
 							newField.cols = columns;
 						}
@@ -320,7 +322,7 @@ namespace LoanTekWidget {
 					// window.console && console.log('fieldId', fieldId, $scope.allFieldsObject[fieldId]);
 					var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
 					// window.console && console.log(fieldToAdd);
-					// var newForm: IWidgetFormObject = angular.copy($scope.currentForm);
+					// var newForm: IW.IWidgetFormObject = angular.copy($scope.currentForm);
 					// window.console && console.log('newForm.buildObject.fields', newForm.buildObject.fields);
 					// newForm.buildObject.fields.push(fieldToAdd);
 					// window.console && console.log('newForm.buildObject.fields', newForm.buildObject.fields);
@@ -336,7 +338,7 @@ namespace LoanTekWidget {
 
 				// function isAddFieldButtonShown(fieldId: string): boolean {
 				// 	var showAddBtn: boolean = true;
-				// 	// var cField: IWidgetField = null;
+				// 	// var cField: IW.IWidgetField = null;
 				// 	var relatedCurrentFieldIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', fieldId);
 				// 	if (relatedCurrentFieldIndex >= 0) {
 				// 		// cField = $scope.currentForm.buildObject.fields[relatedCurrentFieldIndex];
@@ -362,11 +364,11 @@ namespace LoanTekWidget {
 					$scope.selectedForm = { name: 'modified' };
 				}
 
-				function SetCurrentForm(currentForm: IWidgetFormObject) {
+				function SetCurrentForm(currentForm: IW.IWidgetFormObject) {
 					$scope.currentForm = currentForm;
 				}
 
-				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
+				function WidgetScriptBuild(currentFormObj: IW.IWidgetFormObject) {
 					$scope.editFieldData = {
 						widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm
@@ -376,9 +378,9 @@ namespace LoanTekWidget {
 						, buildScript: $scope.WidgetScriptBuild
 					};
 					// window.console && console.log('in widgetscriptbuild. editFieldData.currentForm', $scope.editFieldData.currentForm);
-					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
-					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
+					var cfo: IW.IWidgetFormObject = angular.copy(currentFormObj);
+					var cbo: IW.IWidgetFormBuildObject = angular.copy(cfo.buildObject);
+					var cbod: IW.IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 					var wScriptDisplay: string = wScript;
 					var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
@@ -489,7 +491,7 @@ namespace LoanTekWidget {
 
 					// Add Execution of Widget
 					var contactWidget = `
-						var ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);`;
+						var ltwfb = new LoanTekWidgetTest.FormBuild(ltjq, lthlpr, ltwbo, ltwo);`;
 					mainScript += contactWidget;
 					mainScriptDisplay += contactWidget;
 

@@ -1,69 +1,70 @@
-/// <reference path="../../typings/jquery/jquery.d.ts" />
+/// <reference path="../../Scripts/typings/jquery/jquery.d.ts" />
+declare namespace IW {
+	interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
+	interface IHelperNameId { id: string; name: string; }
+	interface IHelperNameNumId { id: number; name: string; }
 
-interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
-interface IHelperNameId { id: string; name: string; }
-interface IHelperNameNumId { id: number; name: string; }
-
-interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHelperBsGridSizing; }
-interface IHelperBsInputSizing { sm: string; lg: string; }
-interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
+	interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHelperBsGridSizing; }
+	interface IHelperBsInputSizing { sm: string; lg: string; }
+	interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
 
 
-interface IWidgetFieldOptions {
-	id?: string;
-	name: string;
-	isLTRequired?: boolean;
-	isIncluded?: boolean;
-	allowMultiples?: boolean;
-	hideFromList?: boolean;
-	fieldTemplate?: IWidgetField;
+	interface IWidgetFieldOptions {
+		id?: string;
+		name: string;
+		isLTRequired?: boolean;
+		isIncluded?: boolean;
+		allowMultiples?: boolean;
+		hideFromList?: boolean;
+		fieldTemplate?: IWidgetField;
+	}
+
+	interface IWidgetField {
+		field?: string;
+		element?: string;
+		id?: string;
+		type?: string;
+		style?: Object;
+		placeholder?: string;
+		required?: boolean;
+		cols?: number;
+		rows?: number;
+		cssClass?: string;
+		value?: string;
+		size?: string;
+		pattern?: string;
+		alttext?: string;
+		tabindex?: number;
+		nsize?: number;
+
+		color?: string;
+		fontSize?: number;
+		backgroundColor?: string;
+		borderRadius?: number;
+		borderColor?: string;
+		padding?: number;
+	}
+
+	interface IState {
+		abbreviation: string;
+		name: string;
+	}
+
+	interface IStates {
+		country: string;
+		states: IState[];
+	}
 }
 
-interface IWidgetField {
-	field?: string;
-	element?: string;
-	id?: string;
-	type?: string;
-	style?: Object;
-	placeholder?: string;
-	required?: boolean;
-	cols?: number;
-	rows?: number;
-	cssClass?: string;
-	value?: string;
-	size?: string;
-	pattern?: string;
-	alttext?: string;
-	tabindex?: number;
-	nsize?: number;
-
-	color?: string;
-	fontSize?: number;
-	backgroundColor?: string;
-	borderRadius?: number;
-	borderColor?: string;
-	padding?: number;
-}
-
-interface IState {
-	abbreviation: string;
-	name: string;
-}
-
-interface IStates {
-	country: string;
-	states: IState[];
-}
-
-namespace LoanTekWidget {
+namespace LoanTekWidgetTest {
 	class hSizing {
-		public h1: IHelperNameNumId;
-		public h2: IHelperNameNumId;
-		public h3: IHelperNameNumId;
-		public h4: IHelperNameNumId;
-		public h5: IHelperNameNumId;
-		public h6: IHelperNameNumId;
-		// public default: IHelperNameNumId;
+		public h1: IW.IHelperNameNumId;
+		public h2: IW.IHelperNameNumId;
+		public h3: IW.IHelperNameNumId;
+		public h4: IW.IHelperNameNumId;
+		public h5: IW.IHelperNameNumId;
+		public h6: IW.IHelperNameNumId;
+		// public default: IW.IHelperNameNumId;
 		constructor() {
 			this.h1 = { id: 1, name: 'Heading 1' };
 			this.h2 = { id: 2, name: 'Heading 2' };
@@ -74,36 +75,36 @@ namespace LoanTekWidget {
 			// this.default = this.h4;
 		}
 
-		getDefault(): IHelperNameNumId {
+		getDefault(): IW.IHelperNameNumId {
 			return this.h4;
 		}
 
-		asArray(): IHelperNameNumId[] {
-			return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
+		asArray(): IW.IHelperNameNumId[] {
+			return helpers.prototype.ConvertObjectToArray<IW.IHelperNameNumId>(this);
 		}
 	}
 
 	class inputSizing {
-		public sm: IHelperNameId;
-		public md: IHelperNameId;
-		public lg: IHelperNameId;
+		public sm: IW.IHelperNameId;
+		public md: IW.IHelperNameId;
+		public lg: IW.IHelperNameId;
 		constructor() {
 			this.sm = { id: 'sm', name: 'Small' };
 			this.md = { id: 'md', name: 'Medium' }
 			this.lg = { id: 'lg', name: 'Large' };
 		}
 
-		getDefault(): IHelperNameId {
+		getDefault(): IW.IHelperNameId {
 			return this.md;
 		}
 	}
 
 	class gridSizing {
-		public xs: IHelperNameId;
-		public sm: IHelperNameId;
-		public md: IHelperNameId;
-		public lg: IHelperNameId;
-		// public default: IHelperNameId;
+		public xs: IW.IHelperNameId;
+		public sm: IW.IHelperNameId;
+		public md: IW.IHelperNameId;
+		public lg: IW.IHelperNameId;
+		// public default: IW.IHelperNameId;
 		constructor() {
 			this.xs = { id: 'xs', name: 'xs' };
 			this.sm = { id: 'sm', name: 'sm' };
@@ -112,24 +113,24 @@ namespace LoanTekWidget {
 			// this.default = this.md;
 		}
 
-		// getDefault(): IHelperNameId {
+		// getDefault(): IW.IHelperNameId {
 		// 	return this.md;
 		// }
 	}
 
 	class gridColumns {
-		public n1: IHelperNameNumId;
-		public n2: IHelperNameNumId;
-		public n3: IHelperNameNumId;
-		public n4: IHelperNameNumId;
-		public n5: IHelperNameNumId;
-		public n6: IHelperNameNumId;
-		public n7: IHelperNameNumId;
-		public n8: IHelperNameNumId;
-		public n9: IHelperNameNumId;
-		public n10: IHelperNameNumId;
-		public n11: IHelperNameNumId;
-		public n12: IHelperNameNumId;
+		public n1: IW.IHelperNameNumId;
+		public n2: IW.IHelperNameNumId;
+		public n3: IW.IHelperNameNumId;
+		public n4: IW.IHelperNameNumId;
+		public n5: IW.IHelperNameNumId;
+		public n6: IW.IHelperNameNumId;
+		public n7: IW.IHelperNameNumId;
+		public n8: IW.IHelperNameNumId;
+		public n9: IW.IHelperNameNumId;
+		public n10: IW.IHelperNameNumId;
+		public n11: IW.IHelperNameNumId;
+		public n12: IW.IHelperNameNumId;
 		constructor() {
 			// this.n1 = { id: 1, name: '1/12th' }
 			// this.n2 = { id: 2, name: '1/6th' }
@@ -145,12 +146,12 @@ namespace LoanTekWidget {
 			this.n12 = { id: 12, name: 'Full Width' }
 		}
 
-		getDefault(): IHelperNameNumId {
+		getDefault(): IW.IHelperNameNumId {
 			return this.n12;
 		}
 
-		asArray(): IHelperNameNumId[] {
-			return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
+		asArray(): IW.IHelperNameNumId[] {
+			return helpers.prototype.ConvertObjectToArray<IW.IHelperNameNumId>(this);
 		}
 	}
 
@@ -158,19 +159,19 @@ namespace LoanTekWidget {
 		public inputSizing: inputSizing;
 		public gridSizing: gridSizing;
 		public gridColumns: gridColumns;
-		public gridColumnsArray: IHelperNameNumId[];
+		public gridColumnsArray: IW.IHelperNameNumId[];
 		constructor() {
 			this.inputSizing = new inputSizing;
 			this.gridSizing = new gridSizing;
 			this.gridColumns = new gridColumns;
-			this.gridColumnsArray = helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this.gridColumns);
+			this.gridColumnsArray = helpers.prototype.ConvertObjectToArray<IW.IHelperNameNumId>(this.gridColumns);
 		}
 	}
 
 	class formBorderType {
-		public panel: IHelperNameId;
-		public well: IHelperNameId;
-		public none: IHelperNameId;
+		public panel: IW.IHelperNameId;
+		public well: IW.IHelperNameId;
+		public none: IW.IHelperNameId;
 		constructor() {
 			this.panel = { id: 'panel', name: 'Panel' };
 			this.well = { id: 'well', name: 'Well' };
@@ -179,22 +180,22 @@ namespace LoanTekWidget {
 	}
 
 	class widthUnit {
-		px: IHelperNameId;
-		per: IHelperNameId;
+		px: IW.IHelperNameId;
+		per: IW.IHelperNameId;
 		constructor() {
 			this.px = { id: 'px', name: 'Pixels' };
 			this.per = { id: '%', name: 'Percent' };
 		}
 
-		getDefault(): IHelperNameId {
+		getDefault(): IW.IHelperNameId {
 			return this.per;
 		}
 	}
 
 	class widgetType {
-		public contact: IHelperNameId;
-		public quote: IHelperNameId;
-		public rate: IHelperNameId;
+		public contact: IW.IHelperNameId;
+		public quote: IW.IHelperNameId;
+		public rate: IW.IHelperNameId;
 		constructor() {
 			this.contact = { id: 'contact', name: 'Contact' };
 			this.quote = { id: 'quote', name: 'Quote' };
@@ -203,21 +204,21 @@ namespace LoanTekWidget {
 	}
 
 	class contactFields {
-		clientid: IWidgetFieldOptions;
-		userid: IWidgetFieldOptions;
-		firstname: IWidgetFieldOptions;
-		lastname: IWidgetFieldOptions;
-		email: IWidgetFieldOptions;
-		phone: IWidgetFieldOptions;
-		company: IWidgetFieldOptions;
-		state: IWidgetFieldOptions;
-		comments: IWidgetFieldOptions;
-		captcha: IWidgetFieldOptions;
-		submit: IWidgetFieldOptions;
-		resultmessage: IWidgetFieldOptions;
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
+		clientid: IW.IWidgetFieldOptions;
+		userid: IW.IWidgetFieldOptions;
+		firstname: IW.IWidgetFieldOptions;
+		lastname: IW.IWidgetFieldOptions;
+		email: IW.IWidgetFieldOptions;
+		phone: IW.IWidgetFieldOptions;
+		company: IW.IWidgetFieldOptions;
+		state: IW.IWidgetFieldOptions;
+		comments: IW.IWidgetFieldOptions;
+		captcha: IW.IWidgetFieldOptions;
+		submit: IW.IWidgetFieldOptions;
+		resultmessage: IW.IWidgetFieldOptions;
+		label: IW.IWidgetFieldOptions;
+		title: IW.IWidgetFieldOptions;
+		paragraph: IW.IWidgetFieldOptions;
 		constructor() {
 			this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwClientId', value: 'LTWS' } };
 			this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltcwUserId', value: 'UserID###' } };
@@ -242,16 +243,16 @@ namespace LoanTekWidget {
 		public bootstrap: bootstrap;
 		public hsize: hSizing;
 		public formBorderType: formBorderType;
-		public formBorderTypeArray: IHelperNameId[];
+		public formBorderTypeArray: IW.IHelperNameId[];
 		public widthUnit: widthUnit;
 		public widgetType: widgetType;
-		// public defaultFormWidthUnit: IHelperNameId;
+		// public defaultFormWidthUnit: IW.IHelperNameId;
 		// public defaultBorderRadius: number;
 		public defaultVerticalSpacing: number;
 		public defaultFormSpecifierClass: string;
 		public defaultResultSpecifierClass: string;
 		public contactFields: contactFields;
-		public contactFieldsArray: IWidgetFieldOptions[];
+		public contactFieldsArray: IW.IWidgetFieldOptions[];
 
 		constructor(jq: JQueryStatic) {
 			// window.console && console.log('helper constructed');
@@ -260,7 +261,7 @@ namespace LoanTekWidget {
 			this.hsize = new hSizing;
 			this.bootstrap = new bootstrap;
 			this.formBorderType = new formBorderType;
-			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+			this.formBorderTypeArray = this.ConvertObjectToArray<IW.IHelperNameId>(this.formBorderType);
 			this.widthUnit = new widthUnit;
 			this.widgetType = new widgetType;
 			// this.defaultFormWidthUnit = this.widthUnit.per;
@@ -269,7 +270,7 @@ namespace LoanTekWidget {
 			this.defaultFormSpecifierClass = 'ltwF';
 			this.defaultResultSpecifierClass = 'ltwR';
 			this.contactFields = new contactFields;
-			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
+			this.contactFieldsArray = this.ConvertObjectToArray<IW.IWidgetFieldOptions>(this.contactFields);
 		}
 
 		isNumber(numCheck: any): boolean {

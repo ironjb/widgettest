@@ -1,8 +1,8 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
-namespace LoanTekWidget {
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
+namespace LoanTekWidgetTest {
 	export class BuilderHelpers {
 
 		constructor() {
@@ -33,14 +33,14 @@ namespace LoanTekWidget {
 		private _scriptSrcArray: string[];
 		private _scriptRootDirectory: string;
 		private _callbackFunction: Function;
-		private _lth: LoanTekWidget.helpers;
+		private _lth: LoanTekWidgetTest.helpers;
 		constructor(scriptSrcArray: string[], scriptRootDirectory?: string, callback?: Function) {
 			var _thisC = this;
 			_thisC._scriptSrcArray = scriptSrcArray || null;
 			_thisC._scriptRootDirectory = scriptRootDirectory || '';
 			_thisC._callbackFunction = callback || null;;
 
-			_thisC._lth = LoanTekWidgetHelper;
+			_thisC._lth = LoanTekWidgetHelperTest;
 		}
 
 		addSrc(src: string) {
@@ -91,11 +91,11 @@ namespace LoanTekWidget {
 		private _returnStyles: string;
 		private _specifier: string;
 		private _borderType: string;
-		// private _lth: LoanTekWidget.helpers;
+		// private _lth: LoanTekWidgetTest.helpers;
 
-		constructor(currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) {
+		constructor(currentFormObject: IW.IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) {
 			var _thisC = this;
-			var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
+			var lth: LoanTekWidgetTest.helpers = LoanTekWidgetHelperTest;
 			specifier = specifier || '.' + lth.defaultFormSpecifierClass;
 			_thisC._specifier = specifier;
 			_thisC._borderType = currentFormObject.buildObject.formBorderType;
@@ -154,7 +154,7 @@ namespace LoanTekWidget {
 
 		formBorderRadius(borderRadius: number, borderType?: string, specifier?: string): string {
 			var _thisM = this;
-			var lth = LoanTekWidgetHelper;
+			var lth = LoanTekWidgetHelperTest;
 			var br = '';
 			var fbr = borderRadius + '';
 			var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';

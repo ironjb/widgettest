@@ -1,5 +1,5 @@
-var LoanTekTest;
-(function (LoanTekTest) {
+var LoanTekPapaParseTest;
+(function (LoanTekPapaParseTest) {
     var $ = jQuery;
     var fileInputElement = $('#csvFile')[0];
     $('#csvFile').val('');
@@ -19,4 +19,4 @@ var LoanTekTest;
             });
         }
     });
-})(LoanTekTest || (LoanTekTest = {}));
+})(LoanTekPapaParseTest || (LoanTekPapaParseTest = {}));

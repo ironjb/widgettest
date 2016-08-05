@@ -1,5 +1,5 @@
-var LoanTekWidget;
-(function (LoanTekWidget) {
+var LoanTekWidgetTest;
+(function (LoanTekWidgetTest) {
     var FormBuild = (function () {
         function FormBuild($, lth, options, readyOptions) {
             var _thisC = this;
@@ -384,7 +384,7 @@ var LoanTekWidget;
         };
         return FormBuild;
     }());
-    LoanTekWidget.FormBuild = FormBuild;
+    LoanTekWidgetTest.FormBuild = FormBuild;
     var ContactFunctionality = (function () {
         function ContactFunctionality($, options) {
             var settings = {
@@ -508,4 +508,4 @@ var LoanTekWidget;
         }
         return ContactFunctionality;
     }());
-})(LoanTekWidget || (LoanTekWidget = {}));
+})(LoanTekWidgetTest || (LoanTekWidgetTest = {}));

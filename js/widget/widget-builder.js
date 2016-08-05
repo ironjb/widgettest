@@ -1,11 +1,11 @@
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
-var LoanTekWidget;
-(function (LoanTekWidget) {
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
+var LoanTekWidgetTest;
+(function (LoanTekWidgetTest) {
     var WidgetBuilder = (function () {
         function WidgetBuilder($, widgetData) {
             var _thisC = this;
-            var lth = LoanTekWidgetHelper;
-            var ltbh = new LoanTekWidget.BuilderHelpers();
+            var lth = LoanTekWidgetHelperTest;
+            var ltbh = new LoanTekWidgetTest.BuilderHelpers();
             var el = lth.CreateElement();
             $('input textarea').placeholder();
             var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
@@ -96,9 +96,9 @@ var LoanTekWidget;
                             '/Areas/Widgets/Scripts/widget/widget.js'
                         ];
                     }
-                    var scriptHelpersCode = "\n\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
+                    var scriptHelpersCode = "\n\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\tvar lthlpr = new LoanTekWidgetTest.helpers(ltjq);";
                     var scriptLoader = function () {
-                        var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
+                        var loadScripts = new LoanTekWidgetTest.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
                             var body = $('body')[0];
                             var script = el.script().html(scriptHelpersCode)[0];
                             body.appendChild(script);
@@ -227,7 +227,7 @@ var LoanTekWidget;
                             wScriptDisplay += cssLink;
                         }
                         var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
-                        formStyles = new LoanTekWidget.ApplyFormStyles(cfo, !hasCaptchaField).getStyles();
+                        formStyles = new LoanTekWidgetTest.ApplyFormStyles(cfo, !hasCaptchaField).getStyles();
                         if (formStyles) {
                             wScript += lth.Interpolate(styleWrap, { styles: formStyles });
                             wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
@@ -276,7 +276,7 @@ var LoanTekWidget;
                         var ltWidgetOptionsWrap = "\n\t\t\t\t\t\tvar ltwo = #{cwow};";
                         mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
                         mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
-                        var contactWidget = "\n\t\t\t\t\t\tvar ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);";
+                        var contactWidget = "\n\t\t\t\t\t\tvar ltwfb = new LoanTekWidgetTest.FormBuild(ltjq, lthlpr, ltwbo, ltwo);";
                         mainScript += contactWidget;
                         mainScriptDisplay += contactWidget;
                         mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
@@ -305,5 +305,5 @@ var LoanTekWidget;
         }
         return WidgetBuilder;
     }());
-    LoanTekWidget.WidgetBuilder = WidgetBuilder;
-})(LoanTekWidget || (LoanTekWidget = {}));
+    LoanTekWidgetTest.WidgetBuilder = WidgetBuilder;
+})(LoanTekWidgetTest || (LoanTekWidgetTest = {}));

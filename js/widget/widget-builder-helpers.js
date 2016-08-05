@@ -1,6 +1,6 @@
-var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
-var LoanTekWidget;
-(function (LoanTekWidget) {
+var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.helpers(jQuery);
+var LoanTekWidgetTest;
+(function (LoanTekWidgetTest) {
     var BuilderHelpers = (function () {
         function BuilderHelpers() {
         }
@@ -20,7 +20,7 @@ var LoanTekWidget;
         };
         return BuilderHelpers;
     }());
-    LoanTekWidget.BuilderHelpers = BuilderHelpers;
+    LoanTekWidgetTest.BuilderHelpers = BuilderHelpers;
     var LoadScriptsInSequence = (function () {
         function LoadScriptsInSequence(scriptSrcArray, scriptRootDirectory, callback) {
             var _thisC = this;
@@ -28,7 +28,7 @@ var LoanTekWidget;
             _thisC._scriptRootDirectory = scriptRootDirectory || '';
             _thisC._callbackFunction = callback || null;
             ;
-            _thisC._lth = LoanTekWidgetHelper;
+            _thisC._lth = LoanTekWidgetHelperTest;
         }
         LoadScriptsInSequence.prototype.addSrc = function (src) {
             this._scriptSrcArray.push(src);
@@ -64,11 +64,11 @@ var LoanTekWidget;
         };
         return LoadScriptsInSequence;
     }());
-    LoanTekWidget.LoadScriptsInSequence = LoadScriptsInSequence;
+    LoanTekWidgetTest.LoadScriptsInSequence = LoadScriptsInSequence;
     var ApplyFormStyles = (function () {
         function ApplyFormStyles(currentFormObject, excludeCaptchaField, specifier) {
             var _thisC = this;
-            var lth = LoanTekWidgetHelper;
+            var lth = LoanTekWidgetHelperTest;
             specifier = specifier || '.' + lth.defaultFormSpecifierClass;
             _thisC._specifier = specifier;
             _thisC._borderType = currentFormObject.buildObject.formBorderType;
@@ -115,7 +115,7 @@ var LoanTekWidget;
         };
         ApplyFormStyles.prototype.formBorderRadius = function (borderRadius, borderType, specifier) {
             var _thisM = this;
-            var lth = LoanTekWidgetHelper;
+            var lth = LoanTekWidgetHelperTest;
             var br = '';
             var fbr = borderRadius + '';
             var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
@@ -129,5 +129,5 @@ var LoanTekWidget;
         };
         return ApplyFormStyles;
     }());
-    LoanTekWidget.ApplyFormStyles = ApplyFormStyles;
-})(LoanTekWidget || (LoanTekWidget = {}));
+    LoanTekWidgetTest.ApplyFormStyles = ApplyFormStyles;
+})(LoanTekWidgetTest || (LoanTekWidgetTest = {}));

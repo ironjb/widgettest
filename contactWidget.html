@@ -182,7 +182,7 @@
 <script type="text/javascript" src="/js/lib/jquery/jquery.placeholder.min.js"></script>
 <script type="text/javascript" src="/js/loantek-manual-contact-widget.js"></script>
 <script type="text/javascript">
-var ltCaptcha = new LoanTekCaptcha();
+var ltCaptcha = new LoanTekCaptchaTest();
 function captchaValidate() {
 	// window.console && console.log(ltCaptcha.IsValidEntry());
 	return ltCaptcha.IsValidEntry();
@@ -195,5 +195,5 @@ var loanTekManualContactWidgetOptions = {
 	externalValidatorFunction: ltCaptcha.Validate,
 	successMessage: 'Yay!!! Successful POST'
 };
-LoanTekManualContactWidget(loanTekManualContactWidgetOptions);
+LoanTekManualContactWidgetTest(loanTekManualContactWidgetOptions);
 </script>
