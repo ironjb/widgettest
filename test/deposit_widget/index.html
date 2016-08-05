@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Deposit Widget Test</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/Content/site-bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/Content/lib/angular-bootstrap-colorpicker/css/colorpicker.min.css" />
+	<link rel="stylesheet" type="text/css" href="/Content/Site.css" />
+
+	<link href="https://modules.loantek.com/Content/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/widget.css" />
+	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/lt-captcha.css" />
+
+	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/site.css" />
+
+	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/widget-bootstrap.css" />
+</head>
+<body>
+	<nav>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Widget Test</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<!-- <li><a href="contactWidget.html">contactWidget</a></li>
+						<li><a href="contactWidgetBuild.html">contactWidgetBuild</a></li>
+						<li><a href="widgetTest.html">widgetTest</a></li> -->
+						<li><a href="test/papaparse">Papa Parse</a></li>
+						<li><a href="test/metronic">Metronic</a></li>
+						<li><a href="">link</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div data-ng-app="WidgetBuilderApp" data-ng-controller="WidgetBuilderController">
+			<a name="widgetTop"></a>
+			<h1>@Model.WidgetType.Description() Builder</h1>
+			<div class="row">
+				<div class="col-sm-4">
+					<form action="" class="form-horizontal">
+						<div class="row">
+							<div class="col-sm-12">
+								<!-- @if (Request.QueryString["viewtemplate"] == "true") {
+									<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>
+								}
+								@*<pre style="white-space:pre-wrap;">{{currentFormStr}}</pre>
+								<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>*@ -->
+								<div class="panel panel-default">
+									<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
+										<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+									</div>
+									<div data-uib-collapse="isCollapsedSaved">
+										<div class="panel-body">
+											<div class="form-group form-group-sm ng-hide" data-ng-show="isExistingModel">
+												<label for="WidgetName" class="control-label col-sm-12 text-left">Widget Name</label>
+												<div class="col-sm-12"><input type="text" class="form-control" id="WidgetName" name="WidgetName" data-ng-model="passedModelForm.Name" /></div>
+											</div>
+											<div class="form-group form-group-sm">
+												<div class="col-sm-12">
+													<button class="btn btn-xs btn-primary ng-hide" data-ng-click="SaveWidget();" type="button" data-ng-show="isExistingModel">save</button>
+													<button class="btn btn-xs btn-success" data-ng-click="SaveWidget(true);" type="button">save as new</button>
+													<button class="btn btn-xs btn-default ng-hide" data-ng-click="RevertWidget();" type="button" data-ng-show="isExistingModel">revert</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" data-ng-click="isCollapsedTemplates = !isCollapsedTemplates">
+										<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedTemplates &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+									</div>
+									<div data-uib-collapse="isCollapsedTemplates">
+										<div class="panel-body">
+											<div class="form-group form-group-sm">
+												<div class="col-sm-12">
+													<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltForm();" data-ng-model="selectedForm" data-ng-options="pform.name for pform in widgetObject.prebuiltForms"></select>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
+										<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+									</div>
+									<div data-uib-collapse="isCollapsedAvailableFields">
+										<div class="panel-body">
+											<div class="form-group form-group-sm">
+												<div class="col-sm-12">
+													<div class="list-group">
+														<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
+															<div class="pull-right">
+																<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
+																<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
+																<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+																<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+															</div>
+															<span data-ng-bind="aField.name"></span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="col-sm-8">
+					<div class="panel panel-default">
+						<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
+							<h3 class="panel-title">@Model.WidgetType.Description() Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+						</div>
+						<div data-uib-collapse="isCollapsedScriptCopy">
+							<div class="panel-body">
+								<form action="" class="form-horizontal">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
+										</div>
+									</div>
+								</form>
+								<!-- @using (Html.BeginForm("Demo", "Builder", FormMethod.Post, new { @target = "_blank" })) {
+									@Html.Hidden("script", "{{widgetScriptParse}}")
+									<button class="btn btn-default btn-sm" type="submit">Demo</button>
+								} -->
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div data-lt-compile-code="widgetScriptDisplay"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript" src="/Scripts/lib/jquery/jquery.min.js"></script>
+
+	<script type="text/javascript" src="/Scripts/lib/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/jquery/jquery.placeholder.min.js"></script>
+
+	<script type="text/javascript" src="/Scripts/lib/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/Scripts/respond.js"></script>
+
+
+	<script type="text/javascript" src="/Scripts/lib/angular/angular.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/angular/angular-animate.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/angular/angular-sanitize.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/angular/angular-dragdrop.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/angular/ui-bootstrap-tpls.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
+	<script type="text/javascript" src="/Scripts/common/ng/services.js"></script>
+	<script type="text/javascript" src="/Scripts/common/ng/directives.js"></script>
+
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/post-object/contact.js"></script>
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/common/widget-helpers.js"></script>
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget-builder-helpers.js"></script>
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget-builder-templates.js"></script>
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget-builder-services.js"></script>
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget-builder-directives.js"></script>
+	<script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget-builder.js"></script>
+
+	<script type="text/javascript">
+		var widgetModelData = {
+			modelUrls: ["https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/N05KN3YraUFwZ0Y5bWhKYjZEVGhIbWdVMVBVVVdMcllRUFlBNll4ZXNMY3MyQlZ5eHNrbHRBQT01"]
+			, modelWidget: {"WidgetTypeType":"ContactWidget","OwnerId":1940,"ClientId":5,"UserId":1940,"WidgetType":"ContactWidget","ScriptText":"ADD SCRIPT HERE"}
+			, widgetTemplates:
+[{
+	"WidgetTypeType": 3,
+	"OwnerId": 0,
+	"Id": 0,
+	"ClientId": 0,
+	"UserId": 0,
+	"WidgetType": "ContactWidget",
+	"Name": "template1.json",
+	"ScriptText": "{\"name\": \"Default Contact Widget\",\"buildObject\": {\"panelTitle\": \"Contact Us\",\"fields\": [{ \"field\": \"label\", \"cols\": 4, \"value\": \"First Name\" },{ \"field\": \"firstname\", \"cols\": 8 },{ \"field\": \"label\", \"value\": \"Last Name\", \"cols\": 4 },{ \"field\": \"lastname\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Email\" },{ \"field\": \"email\", \"cols\": 8 },{ \"field\": \"label\", \"value\": \"Phone Number\", \"cols\": 4 },{ \"field\": \"phone\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Company\" },{ \"field\": \"company\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"State\" },{ \"field\": \"state\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Comments\" },{ \"field\": \"comments\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Security Check\" },{ \"field\": \"captcha\", \"cols\": 8 },{ \"field\": \"successmessage\", \"cols\": 8, \"offsetCols\": 4 },{ \"field\": \"submit\", \"cols\": 8, \"offsetCols\": 4 }]}}",
+	"LastModifiedDate": "\/Date(1468004010208)\/",
+	"LastModifiedByUserID": null,
+	"Active": true
+}, {
+	"WidgetTypeType": 3,
+	"OwnerId": 0,
+	"Id": 0,
+	"ClientId": 0,
+	"UserId": 0,
+	"WidgetType": "ContactWidget",
+	"Name": "template2.json",
+	"ScriptText": "{\"name\": \"Small Contact Widget\",\"formWidth\": 380,\"formWidthUnit\": \"px\",\"formBg\": \"#def\",\"formBorderRadius\": 0,\"formBorderColor\": \"#08f\",\"formTitleColor\": \"#ddf\",\"formTitleBgColor\": \"#06d\",\"formGroupSpacing\": 4,\"formFieldBorderRadius\": 0,\"formButtonBorderRadius\": 0,\"buildObject\": {\"formBorderType\": \"panel\",\"panelTitle\": \"Contact Us\",\"fieldSize\": \"sm\",\"fields\": [{ \"field\": \"firstname\" },{ \"field\": \"lastname\" },{ \"field\": \"email\" },{ \"field\": \"phone\" },{ \"field\": \"company\" },{ \"field\": \"state\" },{ \"field\": \"comments\" },{ \"field\": \"captcha\" },{ \"field\": \"successmessage\", \"fontSize\": 16 },{ \"field\": \"submit\" }]}}",
+	"LastModifiedDate": "\/Date(1468004018860)\/",
+	"LastModifiedByUserID": null,
+	"Active": true
+}]
+		};
+		var wbuilder = new LoanTekWidget.WidgetBuilder(jQuery, widgetModelData);
+	</script>
+</body>
+</html>

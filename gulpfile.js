@@ -127,6 +127,11 @@
 			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/lib/**'
 			])
 		.pipe(gulp.dest('Scripts/lib'));
+
+		gulp.src([
+			'D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/respond.js'
+			])
+		.pipe(gulp.dest('Scripts'));
 	});
 
 	gulp.task('copy:global:toTfs', function () {
@@ -144,6 +149,11 @@
 			'Scripts/lib/**'
 			])
 		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts/lib'));
+
+		gulp.src([
+			'Scripts/respond.js'
+			])
+		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Scripts'));
 	});
 
 	gulp.task('copy:widgets:fromTfs', ['copy:global:fromTfs'], function () {
@@ -170,6 +180,33 @@
 		.pipe(gulp.dest('D:/LoanTek/Current/com.LoanTek.Clients/com.LoanTek.Clients/Areas/Widgets/Scripts'));
 	});
 
+	gulp.task('ts:compile', function () {
+		var tsProject = ts.createProject('./tsconfig.json');
+		var tsResult = tsProject.src()
+		.pipe(ts(tsProject));
+
+		// dest() should be same as direcotry tsconfig.json. Should also have "outDir" in tsconfig.json file to help output files to correct directories.
+		return tsResult.js.pipe(gulp.dest('./'));
+	});
+
+	gulp.task('ts:watch', ['ts:compile'], function() {
+		var watcher = gulp.watch('**/Scripts/**/*.ts', ['ts:compile']);
+		watcher.on('change', function(event) {
+			console.log('File [' + event.path + '] was ' + event.type + '!');
+		});
+	});
+
+
+	// Old compile watch stuff
+	gulp.task('ts:watchOld', ['ts:compile'], function() {
+		var watcher = gulp.watch('js/**/*.ts', ['ts:compile']);
+		watcher.on('change', function(event) {
+			console.log('File [' + event.path + '] was ' + event.type + '!');
+		});
+	});
+
+
+	// Older Contact Widget compile stuff
 	gulp.task('ts:compilewidget', function () {
 		var tsWidgetBuilderProject = ts.createProject('js/ts/widget-builder/tsconfig.json');
 		var tsContactWidgetProject = ts.createProject('js/ts/contact-widget/tsconfig.json');
@@ -186,15 +223,6 @@
 		tsContactWidget.js.pipe(gulp.dest('js/ts/contact-widget'));
 	});
 
-	gulp.task('ts:compile', function () {
-		var tsProject = ts.createProject('./tsconfig.json');
-		var tsResult = tsProject.src()
-		.pipe(ts(tsProject));
-
-		// dest() should be same as direcotry tsconfig.json. Should also have "outDir" in tsconfig.json file to help output files to correct directories.
-		return tsResult.js.pipe(gulp.dest('./'));
-	});
-
 	gulp.task('ts:watchwidget', ['ts:compilewidget'], function() {
 		var watcher = gulp.watch('js/ts/**/*.ts', ['ts:compile']);
 		watcher.on('change', function(event) {
@@ -202,12 +230,7 @@
 		});
 	});
 
-	gulp.task('ts:watch', ['ts:compile'], function() {
-		var watcher = gulp.watch('js/**/*.ts', ['ts:compile']);
-		watcher.on('change', function(event) {
-			console.log('File [' + event.path + '] was ' + event.type + '!');
-		});
-	});
+
 
 	gulp.task('css:minify', function (details) {
 		return gulp.src(['./css/**/*.css', '!./css/**/*.min.css'])

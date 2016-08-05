@@ -29,18 +29,7 @@ var LoanTekWidget;
                     var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
                     var ltWidgetCSS = ['/Content/widget/css'];
                     var widgetScripts = ['/bundles/widget/widget'];
-                    if (window.location.port === '8080') {
-                        ltWidgetCSS = ['/css/widget.css'];
-                        widgetScripts = [
-                            '/js/lib/jquery-1/jquery.min.js',
-                            '/js/lib/jquery/jquery.placeholder.min.js',
-                            '/js/post-object/contact.js',
-                            '/js/common/lt-captcha.js',
-                            '/js/common/widget-helpers.js',
-                            '/js/widget/widget.js'
-                        ];
-                    }
-                    if (window.location.port === '58477') {
+                    if (window.location.port === '58477' || window.location.port === '8080') {
                         ltWidgetCSS = ['/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
                         widgetScripts = [
                             '/Scripts/lib/jquery-1/jquery.min.js',
