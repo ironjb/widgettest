@@ -1,5 +1,26 @@
 /// <reference path="../common/widget-helpers.ts" />
 
+declare namespace LTWidget {
+
+	interface IFunctionalityOptions {
+		postUrl?: string;
+		externalValidatorFunction?: Function;
+		userId?: number;
+		clientId?: number;
+
+		form_id?: string;
+		form_submit?: string;
+		form_errorAnchor?: string;
+		form_errorMsgWrapper?: string;
+		form_errorMsg?: string;
+	}
+
+	interface IDepositFunctionalityOptions extends IFunctionalityOptions {
+		form_term?: string;
+		form_amount?: string;
+	}
+}
+
 interface IWidgetFormBuildObject {
 	wrapperId?: string;
 	formId?: string;
@@ -77,6 +98,7 @@ namespace LoanTekWidget {
 				, rFields: null
 			};
 			$.extend(settings, options);
+			// window.console && console.log('settings.widgetType', settings.widgetType);
 
 			const COLUMNS_IN_ROW: number = 12;
 			var columnCount: number = 0;
@@ -94,12 +116,23 @@ namespace LoanTekWidget {
 			var nextIndex: number;
 			var remainingColSpace: number = 0;
 			var isNextHidden: boolean = false;
+			var fieldHelperType: string;
 			var fieldTemplate: Object;
 
 			var el = lth.CreateElement();
 
 			var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
 			var errorMsg = el.p().prop('id', settings.errrorMessageId);
+
+			if (settings.widgetType === lth.widgetType.quote.id) {
+				fieldHelperType = 'quoteFields';
+			} else if (settings.widgetType === lth.widgetType.rate.id) {
+				fieldHelperType = 'rateFields';
+			} else if (settings.widgetType === lth.widgetType.deposit.id) {
+				fieldHelperType = 'depositFields';
+			} else {
+				fieldHelperType = 'contactFields';
+			}
 
 			if (!settings.showBuilderTools) {
 				errorRow.css({ display: 'none' });
@@ -119,7 +152,8 @@ namespace LoanTekWidget {
 
 			function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
 				// return $.extend({}, fieldTemplates[eItem.field], eItem);
-				return $.extend({}, lth.contactFields[eItem.field].fieldTemplate, eItem);
+				// window.console && console.log('lth fieldhelper', fieldHelperType, lth['depositFields']);
+				return $.extend({}, lth[fieldHelperType][eItem.field].fieldTemplate, eItem);
 			}
 
 			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
@@ -338,12 +372,15 @@ namespace LoanTekWidget {
 			}
 
 			// call function to set up stuff after DOM created
+			var widgetFunctionality: any;
 			if (settings.widgetType === lth.widgetType.quote.id) {
-
+				//
 			} else if (settings.widgetType === lth.widgetType.rate.id) {
-
+				//
+			} else if (settings.widgetType === lth.widgetType.deposit.id) {
+				widgetFunctionality = new DepositFunctionality($, lth, readyOptions)
 			} else {
-				var widgetFunctionality = new ContactFunctionality($, lth, readyOptions);
+				widgetFunctionality = new ContactFunctionality($, lth, readyOptions);
 			}
 		}
 
@@ -379,13 +416,35 @@ namespace LoanTekWidget {
 					elementObj.placeholder = elementObj.placeholder ? elementObj.placeholder : ' ';
 					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					switch (elementObj.type) {
-						case "state":
+						case 'state':
 							var usStates = _thisM._lth.US_States();
 							_thisM._$.each(usStates.states, function (i, state) {
 								returnElement.append(el.option().val(state.abbreviation).html(state.name));
 							});
 							break;
-
+						case 'depositterm':
+							var depositTermsList = [
+								{ value: 3, name: '3-month' }
+								, { value: 6, name: '6-month' }
+								, { value: 12, name: '1-year' }
+								, { value: 24, name: '2-year' }
+							];
+							_thisM._$.each(depositTermsList, function (i, term) {
+								returnElement.append(el.option().val(term.value).html(term.name));
+							});
+							break;
+						case 'depositamount':
+							var depositAmountList = [
+								{ value: 4999, name: '&lt; 5000' }
+								, { value: 9999, name: '$5,000 - $9,999' }
+								, { value: 14999, name: '$10,000 - 14,999' }
+								, { value: 24999, name: '$15,000 - 24,999' }
+								, { value: 49999, name: '$25,000 - 49,999' }
+							];
+							_thisM._$.each(depositAmountList, function (i, amnt) {
+								returnElement.append(el.option().val(amnt.value).html(amnt.name));
+							});
+							break;
 						default:
 							// code...
 							break;
@@ -597,9 +656,9 @@ namespace LoanTekWidget {
 
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 
-			$(() => {
+			$(function () {
 
-				var widgetData = lth.postObjects.contact;
+				var contactPostData = lth.postObjects.contact();
 
 				$(settings.form_submit).prop('disabled', false);
 
@@ -613,20 +672,20 @@ namespace LoanTekWidget {
 						return false;
 					}
 
-					widgetData.Persons[0].FirstName = $(settings.form_firstName).val();
-					widgetData.Persons[0].LastName = $(settings.form_lastName).val();
-					widgetData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
-					widgetData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
-					widgetData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
-					widgetData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
-					widgetData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
-					widgetData.ClientId = settings.clientId;
-					widgetData.UserId = settings.userId;
-					widgetData.Reason = $(settings.form_comments).val();
-					widgetData.MiscData[0].Value = '';
+					contactPostData.Persons[0].FirstName = $(settings.form_firstName).val();
+					contactPostData.Persons[0].LastName = $(settings.form_lastName).val();
+					contactPostData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
+					contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
+					contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
+					contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
+					contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
+					contactPostData.ClientId = settings.clientId;
+					contactPostData.UserId = settings.userId;
+					contactPostData.Reason = $(settings.form_comments).val();
+					contactPostData.MiscData[0].Value = '';
 
 					if (settings.AdditionalPostData) {
-						$.extend(true, widgetData, settings.AdditionalPostData);
+						$.extend(true, contactPostData, settings.AdditionalPostData);
 					}
 
 					var request = $.ajax({
@@ -636,9 +695,9 @@ namespace LoanTekWidget {
 						, method: 'POST'
 						, contentType: 'application/json'
 						, dataType: 'json'
-						// , data: JSON.stringify(widgetData)
-						, data: JSON.stringify({ LeadFile: widgetData })
-						// , data: { LeadFile: widgetData }
+						// , data: JSON.stringify(contactPostData)
+						, data: JSON.stringify({ LeadFile: contactPostData })
+						// , data: { LeadFile: contactPostData }
 					});
 
 					request.done((result) => {
@@ -652,6 +711,83 @@ namespace LoanTekWidget {
 							$(settings.form_submit).hide(100);
 							$(settings.form_successMessageWrapper).show(100);
 						}
+					});
+
+					request.fail((error) => {
+						$(settings.form_submit).prop('disabled', false);
+						var msg = 'There was an unexpected error. Please try again.';
+
+						try {
+							var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+							msg = errorObj.Message;
+						} catch (e) {
+							console.error('Error @ request.fail.responseText:' + e);
+						}
+
+						$(settings.form_errorMsg).html(msg);
+						$(settings.form_errorMsgWrapper).show(100);
+						lth.ScrollToAnchor(settings.form_errorAnchor);
+					});
+				});
+			});
+		}
+	}
+
+	export class DepositFunctionality {
+
+		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: LTWidget.IDepositFunctionalityOptions) {
+			var settings: LTWidget.IDepositFunctionalityOptions = {
+				postUrl: null
+				, externalValidatorFunction: null
+				, userId: null
+				, clientId: null
+				, form_id: '#ltWidgetForm'
+				, form_term: '#ltwDepositTerm'
+				, form_amount: '#ltwDepositAmount'
+				, form_submit: '#ltwSubmit'
+				, form_errorAnchor: 'ltwErrorAnchor'
+				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
+				, form_errorMsg: '#ltwErrorMessage'
+			};
+			$.extend(settings, options);
+			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
+
+			$(function () {
+				// var depositPostData: any = lth.postObjects.deposit();
+				var depositPostData: any = {};
+				$(settings.form_submit).prop('disabled', false);
+
+				$(settings.form_id).submit(function (event) {
+					event.preventDefault();
+					$(settings.form_errorMsgWrapper).hide(100);
+					$(settings.form_submit).prop('disabled', true);
+
+					if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+						$(settings.form_submit).prop('disabled', false);
+						return false;
+					}
+
+					depositPostData.term = $(settings.form_term).val();
+					depositPostData.amount = $(settings.form_amount).val();
+
+					var request = $.ajax({
+						// url: 'http://node-cors-server.herokuapp.com/no-cors'
+						// url: 'http://node-cors-server.herokuapp.com/simple-cors'
+						url: settings.postUrl
+						, method: 'POST'
+						, contentType: 'application/json'
+						, dataType: 'json'
+						// , data: JSON.stringify(contactPostData)
+						, data: depositPostData
+						// , data: { LeadFile: contactPostData }
+					});
+
+					request.done((result) => {
+						// Clear all fields
+						$(settings.form_id).trigger('reset');
+						$(settings.form_submit).prop('disabled', false);
+
+
 					});
 
 					request.fail((error) => {

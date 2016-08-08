@@ -1,0 +1,6 @@
+[
+	{ "apy": 0.8, "minDeposit": 10000, "institution": "bank 1" },
+	{ "apy": 0.85, "minDeposit": 5000, "institution": "bank 2" },
+	{ "apy": 0.9, "minDeposit": 1500, "institution": "bank 3" },
+	{ "apy": 1, "minDeposit": 500, "institution": "bank 4" }
+]

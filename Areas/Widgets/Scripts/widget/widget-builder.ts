@@ -34,6 +34,7 @@ interface IWidgetModelDataTemplate {
 }
 
 interface IWidget {
+	widgetType?: string;
 	allFieldsObject?: Object;
 	allFieldsOptionsArray: IWidgetFieldOptions[];
 	prebuiltForms?: IWidgetFormObject[];
@@ -120,18 +121,26 @@ namespace LoanTekWidget {
 			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
+				widgetObj.widgetType = lth.widgetType.quote.id;
 				// TODO: code for quote widget
 			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'ratewidget') {
+				widgetObj.widgetType = lth.widgetType.rate.id;
 				// TODO: code for rate widget
+			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
+				widgetObj.widgetType = lth.widgetType.deposit.id;
+				widgetObj.allFieldsObject = lth.depositFields;
+				widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
 			} else {
+				widgetObj.widgetType = lth.widgetType.contact.id;
 				widgetObj.allFieldsObject = lth.contactFields;
 				widgetObj.allFieldsOptionsArray = lth.contactFieldsArray;
-				widgetObj.prebuiltForms = [];
-				for (var iwt = 0, wtl = widgetData.widgetTemplates.length; iwt < wtl; iwt++) {
-					var wTemplate: IWidgetModelDataTemplate = widgetData.widgetTemplates[iwt];
-					if (wTemplate.Active) {
-						widgetObj.prebuiltForms.push(JSON.parse(wTemplate.ScriptText));
-					}
+			}
+
+			widgetObj.prebuiltForms = [];
+			for (var iwt = 0, wtl = widgetData.widgetTemplates.length; iwt < wtl; iwt++) {
+				var wTemplate: IWidgetModelDataTemplate = widgetData.widgetTemplates[iwt];
+				if (wTemplate.Active) {
+					widgetObj.prebuiltForms.push(JSON.parse(wTemplate.ScriptText));
 				}
 			}
 
@@ -171,11 +180,13 @@ namespace LoanTekWidget {
 					loadScripts.run();
 				};
 
+				// When editing existing widget script
 				if (widgetData.modelWidget.Id && widgetData.modelWidget.ScriptText) {
 					$scope.passedModelForm = widgetData.modelWidget;
 					$scope.currentForm = JSON.parse(widgetData.modelWidget.ScriptText);
 					$scope.isExistingModel = true;
 				}
+
 				$scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
 				$scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
 
@@ -304,6 +315,8 @@ namespace LoanTekWidget {
 				}
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
+					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+					// window.console && console.log('currentFormObj', currentFormObj, widgetData.modelWidget.WidgetType);
 					$scope.editFieldData = {
 						widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm

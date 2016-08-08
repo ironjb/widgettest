@@ -1,0 +1,30 @@
+<style type="text/css">.ltw {display:none;}</style> <link rel="stylesheet" href="/Areas/Widgets/Content/widget.css"> <link rel="stylesheet" href="/Areas/Widgets/Content/lt-captcha.css"> <div id="ltWidgetWrapper"></div> <script type="text/javascript" src="/Scripts/lib/jquery-1/jquery.min.js"></script> <script type="text/javascript" src="/Scripts/lib/jquery/jquery.placeholder.min.js"></script> <script type="text/javascript" src="/Areas/Widgets/Scripts/post-object/contact.js"></script> <script type="text/javascript" src="/Areas/Widgets/Scripts/common/lt-captcha.js"></script> <script type="text/javascript" src="/Areas/Widgets/Scripts/common/widget-helpers.js"></script> <script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget.js"></script> <script type="text/javascript">
+(function() {
+	var ltjq = ltjq || jQuery.noConflict(true);
+	var lthlpr = new LoanTekWidget.helpers(ltjq);
+	var pdfun = function() { /*code ran after DOM created*/ };
+	var ev = function() {
+		return true;
+	};
+	var ltwbo = {
+		"panelTitle": "Deposit Rates",
+		"fields": [{
+			"field": "depositterm"
+		}, {
+			"field": "depositamount"
+		}, {
+			"field": "submit"
+		}],
+		"widgetType": "deposit",
+		"postDOMCallback": pdfun
+	};
+	var ltwo = {
+		// "postUrl": "https://api.loantek.com/DEPOSIT-WIDGET-SUBMIT-URL-GOES-HERE",
+		"postUrl": "/test/deposit_widget/test-response.json",
+		"externalValidatorFunction": ev,
+		"clientId": 5,
+		"userId": 1940
+	};
+	var ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);
+})();
+</script>

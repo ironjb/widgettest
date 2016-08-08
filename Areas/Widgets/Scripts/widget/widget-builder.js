@@ -10,18 +10,26 @@ var LoanTekWidget;
             $('input textarea').placeholder();
             var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
             if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
+                widgetObj.widgetType = lth.widgetType.quote.id;
             }
             else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'ratewidget') {
+                widgetObj.widgetType = lth.widgetType.rate.id;
+            }
+            else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
+                widgetObj.widgetType = lth.widgetType.deposit.id;
+                widgetObj.allFieldsObject = lth.depositFields;
+                widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
             }
             else {
+                widgetObj.widgetType = lth.widgetType.contact.id;
                 widgetObj.allFieldsObject = lth.contactFields;
                 widgetObj.allFieldsOptionsArray = lth.contactFieldsArray;
-                widgetObj.prebuiltForms = [];
-                for (var iwt = 0, wtl = widgetData.widgetTemplates.length; iwt < wtl; iwt++) {
-                    var wTemplate = widgetData.widgetTemplates[iwt];
-                    if (wTemplate.Active) {
-                        widgetObj.prebuiltForms.push(JSON.parse(wTemplate.ScriptText));
-                    }
+            }
+            widgetObj.prebuiltForms = [];
+            for (var iwt = 0, wtl = widgetData.widgetTemplates.length; iwt < wtl; iwt++) {
+                var wTemplate = widgetData.widgetTemplates[iwt];
+                if (wTemplate.Active) {
+                    widgetObj.prebuiltForms.push(JSON.parse(wTemplate.ScriptText));
                 }
             }
             var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'lt.services', 'ltw.services', 'ltw.directives', 'ltw.templates']);
@@ -169,6 +177,7 @@ var LoanTekWidget;
                         $scope.currentForm = currentForm;
                     }
                     function WidgetScriptBuild(currentFormObj) {
+                        currentFormObj.buildObject.widgetType = widgetObj.widgetType;
                         $scope.editFieldData = {
                             widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase(),
                             currentForm: $scope.currentForm,

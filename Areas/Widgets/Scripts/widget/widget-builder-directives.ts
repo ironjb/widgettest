@@ -80,6 +80,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// get quotewidget fields
 				} else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
 					// get ratewidget fields
+				} else if (scope.fieldData.widgetTypeLower === 'depositwidget') {
+					scope.currentFieldOptions = lth.depositFields[scope.currentFieldName];
 				} else {
 					scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
 				}

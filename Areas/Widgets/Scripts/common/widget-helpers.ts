@@ -203,10 +203,12 @@ namespace LoanTekWidget {
 		public contact: IHelperNameId;
 		public quote: IHelperNameId;
 		public rate: IHelperNameId;
+		public deposit: IHelperNameId;
 		constructor() {
 			this.contact = { id: 'contact', name: 'Contact' };
 			this.quote = { id: 'quote', name: 'Quote' };
 			this.rate = { id: 'rate', name: 'Rate' };
+			this.deposit = { id: 'deposit', name: 'Deposit' };
 		}
 	}
 
@@ -244,14 +246,63 @@ namespace LoanTekWidget {
 			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
 			//this.spacer
 			//this.hr
+
+			for (var fieldName in this) {
+				var contactField: IWidgetFieldOptions = this[fieldName];
+				if (contactField.isLTRequired) {
+					contactField.fieldTemplate.required = contactField.isLTRequired;
+				}
+			}
+		}
+	}
+
+	class depositFields {
+		// clientid: IWidgetFieldOptions;
+		// userid: IWidgetFieldOptions;
+		depositterm: IWidgetFieldOptions;
+		depositamount: IWidgetFieldOptions;
+		submit: IWidgetFieldOptions;
+		captcha: IWidgetFieldOptions;
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
+		constructor() {
+			// this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
+			// this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
+			this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term'} };
+			this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
+			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
+			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+
+			for (var fieldName in this) {
+				var depositField: IWidgetFieldOptions = this[fieldName];
+				if (depositField.isLTRequired) {
+					depositField.fieldTemplate.required = depositField.isLTRequired;
+				}
+			}
+		}
+
+		asArray() {
+			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
 		}
 	}
 
 	class postObjects {
-		public contact: LoanTekWidget.PostObject_Contact
+		// public contact: LoanTekWidget.PostObject_Contact
 		constructor() {
-			this.contact = new LoanTekWidget.PostObject_Contact;
+			// this.contact = new LoanTekWidget.PostObject_Contact;
 		}
+
+		contact(): LoanTekWidget.PostObject_Contact {
+			return new LoanTekWidget.PostObject_Contact;
+		}
+
+		// deposit() {
+		// 	return {};
+		// }
 	}
 
 	export class helpers {
@@ -266,6 +317,7 @@ namespace LoanTekWidget {
 		public defaultFormSpecifierClass: string;
 		public defaultResultSpecifierClass: string;
 		public contactFields: contactFields;
+		public depositFields: depositFields;
 		public contactFieldsArray: IWidgetFieldOptions[];
 		public postObjects: postObjects;
 
@@ -283,6 +335,7 @@ namespace LoanTekWidget {
 			this.defaultResultSpecifierClass = 'ltwR';
 			this.contactFields = new contactFields;
 			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
+			this.depositFields = new depositFields;
 			this.postObjects = new postObjects;
 		}
 

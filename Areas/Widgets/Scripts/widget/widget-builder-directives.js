@@ -49,6 +49,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     }
                     else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
                     }
+                    else if (scope.fieldData.widgetTypeLower === 'depositwidget') {
+                        scope.currentFieldOptions = lth.depositFields[scope.currentFieldName];
+                    }
                     else {
                         scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
                     }

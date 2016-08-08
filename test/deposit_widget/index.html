@@ -9,12 +9,11 @@
 
 	<link href="https://modules.loantek.com/Content/font-awesome.min.css" rel="stylesheet" type="text/css" />
 
-	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/widget.css" />
-	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/lt-captcha.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/widget.css" />
+	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/lt-captcha.css" /> -->
 
+	<!-- <link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/widget-bootstrap.css" /> -->
 	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/site.css" />
-
-	<link rel="stylesheet" type="text/css" href="/Areas/Widgets/Content/widget-bootstrap.css" />
 </head>
 <body>
 	<nav>
@@ -33,9 +32,10 @@
 					<ul class="nav navbar-nav">
 						<!-- <li><a href="contactWidget.html">contactWidget</a></li>
 						<li><a href="contactWidgetBuild.html">contactWidgetBuild</a></li>
-						<li><a href="widgetTest.html">widgetTest</a></li> -->
+						<li><a href="widgetTest.html">widgetTest</a></li>
 						<li><a href="test/papaparse">Papa Parse</a></li>
-						<li><a href="test/metronic">Metronic</a></li>
+						<li><a href="test/metronic">Metronic</a></li> -->
+						<li><a href="deposit-test.html">Deposit Test</a></li>
 						<li><a href="">link</a></li>
 					</ul>
 				</div>
@@ -44,6 +44,8 @@
 	</nav>
 
 	<div class="container">
+		<!-- START WIDGET INDEX CONTENT -->
+
 		<div data-ng-app="WidgetBuilderApp" data-ng-controller="WidgetBuilderController">
 			<a name="widgetTop"></a>
 			<h1>@Model.WidgetType.Description() Builder</h1>
@@ -52,10 +54,10 @@
 					<form action="" class="form-horizontal">
 						<div class="row">
 							<div class="col-sm-12">
-								<!-- @if (Request.QueryString["viewtemplate"] == "true") {
+								@if (Request.QueryString["viewtemplate"] == "true") {
 									<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>
 								}
-								@*<pre style="white-space:pre-wrap;">{{currentFormStr}}</pre>
+								<!-- @*<pre style="white-space:pre-wrap;">{{currentFormStr}}</pre>
 								<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>*@ -->
 								<div class="panel panel-default">
 									<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
@@ -146,6 +148,8 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- END WIDGET INDEX CONTENT -->
 	</div>
 
 
@@ -177,8 +181,8 @@
 
 	<script type="text/javascript">
 		var widgetModelData = {
-			modelUrls: ["https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/N05KN3YraUFwZ0Y5bWhKYjZEVGhIbWdVMVBVVVdMcllRUFlBNll4ZXNMY3MyQlZ5eHNrbHRBQT01"]
-			, modelWidget: {"WidgetTypeType":"ContactWidget","OwnerId":1940,"ClientId":5,"UserId":1940,"WidgetType":"ContactWidget","ScriptText":"ADD SCRIPT HERE"}
+			modelUrls: ["https://api.loantek.com/DEPOSIT-WIDGET-SUBMIT-URL-GOES-HERE"]
+			, modelWidget: {"WidgetTypeType":"DepositWidget","OwnerId":1940,"ClientId":5,"UserId":1940,"WidgetType":"DepositWidget","ScriptText":"ADD SCRIPT HERE"}
 			, widgetTemplates:
 [{
 	"WidgetTypeType": 3,
@@ -186,22 +190,10 @@
 	"Id": 0,
 	"ClientId": 0,
 	"UserId": 0,
-	"WidgetType": "ContactWidget",
+	"WidgetType": "DepositWidget",
 	"Name": "template1.json",
-	"ScriptText": "{\"name\": \"Default Contact Widget\",\"buildObject\": {\"panelTitle\": \"Contact Us\",\"fields\": [{ \"field\": \"label\", \"cols\": 4, \"value\": \"First Name\" },{ \"field\": \"firstname\", \"cols\": 8 },{ \"field\": \"label\", \"value\": \"Last Name\", \"cols\": 4 },{ \"field\": \"lastname\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Email\" },{ \"field\": \"email\", \"cols\": 8 },{ \"field\": \"label\", \"value\": \"Phone Number\", \"cols\": 4 },{ \"field\": \"phone\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Company\" },{ \"field\": \"company\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"State\" },{ \"field\": \"state\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Comments\" },{ \"field\": \"comments\", \"cols\": 8 },{ \"field\": \"label\", \"cols\": 4, \"value\": \"Security Check\" },{ \"field\": \"captcha\", \"cols\": 8 },{ \"field\": \"successmessage\", \"cols\": 8, \"offsetCols\": 4 },{ \"field\": \"submit\", \"cols\": 8, \"offsetCols\": 4 }]}}",
+	"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]}}",
 	"LastModifiedDate": "\/Date(1468004010208)\/",
-	"LastModifiedByUserID": null,
-	"Active": true
-}, {
-	"WidgetTypeType": 3,
-	"OwnerId": 0,
-	"Id": 0,
-	"ClientId": 0,
-	"UserId": 0,
-	"WidgetType": "ContactWidget",
-	"Name": "template2.json",
-	"ScriptText": "{\"name\": \"Small Contact Widget\",\"formWidth\": 380,\"formWidthUnit\": \"px\",\"formBg\": \"#def\",\"formBorderRadius\": 0,\"formBorderColor\": \"#08f\",\"formTitleColor\": \"#ddf\",\"formTitleBgColor\": \"#06d\",\"formGroupSpacing\": 4,\"formFieldBorderRadius\": 0,\"formButtonBorderRadius\": 0,\"buildObject\": {\"formBorderType\": \"panel\",\"panelTitle\": \"Contact Us\",\"fieldSize\": \"sm\",\"fields\": [{ \"field\": \"firstname\" },{ \"field\": \"lastname\" },{ \"field\": \"email\" },{ \"field\": \"phone\" },{ \"field\": \"company\" },{ \"field\": \"state\" },{ \"field\": \"comments\" },{ \"field\": \"captcha\" },{ \"field\": \"successmessage\", \"fontSize\": 16 },{ \"field\": \"submit\" }]}}",
-	"LastModifiedDate": "\/Date(1468004018860)\/",
 	"LastModifiedByUserID": null,
 	"Active": true
 }]
