@@ -1,6 +1,6 @@
 [
-	{ "apy": 0.8, "minDeposit": 10000, "institution": "bank 1" },
-	{ "apy": 0.85, "minDeposit": 5000, "institution": "bank 2" },
-	{ "apy": 0.9, "minDeposit": 1500, "institution": "bank 3" },
-	{ "apy": 1, "minDeposit": 500, "institution": "bank 4" }
+	{ "APY": 0.8, "TotalInterestEarned": 10000, "AmountPlusInterest": 5000 },
+	{ "APY": 0.85, "TotalInterestEarned": 5000, "AmountPlusInterest": 4000 },
+	{ "APY": 0.9, "TotalInterestEarned": 1500, "AmountPlusInterest": 3500 },
+	{ "APY": 1, "TotalInterestEarned": 500, "AmountPlusInterest": 100 }
 ]

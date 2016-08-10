@@ -290,6 +290,18 @@ namespace LoanTekWidget {
 		}
 	}
 
+	class depositResultFields {
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
+		repeatdata: IWidgetFieldOptions;
+		constructor() {
+			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+		}
+	}
+
 	class postObjects {
 		// public contact: LoanTekWidget.PostObject_Contact
 		constructor() {
@@ -416,6 +428,11 @@ namespace LoanTekWidget {
 				}
 				return fn(rt);
 			});
+		}
+
+		ExtendWidgetFieldTemplate(eItem: IWidgetField, templateName: string): IWidgetField {
+			var lth = this;
+			return this.$.extend({}, lth[templateName][eItem.field].fieldTemplate, eItem);
 		}
 
 		CreateElement() {

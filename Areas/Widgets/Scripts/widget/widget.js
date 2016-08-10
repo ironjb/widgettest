@@ -17,13 +17,7 @@ var LoanTekWidget;
                 formBorderType: null,
                 panelTitle: null,
                 showBuilderTools: false,
-                fields: null,
-                resultWrapId: null,
-                rFormId: null,
-                rFieldSize: null,
-                rFormBorderType: null,
-                rPanelTitle: null,
-                rFields: null
+                fields: null
             };
             $.extend(settings, options);
             var COLUMNS_IN_ROW = 12;
@@ -45,6 +39,7 @@ var LoanTekWidget;
             var fieldHelperType;
             var fieldTemplate;
             var el = lth.CreateElement();
+            var formEl = new FormElement(lth);
             var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
             var errorMsg = el.p().prop('id', settings.errrorMessageId);
             if (settings.widgetType === lth.widgetType.quote.id) {
@@ -67,12 +62,9 @@ var LoanTekWidget;
             }
             errorRow.append(el.col().append(el.a().prop('name', settings.errorAnchor)).append(el.div().addClass('alert alert-danger').append(errorMsg)));
             var returnForm = el.form().prop('id', settings.formId).append(errorRow);
-            function ExtendFieldTemplate(eItem) {
-                return $.extend({}, lth[fieldHelperType][eItem.field].fieldTemplate, eItem);
-            }
             $.each(settings.fields, function (i, elementItem) {
                 if (elementItem.field) {
-                    settings.fields[i] = ExtendFieldTemplate(elementItem);
+                    settings.fields[i] = lth.ExtendWidgetFieldTemplate(elementItem, fieldHelperType);
                 }
             });
             $.each(settings.fields, function (fieldIndex, elementItem) {
@@ -93,7 +85,7 @@ var LoanTekWidget;
                     nextIndex++;
                 } while (nextFieldCols === 0 && nextIndex <= fieldsLength);
                 if (isHidden) {
-                    returnForm.append(_thisC.CreateFormElement(elementItem));
+                    returnForm.append(formEl.Create(elementItem));
                 }
                 else {
                     if (!row) {
@@ -111,14 +103,14 @@ var LoanTekWidget;
                     if (isSingleRow) {
                         if (isLabel) {
                             if (elementItem.offsetCols > 0) {
-                                cell = el.col(elementItem.cols).append(el.row().append(_thisC.CreateFormElement(elementItem)));
+                                cell = el.col(elementItem.cols).append(el.row().append(formEl.Create(elementItem)));
                             }
                             else {
-                                cell = _thisC.CreateFormElement(elementItem);
+                                cell = formEl.Create(elementItem);
                             }
                         }
                         else {
-                            cell = el.col(elementItem.cols).append(_thisC.CreateFormElement(elementItem));
+                            cell = el.col(elementItem.cols).append(formEl.Create(elementItem));
                         }
                         if (settings.showBuilderTools) {
                             appendBuilderTools(cell);
@@ -128,10 +120,10 @@ var LoanTekWidget;
                     else {
                         var innerCell;
                         if (isLabel) {
-                            innerCell = _thisC.CreateFormElement(elementItem);
+                            innerCell = formEl.Create(elementItem);
                         }
                         else {
-                            innerCell = el.col().append(_thisC.CreateFormElement(elementItem));
+                            innerCell = el.col().append(formEl.Create(elementItem));
                         }
                         if (settings.showBuilderTools) {
                             appendBuilderTools(innerCell);
@@ -154,8 +146,9 @@ var LoanTekWidget;
                     }
                     function appendMoveTools(currentCell) {
                         currentCell.prepend(el.div().addClass('move-hover'));
+                        window.console && console.log('pdi: ', fieldIndex);
                         currentCell.attr('data-drop', 'true')
-                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }", { pdi: '' + fieldIndex }))
+                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }", { pdi: '0' + fieldIndex }))
                             .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}");
                     }
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -175,7 +168,7 @@ var LoanTekWidget;
                             row.append(el.col(remainingColSpace).addClass('hidden-xs')
                                 .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->'))
                                 .attr('data-drop', 'true')
-                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }", { pdi: fieldIndex, space: remainingColSpace, isPh: 'true' }))
+                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }", { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
                                 .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}")
                                 .prepend(el.div().addClass('move-hover')))));
                         }
@@ -228,13 +221,213 @@ var LoanTekWidget;
             else if (settings.widgetType === lth.widgetType.rate.id) {
             }
             else if (settings.widgetType === lth.widgetType.deposit.id) {
-                widgetFunctionality = new DepositFunctionality($, lth, readyOptions);
+                widgetFunctionality = new DepositFunctionality(lth, readyOptions);
             }
             else {
                 widgetFunctionality = new ContactFunctionality($, lth, readyOptions);
             }
         }
-        FormBuild.prototype.CreateFormElement = function (elementObj) {
+        return FormBuild;
+    }());
+    LoanTekWidget.FormBuild = FormBuild;
+    var ContactFunctionality = (function () {
+        function ContactFunctionality($, lth, options) {
+            var settings = {
+                redirectUrl: null,
+                postUrl: null,
+                successMessage: 'Thank you. You will be contacted shortly.',
+                externalValidatorFunction: null,
+                userId: null,
+                clientId: null,
+                AdditionalPostData: null,
+                form_id: '#ltWidgetForm',
+                form_firstName: '#ltwFirstName',
+                form_lastName: '#ltwLastName',
+                form_email: '#ltwEmail',
+                form_phone: '#ltwPhone',
+                form_company: '#ltwCompany',
+                form_state: '#ltwState',
+                form_comments: '#ltwComments',
+                form_submit: '#ltwSubmit',
+                form_successMessageWrapper: '#ltwSuccessMessageWrapper',
+                form_errorAnchor: 'ltwErrorAnchor',
+                form_errorMsgWrapper: '#ltwErrorMessageWrapper',
+                form_errorMsg: '#ltwErrorMessage'
+            };
+            $.extend(settings, options);
+            $('input, textarea').placeholder({ customClass: 'placeholder-text' });
+            $(function () {
+                var contactPostData = lth.postObjects.contact();
+                $(settings.form_submit).prop('disabled', false);
+                $(settings.form_id).submit(function (event) {
+                    event.preventDefault();
+                    $(settings.form_errorMsgWrapper).hide(100);
+                    $(settings.form_submit).prop('disabled', true);
+                    if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+                        $(settings.form_submit).prop('disabled', false);
+                        return false;
+                    }
+                    contactPostData.Persons[0].FirstName = $(settings.form_firstName).val();
+                    contactPostData.Persons[0].LastName = $(settings.form_lastName).val();
+                    contactPostData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
+                    contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
+                    contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
+                    contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
+                    contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
+                    contactPostData.ClientId = settings.clientId;
+                    contactPostData.UserId = settings.userId;
+                    contactPostData.Reason = $(settings.form_comments).val();
+                    contactPostData.MiscData[0].Value = '';
+                    if (settings.AdditionalPostData) {
+                        $.extend(true, contactPostData, settings.AdditionalPostData);
+                    }
+                    var request = $.ajax({
+                        url: settings.postUrl,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify({ LeadFile: contactPostData })
+                    });
+                    request.done(function (result) {
+                        $(settings.form_id).trigger('reset');
+                        $(settings.form_submit).prop('disabled', false);
+                        if (settings.redirectUrl) {
+                            window.location.assign(settings.redirectUrl);
+                        }
+                        else if (settings.successMessage) {
+                            $(settings.form_submit).hide(100);
+                            $(settings.form_successMessageWrapper).show(100);
+                        }
+                    });
+                    request.fail(function (error) {
+                        $(settings.form_submit).prop('disabled', false);
+                        var msg = 'There was an unexpected error. Please try again.';
+                        try {
+                            var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+                            msg = errorObj.Message;
+                        }
+                        catch (e) {
+                            console.error('Error @ request.fail.responseText:' + e);
+                        }
+                        $(settings.form_errorMsg).html(msg);
+                        $(settings.form_errorMsgWrapper).show(100);
+                        lth.ScrollToAnchor(settings.form_errorAnchor);
+                    });
+                });
+            });
+        }
+        return ContactFunctionality;
+    }());
+    LoanTekWidget.ContactFunctionality = ContactFunctionality;
+    var DepositFunctionality = (function () {
+        function DepositFunctionality(lth, options) {
+            var $ = lth.$;
+            var settings = {
+                postUrl: null,
+                externalValidatorFunction: null,
+                userId: null,
+                clientId: null,
+                form_id: '#ltWidgetForm',
+                form_submit: '#ltwSubmit',
+                form_errorAnchor: 'ltwErrorAnchor',
+                form_errorMsgWrapper: '#ltwErrorMessageWrapper',
+                form_errorMsg: '#ltwErrorMessage',
+                form_term: '#ltwDepositTerm',
+                form_amount: '#ltwDepositAmount'
+            };
+            $.extend(settings, options);
+            $('input, textarea').placeholder({ customClass: 'placeholder-text' });
+            $(function () {
+                var depositPostData = {};
+                $(settings.form_submit).prop('disabled', false);
+                $(settings.form_id).submit(function (event) {
+                    event.preventDefault();
+                    $(settings.form_errorMsgWrapper).hide(100);
+                    $(settings.form_submit).prop('disabled', true);
+                    if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+                        $(settings.form_submit).prop('disabled', false);
+                        return false;
+                    }
+                    depositPostData.ForType = 'DepositCd';
+                    depositPostData.TermInMonths = $(settings.form_term).val();
+                    depositPostData.Amount = $(settings.form_amount).val();
+                    var request = $.ajax({
+                        url: settings.postUrl,
+                        method: 'GET',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: depositPostData
+                    });
+                    request.done(function (result) {
+                        $(settings.form_submit).prop('disabled', false);
+                        var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions, result);
+                        depositResultBuild.build();
+                    });
+                    request.fail(function (error) {
+                        $(settings.form_submit).prop('disabled', false);
+                        var msg = 'There was an unexpected error. Please try again.';
+                        try {
+                            var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+                            msg = errorObj.Message;
+                        }
+                        catch (e) {
+                            console.error('Error @ request.fail.responseText:' + e);
+                        }
+                        $(settings.form_errorMsg).html(msg);
+                        $(settings.form_errorMsgWrapper).show(100);
+                        lth.ScrollToAnchor(settings.form_errorAnchor);
+                    });
+                });
+            });
+        }
+        return DepositFunctionality;
+    }());
+    LoanTekWidget.DepositFunctionality = DepositFunctionality;
+    var ResultsBuilder = (function () {
+        function ResultsBuilder(lth, options, data) {
+            var _settings = {
+                resultWrapperId: 'ltWidgetResultWrapper',
+                resultFields: null
+            };
+            lth.$.extend(_settings, options);
+            this.settings = _settings;
+            this.data = data;
+            this.lth = lth;
+        }
+        ResultsBuilder.prototype.build = function (startIndex, showCount) {
+            var _thisM = this;
+            var settings = this.settings;
+            var lth = this.lth;
+            var $ = lth.$;
+            var el = lth.CreateElement();
+            var resultHelperType;
+            if (settings.widgetType === _thisM.lth.widgetType.quote.id) {
+                resultHelperType = 'quoteResultFields';
+            }
+            else if (settings.widgetType === lth.widgetType.rate.id) {
+                resultHelperType = 'rateResultFields';
+            }
+            else if (settings.widgetType === lth.widgetType.deposit.id) {
+                resultHelperType = 'depositResultFields';
+            }
+            else {
+                resultHelperType = 'contactResultFields';
+            }
+            var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass + ' container-fluid').empty().html('test');
+            if (_thisM.settings.showBuilderTools) {
+                widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
+            }
+        };
+        return ResultsBuilder;
+    }());
+    LoanTekWidget.ResultsBuilder = ResultsBuilder;
+    var FormElement = (function () {
+        function FormElement(lth) {
+            var _thisC = this;
+            _thisC._$ = lth.$;
+            _thisC._lth = lth;
+        }
+        FormElement.prototype.Create = function (elementObj) {
             var _thisM = this;
             var el = _thisM._lth.CreateElement();
             var returnElement = null;
@@ -348,8 +541,8 @@ var LoanTekWidget;
                         captchaInputObj.size = elementObj.size;
                         captchaResetBtnObj.size = elementObj.size;
                     }
-                    var captchaInput = _thisM.CreateFormElement(captchaInputObj);
-                    var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
+                    var captchaInput = _thisM.Create(captchaInputObj);
+                    var captchaResetBtn = _thisM.Create(captchaResetBtnObj);
                     returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 default:
@@ -445,157 +638,189 @@ var LoanTekWidget;
             }
             return returnElement;
         };
-        return FormBuild;
+        return FormElement;
     }());
-    LoanTekWidget.FormBuild = FormBuild;
-    var ContactFunctionality = (function () {
-        function ContactFunctionality($, lth, options) {
+    LoanTekWidget.FormElement = FormElement;
+    var WidgetTools = (function () {
+        function WidgetTools() {
+        }
+        WidgetTools.prototype.BuildFields = function (lth, wrapElement, options) {
+            var $ = lth.$;
             var settings = {
-                redirectUrl: null,
-                postUrl: null,
-                successMessage: 'Thank you. You will be contacted shortly.',
-                externalValidatorFunction: null,
-                userId: null,
-                clientId: null,
-                AdditionalPostData: null,
-                form_id: '#ltWidgetForm',
-                form_firstName: '#ltwFirstName',
-                form_lastName: '#ltwLastName',
-                form_email: '#ltwEmail',
-                form_phone: '#ltwPhone',
-                form_company: '#ltwCompany',
-                form_state: '#ltwState',
-                form_comments: '#ltwComments',
-                form_submit: '#ltwSubmit',
-                form_successMessageWrapper: '#ltwSuccessMessageWrapper',
-                form_errorAnchor: 'ltwErrorAnchor',
-                form_errorMsgWrapper: '#ltwErrorMessageWrapper',
-                form_errorMsg: '#ltwErrorMessage'
+                fieldHelperType: null,
+                fieldSize: null,
+                showBuilderTools: false
             };
             $.extend(settings, options);
-            $('input, textarea').placeholder({ customClass: 'placeholder-text' });
-            $(function () {
-                var contactPostData = lth.postObjects.contact();
-                $(settings.form_submit).prop('disabled', false);
-                $(settings.form_id).submit(function (event) {
-                    event.preventDefault();
-                    $(settings.form_errorMsgWrapper).hide(100);
-                    $(settings.form_submit).prop('disabled', true);
-                    if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-                        $(settings.form_submit).prop('disabled', false);
-                        return false;
-                    }
-                    contactPostData.Persons[0].FirstName = $(settings.form_firstName).val();
-                    contactPostData.Persons[0].LastName = $(settings.form_lastName).val();
-                    contactPostData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
-                    contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
-                    contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
-                    contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
-                    contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
-                    contactPostData.ClientId = settings.clientId;
-                    contactPostData.UserId = settings.userId;
-                    contactPostData.Reason = $(settings.form_comments).val();
-                    contactPostData.MiscData[0].Value = '';
-                    if (settings.AdditionalPostData) {
-                        $.extend(true, contactPostData, settings.AdditionalPostData);
-                    }
-                    var request = $.ajax({
-                        url: settings.postUrl,
-                        method: 'POST',
-                        contentType: 'application/json',
-                        dataType: 'json',
-                        data: JSON.stringify({ LeadFile: contactPostData })
-                    });
-                    request.done(function (result) {
-                        $(settings.form_id).trigger('reset');
-                        $(settings.form_submit).prop('disabled', false);
-                        if (settings.redirectUrl) {
-                            window.location.assign(settings.redirectUrl);
-                        }
-                        else if (settings.successMessage) {
-                            $(settings.form_submit).hide(100);
-                            $(settings.form_successMessageWrapper).show(100);
-                        }
-                    });
-                    request.fail(function (error) {
-                        $(settings.form_submit).prop('disabled', false);
-                        var msg = 'There was an unexpected error. Please try again.';
-                        try {
-                            var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
-                            msg = errorObj.Message;
-                        }
-                        catch (e) {
-                            console.error('Error @ request.fail.responseText:' + e);
-                        }
-                        $(settings.form_errorMsg).html(msg);
-                        $(settings.form_errorMsgWrapper).show(100);
-                        lth.ScrollToAnchor(settings.form_errorAnchor);
-                    });
-                });
+            var COLUMNS_IN_ROW = 12;
+            var columnCount = 0;
+            var row = null;
+            var isSingleRow;
+            var isTimeToAddRow = false;
+            var isSpaceLeftOver = false;
+            var isLastField = false;
+            var isHidden = false;
+            var isLabel;
+            var cell = null;
+            var fieldsLength = settings.fieldList.length;
+            var nextFieldOffsetCols;
+            var nextFieldCols;
+            var nextIndex;
+            var remainingColSpace = 0;
+            var isNextHidden = false;
+            var fieldHelperType;
+            var fieldTemplate;
+            var el = lth.CreateElement();
+            var formEl = new FormElement(lth);
+            $.each(settings.fieldList, function (i, elementItem) {
+                if (elementItem.field) {
+                    settings.fieldList[i] = lth.ExtendWidgetFieldTemplate(elementItem, fieldHelperType);
+                }
             });
-        }
-        return ContactFunctionality;
-    }());
-    LoanTekWidget.ContactFunctionality = ContactFunctionality;
-    var DepositFunctionality = (function () {
-        function DepositFunctionality($, lth, options) {
-            var settings = {
-                postUrl: null,
-                externalValidatorFunction: null,
-                userId: null,
-                clientId: null,
-                form_id: '#ltWidgetForm',
-                form_term: '#ltwDepositTerm',
-                form_amount: '#ltwDepositAmount',
-                form_submit: '#ltwSubmit',
-                form_errorAnchor: 'ltwErrorAnchor',
-                form_errorMsgWrapper: '#ltwErrorMessageWrapper',
-                form_errorMsg: '#ltwErrorMessage'
-            };
-            $.extend(settings, options);
-            $('input, textarea').placeholder({ customClass: 'placeholder-text' });
-            $(function () {
-                var depositPostData = {};
-                $(settings.form_submit).prop('disabled', false);
-                $(settings.form_id).submit(function (event) {
-                    event.preventDefault();
-                    $(settings.form_errorMsgWrapper).hide(100);
-                    $(settings.form_submit).prop('disabled', true);
-                    if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-                        $(settings.form_submit).prop('disabled', false);
-                        return false;
+            $.each(settings.fieldList, function (fieldIndex, elementItem) {
+                if (elementItem.offsetCols && !elementItem.cols) {
+                    elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
+                }
+                isHidden = elementItem.type === 'hidden';
+                elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
+                elementItem.offsetCols = elementItem.offsetCols ? elementItem.offsetCols : 0;
+                elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
+                isLastField = fieldIndex >= fieldsLength - 1;
+                isLabel = elementItem.element === 'label';
+                nextIndex = fieldIndex + 1;
+                do {
+                    isNextHidden = settings.fieldList[nextIndex] && settings.fieldList[nextIndex].type === 'hidden';
+                    nextFieldOffsetCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].offsetCols) ? settings.fieldList[nextIndex].offsetCols : 0;
+                    nextFieldCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].cols) ? settings.fieldList[nextIndex].cols + nextFieldOffsetCols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+                    nextIndex++;
+                } while (nextFieldCols === 0 && nextIndex <= fieldsLength);
+                if (isHidden) {
+                    wrapElement.append(formEl.Create(elementItem));
+                }
+                else {
+                    if (!row) {
+                        columnCount = 0;
+                        if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
+                            row = el.formGroup(elementItem.size);
+                            isSingleRow = true;
+                        }
+                        else {
+                            row = el.row();
+                            isSingleRow = false;
+                        }
                     }
-                    depositPostData.term = $(settings.form_term).val();
-                    depositPostData.amount = $(settings.form_amount).val();
-                    var request = $.ajax({
-                        url: settings.postUrl,
-                        method: 'POST',
-                        contentType: 'application/json',
-                        dataType: 'json',
-                        data: depositPostData
-                    });
-                    request.done(function (result) {
-                        $(settings.form_id).trigger('reset');
-                        $(settings.form_submit).prop('disabled', false);
-                    });
-                    request.fail(function (error) {
-                        $(settings.form_submit).prop('disabled', false);
-                        var msg = 'There was an unexpected error. Please try again.';
-                        try {
-                            var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
-                            msg = errorObj.Message;
+                    columnCount += elementItem.cols + elementItem.offsetCols;
+                    if (isSingleRow) {
+                        if (isLabel) {
+                            if (elementItem.offsetCols > 0) {
+                                cell = el.col(elementItem.cols).append(el.row().append(formEl.Create(elementItem)));
+                            }
+                            else {
+                                cell = formEl.Create(elementItem);
+                            }
                         }
-                        catch (e) {
-                            console.error('Error @ request.fail.responseText:' + e);
+                        else {
+                            cell = el.col(elementItem.cols).append(formEl.Create(elementItem));
                         }
-                        $(settings.form_errorMsg).html(msg);
-                        $(settings.form_errorMsgWrapper).show(100);
-                        lth.ScrollToAnchor(settings.form_errorAnchor);
-                    });
-                });
+                        if (settings.showBuilderTools) {
+                            appendBuilderTools(cell);
+                            appendMoveTools(cell);
+                        }
+                    }
+                    else {
+                        var innerCell;
+                        if (isLabel) {
+                            innerCell = formEl.Create(elementItem);
+                        }
+                        else {
+                            innerCell = el.col().append(formEl.Create(elementItem));
+                        }
+                        if (settings.showBuilderTools) {
+                            appendBuilderTools(innerCell);
+                            appendMoveTools(innerCell);
+                        }
+                        cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
+                    }
+                    if (elementItem.offsetCols > 0) {
+                        cell.addClass('col-sm-offset-' + elementItem.offsetCols);
+                    }
+                    function appendBuilderTools(currentCell) {
+                        var passData = { index: fieldIndex };
+                        var passString = JSON.stringify(passData);
+                        currentCell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
+                            .attr('data-lt-field-edit-tool', passString)
+                            .attr('data-lt-field-edit-tool-data', 'editFieldData'));
+                        if (!isSingleRow) {
+                            currentCell.addClass('ltw-builder-tools-multi-cell-row');
+                        }
+                    }
+                    function appendMoveTools(currentCell) {
+                        currentCell.prepend(el.div().addClass('move-hover'));
+                        window.console && console.log('pdi: ', fieldIndex);
+                        currentCell.attr('data-drop', 'true')
+                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }", { pdi: '0' + fieldIndex }))
+                            .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}");
+                    }
+                    isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+                    isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
+                    if (lth[settings.fieldHelperType].successmessage && elementItem.type === lth[settings.fieldHelperType].successmessage.id) {
+                        var wrapElement = isSingleRow ? row : cell;
+                        wrapElement.prop('id', settings.successMessageWrapperId);
+                        if (!settings.showBuilderTools) {
+                            wrapElement.css({ display: 'none' });
+                        }
+                    }
+                    row.append(cell);
+                    if (isSpaceLeftOver) {
+                        isTimeToAddRow = true;
+                        remainingColSpace = COLUMNS_IN_ROW - columnCount;
+                        if (settings.showBuilderTools) {
+                            row.append(el.col(remainingColSpace).addClass('hidden-xs')
+                                .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->'))
+                                .attr('data-drop', 'true')
+                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }", { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
+                                .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}")
+                                .prepend(el.div().addClass('move-hover')))));
+                        }
+                    }
+                    else {
+                        remainingColSpace = 0;
+                    }
+                    if (isTimeToAddRow) {
+                        wrapElement.append(row);
+                        row = null;
+                        columnCount = 0;
+                    }
+                }
             });
-        }
-        return DepositFunctionality;
+            if (settings.formBorderType) {
+                if (settings.formBorderType === lth.formBorderType.well.id) {
+                    var wellMain = el.div().addClass('well lt-widget-border');
+                    if (settings.panelTitle) {
+                        wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
+                    }
+                    wrapElement = wellMain.append(wrapElement);
+                }
+                else if (settings.formBorderType === lth.formBorderType.panel.id) {
+                    var panelMain, panelHeading, panelBody;
+                    panelMain = el.div().addClass('panel panel-default lt-widget-border');
+                    panelBody = el.div().addClass('panel-body').append(wrapElement);
+                    if (settings.panelTitle) {
+                        panelHeading = el.div().addClass('panel-heading lt-widget-heading').html(settings.panelTitle);
+                    }
+                    if (panelHeading) {
+                        panelMain.append(panelHeading);
+                    }
+                    panelMain.append(panelBody);
+                    wrapElement = panelMain;
+                }
+            }
+            else if (settings.panelTitle) {
+                wrapElement.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
+            }
+            return wrapElement;
+        };
+        return WidgetTools;
     }());
-    LoanTekWidget.DepositFunctionality = DepositFunctionality;
+    LoanTekWidget.WidgetTools = WidgetTools;
 })(LoanTekWidget || (LoanTekWidget = {}));

@@ -151,14 +151,19 @@ var LoanTekWidget;
         };
         return depositFields;
     }());
+    var depositResultFields = (function () {
+        function depositResultFields() {
+            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+        }
+        return depositResultFields;
+    }());
     var postObjects = (function () {
         function postObjects() {
         }
         postObjects.prototype.contact = function () {
             return new LoanTekWidget.PostObject_Contact;
-        };
-        postObjects.prototype.deposit = function () {
-            return {};
         };
         return postObjects;
     }());
@@ -245,6 +250,10 @@ var LoanTekWidget;
                 }
                 return fn(rt);
             });
+        };
+        helpers.prototype.ExtendWidgetFieldTemplate = function (eItem, templateName) {
+            var lth = this;
+            return this.$.extend({}, lth[templateName][eItem.field].fieldTemplate, eItem);
         };
         helpers.prototype.CreateElement = function () {
             var $ = this.$;

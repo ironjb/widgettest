@@ -13,11 +13,31 @@ declare namespace LTWidget {
 		form_errorAnchor?: string;
 		form_errorMsgWrapper?: string;
 		form_errorMsg?: string;
+
+		resultDisplayOptions?: IResultBuildOptions;
 	}
 
 	interface IDepositFunctionalityOptions extends IFunctionalityOptions {
 		form_term?: string;
 		form_amount?: string;
+	}
+
+	interface IResultBuildOptions {
+		resultWrapperId?: string;
+		panelTitle?: string;
+		showBuilderTools?: boolean;
+		widgetType?: string;
+		resultFields: IWidgetField[];
+	}
+
+	interface IBuildOptions {
+		formBorderType?: string;
+		panelTitle?: string;
+		showBuilderTools?: boolean;
+		fieldList?: IWidgetField[];
+		fieldSize?: string;
+		fieldHelperType?: string;
+		successMessageWrapperId?: string;
 	}
 }
 
@@ -37,12 +57,11 @@ interface IWidgetFormBuildObject {
 	panelTitle?: string;
 	fields: IWidgetField[];
 
-	resultWrapId?: string;
-	rFormId?: string;
-	rFieldSize?: string;
-	rFormBorderType?: string;
-	rPanelTitle?: string;
-	rFields?: IWidgetField[];
+	// resultWrapperId?: string;
+	// resultFieldSize?: string;
+	// resultBorderType?: string;
+	// resultPanelTitle?: string;
+	// resultFields?: IWidgetField[];
 }
 
 interface IWidgetContactFunctionalityOptions {
@@ -90,12 +109,12 @@ namespace LoanTekWidget {
 				, panelTitle: null
 				, showBuilderTools: false
 				, fields: null
-				, resultWrapId: null
-				, rFormId: null
-				, rFieldSize: null
-				, rFormBorderType: null
-				, rPanelTitle: null
-				, rFields: null
+
+				// , resultWrapperId: 'ltWidgetResultWrapper'
+				// , resultFieldSize: null
+				// , resultBorderType: null
+				// , resultPanelTitle: null
+				// , resultFields: null
 			};
 			$.extend(settings, options);
 			// window.console && console.log('settings.widgetType', settings.widgetType);
@@ -120,6 +139,7 @@ namespace LoanTekWidget {
 			var fieldTemplate: Object;
 
 			var el = lth.CreateElement();
+			var formEl = new FormElement(lth);
 
 			var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
 			var errorMsg = el.p().prop('id', settings.errrorMessageId);
@@ -150,16 +170,17 @@ namespace LoanTekWidget {
 
 			var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 
-			function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
-				// return $.extend({}, fieldTemplates[eItem.field], eItem);
-				// window.console && console.log('lth fieldhelper', fieldHelperType, lth['depositFields']);
-				return $.extend({}, lth[fieldHelperType][eItem.field].fieldTemplate, eItem);
-			}
+			// function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
+			// 	// return $.extend({}, fieldTemplates[eItem.field], eItem);
+			// 	// window.console && console.log('lth fieldhelper', fieldHelperType, lth['depositFields']);
+			// 	return $.extend({}, lth[fieldHelperType][eItem.field].fieldTemplate, eItem);
+			// }
 
 			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
 			$.each(settings.fields, (i, elementItem) => {
 				if (elementItem.field) {
-					settings.fields[i] = ExtendFieldTemplate(elementItem);
+					// settings.fields[i] = ExtendFieldTemplate(elementItem);
+					settings.fields[i] = lth.ExtendWidgetFieldTemplate(elementItem, fieldHelperType);
 				}
 			});
 
@@ -185,7 +206,7 @@ namespace LoanTekWidget {
 				} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
 
 				if (isHidden) {
-					returnForm.append(_thisC.CreateFormElement(elementItem));
+					returnForm.append(formEl.Create(elementItem));
 				} else {
 					// Create row
 					if (!row) {
@@ -205,12 +226,12 @@ namespace LoanTekWidget {
 					if (isSingleRow) {
 						if (isLabel) {
 							if (elementItem.offsetCols > 0) {
-							cell = el.col(elementItem.cols).append(el.row().append(_thisC.CreateFormElement(elementItem)));
+							cell = el.col(elementItem.cols).append(el.row().append(formEl.Create(elementItem)));
 							} else {
-							cell = _thisC.CreateFormElement(elementItem);
+							cell = formEl.Create(elementItem);
 							}
 						} else {
-							cell = el.col(elementItem.cols).append(_thisC.CreateFormElement(elementItem));
+							cell = el.col(elementItem.cols).append(formEl.Create(elementItem));
 						}
 
 						if (settings.showBuilderTools) {
@@ -220,9 +241,9 @@ namespace LoanTekWidget {
 					} else {
 						var innerCell: JQuery;
 						if (isLabel) {
-							innerCell = _thisC.CreateFormElement(elementItem);
+							innerCell = formEl.Create(elementItem);
 						} else {
-							innerCell = el.col().append(_thisC.CreateFormElement(elementItem));
+							innerCell = el.col().append(formEl.Create(elementItem));
 						}
 
 						if (settings.showBuilderTools) {
@@ -254,8 +275,10 @@ namespace LoanTekWidget {
 					function appendMoveTools(currentCell) {
 						currentCell.prepend(el.div().addClass('move-hover'));
 
+						window.console && console.log('pdi: ', fieldIndex);
+
 						currentCell.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '' + fieldIndex }))
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '0' + fieldIndex }))
 							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
 					}
 
@@ -297,7 +320,7 @@ namespace LoanTekWidget {
 											el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->')
 										)
 											.attr('data-drop', 'true')
-											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: remainingColSpace, isPh: 'true' }))
+											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
 											.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
 											.prepend(el.div().addClass('move-hover'))
 									)
@@ -378,13 +401,263 @@ namespace LoanTekWidget {
 			} else if (settings.widgetType === lth.widgetType.rate.id) {
 				//
 			} else if (settings.widgetType === lth.widgetType.deposit.id) {
-				widgetFunctionality = new DepositFunctionality($, lth, readyOptions)
+				widgetFunctionality = new DepositFunctionality(lth, readyOptions)
 			} else {
 				widgetFunctionality = new ContactFunctionality($, lth, readyOptions);
 			}
 		}
+	}
 
-		CreateFormElement(elementObj: IWidgetField) {
+	export class ContactFunctionality {
+
+		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: IWidgetContactFunctionalityOptions) {
+			var settings: IWidgetContactFunctionalityOptions = {
+				redirectUrl: null,
+				postUrl: null,
+				// postUrl: 'https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/[authToken]',
+				// postUrl: '/widgets/home/angulartemplates/jsonSuccess',
+				successMessage: 'Thank you. You will be contacted shortly.',
+				externalValidatorFunction: null,
+				userId: null,
+				clientId: null,
+				AdditionalPostData: null,
+
+				// Default form element IDs
+				form_id: '#ltWidgetForm',
+				form_firstName: '#ltwFirstName',
+				form_lastName: '#ltwLastName',
+				form_email: '#ltwEmail',
+				form_phone: '#ltwPhone',
+				form_company: '#ltwCompany',
+				form_state: '#ltwState',
+				form_comments: '#ltwComments',
+				form_submit: '#ltwSubmit',
+				form_successMessageWrapper: '#ltwSuccessMessageWrapper',
+				form_errorAnchor: 'ltwErrorAnchor',
+				form_errorMsgWrapper: '#ltwErrorMessageWrapper',
+				form_errorMsg: '#ltwErrorMessage',
+			};
+			$.extend(settings, options);
+
+			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
+
+			$(function () {
+
+				var contactPostData = lth.postObjects.contact();
+
+				$(settings.form_submit).prop('disabled', false);
+
+				$(settings.form_id).submit((event) => {
+					event.preventDefault();
+					$(settings.form_errorMsgWrapper).hide(100);
+					$(settings.form_submit).prop('disabled', true);
+
+					if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+						$(settings.form_submit).prop('disabled', false);
+						return false;
+					}
+
+					contactPostData.Persons[0].FirstName = $(settings.form_firstName).val();
+					contactPostData.Persons[0].LastName = $(settings.form_lastName).val();
+					contactPostData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
+					contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
+					contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
+					contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
+					contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
+					contactPostData.ClientId = settings.clientId;
+					contactPostData.UserId = settings.userId;
+					contactPostData.Reason = $(settings.form_comments).val();
+					contactPostData.MiscData[0].Value = '';
+
+					if (settings.AdditionalPostData) {
+						$.extend(true, contactPostData, settings.AdditionalPostData);
+					}
+
+					var request = $.ajax({
+						// url: 'http://node-cors-server.herokuapp.com/no-cors'
+						// url: 'http://node-cors-server.herokuapp.com/simple-cors'
+						url: settings.postUrl
+						, method: 'POST'
+						, contentType: 'application/json'
+						, dataType: 'json'
+						// , data: JSON.stringify(contactPostData)
+						, data: JSON.stringify({ LeadFile: contactPostData })
+						// , data: { LeadFile: contactPostData }
+					});
+
+					request.done((result) => {
+						// Clear all fields
+						$(settings.form_id).trigger('reset');
+						$(settings.form_submit).prop('disabled', false);
+
+						if (settings.redirectUrl) {
+							window.location.assign(settings.redirectUrl);
+						} else if (settings.successMessage) {
+							$(settings.form_submit).hide(100);
+							$(settings.form_successMessageWrapper).show(100);
+						}
+					});
+
+					request.fail((error) => {
+						$(settings.form_submit).prop('disabled', false);
+						var msg = 'There was an unexpected error. Please try again.';
+
+						try {
+							var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+							msg = errorObj.Message;
+						} catch (e) {
+							console.error('Error @ request.fail.responseText:' + e);
+						}
+
+						$(settings.form_errorMsg).html(msg);
+						$(settings.form_errorMsgWrapper).show(100);
+						lth.ScrollToAnchor(settings.form_errorAnchor);
+					});
+				});
+			});
+		}
+	}
+
+	export class DepositFunctionality {
+
+		constructor(lth: LoanTekWidget.helpers, options?: LTWidget.IDepositFunctionalityOptions) {
+			var $ = lth.$;
+			var settings: LTWidget.IDepositFunctionalityOptions = {
+				// IFunctionalityOptions options
+				postUrl: null
+				, externalValidatorFunction: null
+				, userId: null
+				, clientId: null
+				, form_id: '#ltWidgetForm'
+				, form_submit: '#ltwSubmit'
+				, form_errorAnchor: 'ltwErrorAnchor'
+				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
+				, form_errorMsg: '#ltwErrorMessage'
+
+				// IDepositFunctionalityOptions options
+				, form_term: '#ltwDepositTerm'
+				, form_amount: '#ltwDepositAmount'
+			};
+			$.extend(settings, options);
+			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
+			// window.console && console.log('depositfnctionality settings: ', settings);
+
+			$(function () {
+				// var depositPostData: any = lth.postObjects.deposit();
+				var depositPostData: any = {};
+				$(settings.form_submit).prop('disabled', false);
+
+				$(settings.form_id).submit(function (event) {
+					event.preventDefault();
+					$(settings.form_errorMsgWrapper).hide(100);
+					$(settings.form_submit).prop('disabled', true);
+
+					if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+						$(settings.form_submit).prop('disabled', false);
+						return false;
+					}
+
+					depositPostData.ForType = 'DepositCd';
+					depositPostData.TermInMonths = $(settings.form_term).val();
+					depositPostData.Amount = $(settings.form_amount).val();
+
+					var request = $.ajax({
+						// url: 'http://node-cors-server.herokuapp.com/no-cors'
+						// url: 'http://node-cors-server.herokuapp.com/simple-cors'
+						url: settings.postUrl
+						// , method: 'POST'
+						, method: 'GET'
+						, contentType: 'application/json'
+						, dataType: 'json'
+						// , data: JSON.stringify(contactPostData)
+						, data: depositPostData
+						// , data: { LeadFile: contactPostData }
+					});
+
+					request.done((result) => {
+						// Clear all fields
+						// $(settings.form_id).trigger('reset');
+
+						$(settings.form_submit).prop('disabled', false);
+						// window.console && console.log('request successful: ', result);
+						var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions, result);
+						depositResultBuild.build();
+					});
+
+					request.fail((error) => {
+						$(settings.form_submit).prop('disabled', false);
+						var msg = 'There was an unexpected error. Please try again.';
+
+						try {
+							var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+							msg = errorObj.Message;
+						} catch (e) {
+							console.error('Error @ request.fail.responseText:' + e);
+						}
+
+						$(settings.form_errorMsg).html(msg);
+						$(settings.form_errorMsgWrapper).show(100);
+						lth.ScrollToAnchor(settings.form_errorAnchor);
+					});
+				});
+			});
+		}
+	}
+
+	export class ResultsBuilder {
+		private settings: LTWidget.IResultBuildOptions;
+		private data: any;
+		private lth: LoanTekWidget.helpers;
+		constructor(lth: LoanTekWidget.helpers, options: LTWidget.IResultBuildOptions, data: any) {
+			var _settings: LTWidget.IResultBuildOptions = {
+				resultWrapperId: 'ltWidgetResultWrapper'
+				, resultFields: null
+			};
+
+			lth.$.extend(_settings, options)
+
+			this.settings = _settings;
+			this.data = data;
+			this.lth = lth;
+		}
+
+		build(startIndex?: number, showCount?: number) {
+			var _thisM = this;
+			var settings = this.settings;
+			var lth = this.lth;
+			var $ = lth.$;
+			var el = lth.CreateElement();
+			var resultHelperType: string;
+
+			if (settings.widgetType === _thisM.lth.widgetType.quote.id) {
+				resultHelperType = 'quoteResultFields';
+			} else if (settings.widgetType === lth.widgetType.rate.id) {
+				resultHelperType = 'rateResultFields';
+			} else if (settings.widgetType === lth.widgetType.deposit.id) {
+				resultHelperType = 'depositResultFields';
+			} else {
+				resultHelperType = 'contactResultFields';
+			}
+
+			// create returnForm... rename as returnResult
+
+			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass + ' container-fluid').empty().html('test');
+			if (_thisM.settings.showBuilderTools) {
+				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
+			}
+		}
+	}
+
+	export class FormElement {
+		private _$: JQueryStatic;
+		private _lth: LoanTekWidget.helpers;
+		constructor(lth: LoanTekWidget.helpers) {
+			var _thisC = this;
+			_thisC._$ = lth.$;
+			_thisC._lth = lth;
+		}
+
+		Create(elementObj: IWidgetField) {
 			var _thisM = this;
 			var el = _thisM._lth.CreateElement();
 			var returnElement: JQuery = null;
@@ -483,8 +756,8 @@ namespace LoanTekWidget {
 						captchaInputObj.size = elementObj.size;
 						captchaResetBtnObj.size = elementObj.size;
 					}
-					var captchaInput = _thisM.CreateFormElement(captchaInputObj);
-					var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
+					var captchaInput = _thisM.Create(captchaInputObj);
+					var captchaResetBtn = _thisM.Create(captchaResetBtnObj);
 
 					returnElement = el.div().addClass('lt-captcha').append(
 						el.div().addClass('panel panel-info').append(
@@ -623,190 +896,251 @@ namespace LoanTekWidget {
 		}
 	}
 
-	export class ContactFunctionality {
-
-		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: IWidgetContactFunctionalityOptions) {
-			var settings: IWidgetContactFunctionalityOptions = {
-				redirectUrl: null,
-				postUrl: null,
-				// postUrl: 'https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/[authToken]',
-				// postUrl: '/widgets/home/angulartemplates/jsonSuccess',
-				successMessage: 'Thank you. You will be contacted shortly.',
-				externalValidatorFunction: null,
-				userId: null,
-				clientId: null,
-				AdditionalPostData: null,
-
-				// Default form element IDs
-				form_id: '#ltWidgetForm',
-				form_firstName: '#ltwFirstName',
-				form_lastName: '#ltwLastName',
-				form_email: '#ltwEmail',
-				form_phone: '#ltwPhone',
-				form_company: '#ltwCompany',
-				form_state: '#ltwState',
-				form_comments: '#ltwComments',
-				form_submit: '#ltwSubmit',
-				form_successMessageWrapper: '#ltwSuccessMessageWrapper',
-				form_errorAnchor: 'ltwErrorAnchor',
-				form_errorMsgWrapper: '#ltwErrorMessageWrapper',
-				form_errorMsg: '#ltwErrorMessage',
-			};
-			$.extend(settings, options);
-
-			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
-
-			$(function () {
-
-				var contactPostData = lth.postObjects.contact();
-
-				$(settings.form_submit).prop('disabled', false);
-
-				$(settings.form_id).submit((event) => {
-					event.preventDefault();
-					$(settings.form_errorMsgWrapper).hide(100);
-					$(settings.form_submit).prop('disabled', true);
-
-					if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-						$(settings.form_submit).prop('disabled', false);
-						return false;
-					}
-
-					contactPostData.Persons[0].FirstName = $(settings.form_firstName).val();
-					contactPostData.Persons[0].LastName = $(settings.form_lastName).val();
-					contactPostData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
-					contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
-					contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
-					contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
-					contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
-					contactPostData.ClientId = settings.clientId;
-					contactPostData.UserId = settings.userId;
-					contactPostData.Reason = $(settings.form_comments).val();
-					contactPostData.MiscData[0].Value = '';
-
-					if (settings.AdditionalPostData) {
-						$.extend(true, contactPostData, settings.AdditionalPostData);
-					}
-
-					var request = $.ajax({
-						// url: 'http://node-cors-server.herokuapp.com/no-cors'
-						// url: 'http://node-cors-server.herokuapp.com/simple-cors'
-						url: settings.postUrl
-						, method: 'POST'
-						, contentType: 'application/json'
-						, dataType: 'json'
-						// , data: JSON.stringify(contactPostData)
-						, data: JSON.stringify({ LeadFile: contactPostData })
-						// , data: { LeadFile: contactPostData }
-					});
-
-					request.done((result) => {
-						// Clear all fields
-						$(settings.form_id).trigger('reset');
-						$(settings.form_submit).prop('disabled', false);
-
-						if (settings.redirectUrl) {
-							window.location.assign(settings.redirectUrl);
-						} else if (settings.successMessage) {
-							$(settings.form_submit).hide(100);
-							$(settings.form_successMessageWrapper).show(100);
-						}
-					});
-
-					request.fail((error) => {
-						$(settings.form_submit).prop('disabled', false);
-						var msg = 'There was an unexpected error. Please try again.';
-
-						try {
-							var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
-							msg = errorObj.Message;
-						} catch (e) {
-							console.error('Error @ request.fail.responseText:' + e);
-						}
-
-						$(settings.form_errorMsg).html(msg);
-						$(settings.form_errorMsgWrapper).show(100);
-						lth.ScrollToAnchor(settings.form_errorAnchor);
-					});
-				});
-			});
+	export class WidgetTools{
+		constructor() {
+			//
 		}
-	}
 
-	export class DepositFunctionality {
-
-		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: LTWidget.IDepositFunctionalityOptions) {
-			var settings: LTWidget.IDepositFunctionalityOptions = {
-				postUrl: null
-				, externalValidatorFunction: null
-				, userId: null
-				, clientId: null
-				, form_id: '#ltWidgetForm'
-				, form_term: '#ltwDepositTerm'
-				, form_amount: '#ltwDepositAmount'
-				, form_submit: '#ltwSubmit'
-				, form_errorAnchor: 'ltwErrorAnchor'
-				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
-				, form_errorMsg: '#ltwErrorMessage'
+		BuildFields(lth: LoanTekWidget.helpers, wrapElement: JQuery, options: LTWidget.IBuildOptions) {
+			var $ = lth.$;
+			var settings: LTWidget.IBuildOptions = {
+				fieldHelperType: null
+				, fieldSize: null
+				, showBuilderTools: false
 			};
+
 			$.extend(settings, options);
-			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
+			const COLUMNS_IN_ROW: number = 12;
+			var columnCount: number = 0;
+			var row: JQuery = null;
+			var isSingleRow: boolean;
+			var isTimeToAddRow: boolean = false;
+			var isSpaceLeftOver: boolean = false;
+			var isLastField: boolean = false;
+			var isHidden: boolean = false;
+			var isLabel: boolean;
+			var cell: JQuery = null;
+			var fieldsLength: number = settings.fieldList.length;
+			var nextFieldOffsetCols: number;
+			var nextFieldCols: number;
+			var nextIndex: number;
+			var remainingColSpace: number = 0;
+			var isNextHidden: boolean = false;
+			var fieldHelperType: string;
+			var fieldTemplate: Object;
 
-			$(function () {
-				// var depositPostData: any = lth.postObjects.deposit();
-				var depositPostData: any = {};
-				$(settings.form_submit).prop('disabled', false);
+			var el = lth.CreateElement();
+			var formEl = new FormElement(lth);
 
-				$(settings.form_id).submit(function (event) {
-					event.preventDefault();
-					$(settings.form_errorMsgWrapper).hide(100);
-					$(settings.form_submit).prop('disabled', true);
+			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
+			$.each(settings.fieldList, (i, elementItem) => {
+				if (elementItem.field) {
+					// settings.fieldList[i] = ExtendFieldTemplate(elementItem);
+					settings.fieldList[i] = lth.ExtendWidgetFieldTemplate(elementItem, fieldHelperType);
+				}
+			});
 
-					if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
-						$(settings.form_submit).prop('disabled', false);
-						return false;
+			$.each(settings.fieldList, (fieldIndex, elementItem) => {
+				if (elementItem.offsetCols && !elementItem.cols) {
+					elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
+				}
+
+				isHidden = elementItem.type === 'hidden';
+				elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
+				elementItem.offsetCols = elementItem.offsetCols ? elementItem.offsetCols : 0;
+				elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
+				isLastField = fieldIndex >= fieldsLength - 1;
+				isLabel = elementItem.element === 'label';
+
+				nextIndex = fieldIndex + 1;
+				do {
+					// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
+					isNextHidden = settings.fieldList[nextIndex] && settings.fieldList[nextIndex].type === 'hidden';
+					nextFieldOffsetCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].offsetCols) ? settings.fieldList[nextIndex].offsetCols : 0;
+					nextFieldCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].cols) ? settings.fieldList[nextIndex].cols + nextFieldOffsetCols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+					nextIndex++;
+				} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
+
+				if (isHidden) {
+					wrapElement.append(formEl.Create(elementItem));
+				} else {
+					// Create row
+					if (!row) {
+						columnCount = 0
+						if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
+							row = el.formGroup(elementItem.size);
+							isSingleRow = true;
+						} else {
+							row = el.row();
+							isSingleRow = false;
+						}
 					}
 
-					depositPostData.term = $(settings.form_term).val();
-					depositPostData.amount = $(settings.form_amount).val();
+					columnCount += elementItem.cols + elementItem.offsetCols;
 
-					var request = $.ajax({
-						// url: 'http://node-cors-server.herokuapp.com/no-cors'
-						// url: 'http://node-cors-server.herokuapp.com/simple-cors'
-						url: settings.postUrl
-						, method: 'POST'
-						, contentType: 'application/json'
-						, dataType: 'json'
-						// , data: JSON.stringify(contactPostData)
-						, data: depositPostData
-						// , data: { LeadFile: contactPostData }
-					});
-
-					request.done((result) => {
-						// Clear all fields
-						$(settings.form_id).trigger('reset');
-						$(settings.form_submit).prop('disabled', false);
-
-
-					});
-
-					request.fail((error) => {
-						$(settings.form_submit).prop('disabled', false);
-						var msg = 'There was an unexpected error. Please try again.';
-
-						try {
-							var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
-							msg = errorObj.Message;
-						} catch (e) {
-							console.error('Error @ request.fail.responseText:' + e);
+					// Create Cell
+					if (isSingleRow) {
+						if (isLabel) {
+							if (elementItem.offsetCols > 0) {
+							cell = el.col(elementItem.cols).append(el.row().append(formEl.Create(elementItem)));
+							} else {
+							cell = formEl.Create(elementItem);
+							}
+						} else {
+							cell = el.col(elementItem.cols).append(formEl.Create(elementItem));
 						}
 
-						$(settings.form_errorMsg).html(msg);
-						$(settings.form_errorMsgWrapper).show(100);
-						lth.ScrollToAnchor(settings.form_errorAnchor);
-					});
-				});
+						if (settings.showBuilderTools) {
+							appendBuilderTools(cell);
+							appendMoveTools(cell);
+						}
+					} else {
+						var innerCell: JQuery;
+						if (isLabel) {
+							innerCell = formEl.Create(elementItem);
+						} else {
+							innerCell = el.col().append(formEl.Create(elementItem));
+						}
+
+						if (settings.showBuilderTools) {
+							appendBuilderTools(innerCell);
+							appendMoveTools(innerCell);
+						}
+
+						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
+					}
+
+					if (elementItem.offsetCols > 0) {
+						cell.addClass('col-sm-offset-' + elementItem.offsetCols);
+					}
+
+					function appendBuilderTools(currentCell) {
+						var passData = { index: fieldIndex };
+						var passString = JSON.stringify(passData);
+						currentCell.addClass('ltw-builder-tools-field').prepend(
+							el.div().addClass('ltw-tool-field-update')
+								.attr('data-lt-field-edit-tool', passString)
+								.attr('data-lt-field-edit-tool-data', 'editFieldData')
+						);
+
+						if (!isSingleRow) {
+							currentCell.addClass('ltw-builder-tools-multi-cell-row');
+						}
+					}
+
+					function appendMoveTools(currentCell) {
+						currentCell.prepend(el.div().addClass('move-hover'));
+
+						window.console && console.log('pdi: ', fieldIndex);
+
+						currentCell.attr('data-drop', 'true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '0' + fieldIndex }))
+							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
+					}
+
+					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+					isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
+
+					/*if (settings.showBuilderTools && !isTimeToAddRow && !isSpaceLeftOver) {
+						cell.append(
+							el.div().addClass('move-between-cells')
+							.attr('data-drop', 'true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover', activeClass: 'on-drag-active'}`)
+							// .prepend(el.div().addClass('move-hover'))
+						);
+					}*/
+
+					if (lth[settings.fieldHelperType].successmessage && elementItem.type === lth[settings.fieldHelperType].successmessage.id) {
+						var wrapElement: JQuery = isSingleRow ? row : cell;
+						wrapElement.prop('id', settings.successMessageWrapperId);
+
+						if (!settings.showBuilderTools) {
+							wrapElement.css({display: 'none'});
+						}
+					}
+
+					row.append(cell);
+
+					if (isSpaceLeftOver) {
+						isTimeToAddRow = true;
+						remainingColSpace = COLUMNS_IN_ROW - columnCount;
+
+						// On move hover... show leftover space
+						if (settings.showBuilderTools) {
+							row.append(
+								el.col(remainingColSpace).addClass('hidden-xs')
+									.append(
+									el.formGroup(elementItem.size).append(
+										el.col().append(
+											el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->')
+										)
+											.attr('data-drop', 'true')
+											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
+											.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+											.prepend(el.div().addClass('move-hover'))
+									)
+									)
+							);
+						}
+
+					} else {
+						remainingColSpace = 0;
+					}
+
+					if (isTimeToAddRow) {
+						wrapElement.append(row);
+
+						/*if (settings.showBuilderTools) {
+							wrapElement.append(
+								el.div()
+								.addClass('move-between-rows-wrapper')
+								.attr('data-drop', 'true')
+								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+								.append(
+									el.div().addClass('move-between-rows')
+								)
+							);
+						}*/
+
+						row = null;
+						columnCount = 0;
+					}
+				}
 			});
+
+			if (settings.formBorderType) {
+				if (settings.formBorderType === lth.formBorderType.well.id) {
+					var wellMain = el.div().addClass('well lt-widget-border');
+
+					if (settings.panelTitle) {
+						wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
+					}
+
+					wrapElement = wellMain.append(wrapElement);
+				} else if (settings.formBorderType === lth.formBorderType.panel.id) {
+					var panelMain, panelHeading, panelBody;
+					panelMain = el.div().addClass('panel panel-default lt-widget-border');
+					panelBody = el.div().addClass('panel-body').append(wrapElement);
+
+					if (settings.panelTitle) {
+						panelHeading = el.div().addClass('panel-heading lt-widget-heading').html(settings.panelTitle);
+					}
+
+					if (panelHeading) {
+						panelMain.append(panelHeading);
+					}
+
+					panelMain.append(panelBody);
+
+					wrapElement = panelMain;
+				}
+
+			} else if (settings.panelTitle) {
+				wrapElement.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
+			}
+			return wrapElement;
 		}
 	}
 }
