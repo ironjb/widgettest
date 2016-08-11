@@ -1,5 +1,26 @@
 /// <reference path="../../../../Scripts/typings/jquery/jquery.d.ts" />
 
+declare namespace LTWidget {
+	interface IResultBuildOptions extends IBuildOptions {
+		resultWrapperId?: string;
+	}
+
+	interface IFieldListOptions extends IBuildOptions {
+		//
+	}
+
+	interface IBuildOptions {
+		formBorderType?: string;
+		widgetType?: string;
+		panelTitle?: string;
+		showBuilderTools?: boolean;
+		fieldList?: IWidgetField[];
+		fieldSize?: string;
+		fieldHelperType?: string;
+		successMessageWrapperId?: string;
+	}
+}
+
 interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
 interface IHelperNameId { id: string; name: string; }
 interface IHelperNameNumId { id: number; name: string; }
@@ -44,6 +65,9 @@ interface IWidgetField {
 	borderRadius?: number;
 	borderColor?: string;
 	padding?: number;
+
+	fieldListOptions?: LTWidget.IFieldListOptions;
+	fieldData?: any;
 }
 
 interface IState {
@@ -212,6 +236,19 @@ namespace LoanTekWidget {
 		}
 	}
 
+	class sharedFields {
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
+		submit: IWidgetFieldOptions;
+		constructor() {
+			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+		}
+	}
+
 	class contactFields {
 		clientid: IWidgetFieldOptions;
 		userid: IWidgetFieldOptions;
@@ -229,6 +266,7 @@ namespace LoanTekWidget {
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
 		constructor() {
+			var sf = new sharedFields;
 			this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
 			this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
 			this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
@@ -239,20 +277,25 @@ namespace LoanTekWidget {
 			this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
 			this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
 			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			// this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			this.submit = sf.submit;
 			this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
-			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			// this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+			// this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+			// this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
 			//this.spacer
 			//this.hr
 
-			for (var fieldName in this) {
-				var contactField: IWidgetFieldOptions = this[fieldName];
-				if (contactField.isLTRequired) {
-					contactField.fieldTemplate.required = contactField.isLTRequired;
-				}
-			}
+			// for (var fieldName in this) {
+			// 	var contactField: IWidgetFieldOptions = this[fieldName];
+			// 	if (contactField.isLTRequired) {
+			// 		contactField.fieldTemplate.required = contactField.isLTRequired;
+			// 	}
+			// }
+			helpers.prototype.SetRequiredFields(this);
 		}
 	}
 
@@ -267,22 +310,28 @@ namespace LoanTekWidget {
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
 		constructor() {
+			var sf = new sharedFields;
 			// this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
 			// this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
 			this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term'} };
 			this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
-			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			// this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			this.submit = sf.submit;
 			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			// this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+			// this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+			// this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
 
-			for (var fieldName in this) {
-				var depositField: IWidgetFieldOptions = this[fieldName];
-				if (depositField.isLTRequired) {
-					depositField.fieldTemplate.required = depositField.isLTRequired;
-				}
-			}
+			// for (var fieldName in this) {
+			// 	var depositField: IWidgetFieldOptions = this[fieldName];
+			// 	if (depositField.isLTRequired) {
+			// 		depositField.fieldTemplate.required = depositField.isLTRequired;
+			// 	}
+			// }
+			helpers.prototype.SetRequiredFields(this);
 		}
 
 		asArray() {
@@ -294,11 +343,36 @@ namespace LoanTekWidget {
 		label: IWidgetFieldOptions;
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
-		repeatdata: IWidgetFieldOptions;
+		depositdatalist: IWidgetFieldOptions;
 		constructor() {
-			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			var sf = new sharedFields;
+			// this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+			// this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+			// this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
+			this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist'} };
+
+			helpers.prototype.SetRequiredFields(this);
+		}
+	}
+
+	class depositResultDataFields {
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
+		api: IWidgetFieldOptions;
+		totalinterestearned: IWidgetFieldOptions;
+		amountplusinterest: IWidgetFieldOptions;
+		constructor() {
+			var sf = new sharedFields;
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
+			this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
+			this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
+			this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
 		}
 	}
 
@@ -330,6 +404,8 @@ namespace LoanTekWidget {
 		public defaultResultSpecifierClass: string;
 		public contactFields: contactFields;
 		public depositFields: depositFields;
+		public depositResultFields: depositResultFields;
+		public depositResultDataFields: depositResultDataFields;
 		public contactFieldsArray: IWidgetFieldOptions[];
 		public postObjects: postObjects;
 
@@ -348,6 +424,8 @@ namespace LoanTekWidget {
 			this.contactFields = new contactFields;
 			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
 			this.depositFields = new depositFields;
+			this.depositResultFields = new depositResultFields;
+			this.depositResultDataFields = new depositResultDataFields;
 			this.postObjects = new postObjects;
 		}
 
@@ -402,6 +480,15 @@ namespace LoanTekWidget {
 			return -1;
 		}
 
+		SetRequiredFields(fields) {
+			for (var fieldName in fields) {
+				var thisField: IWidgetFieldOptions = fields[fieldName];
+				if (thisField.isLTRequired) {
+					thisField.fieldTemplate.required = thisField.isLTRequired;
+				}
+			}
+		}
+
 		/**
 		 * Performs string interpolation similar to the style of Ruby
 		 * @param  {string}   text       String to interpolate
@@ -431,8 +518,17 @@ namespace LoanTekWidget {
 		}
 
 		ExtendWidgetFieldTemplate(eItem: IWidgetField, templateName: string): IWidgetField {
-			var lth = this;
-			return this.$.extend({}, lth[templateName][eItem.field].fieldTemplate, eItem);
+			var _this = this;
+			var fOption: IWidgetFieldOptions;
+			var returnWidgetField: IWidgetField;
+			if (_this[templateName] && _this[templateName][eItem.field]) {
+				fOption = _this[templateName][eItem.field];
+				returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
+			} else {
+				window.console && console.error('templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
+				returnWidgetField = eItem;
+			}
+			return returnWidgetField;
 		}
 
 		CreateElement() {

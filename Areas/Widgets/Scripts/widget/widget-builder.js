@@ -34,7 +34,7 @@ var LoanTekWidget;
             }
             var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'lt.services', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'commonServices', 'widgetServices', function ($scope, $timeout, commonServices, widgetServices) {
-                    var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
+                    var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//client.loantek.com';
                     var ltWidgetCSS = ['/Content/widget/css'];
                     var widgetScripts = ['/bundles/widget/widget'];
                     if (window.location.port === '58477' || window.location.port === '8080') {

@@ -104,8 +104,18 @@ var LoanTekWidget;
         }
         return widgetType;
     }());
+    var sharedFields = (function () {
+        function sharedFields() {
+            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+            this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+        }
+        return sharedFields;
+    }());
     var contactFields = (function () {
         function contactFields() {
+            var sf = new sharedFields;
             this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
             this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
             this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
@@ -116,35 +126,26 @@ var LoanTekWidget;
             this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
             this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
             this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-            this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+            this.submit = sf.submit;
             this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
-            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
-            for (var fieldName in this) {
-                var contactField = this[fieldName];
-                if (contactField.isLTRequired) {
-                    contactField.fieldTemplate.required = contactField.isLTRequired;
-                }
-            }
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            helpers.prototype.SetRequiredFields(this);
         }
         return contactFields;
     }());
     var depositFields = (function () {
         function depositFields() {
+            var sf = new sharedFields;
             this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term' } };
             this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
-            this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+            this.submit = sf.submit;
             this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
-            for (var fieldName in this) {
-                var depositField = this[fieldName];
-                if (depositField.isLTRequired) {
-                    depositField.fieldTemplate.required = depositField.isLTRequired;
-                }
-            }
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            helpers.prototype.SetRequiredFields(this);
         }
         depositFields.prototype.asArray = function () {
             return helpers.prototype.ConvertObjectToArray(this);
@@ -153,11 +154,26 @@ var LoanTekWidget;
     }());
     var depositResultFields = (function () {
         function depositResultFields() {
-            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist' } };
+            helpers.prototype.SetRequiredFields(this);
         }
         return depositResultFields;
+    }());
+    var depositResultDataFields = (function () {
+        function depositResultDataFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
+            this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
+            this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
+        }
+        return depositResultDataFields;
     }());
     var postObjects = (function () {
         function postObjects() {
@@ -182,6 +198,8 @@ var LoanTekWidget;
             this.contactFields = new contactFields;
             this.contactFieldsArray = this.ConvertObjectToArray(this.contactFields);
             this.depositFields = new depositFields;
+            this.depositResultFields = new depositResultFields;
+            this.depositResultDataFields = new depositResultDataFields;
             this.postObjects = new postObjects;
         }
         helpers.prototype.isNumber = function (numCheck) {
@@ -231,6 +249,14 @@ var LoanTekWidget;
             }
             return -1;
         };
+        helpers.prototype.SetRequiredFields = function (fields) {
+            for (var fieldName in fields) {
+                var thisField = fields[fieldName];
+                if (thisField.isLTRequired) {
+                    thisField.fieldTemplate.required = thisField.isLTRequired;
+                }
+            }
+        };
         helpers.prototype.Interpolate = function (text, parameters, fn, regex) {
             text = text || '';
             parameters = parameters || {};
@@ -252,8 +278,18 @@ var LoanTekWidget;
             });
         };
         helpers.prototype.ExtendWidgetFieldTemplate = function (eItem, templateName) {
-            var lth = this;
-            return this.$.extend({}, lth[templateName][eItem.field].fieldTemplate, eItem);
+            var _this = this;
+            var fOption;
+            var returnWidgetField;
+            if (_this[templateName] && _this[templateName][eItem.field]) {
+                fOption = _this[templateName][eItem.field];
+                returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
+            }
+            else {
+                window.console && console.error('templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
+                returnWidgetField = eItem;
+            }
+            return returnWidgetField;
         };
         helpers.prototype.CreateElement = function () {
             var $ = this.$;

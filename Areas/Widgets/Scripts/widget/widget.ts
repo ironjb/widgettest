@@ -21,24 +21,6 @@ declare namespace LTWidget {
 		form_term?: string;
 		form_amount?: string;
 	}
-
-	interface IResultBuildOptions {
-		resultWrapperId?: string;
-		panelTitle?: string;
-		showBuilderTools?: boolean;
-		widgetType?: string;
-		resultFields: IWidgetField[];
-	}
-
-	interface IBuildOptions {
-		formBorderType?: string;
-		panelTitle?: string;
-		showBuilderTools?: boolean;
-		fieldList?: IWidgetField[];
-		fieldSize?: string;
-		fieldHelperType?: string;
-		successMessageWrapperId?: string;
-	}
 }
 
 interface IWidgetFormBuildObject {
@@ -139,7 +121,8 @@ namespace LoanTekWidget {
 			var fieldTemplate: Object;
 
 			var el = lth.CreateElement();
-			var formEl = new FormElement(lth);
+			var buildTools = new BuildTools(lth);
+			// var formEl = new FormElement(lth);
 
 			var errorRow = el.row('row').prop('id', settings.errorMessageWrapperId);
 			var errorMsg = el.p().prop('id', settings.errrorMessageId);
@@ -206,7 +189,7 @@ namespace LoanTekWidget {
 				} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
 
 				if (isHidden) {
-					returnForm.append(formEl.Create(elementItem));
+					returnForm.append(buildTools.CreateFormElement(elementItem));
 				} else {
 					// Create row
 					if (!row) {
@@ -226,12 +209,12 @@ namespace LoanTekWidget {
 					if (isSingleRow) {
 						if (isLabel) {
 							if (elementItem.offsetCols > 0) {
-							cell = el.col(elementItem.cols).append(el.row().append(formEl.Create(elementItem)));
+							cell = el.col(elementItem.cols).append(el.row().append(buildTools.CreateFormElement(elementItem)));
 							} else {
-							cell = formEl.Create(elementItem);
+							cell = buildTools.CreateFormElement(elementItem);
 							}
 						} else {
-							cell = el.col(elementItem.cols).append(formEl.Create(elementItem));
+							cell = el.col(elementItem.cols).append(buildTools.CreateFormElement(elementItem));
 						}
 
 						if (settings.showBuilderTools) {
@@ -241,9 +224,9 @@ namespace LoanTekWidget {
 					} else {
 						var innerCell: JQuery;
 						if (isLabel) {
-							innerCell = formEl.Create(elementItem);
+							innerCell = buildTools.CreateFormElement(elementItem);
 						} else {
-							innerCell = el.col().append(formEl.Create(elementItem));
+							innerCell = el.col().append(buildTools.CreateFormElement(elementItem));
 						}
 
 						if (settings.showBuilderTools) {
@@ -385,7 +368,7 @@ namespace LoanTekWidget {
 				returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 			}
 
-			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass + ' container-fluid').empty().append(returnForm);
+			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass/* + ' container-fluid'*/).empty().append(returnForm);
 			if (settings.showBuilderTools) {
 				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
 			}
@@ -537,8 +520,11 @@ namespace LoanTekWidget {
 				// IDepositFunctionalityOptions options
 				, form_term: '#ltwDepositTerm'
 				, form_amount: '#ltwDepositAmount'
+				, resultDisplayOptions: {
+					fieldHelperType: 'depositResultFields'
+				}
 			};
-			$.extend(settings, options);
+			$.extend(true, settings, options);
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 			// window.console && console.log('depositfnctionality settings: ', settings);
 
@@ -546,6 +532,10 @@ namespace LoanTekWidget {
 				// var depositPostData: any = lth.postObjects.deposit();
 				var depositPostData: any = {};
 				$(settings.form_submit).prop('disabled', false);
+
+				// Testing
+				$(settings.form_term).val(3);
+				$(settings.form_amount).val(4999);
 
 				$(settings.form_id).submit(function (event) {
 					event.preventDefault();
@@ -579,8 +569,17 @@ namespace LoanTekWidget {
 						// $(settings.form_id).trigger('reset');
 
 						$(settings.form_submit).prop('disabled', false);
-						// window.console && console.log('request successful: ', result);
-						var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions, result);
+						window.console && console.log('request successful: ', result, options.resultDisplayOptions);
+
+						for (var flIndex = options.resultDisplayOptions.fieldList.length - 1; flIndex >= 0; flIndex--) {
+							var fieldItem = options.resultDisplayOptions.fieldList[flIndex];
+							if (fieldItem.field === 'depositdatalist') {
+								fieldItem.fieldData = result;
+							}
+							window.console && console.log('fieldItem', fieldItem);
+						}
+						// var depositResultBuild = new ResultsBuilder(lth, result, options.resultDisplayOptions);
+						var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions);
 						depositResultBuild.build();
 					});
 
@@ -606,28 +605,31 @@ namespace LoanTekWidget {
 
 	export class ResultsBuilder {
 		private settings: LTWidget.IResultBuildOptions;
-		private data: any;
+		// private data: any;
 		private lth: LoanTekWidget.helpers;
-		constructor(lth: LoanTekWidget.helpers, options: LTWidget.IResultBuildOptions, data: any) {
+		// constructor(lth: LoanTekWidget.helpers, data: any, options: LTWidget.IResultBuildOptions) {
+		constructor(lth: LoanTekWidget.helpers, options: LTWidget.IResultBuildOptions) {
 			var _settings: LTWidget.IResultBuildOptions = {
 				resultWrapperId: 'ltWidgetResultWrapper'
-				, resultFields: null
+				// , resultFields: null
 			};
 
 			lth.$.extend(_settings, options)
 
 			this.settings = _settings;
-			this.data = data;
+			// this.data = data;
 			this.lth = lth;
 		}
 
 		build(startIndex?: number, showCount?: number) {
 			var _thisM = this;
 			var settings = this.settings;
+			// var data = this.data;
 			var lth = this.lth;
 			var $ = lth.$;
 			var el = lth.CreateElement();
 			var resultHelperType: string;
+			var buildTools = new BuildTools(lth);
 
 			if (settings.widgetType === _thisM.lth.widgetType.quote.id) {
 				resultHelperType = 'quoteResultFields';
@@ -639,31 +641,285 @@ namespace LoanTekWidget {
 				resultHelperType = 'contactResultFields';
 			}
 
-			// create returnForm... rename as returnResult
+			settings.fieldHelperType = resultHelperType;
 
-			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass + ' container-fluid').empty().html('test');
+			var resultsForm = el.form();
+			window.console && console.log('ResultsBuilder build() settings', settings);
+			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
+
+			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass/* + ' container-fluid'*/).empty().append(resultsForm2);
 			if (_thisM.settings.showBuilderTools) {
 				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
 			}
 		}
 	}
 
-	export class FormElement {
-		private _$: JQueryStatic;
-		private _lth: LoanTekWidget.helpers;
+
+	export class BuildTools{
+		private lth: LoanTekWidget.helpers;
 		constructor(lth: LoanTekWidget.helpers) {
-			var _thisC = this;
-			_thisC._$ = lth.$;
-			_thisC._lth = lth;
+			this.lth = lth;
 		}
 
-		Create(elementObj: IWidgetField) {
+		BuildFields(mainWrapper: JQuery, options: LTWidget.IBuildOptions, data?: any): JQuery {
 			var _thisM = this;
-			var el = _thisM._lth.CreateElement();
+			var lth = this.lth;
+			var $ = lth.$;
+			var settings: LTWidget.IBuildOptions = {
+				fieldHelperType: null
+				, fieldSize: null
+				, showBuilderTools: false
+			};
+
+			$.extend(settings, options);
+			const COLUMNS_IN_ROW: number = 12;
+			var columnCount: number = 0;
+			var row: JQuery = null;
+			var isSingleRow: boolean;
+			var isTimeToAddRow: boolean = false;
+			var isSpaceLeftOver: boolean = false;
+			var isLastField: boolean = false;
+			var isHidden: boolean = false;
+			var isLabel: boolean;
+			var cell: JQuery = null;
+			var fieldsLength: number = settings.fieldList.length;
+			var nextFieldOffsetCols: number;
+			var nextFieldCols: number;
+			var nextIndex: number;
+			var remainingColSpace: number = 0;
+			var isNextHidden: boolean = false;
+			// var fieldHelperType: string;
+			var fieldTemplate: Object;
+
+			var el = lth.CreateElement();
+			// var formEl = new FormElement(lth);
+			// window.console && console.log('mainWrapper', mainWrapper);
+
+			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
+			$.each(settings.fieldList, (i, elementItem) => {
+				if (elementItem.field) {
+					// settings.fieldList[i] = ExtendFieldTemplate(elementItem);
+					// window.console && console.log('settings.fieldHelperType', settings.fieldHelperType);
+					settings.fieldList[i] = lth.ExtendWidgetFieldTemplate(elementItem, settings.fieldHelperType);
+				}
+			});
+
+			$.each(settings.fieldList, (fieldIndex, elementItem) => {
+				window.console && console.log('elementItem', elementItem);
+				if (elementItem.offsetCols && !elementItem.cols) {
+					elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
+				}
+
+				isHidden = elementItem.type === 'hidden';
+				elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
+				elementItem.offsetCols = elementItem.offsetCols ? elementItem.offsetCols : 0;
+				elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
+				isLastField = fieldIndex >= fieldsLength - 1;
+				isLabel = elementItem.element === 'label';
+
+				nextIndex = fieldIndex + 1;
+				do {
+					// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
+					isNextHidden = settings.fieldList[nextIndex] && settings.fieldList[nextIndex].type === 'hidden';
+					nextFieldOffsetCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].offsetCols) ? settings.fieldList[nextIndex].offsetCols : 0;
+					nextFieldCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].cols) ? settings.fieldList[nextIndex].cols + nextFieldOffsetCols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+					nextIndex++;
+				} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
+
+				if (isHidden) {
+					mainWrapper.append(_thisM.CreateFormElement(elementItem));
+				} else {
+					// Create row
+					if (!row) {
+						columnCount = 0
+						if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
+							row = el.formGroup(elementItem.size);
+							isSingleRow = true;
+						} else {
+							row = el.row();
+							isSingleRow = false;
+						}
+					}
+
+					columnCount += elementItem.cols + elementItem.offsetCols;
+
+					// Create Cell
+					if (isSingleRow) {
+						if (isLabel) {
+							if (elementItem.offsetCols > 0) {
+							cell = el.col(elementItem.cols).append(el.row().append(_thisM.CreateFormElement(elementItem)));
+							} else {
+							cell = _thisM.CreateFormElement(elementItem);
+							}
+						} else {
+							cell = el.col(elementItem.cols).append(_thisM.CreateFormElement(elementItem));
+						}
+
+						if (settings.showBuilderTools) {
+							appendBuilderTools(cell);
+							appendMoveTools(cell);
+						}
+					} else {
+						var innerCell: JQuery;
+						if (isLabel) {
+							innerCell = _thisM.CreateFormElement(elementItem);
+						} else {
+							innerCell = el.col().append(_thisM.CreateFormElement(elementItem));
+						}
+
+						if (settings.showBuilderTools) {
+							appendBuilderTools(innerCell);
+							appendMoveTools(innerCell);
+						}
+
+						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
+					}
+
+					if (elementItem.offsetCols > 0) {
+						cell.addClass('col-sm-offset-' + elementItem.offsetCols);
+					}
+
+					function appendBuilderTools(currentCell) {
+						var passData = { index: fieldIndex };
+						var passString = JSON.stringify(passData);
+						currentCell.addClass('ltw-builder-tools-field').prepend(
+							el.div().addClass('ltw-tool-field-update')
+								.attr('data-lt-field-edit-tool', passString)
+								.attr('data-lt-field-edit-tool-data', 'editFieldData')
+						);
+
+						if (!isSingleRow) {
+							currentCell.addClass('ltw-builder-tools-multi-cell-row');
+						}
+					}
+
+					function appendMoveTools(currentCell) {
+						currentCell.prepend(el.div().addClass('move-hover'));
+
+						currentCell.attr('data-drop', 'true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '' + fieldIndex }))
+							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
+					}
+
+					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
+					isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
+
+					/*if (settings.showBuilderTools && !isTimeToAddRow && !isSpaceLeftOver) {
+						cell.append(
+							el.div().addClass('move-between-cells')
+							.attr('data-drop', 'true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover', activeClass: 'on-drag-active'}`)
+							// .prepend(el.div().addClass('move-hover'))
+						);
+					}*/
+
+					if (lth[settings.fieldHelperType].successmessage && elementItem.type === lth[settings.fieldHelperType].successmessage.id) {
+						var wrapElement: JQuery = isSingleRow ? row : cell;
+						wrapElement.prop('id', settings.successMessageWrapperId);
+
+						if (!settings.showBuilderTools) {
+							wrapElement.css({display: 'none'});
+						}
+					}
+
+					row.append(cell);
+
+					if (isSpaceLeftOver) {
+						isTimeToAddRow = true;
+						remainingColSpace = COLUMNS_IN_ROW - columnCount;
+
+						// On move hover... show leftover space
+						if (settings.showBuilderTools) {
+							row.append(
+								el.col(remainingColSpace).addClass('hidden-xs')
+									.append(
+									el.formGroup(elementItem.size).append(
+										el.col().append(
+											el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->')
+										)
+											.attr('data-drop', 'true')
+											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
+											.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+											.prepend(el.div().addClass('move-hover'))
+									)
+									)
+							);
+						}
+
+					} else {
+						remainingColSpace = 0;
+					}
+
+					if (isTimeToAddRow) {
+						mainWrapper.append(row);
+
+						/*if (settings.showBuilderTools) {
+							mainWrapper.append(
+								el.div()
+								.addClass('move-between-rows-wrapper')
+								.attr('data-drop', 'true')
+								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+								.append(
+									el.div().addClass('move-between-rows')
+								)
+							);
+						}*/
+
+						row = null;
+						columnCount = 0;
+					}
+				}
+			});
+
+			if (settings.formBorderType) {
+				window.console && console.log('settings.formBorderType', settings.formBorderType, mainWrapper);
+				if (settings.formBorderType === lth.formBorderType.well.id) {
+					window.console && console.log('in well');
+					var wellMain = el.div().addClass('well lt-widget-border');
+
+					if (settings.panelTitle) {
+						wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
+					}
+
+					mainWrapper = wellMain.append(mainWrapper);
+					window.console && console.log('mainWrapper, well: ', mainWrapper);
+				} else if (settings.formBorderType === lth.formBorderType.panel.id) {
+					var panelMain, panelHeading, panelBody;
+					panelMain = el.div().addClass('panel panel-default lt-widget-border');
+					panelBody = el.div().addClass('panel-body').append(mainWrapper);
+
+					if (settings.panelTitle) {
+						panelHeading = el.div().addClass('panel-heading lt-widget-heading').html(settings.panelTitle);
+					}
+
+					if (panelHeading) {
+						panelMain.append(panelHeading);
+					}
+
+					panelMain.append(panelBody);
+
+					mainWrapper = panelMain;
+				}
+
+			} else if (settings.panelTitle) {
+				mainWrapper.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
+			}
+			// TODO: Find way to replace text in DOM
+
+			return mainWrapper;
+		}
+
+		CreateFormElement(elementObj: IWidgetField) {
+			var _thisM = this;
+			var lth = this.lth;
+			var $ = lth.$;
+			var el = lth.CreateElement();
 			var returnElement: JQuery = null;
 			switch (elementObj.element) {
 				case 'title':
-					elementObj.nsize = elementObj.nsize || _thisM._lth.hsize.getDefault().id;
+					elementObj.nsize = elementObj.nsize || lth.hsize.getDefault().id;
 					returnElement = el.h(elementObj.nsize);
 					returnElement.html(elementObj.value);
 					break;
@@ -690,8 +946,8 @@ namespace LoanTekWidget {
 					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					switch (elementObj.type) {
 						case 'state':
-							var usStates = _thisM._lth.US_States();
-							_thisM._$.each(usStates.states, function (i, state) {
+							var usStates = lth.US_States();
+							$.each(usStates.states, function (i, state) {
 								returnElement.append(el.option().val(state.abbreviation).html(state.name));
 							});
 							break;
@@ -702,7 +958,7 @@ namespace LoanTekWidget {
 								, { value: 12, name: '1-year' }
 								, { value: 24, name: '2-year' }
 							];
-							_thisM._$.each(depositTermsList, function (i, term) {
+							$.each(depositTermsList, function (i, term) {
 								returnElement.append(el.option().val(term.value).html(term.name));
 							});
 							break;
@@ -714,7 +970,7 @@ namespace LoanTekWidget {
 								, { value: 24999, name: '$15,000 - 24,999' }
 								, { value: 49999, name: '$25,000 - 49,999' }
 							];
-							_thisM._$.each(depositAmountList, function (i, amnt) {
+							$.each(depositAmountList, function (i, amnt) {
 								returnElement.append(el.option().val(amnt.value).html(amnt.name));
 							});
 							break;
@@ -756,8 +1012,8 @@ namespace LoanTekWidget {
 						captchaInputObj.size = elementObj.size;
 						captchaResetBtnObj.size = elementObj.size;
 					}
-					var captchaInput = _thisM.Create(captchaInputObj);
-					var captchaResetBtn = _thisM.Create(captchaResetBtnObj);
+					var captchaInput = _thisM.CreateFormElement(captchaInputObj);
+					var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
 
 					returnElement = el.div().addClass('lt-captcha').append(
 						el.div().addClass('panel panel-info').append(
@@ -787,6 +1043,19 @@ namespace LoanTekWidget {
 							)
 					);
 					break;
+				case 'repeat':
+					window.console && console.log('case repeat: elementObj', elementObj);
+					if (elementObj.type === 'depositdatalist') {
+						elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
+					}
+					returnElement = el.div();
+					for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
+						var dataItem = elementObj.fieldData[dataIndex];
+						var resultDataRow = el.div();
+						resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
+						returnElement.append(resultDataRow);
+					}
+					break;
 				default:
 					elementObj.value = elementObj.value || ' ';
 					returnElement = el.div();
@@ -811,7 +1080,7 @@ namespace LoanTekWidget {
 					returnElement.css({ backgroundColor: elementObj.backgroundColor });
 				}
 
-				if (_thisM._lth.isNumber(elementObj.borderRadius)) {
+				if (lth.isNumber(elementObj.borderRadius)) {
 					returnElement.css({ borderRadius: elementObj.borderRadius + 'px' });
 				}
 
@@ -827,7 +1096,7 @@ namespace LoanTekWidget {
 					returnElement.css({ borderColor: elementObj.borderColor });
 				}
 
-				if (_thisM._lth.isNumber(elementObj.padding)) {
+				if (lth.isNumber(elementObj.padding)) {
 					returnElement.css({ padding: elementObj.padding + 'px' });
 				}
 
@@ -893,254 +1162,6 @@ namespace LoanTekWidget {
 			}
 
 			return returnElement;
-		}
-	}
-
-	export class WidgetTools{
-		constructor() {
-			//
-		}
-
-		BuildFields(lth: LoanTekWidget.helpers, wrapElement: JQuery, options: LTWidget.IBuildOptions) {
-			var $ = lth.$;
-			var settings: LTWidget.IBuildOptions = {
-				fieldHelperType: null
-				, fieldSize: null
-				, showBuilderTools: false
-			};
-
-			$.extend(settings, options);
-			const COLUMNS_IN_ROW: number = 12;
-			var columnCount: number = 0;
-			var row: JQuery = null;
-			var isSingleRow: boolean;
-			var isTimeToAddRow: boolean = false;
-			var isSpaceLeftOver: boolean = false;
-			var isLastField: boolean = false;
-			var isHidden: boolean = false;
-			var isLabel: boolean;
-			var cell: JQuery = null;
-			var fieldsLength: number = settings.fieldList.length;
-			var nextFieldOffsetCols: number;
-			var nextFieldCols: number;
-			var nextIndex: number;
-			var remainingColSpace: number = 0;
-			var isNextHidden: boolean = false;
-			var fieldHelperType: string;
-			var fieldTemplate: Object;
-
-			var el = lth.CreateElement();
-			var formEl = new FormElement(lth);
-
-			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
-			$.each(settings.fieldList, (i, elementItem) => {
-				if (elementItem.field) {
-					// settings.fieldList[i] = ExtendFieldTemplate(elementItem);
-					settings.fieldList[i] = lth.ExtendWidgetFieldTemplate(elementItem, fieldHelperType);
-				}
-			});
-
-			$.each(settings.fieldList, (fieldIndex, elementItem) => {
-				if (elementItem.offsetCols && !elementItem.cols) {
-					elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
-				}
-
-				isHidden = elementItem.type === 'hidden';
-				elementItem.cols = elementItem.cols ? elementItem.cols : COLUMNS_IN_ROW;
-				elementItem.offsetCols = elementItem.offsetCols ? elementItem.offsetCols : 0;
-				elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
-				isLastField = fieldIndex >= fieldsLength - 1;
-				isLabel = elementItem.element === 'label';
-
-				nextIndex = fieldIndex + 1;
-				do {
-					// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
-					isNextHidden = settings.fieldList[nextIndex] && settings.fieldList[nextIndex].type === 'hidden';
-					nextFieldOffsetCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].offsetCols) ? settings.fieldList[nextIndex].offsetCols : 0;
-					nextFieldCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].cols) ? settings.fieldList[nextIndex].cols + nextFieldOffsetCols : isNextHidden ? 0 : COLUMNS_IN_ROW;
-					nextIndex++;
-				} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
-
-				if (isHidden) {
-					wrapElement.append(formEl.Create(elementItem));
-				} else {
-					// Create row
-					if (!row) {
-						columnCount = 0
-						if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
-							row = el.formGroup(elementItem.size);
-							isSingleRow = true;
-						} else {
-							row = el.row();
-							isSingleRow = false;
-						}
-					}
-
-					columnCount += elementItem.cols + elementItem.offsetCols;
-
-					// Create Cell
-					if (isSingleRow) {
-						if (isLabel) {
-							if (elementItem.offsetCols > 0) {
-							cell = el.col(elementItem.cols).append(el.row().append(formEl.Create(elementItem)));
-							} else {
-							cell = formEl.Create(elementItem);
-							}
-						} else {
-							cell = el.col(elementItem.cols).append(formEl.Create(elementItem));
-						}
-
-						if (settings.showBuilderTools) {
-							appendBuilderTools(cell);
-							appendMoveTools(cell);
-						}
-					} else {
-						var innerCell: JQuery;
-						if (isLabel) {
-							innerCell = formEl.Create(elementItem);
-						} else {
-							innerCell = el.col().append(formEl.Create(elementItem));
-						}
-
-						if (settings.showBuilderTools) {
-							appendBuilderTools(innerCell);
-							appendMoveTools(innerCell);
-						}
-
-						cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
-					}
-
-					if (elementItem.offsetCols > 0) {
-						cell.addClass('col-sm-offset-' + elementItem.offsetCols);
-					}
-
-					function appendBuilderTools(currentCell) {
-						var passData = { index: fieldIndex };
-						var passString = JSON.stringify(passData);
-						currentCell.addClass('ltw-builder-tools-field').prepend(
-							el.div().addClass('ltw-tool-field-update')
-								.attr('data-lt-field-edit-tool', passString)
-								.attr('data-lt-field-edit-tool-data', 'editFieldData')
-						);
-
-						if (!isSingleRow) {
-							currentCell.addClass('ltw-builder-tools-multi-cell-row');
-						}
-					}
-
-					function appendMoveTools(currentCell) {
-						currentCell.prepend(el.div().addClass('move-hover'));
-
-						window.console && console.log('pdi: ', fieldIndex);
-
-						currentCell.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '0' + fieldIndex }))
-							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
-					}
-
-					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
-					isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
-
-					/*if (settings.showBuilderTools && !isTimeToAddRow && !isSpaceLeftOver) {
-						cell.append(
-							el.div().addClass('move-between-cells')
-							.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
-							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover', activeClass: 'on-drag-active'}`)
-							// .prepend(el.div().addClass('move-hover'))
-						);
-					}*/
-
-					if (lth[settings.fieldHelperType].successmessage && elementItem.type === lth[settings.fieldHelperType].successmessage.id) {
-						var wrapElement: JQuery = isSingleRow ? row : cell;
-						wrapElement.prop('id', settings.successMessageWrapperId);
-
-						if (!settings.showBuilderTools) {
-							wrapElement.css({display: 'none'});
-						}
-					}
-
-					row.append(cell);
-
-					if (isSpaceLeftOver) {
-						isTimeToAddRow = true;
-						remainingColSpace = COLUMNS_IN_ROW - columnCount;
-
-						// On move hover... show leftover space
-						if (settings.showBuilderTools) {
-							row.append(
-								el.col(remainingColSpace).addClass('hidden-xs')
-									.append(
-									el.formGroup(elementItem.size).append(
-										el.col().append(
-											el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->')
-										)
-											.attr('data-drop', 'true')
-											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
-											.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
-											.prepend(el.div().addClass('move-hover'))
-									)
-									)
-							);
-						}
-
-					} else {
-						remainingColSpace = 0;
-					}
-
-					if (isTimeToAddRow) {
-						wrapElement.append(row);
-
-						/*if (settings.showBuilderTools) {
-							wrapElement.append(
-								el.div()
-								.addClass('move-between-rows-wrapper')
-								.attr('data-drop', 'true')
-								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
-								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
-								.append(
-									el.div().addClass('move-between-rows')
-								)
-							);
-						}*/
-
-						row = null;
-						columnCount = 0;
-					}
-				}
-			});
-
-			if (settings.formBorderType) {
-				if (settings.formBorderType === lth.formBorderType.well.id) {
-					var wellMain = el.div().addClass('well lt-widget-border');
-
-					if (settings.panelTitle) {
-						wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
-					}
-
-					wrapElement = wellMain.append(wrapElement);
-				} else if (settings.formBorderType === lth.formBorderType.panel.id) {
-					var panelMain, panelHeading, panelBody;
-					panelMain = el.div().addClass('panel panel-default lt-widget-border');
-					panelBody = el.div().addClass('panel-body').append(wrapElement);
-
-					if (settings.panelTitle) {
-						panelHeading = el.div().addClass('panel-heading lt-widget-heading').html(settings.panelTitle);
-					}
-
-					if (panelHeading) {
-						panelMain.append(panelHeading);
-					}
-
-					panelMain.append(panelBody);
-
-					wrapElement = panelMain;
-				}
-
-			} else if (settings.panelTitle) {
-				wrapElement.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
-			}
-			return wrapElement;
 		}
 	}
 }

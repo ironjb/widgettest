@@ -149,7 +149,7 @@ namespace LoanTekWidget {
 
 			// Angular Widget Controller
 			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'commonServices', 'widgetServices', function ($scope: IWidgetBuilderNgScope, $timeout, commonServices: ICommonNgServices, widgetServices: IWidgetNgServices) {
-				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//clients.loantek.com';
+				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//client.loantek.com';
 				var ltWidgetCSS: string[] = ['/Content/widget/css'];
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
 
