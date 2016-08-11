@@ -291,6 +291,21 @@ var LoanTekWidget;
             }
             return returnWidgetField;
         };
+        helpers.prototype.ModifyTextElementsInDOM = function (node, callback) {
+            var _this = this;
+            var next;
+            if (node.nodeType === 1) {
+                if (node = node.firstChild) {
+                    do {
+                        next = node.nextSibling;
+                        _this.ModifyTextElementsInDOM(node, callback);
+                    } while (node = next);
+                }
+            }
+            else if (node.nodeType === 3) {
+                node.nodeValue = callback(node.nodeValue);
+            }
+        };
         helpers.prototype.CreateElement = function () {
             var $ = this.$;
             var el = {

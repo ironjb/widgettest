@@ -531,6 +531,30 @@ namespace LoanTekWidget {
 			return returnWidgetField;
 		}
 
+		/**
+		 * Modifies Text Nodes in DOM
+		 * @param {Node}     node		Node/Element to look through for text Nodes/Elements
+		 * @param {Function} callback	Function that receives a <u>string</u> to be modified then returns the modified <u>string</u>.
+		 * <b>(NOTE: Must return a <u>string</u> value)</b>
+		 */
+		ModifyTextElementsInDOM(node: Node, callback: Function) {
+			var _this = this;
+			var next: Node;
+			if (node.nodeType === 1) {
+				// (Element Node)
+				if (node = node.firstChild) {
+					do {
+						// Recursively call this function on each child node
+						next = node.nextSibling;
+						_this.ModifyTextElementsInDOM(node, callback);
+					} while (node = next);
+				}
+			} else if (node.nodeType === 3) {
+				// (Text Node)
+				node.nodeValue = callback(node.nodeValue);
+			}
+		}
+
 		CreateElement() {
 			var $ = this.$;
 			var el = {

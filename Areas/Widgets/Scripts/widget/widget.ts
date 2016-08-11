@@ -569,14 +569,14 @@ namespace LoanTekWidget {
 						// $(settings.form_id).trigger('reset');
 
 						$(settings.form_submit).prop('disabled', false);
-						window.console && console.log('request successful: ', result, options.resultDisplayOptions);
+						// window.console && console.log('request successful: ', result, options.resultDisplayOptions);
 
 						for (var flIndex = options.resultDisplayOptions.fieldList.length - 1; flIndex >= 0; flIndex--) {
 							var fieldItem = options.resultDisplayOptions.fieldList[flIndex];
 							if (fieldItem.field === 'depositdatalist') {
 								fieldItem.fieldData = result;
 							}
-							window.console && console.log('fieldItem', fieldItem);
+							// window.console && console.log('fieldItem', fieldItem);
 						}
 						// var depositResultBuild = new ResultsBuilder(lth, result, options.resultDisplayOptions);
 						var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions);
@@ -591,7 +591,7 @@ namespace LoanTekWidget {
 							var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
 							msg = errorObj.Message;
 						} catch (e) {
-							console.error('Error @ request.fail.responseText:' + e);
+							window.console && console.error('Error @ request.fail.responseText:' + e);
 						}
 
 						$(settings.form_errorMsg).html(msg);
@@ -644,7 +644,7 @@ namespace LoanTekWidget {
 			settings.fieldHelperType = resultHelperType;
 
 			var resultsForm = el.form();
-			window.console && console.log('ResultsBuilder build() settings', settings);
+			// window.console && console.log('ResultsBuilder build() settings', settings);
 			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
 
 			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass/* + ' container-fluid'*/).empty().append(resultsForm2);
@@ -705,7 +705,7 @@ namespace LoanTekWidget {
 			});
 
 			$.each(settings.fieldList, (fieldIndex, elementItem) => {
-				window.console && console.log('elementItem', elementItem);
+				// window.console && console.log('elementItem', elementItem);
 				if (elementItem.offsetCols && !elementItem.cols) {
 					elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
 				}
@@ -874,9 +874,9 @@ namespace LoanTekWidget {
 			});
 
 			if (settings.formBorderType) {
-				window.console && console.log('settings.formBorderType', settings.formBorderType, mainWrapper);
+				// window.console && console.log('settings.formBorderType', settings.formBorderType, mainWrapper);
 				if (settings.formBorderType === lth.formBorderType.well.id) {
-					window.console && console.log('in well');
+					// window.console && console.log('in well');
 					var wellMain = el.div().addClass('well lt-widget-border');
 
 					if (settings.panelTitle) {
@@ -884,7 +884,7 @@ namespace LoanTekWidget {
 					}
 
 					mainWrapper = wellMain.append(mainWrapper);
-					window.console && console.log('mainWrapper, well: ', mainWrapper);
+					// window.console && console.log('mainWrapper, well: ', mainWrapper);
 				} else if (settings.formBorderType === lth.formBorderType.panel.id) {
 					var panelMain, panelHeading, panelBody;
 					panelMain = el.div().addClass('panel panel-default lt-widget-border');
@@ -906,7 +906,12 @@ namespace LoanTekWidget {
 			} else if (settings.panelTitle) {
 				mainWrapper.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 			}
-			// TODO: Find way to replace text in DOM
+			// Replaces placeholder text in DOM with data
+			mainWrapper.each(function(index, element) {
+				lth.ModifyTextElementsInDOM(element, function(nodeValue: string) {
+					return lth.Interpolate(nodeValue, data);
+				});
+			});
 
 			return mainWrapper;
 		}
@@ -1044,14 +1049,14 @@ namespace LoanTekWidget {
 					);
 					break;
 				case 'repeat':
-					window.console && console.log('case repeat: elementObj', elementObj);
+					// window.console && console.log('case repeat: elementObj', elementObj);
 					if (elementObj.type === 'depositdatalist') {
 						elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
 					}
 					returnElement = el.div();
 					for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
 						var dataItem = elementObj.fieldData[dataIndex];
-						var resultDataRow = el.div();
+						var resultDataRow = el.div().addClass('widget-results-repeat-section');
 						resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
 						returnElement.append(resultDataRow);
 					}

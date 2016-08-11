@@ -365,13 +365,11 @@ var LoanTekWidget;
                     });
                     request.done(function (result) {
                         $(settings.form_submit).prop('disabled', false);
-                        window.console && console.log('request successful: ', result, options.resultDisplayOptions);
                         for (var flIndex = options.resultDisplayOptions.fieldList.length - 1; flIndex >= 0; flIndex--) {
                             var fieldItem = options.resultDisplayOptions.fieldList[flIndex];
                             if (fieldItem.field === 'depositdatalist') {
                                 fieldItem.fieldData = result;
                             }
-                            window.console && console.log('fieldItem', fieldItem);
                         }
                         var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions);
                         depositResultBuild.build();
@@ -384,7 +382,7 @@ var LoanTekWidget;
                             msg = errorObj.Message;
                         }
                         catch (e) {
-                            console.error('Error @ request.fail.responseText:' + e);
+                            window.console && console.error('Error @ request.fail.responseText:' + e);
                         }
                         $(settings.form_errorMsg).html(msg);
                         $(settings.form_errorMsgWrapper).show(100);
@@ -427,7 +425,6 @@ var LoanTekWidget;
             }
             settings.fieldHelperType = resultHelperType;
             var resultsForm = el.form();
-            window.console && console.log('ResultsBuilder build() settings', settings);
             var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
             var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass).empty().append(resultsForm2);
             if (_thisM.settings.showBuilderTools) {
@@ -475,7 +472,6 @@ var LoanTekWidget;
                 }
             });
             $.each(settings.fieldList, function (fieldIndex, elementItem) {
-                window.console && console.log('elementItem', elementItem);
                 if (elementItem.offsetCols && !elementItem.cols) {
                     elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
                 }
@@ -591,15 +587,12 @@ var LoanTekWidget;
                 }
             });
             if (settings.formBorderType) {
-                window.console && console.log('settings.formBorderType', settings.formBorderType, mainWrapper);
                 if (settings.formBorderType === lth.formBorderType.well.id) {
-                    window.console && console.log('in well');
                     var wellMain = el.div().addClass('well lt-widget-border');
                     if (settings.panelTitle) {
                         wellMain.append(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
                     }
                     mainWrapper = wellMain.append(mainWrapper);
-                    window.console && console.log('mainWrapper, well: ', mainWrapper);
                 }
                 else if (settings.formBorderType === lth.formBorderType.panel.id) {
                     var panelMain, panelHeading, panelBody;
@@ -618,6 +611,11 @@ var LoanTekWidget;
             else if (settings.panelTitle) {
                 mainWrapper.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
             }
+            mainWrapper.each(function (index, element) {
+                lth.ModifyTextElementsInDOM(element, function (nodeValue) {
+                    return lth.Interpolate(nodeValue, data);
+                });
+            });
             return mainWrapper;
         };
         BuildTools.prototype.CreateFormElement = function (elementObj) {
@@ -741,14 +739,13 @@ var LoanTekWidget;
                     returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 case 'repeat':
-                    window.console && console.log('case repeat: elementObj', elementObj);
                     if (elementObj.type === 'depositdatalist') {
                         elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
                     }
                     returnElement = el.div();
                     for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
                         var dataItem = elementObj.fieldData[dataIndex];
-                        var resultDataRow = el.div();
+                        var resultDataRow = el.div().addClass('widget-results-repeat-section');
                         resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
                         returnElement.append(resultDataRow);
                     }
