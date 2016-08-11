@@ -7,13 +7,13 @@ declare namespace IW {
 			WidgetType: string;
 			Id?: number;
 		};
-		widgetTemplates: IWidgetFormObject[];
+		widgetTemplates: IW.IWidgetFormObject[];
 	}
 
 	interface IWidget {
 		allFieldsObject?: Object;
 		allFieldsOptionsArray: IW.IWidgetFieldOptions[];
-		prebuiltForms?: IWidgetFormObject[];
+		prebuiltForms?: IW.IWidgetFormObject[];
 	}
 
 	interface IWidgetFormObject {
@@ -28,11 +28,11 @@ declare namespace IW {
 		formGroupSpacing?: number;
 		formFieldBorderRadius?: number;
 		formButtonBorderRadius?: number;
-		buildObject?: IWidgetFormBuildObject;
+		buildObject?: IW.IWidgetFormBuildObject;
 	}
 
 	interface IWidgetOnDragStart {
-		(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
+		(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IW.IWidgetOnDragStartData): void;
 	}
 
 	interface IWidgetOnDragStartData {
@@ -45,19 +45,19 @@ declare namespace IW {
 		currentForm?: IWidgetFormObject;
 		clearSelectedForm?(): void;
 		onDragStart: IWidgetOnDragStart;
-		setCurrentForm?(currentForm: IWidgetFormObject): void;
-		buildScript?(widgetFormObject: IWidgetFormObject): void;
+		setCurrentForm?(currentForm: IW.IWidgetFormObject): void;
+		buildScript?(widgetFormObject: IW.IWidgetFormObject): void;
 	}
 
 	interface IWidgetBuilderNgScope extends ng.IScope {
-		currentForm?: IWidgetFormObject;
+		currentForm?: IW.IWidgetFormObject;
 		SaveWidget?(): void;
 		DeleteWidget?(): void;
 		UsePrebuiltForm?(): void;
 		UpdateWidgetDisplay?(): void;
-		WidgetScriptBuild?(widgetFormObject: IWidgetFormObject): void;
+		WidgetScriptBuild?(widgetFormObject: IW.IWidgetFormObject): void;
 		ClearSelectedForm?(): void;
-		SetCurrentForm?(currentForm: IWidgetFormObject): void;
+		SetCurrentForm?(currentForm: IW.IWidgetFormObject): void;
 		FilterAvailableFields?(value, index, array): boolean;
 		// isFieldOptionShown?(fieldId: string): boolean;
 		// isAddFieldButtonShown?(fieldId: string): boolean;
@@ -67,17 +67,17 @@ declare namespace IW {
 		// onDropValidation?(newIndex: number, data: any): boolean;
 		// list1?: any;
 		// list2?: any;
-		selectedForm?: IWidgetFormObject;
+		selectedForm?: IW.IWidgetFormObject;
 		widgetObject?: IWidget;
 		widgetScript?: string;
 		// WidgetType?: string;
 		widgetScriptDisplay?: string;
 		widgetScriptParse?: string;
 		scriptChangedClass?: string;
-		editFieldData?: IWidgetEditFieldData;
+		editFieldData?: IW.IWidgetEditFieldData;
 		allFieldsObject?: Object;
 		allFieldsOptionsArray?: IW.IWidgetFieldOptions[];
-		dragData?: IWidgetOnDragStartData;
+		dragData?: IW.IWidgetOnDragStartData;
 	}
 }
 

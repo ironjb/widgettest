@@ -15,20 +15,12 @@
 		formBorderType: 'well',
 		fieldSize: 'sm',
 		"fields": [{
-			"field": "depositterm", cols: 6
+			"field": "depositterm", cols: 6, value: 3
 		}, {
-			"field": "depositamount", cols: 6
+			"field": "depositamount", cols: 6, value: 4999
 		}, {
 			"field": "submit"
 		}],
-		resultPanelTitle: 'Rates',
-		resultFields: [
-			{field: 'paging'},
-			{field: 'title'},
-			{field: 'paragraph'},
-			{field: 'depositdatalist'},
-			{field: 'paging'}
-		],
 		"widgetType": "deposit",
 		"postDOMCallback": pdfun
 	};
@@ -43,12 +35,12 @@
 			formBorderType: 'panel',
 			fieldSize: 'sm',
 			panelTitle: 'my results panel title',
-			fieldList: [
+			fields: [
 				{field: 'title', value: 'Deposit List'},
 				{field: 'paragraph', value: 'explanation goes here if needed'},
 				{field: 'depositdatalist', fieldListOptions: {
 					formBorderType: 'panel',
-					fieldList: [
+					fields: [
 						{field: 'paragraph', value: 'repeater paragraph'},
 						{field: 'api', cols: 4, value: '#{APY}% is #{APY}'},
 						{field: 'totalinterestearned', cols: 4},

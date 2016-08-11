@@ -23,21 +23,21 @@ declare namespace LTWidget {
 	}
 }
 
-interface IWidgetFormBuildObject {
+interface IWidgetFormBuildObject extends LTWidget.IBuildOptions {
 	wrapperId?: string;
 	formId?: string;
-	widgetType?: string;
-	successMessageWrapperId?: string;
+	// widgetType?: string;
+	// successMessageWrapperId?: string;
 	errorAnchor?: string;
 	errorMessageWrapperId?: string;
 	errrorMessageId?: string;
-	showBuilderTools?: boolean;
+	// showBuilderTools?: boolean;
 	postDOMCallback?: any;
 
-	fieldSize?: string;
-	formBorderType?: string;
-	panelTitle?: string;
-	fields: IWidgetField[];
+	// fieldSize?: string;
+	// formBorderType?: string;
+	// panelTitle?: string;
+	// fields: IWidgetField[];
 
 	// resultWrapperId?: string;
 	// resultFieldSize?: string;
@@ -101,24 +101,24 @@ namespace LoanTekWidget {
 			$.extend(settings, options);
 			// window.console && console.log('settings.widgetType', settings.widgetType);
 
-			const COLUMNS_IN_ROW: number = 12;
-			var columnCount: number = 0;
-			var row: JQuery = null;
-			var isSingleRow: boolean;
-			var isTimeToAddRow: boolean = false;
-			var isSpaceLeftOver: boolean = false;
-			var isLastField: boolean = false;
-			var isHidden: boolean = false;
-			var isLabel: boolean;
-			var cell: JQuery = null;
-			var fieldsLength: number = settings.fields.length;
-			var nextFieldOffsetCols: number;
-			var nextFieldCols: number;
-			var nextIndex: number;
-			var remainingColSpace: number = 0;
-			var isNextHidden: boolean = false;
+			// const COLUMNS_IN_ROW: number = 12;
+			// var columnCount: number = 0;
+			// var row: JQuery = null;
+			// var isSingleRow: boolean;
+			// var isTimeToAddRow: boolean = false;
+			// var isSpaceLeftOver: boolean = false;
+			// var isLastField: boolean = false;
+			// var isHidden: boolean = false;
+			// var isLabel: boolean;
+			// var cell: JQuery = null;
+			// var fieldsLength: number = settings.fields.length;
+			// var nextFieldOffsetCols: number;
+			// var nextFieldCols: number;
+			// var nextIndex: number;
+			// var remainingColSpace: number = 0;
+			// var isNextHidden: boolean = false;
 			var fieldHelperType: string;
-			var fieldTemplate: Object;
+			// var fieldTemplate: Object;
 
 			var el = lth.CreateElement();
 			var buildTools = new BuildTools(lth);
@@ -136,6 +136,8 @@ namespace LoanTekWidget {
 			} else {
 				fieldHelperType = 'contactFields';
 			}
+
+			settings.fieldHelperType = fieldHelperType;
 
 			if (!settings.showBuilderTools) {
 				errorRow.css({ display: 'none' });
@@ -159,7 +161,7 @@ namespace LoanTekWidget {
 			// 	return $.extend({}, lth[fieldHelperType][eItem.field].fieldTemplate, eItem);
 			// }
 
-			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
+			/*// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
 			$.each(settings.fields, (i, elementItem) => {
 				if (elementItem.field) {
 					// settings.fields[i] = ExtendFieldTemplate(elementItem);
@@ -258,25 +260,23 @@ namespace LoanTekWidget {
 					function appendMoveTools(currentCell) {
 						currentCell.prepend(el.div().addClass('move-hover'));
 
-						window.console && console.log('pdi: ', fieldIndex);
-
 						currentCell.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '0' + fieldIndex }))
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '' + fieldIndex }))
 							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
 					}
 
 					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
 					isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
 
-					/*if (settings.showBuilderTools && !isTimeToAddRow && !isSpaceLeftOver) {
-						cell.append(
-							el.div().addClass('move-between-cells')
-							.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
-							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover', activeClass: 'on-drag-active'}`)
-							// .prepend(el.div().addClass('move-hover'))
-						);
-					}*/
+					// if (settings.showBuilderTools && !isTimeToAddRow && !isSpaceLeftOver) {
+					// 	cell.append(
+					// 		el.div().addClass('move-between-cells')
+					// 		.attr('data-drop', 'true')
+					// 		.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+					// 		.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover', activeClass: 'on-drag-active'}`)
+					// 		// .prepend(el.div().addClass('move-hover'))
+					// 	);
+					// }
 
 					if (elementItem.type === lth.contactFields.successmessage.id) {
 						var wrapElement: JQuery = isSingleRow ? row : cell;
@@ -318,18 +318,18 @@ namespace LoanTekWidget {
 					if (isTimeToAddRow) {
 						returnForm.append(row);
 
-						/*if (settings.showBuilderTools) {
-							returnForm.append(
-								el.div()
-								.addClass('move-between-rows-wrapper')
-								.attr('data-drop', 'true')
-								.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
-								.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
-								.append(
-									el.div().addClass('move-between-rows')
-								)
-							);
-						}*/
+						// if (settings.showBuilderTools) {
+						// 	returnForm.append(
+						// 		el.div()
+						// 		.addClass('move-between-rows-wrapper')
+						// 		.attr('data-drop', 'true')
+						// 		.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: fieldIndex, space: 'null', isPh: 'true' }))
+						// 		.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
+						// 		.append(
+						// 			el.div().addClass('move-between-rows')
+						// 		)
+						// 	);
+						// }
 
 						row = null;
 						columnCount = 0;
@@ -366,9 +366,10 @@ namespace LoanTekWidget {
 
 			} else if (settings.panelTitle) {
 				returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
-			}
+			}*/
+			var returnForm2 = buildTools.BuildFields(returnForm, settings);
 
-			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass/* + ' container-fluid'*/).empty().append(returnForm);
+			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm);
 			if (settings.showBuilderTools) {
 				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
 			}
@@ -533,10 +534,6 @@ namespace LoanTekWidget {
 				var depositPostData: any = {};
 				$(settings.form_submit).prop('disabled', false);
 
-				// Testing
-				$(settings.form_term).val(3);
-				$(settings.form_amount).val(4999);
-
 				$(settings.form_id).submit(function (event) {
 					event.preventDefault();
 					$(settings.form_errorMsgWrapper).hide(100);
@@ -571,8 +568,8 @@ namespace LoanTekWidget {
 						$(settings.form_submit).prop('disabled', false);
 						// window.console && console.log('request successful: ', result, options.resultDisplayOptions);
 
-						for (var flIndex = options.resultDisplayOptions.fieldList.length - 1; flIndex >= 0; flIndex--) {
-							var fieldItem = options.resultDisplayOptions.fieldList[flIndex];
+						for (var flIndex = options.resultDisplayOptions.fields.length - 1; flIndex >= 0; flIndex--) {
+							var fieldItem = options.resultDisplayOptions.fields[flIndex];
 							if (fieldItem.field === 'depositdatalist') {
 								fieldItem.fieldData = result;
 							}
@@ -682,7 +679,7 @@ namespace LoanTekWidget {
 			var isHidden: boolean = false;
 			var isLabel: boolean;
 			var cell: JQuery = null;
-			var fieldsLength: number = settings.fieldList.length;
+			var fieldsLength: number = settings.fields.length;
 			var nextFieldOffsetCols: number;
 			var nextFieldCols: number;
 			var nextIndex: number;
@@ -696,15 +693,15 @@ namespace LoanTekWidget {
 			// window.console && console.log('mainWrapper', mainWrapper);
 
 			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
-			$.each(settings.fieldList, (i, elementItem) => {
+			$.each(settings.fields, (i, elementItem) => {
 				if (elementItem.field) {
-					// settings.fieldList[i] = ExtendFieldTemplate(elementItem);
+					// settings.fields[i] = ExtendFieldTemplate(elementItem);
 					// window.console && console.log('settings.fieldHelperType', settings.fieldHelperType);
-					settings.fieldList[i] = lth.ExtendWidgetFieldTemplate(elementItem, settings.fieldHelperType);
+					settings.fields[i] = lth.ExtendWidgetFieldTemplate(elementItem, settings.fieldHelperType);
 				}
 			});
 
-			$.each(settings.fieldList, (fieldIndex, elementItem) => {
+			$.each(settings.fields, (fieldIndex, elementItem) => {
 				// window.console && console.log('elementItem', elementItem);
 				if (elementItem.offsetCols && !elementItem.cols) {
 					elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
@@ -720,9 +717,9 @@ namespace LoanTekWidget {
 				nextIndex = fieldIndex + 1;
 				do {
 					// nextFieldCols needs to ignore hidden fields.  instead it should check the next item in the array
-					isNextHidden = settings.fieldList[nextIndex] && settings.fieldList[nextIndex].type === 'hidden';
-					nextFieldOffsetCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].offsetCols) ? settings.fieldList[nextIndex].offsetCols : 0;
-					nextFieldCols = (settings.fieldList[nextIndex] && settings.fieldList[nextIndex].cols) ? settings.fieldList[nextIndex].cols + nextFieldOffsetCols : isNextHidden ? 0 : COLUMNS_IN_ROW;
+					isNextHidden = settings.fields[nextIndex] && settings.fields[nextIndex].type === 'hidden';
+					nextFieldOffsetCols = (settings.fields[nextIndex] && settings.fields[nextIndex].offsetCols) ? settings.fields[nextIndex].offsetCols : 0;
+					nextFieldCols = (settings.fields[nextIndex] && settings.fields[nextIndex].cols) ? settings.fields[nextIndex].cols + nextFieldOffsetCols : isNextHidden ? 0 : COLUMNS_IN_ROW;
 					nextIndex++;
 				} while (nextFieldCols === 0 && nextIndex <= fieldsLength)
 
@@ -907,11 +904,13 @@ namespace LoanTekWidget {
 				mainWrapper.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 			}
 			// Replaces placeholder text in DOM with data
-			mainWrapper.each(function(index, element) {
-				lth.ModifyTextElementsInDOM(element, function(nodeValue: string) {
-					return lth.Interpolate(nodeValue, data);
+			if (data) {
+				mainWrapper.each(function(index, element) {
+					lth.ModifyTextElementsInDOM(element, function(nodeValue: string) {
+						return lth.Interpolate(nodeValue, data);
+					});
 				});
-			});
+			}
 
 			return mainWrapper;
 		}

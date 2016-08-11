@@ -14,7 +14,7 @@ declare namespace LTWidget {
 		widgetType?: string;
 		panelTitle?: string;
 		showBuilderTools?: boolean;
-		fieldList?: IWidgetField[];
+		fields?: IWidgetField[];
 		fieldSize?: string;
 		fieldHelperType?: string;
 		successMessageWrapperId?: string;
@@ -356,6 +356,10 @@ namespace LoanTekWidget {
 
 			helpers.prototype.SetRequiredFields(this);
 		}
+
+		asArray() {
+			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+		}
 	}
 
 	class depositResultDataFields {
@@ -373,6 +377,10 @@ namespace LoanTekWidget {
 			this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
 			this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
 			this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
+		}
+
+		asArray() {
+			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
 		}
 	}
 

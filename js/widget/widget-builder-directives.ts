@@ -125,7 +125,7 @@ var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.h
 				};
 
 				scope.EditWidgetField = () => {
-					var fieldEditOptions: IFieldEditOptions = {
+					var fieldEditOptions: IW.IFieldEditOptions = {
 						instanceOptions: {
 							currentForm: angular.copy(scope.fieldData.currentForm),
 							currentFieldIndex: scope.toolInfo.index

@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/tsd.d.ts" />
+/// <reference path="../../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/interfaces-widget.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
@@ -30,7 +30,7 @@
 			};
 		});
 	}*/);
-	var ltm = new LoanTekWidgetHelpers.helpers($);
+	var ltm = new LoanTekWidgetHelpersTest.helpers($);
 	// var ltp = new LoanTekWidgetHelpers.properties();
 	// window.console && console.log('ltp', ltp.hsize.h1.id);
 	var el = ltm.CreateElement();
@@ -51,7 +51,7 @@
 		private _specifier: string;
 		private _borderType: string;
 
-		constructor(currentFormObject: IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) {
+		constructor(currentFormObject: tsIW.IWidgetFormObject, excludeCaptchaField?: boolean, specifier?: string) {
 			var _thisC = this;
 			specifier = specifier || '';
 			_thisC._specifier = specifier;
@@ -233,7 +233,7 @@
 		// 	currentForm: $scope.currentForm
 		// 	, WidgetScriptBuild: WidgetScriptBuild
 		// };
-		var contactWidget: IWidget = {
+		var contactWidget: tsIW.IWidget = {
 			prebuiltForms: [
 				{
 					name: 'Default Contact Widget',
@@ -309,11 +309,11 @@
 			]
 		};
 
-		var WidgetScriptBuild = (currentFormObj: IWidgetFormObject) => {
+		var WidgetScriptBuild = (currentFormObj: tsIW.IWidgetFormObject) => {
 			// $scope.currentForm = currentFormObj;
-			var ct: IWidgetFormObject = angular.copy(currentFormObj);
-			var cfo: IWidgetFormBuildObject = angular.copy(ct.buildObject);
-			var cfod: IWidgetFormBuildObject = angular.copy(ct.buildObject);
+			var ct: tsIW.IWidgetFormObject = angular.copy(currentFormObj);
+			var cfo: tsIW.IWidgetFormBuildObject = angular.copy(ct.buildObject);
+			var cfod: tsIW.IWidgetFormBuildObject = angular.copy(ct.buildObject);
 			var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 			var wScriptDisplay: string = wScript;
 			var hasCaptchaField = ltm.GetIndexOfFirstObjectInArray(cfo.fields, 'field', 'captcha') >= 0;
@@ -602,7 +602,7 @@
 					});
 
 					$scope.saveClick = () => {
-						var newForm: IWidgetFormObject = angular.copy($scope.modForm);
+						var newForm: tsIW.IWidgetFormObject = angular.copy($scope.modForm);
 						newForm.name = 'modified';
 						// ltm.hn.h2
 

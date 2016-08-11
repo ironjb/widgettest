@@ -287,7 +287,7 @@ var LoanTekWidgetHelperTest = LoanTekWidgetHelperTest || new LoanTekWidgetTest.h
 
 			// templateUrl = '/template.html?t=' + new Date().getTime();
 			// templateUrl = 'template/modal/editField.html';
-			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IW.IWidgetEditFieldNgScope, $uibModalInstance, instanceOptions: IFieldEditModalInstanceOptions) => {
+			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IW.IWidgetEditFieldNgScope, $uibModalInstance, instanceOptions: IW.IFieldEditModalInstanceOptions) => {
 				$scope.modelOptions = modelOptions;
 				$scope.modForm = angular.copy(instanceOptions.currentForm);
 				$scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];

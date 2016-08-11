@@ -37,6 +37,7 @@ interface IWidget {
 	widgetType?: string;
 	allFieldsObject?: Object;
 	allFieldsOptionsArray: IWidgetFieldOptions[];
+	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 	prebuiltForms?: IWidgetFormObject[];
 }
 
@@ -53,6 +54,7 @@ interface IWidgetFormObject {
 	formFieldBorderRadius?: number;
 	formButtonBorderRadius?: number;
 	buildObject?: IWidgetFormBuildObject;
+	resultObject?: LTWidget.IResultBuildOptions;
 }
 
 interface IWidgetOnDragStart {
@@ -97,6 +99,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	editFieldData?: IWidgetEditFieldData;
 	allFieldsObject?: Object;
 	allFieldsOptionsArray?: IWidgetFieldOptions[];
+	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 	dragData?: IWidgetOnDragStartData;
 	isExistingModel?: boolean;
 }
@@ -118,7 +121,7 @@ namespace LoanTekWidget {
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
+			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
 				widgetObj.widgetType = lth.widgetType.quote.id;
@@ -130,6 +133,7 @@ namespace LoanTekWidget {
 				widgetObj.widgetType = lth.widgetType.deposit.id;
 				widgetObj.allFieldsObject = lth.depositFields;
 				widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
+				widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
 			} else {
 				widgetObj.widgetType = lth.widgetType.contact.id;
 				widgetObj.allFieldsObject = lth.contactFields;
@@ -189,6 +193,9 @@ namespace LoanTekWidget {
 
 				$scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
 				$scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
+				if (widgetObj.allResultFieldsOptionsArray) {
+					$scope.allResultFieldsOptionsArray = angular.copy(widgetObj.allResultFieldsOptionsArray);
+				}
 
 				$scope.WidgetScriptBuild = WidgetScriptBuild;
 				$scope.SaveWidget = SaveWidget;
@@ -203,6 +210,7 @@ namespace LoanTekWidget {
 				BuilderInit();
 
 				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], (newValue) => {
+					// Checks Available Fields to see if they have been added to widget
 					for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
 						var field = $scope.allFieldsOptionsArray[i];
 						var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);

@@ -8,7 +8,7 @@ var LoanTekWidget;
             var ltbh = new LoanTekWidget.BuilderHelpers();
             var el = lth.CreateElement();
             $('input textarea').placeholder();
-            var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, prebuiltForms: null };
+            var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
             if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
                 widgetObj.widgetType = lth.widgetType.quote.id;
             }
@@ -19,6 +19,7 @@ var LoanTekWidget;
                 widgetObj.widgetType = lth.widgetType.deposit.id;
                 widgetObj.allFieldsObject = lth.depositFields;
                 widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
+                widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
             }
             else {
                 widgetObj.widgetType = lth.widgetType.contact.id;
@@ -65,6 +66,9 @@ var LoanTekWidget;
                     }
                     $scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
                     $scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
+                    if (widgetObj.allResultFieldsOptionsArray) {
+                        $scope.allResultFieldsOptionsArray = angular.copy(widgetObj.allResultFieldsOptionsArray);
+                    }
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
                     $scope.SaveWidget = SaveWidget;
                     $scope.RevertWidget = RevertWidget;

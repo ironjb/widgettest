@@ -161,6 +161,9 @@ var LoanTekWidget;
             this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist' } };
             helpers.prototype.SetRequiredFields(this);
         }
+        depositResultFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
         return depositResultFields;
     }());
     var depositResultDataFields = (function () {
@@ -173,6 +176,9 @@ var LoanTekWidget;
             this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
             this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
         }
+        depositResultDataFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
         return depositResultDataFields;
     }());
     var postObjects = (function () {
