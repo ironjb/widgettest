@@ -10,22 +10,23 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 angular.extend(settings, options);
                 var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
                         $scope.modForm = angular.copy(instanceOptions.currentForm);
+                        $scope.modBuildOptions = $scope.modForm[instanceOptions.formObjectType];
                         $scope.borderType = angular.copy(lth.formBorderType);
                         $scope.formWidthUnits = angular.copy(lth.widthUnit);
                         $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
                         $scope.modelOptions = ngModelOptions;
                         $scope.changeFormWidthUnit = function ($event, unit) {
                             $event.preventDefault();
-                            $scope.modForm.formWidthUnit = unit.id;
+                            $scope.modBuildOptions.formWidthUnit = unit.id;
                         };
                         $scope.borderTypeChange = function () {
-                            if ($scope.modForm.buildObject.formBorderType === lth.formBorderType.none.id) {
+                            if ($scope.modBuildOptions.formBorderType === lth.formBorderType.none.id) {
                                 $scope.isBorderTypeNone = true;
                             }
                             else {
                                 $scope.isBorderTypeNone = false;
                             }
-                            if ($scope.modForm.buildObject.formBorderType === lth.formBorderType.panel.id) {
+                            if ($scope.modBuildOptions.formBorderType === lth.formBorderType.panel.id) {
                                 $scope.isBorderTypePanel = true;
                             }
                             else {
@@ -33,11 +34,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                         };
                         $scope.fieldSizeChange = function () {
-                            if ($scope.modForm.buildObject.fieldSize === lth.bootstrap.inputSizing.sm.id) {
+                            if ($scope.modBuildOptions.fieldSize === lth.bootstrap.inputSizing.sm.id) {
                                 $scope.fieldSizeClass = 'form-group-sm';
                                 $scope.buttonSizeClass = 'btn-sm';
                             }
-                            else if ($scope.modForm.buildObject.fieldSize === lth.bootstrap.inputSizing.lg.id) {
+                            else if ($scope.modBuildOptions.fieldSize === lth.bootstrap.inputSizing.lg.id) {
                                 $scope.fieldSizeClass = 'form-group-lg';
                                 $scope.buttonSizeClass = 'btn-lg';
                             }
@@ -46,31 +47,31 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 $scope.buttonSizeClass = '';
                             }
                         };
-                        if (lth.isStringNullOrEmpty($scope.modForm.buildObject.fieldSize)) {
-                            $scope.modForm.buildObject.fieldSize = lth.bootstrap.inputSizing.getDefault().id;
+                        if (lth.isStringNullOrEmpty($scope.modBuildOptions.fieldSize)) {
+                            $scope.modBuildOptions.fieldSize = lth.bootstrap.inputSizing.getDefault().id;
                         }
-                        if (!$scope.modForm.formWidthUnit) {
-                            $scope.modForm.formWidthUnit = lth.widthUnit.getDefault().id;
+                        if (!$scope.modBuildOptions.formWidthUnit) {
+                            $scope.modBuildOptions.formWidthUnit = lth.widthUnit.getDefault().id;
                         }
-                        if (!$scope.modForm.buildObject.formBorderType) {
-                            $scope.modForm.buildObject.formBorderType = lth.formBorderType.none.id;
+                        if (!$scope.modBuildOptions.formBorderType) {
+                            $scope.modBuildOptions.formBorderType = lth.formBorderType.none.id;
                         }
                         $scope.borderTypeChange();
                         $scope.fieldSizeChange();
                         var watchGroups = [
-                            'modForm.buildObject.formBorderType',
-                            'modForm.buildObject.fieldSize',
-                            'modForm.formBg',
-                            'modForm.formBorderColor',
-                            'modForm.formBorderRadius',
-                            'modForm.formTitleColor',
-                            'modForm.formTitleBgColor',
-                            'modForm.formGroupSpacing',
-                            'modForm.formFieldBorderRadius',
-                            'modForm.formButtonBorderRadius'
+                            'modBuildOptions.formBorderType',
+                            'modBuildOptions.fieldSize',
+                            'modBuildOptions.formBg',
+                            'modBuildOptions.formBorderColor',
+                            'modBuildOptions.formBorderRadius',
+                            'modBuildOptions.formTitleColor',
+                            'modBuildOptions.formTitleBgColor',
+                            'modBuildOptions.formGroupSpacing',
+                            'modBuildOptions.formFieldBorderRadius',
+                            'modBuildOptions.formButtonBorderRadius'
                         ];
                         $scope.$watchGroup(watchGroups, function (newValue, oldValue) {
-                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modBuildOptions, true, '.ltw-preview');
                             var previewStyles = applyFormStyles.getStyles();
                             $scope.previewStyles = previewStyles;
                         });
@@ -84,41 +85,43 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                         };
                         $scope.saveClick = function () {
+                            var newBuildOptions = angular.copy($scope.modBuildOptions);
                             var newForm = angular.copy($scope.modForm);
                             newForm.name = 'modified';
-                            if (!lth.isNumber(newForm.formBorderRadius) || newForm.formBorderRadius === lth.getDefaultBorderRadius(newForm.buildObject.fieldSize)) {
-                                delete newForm.formBorderRadius;
+                            if (!lth.isNumber(newBuildOptions.formBorderRadius) || newBuildOptions.formBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
+                                delete newBuildOptions.formBorderRadius;
                             }
-                            if (lth.isStringNullOrEmpty(newForm.buildObject.panelTitle)) {
-                                delete newForm.buildObject.panelTitle;
-                                delete newForm.formTitleColor;
-                                delete newForm.formTitleBgColor;
+                            if (lth.isStringNullOrEmpty(newBuildOptions.panelTitle)) {
+                                delete newBuildOptions.panelTitle;
+                                delete newBuildOptions.formTitleColor;
+                                delete newBuildOptions.formTitleBgColor;
                             }
-                            if (!lth.isNumber(newForm.formWidth)) {
-                                delete newForm.formWidth;
-                                delete newForm.formWidthUnit;
+                            if (!lth.isNumber(newBuildOptions.formWidth)) {
+                                delete newBuildOptions.formWidth;
+                                delete newBuildOptions.formWidthUnit;
                             }
-                            if (newForm.formWidthUnit === lth.widthUnit.getDefault().id) {
-                                delete newForm.formWidthUnit;
+                            if (newBuildOptions.formWidthUnit === lth.widthUnit.getDefault().id) {
+                                delete newBuildOptions.formWidthUnit;
                             }
-                            if (newForm.formGroupSpacing === lth.defaultVerticalSpacing) {
-                                delete newForm.formGroupSpacing;
+                            if (newBuildOptions.formGroupSpacing === lth.defaultVerticalSpacing) {
+                                delete newBuildOptions.formGroupSpacing;
                             }
-                            if (newForm.formFieldBorderRadius === lth.getDefaultBorderRadius(newForm.buildObject.fieldSize)) {
-                                delete newForm.formFieldBorderRadius;
+                            if (newBuildOptions.formFieldBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
+                                delete newBuildOptions.formFieldBorderRadius;
                             }
-                            if (newForm.formButtonBorderRadius === lth.getDefaultBorderRadius(newForm.buildObject.fieldSize)) {
-                                delete newForm.formButtonBorderRadius;
+                            if (newBuildOptions.formButtonBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
+                                delete newBuildOptions.formButtonBorderRadius;
                             }
-                            if (newForm.buildObject.fieldSize === lth.bootstrap.inputSizing.getDefault().id) {
-                                delete newForm.buildObject.fieldSize;
+                            if (newBuildOptions.fieldSize === lth.bootstrap.inputSizing.getDefault().id) {
+                                delete newBuildOptions.fieldSize;
                             }
-                            if (!newForm.buildObject.formBorderType || newForm.buildObject.formBorderType === lth.formBorderType.none.id) {
-                                delete newForm.buildObject.formBorderType;
-                                delete newForm.formBg;
-                                delete newForm.formBorderRadius;
-                                delete newForm.formBorderColor;
+                            if (!newBuildOptions.formBorderType || newBuildOptions.formBorderType === lth.formBorderType.none.id) {
+                                delete newBuildOptions.formBorderType;
+                                delete newBuildOptions.formBg;
+                                delete newBuildOptions.formBorderRadius;
+                                delete newBuildOptions.formBorderColor;
                             }
+                            newForm[instanceOptions.formObjectType] = newBuildOptions;
                             $uibModalInstance.close(newForm);
                         };
                         $scope.cancelClick = function () {
@@ -157,7 +160,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         $scope.modForm = angular.copy(instanceOptions.currentForm);
                         $scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];
                         $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
-                        var applyFormStyles = new LoanTekWidget.ApplyFormStyles($scope.modForm, true, '.ltw-preview');
+                        var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modForm, true, '.ltw-preview');
                         var previewStyles = applyFormStyles.getStyles();
                         var ft = instanceOptions.fieldOptions.fieldTemplate;
                         var el = ft.element;

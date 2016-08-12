@@ -35,7 +35,7 @@ var LoanTekWidget;
             }
             var widgetBuilderApp = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'lt.services', 'ltw.services', 'ltw.directives', 'ltw.templates']);
             widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'commonServices', 'widgetServices', function ($scope, $timeout, commonServices, widgetServices) {
-                    var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//client.loantek.com';
+                    var wwwRoot = (widgetData.scriptsDomain) ? widgetData.scriptsDomain.replace(/http:\/\/|https:\/\//, '//') : '//client.loantek.com';
                     var ltWidgetCSS = ['/Content/widget/css'];
                     var widgetScripts = ['/bundles/widget/widget'];
                     if (window.location.port === '58477' || window.location.port === '8080') {
@@ -182,6 +182,10 @@ var LoanTekWidget;
                     }
                     function WidgetScriptBuild(currentFormObj) {
                         currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+                        if (currentFormObj.resultObject) {
+                            currentFormObj.resultObject.widgetType = widgetObj.widgetType;
+                            window.console && console.log('currentFormObj', currentFormObj);
+                        }
                         $scope.editFieldData = {
                             widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase(),
                             currentForm: $scope.currentForm,
@@ -206,12 +210,6 @@ var LoanTekWidget;
                             var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
                             wScript += cssLink;
                             wScriptDisplay += cssLink;
-                        }
-                        var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
-                        formStyles = new LoanTekWidget.ApplyFormStyles(cfo, !hasCaptchaField).getStyles();
-                        if (formStyles) {
-                            wScript += lth.Interpolate(styleWrap, { styles: formStyles });
-                            wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
                         }
                         var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
                         wScript += widgetWrapper;

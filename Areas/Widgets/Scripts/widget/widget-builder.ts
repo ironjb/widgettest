@@ -2,6 +2,7 @@
 /// <reference path="../common/widget-helpers.ts" />
 
 interface IWidgetModelData {
+	scriptsDomain?: string;
 	modelUrls?: string[];
 	modelWidget?: IWidgetModelDataModelWidget;
 	widgetTemplates?: IWidgetModelDataTemplate[];
@@ -43,16 +44,16 @@ interface IWidget {
 
 interface IWidgetFormObject {
 	name: string;
-	formWidth?: number;
-	formWidthUnit?: string;
-	formBg?: string;
-	formBorderRadius?: number;
-	formBorderColor?: string;
-	formTitleColor?: string;
-	formTitleBgColor?: string;
-	formGroupSpacing?: number;
-	formFieldBorderRadius?: number;
-	formButtonBorderRadius?: number;
+	// formWidth?: number;
+	// formWidthUnit?: string;
+	// formBg?: string;
+	// formBorderRadius?: number;
+	// formBorderColor?: string;
+	// formTitleColor?: string;
+	// formTitleBgColor?: string;
+	// formGroupSpacing?: number;
+	// formFieldBorderRadius?: number;
+	// formButtonBorderRadius?: number;
 	buildObject?: IWidgetFormBuildObject;
 	resultObject?: LTWidget.IResultBuildOptions;
 }
@@ -153,7 +154,7 @@ namespace LoanTekWidget {
 
 			// Angular Widget Controller
 			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'commonServices', 'widgetServices', function ($scope: IWidgetBuilderNgScope, $timeout, commonServices: ICommonNgServices, widgetServices: IWidgetNgServices) {
-				var wwwRoot = window.location.port === '8080' || window.location.port === '58477' ? '' : '//client.loantek.com';
+				var wwwRoot = (widgetData.scriptsDomain) ? widgetData.scriptsDomain.replace(/http:\/\/|https:\/\//, '//') : '//client.loantek.com';
 				var ltWidgetCSS: string[] = ['/Content/widget/css'];
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
 
@@ -324,6 +325,10 @@ namespace LoanTekWidget {
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+					if (currentFormObj.resultObject) {
+						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
+						window.console && console.log('currentFormObj', currentFormObj);
+					}
 					// window.console && console.log('currentFormObj', currentFormObj, widgetData.modelWidget.WidgetType);
 					$scope.editFieldData = {
 						widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase()
@@ -353,13 +358,13 @@ namespace LoanTekWidget {
 						wScriptDisplay += cssLink;
 					}
 
-					// Add styles
-					var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
-					formStyles = new ApplyFormStyles(cfo, !hasCaptchaField).getStyles();
-					if (formStyles) {
-						wScript += lth.Interpolate(styleWrap, { styles: formStyles });
-						wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
-					}
+					// // Add styles
+					// var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
+					// formStyles = new ApplyFormStyles(cfo, !hasCaptchaField).getStyles();
+					// if (formStyles) {
+					// 	wScript += lth.Interpolate(styleWrap, { styles: formStyles });
+					// 	wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
+					// }
 
 					// Add Widget Wrapper
 					var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';

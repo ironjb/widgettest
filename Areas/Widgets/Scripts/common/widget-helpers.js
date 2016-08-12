@@ -5,208 +5,24 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var LoanTekWidget;
 (function (LoanTekWidget) {
-    var hSizing = (function () {
-        function hSizing() {
-            this.h1 = { id: 1, name: 'Heading 1' };
-            this.h2 = { id: 2, name: 'Heading 2' };
-            this.h3 = { id: 3, name: 'Heading 3' };
-            this.h4 = { id: 4, name: 'Heading 4' };
-            this.h5 = { id: 5, name: 'Heading 5' };
-            this.h6 = { id: 6, name: 'Heading 6' };
-        }
-        hSizing.prototype.getDefault = function () {
-            return this.h4;
-        };
-        hSizing.prototype.asArray = function () {
-            return helpers.prototype.ConvertObjectToArray(this);
-        };
-        return hSizing;
-    }());
-    var inputSizing = (function () {
-        function inputSizing() {
-            this.sm = { id: 'sm', name: 'Small' };
-            this.md = { id: 'md', name: 'Medium' };
-            this.lg = { id: 'lg', name: 'Large' };
-        }
-        inputSizing.prototype.getDefault = function () {
-            return this.md;
-        };
-        return inputSizing;
-    }());
-    var gridSizing = (function () {
-        function gridSizing() {
-            this.xs = { id: 'xs', name: 'xs' };
-            this.sm = { id: 'sm', name: 'sm' };
-            this.md = { id: 'md', name: 'md' };
-            this.lg = { id: 'lg', name: 'lg' };
-        }
-        return gridSizing;
-    }());
-    var gridColumns = (function () {
-        function gridColumns() {
-            this.n3 = { id: 3, name: '1/4th' };
-            this.n4 = { id: 4, name: '1/3rd' };
-            this.n6 = { id: 6, name: '1/2' };
-            this.n8 = { id: 8, name: '2/3rds' };
-            this.n9 = { id: 9, name: '3/4ths' };
-            this.n12 = { id: 12, name: 'Full Width' };
-        }
-        gridColumns.prototype.getDefault = function () {
-            return this.n12;
-        };
-        gridColumns.prototype.asArray = function () {
-            return helpers.prototype.ConvertObjectToArray(this);
-        };
-        return gridColumns;
-    }());
-    var offsetColumns = (function (_super) {
-        __extends(offsetColumns, _super);
-        function offsetColumns() {
-            _super.call(this);
-            this.n12 = { id: 0, name: 'No Offset' };
-        }
-        return offsetColumns;
-    }(gridColumns));
-    var bootstrap = (function () {
-        function bootstrap() {
-            this.inputSizing = new inputSizing;
-            this.gridSizing = new gridSizing;
-            this.gridColumns = new gridColumns;
-            this.offsetColumns = new offsetColumns;
-            this.gridColumnsArray = helpers.prototype.ConvertObjectToArray(this.gridColumns);
-        }
-        return bootstrap;
-    }());
-    var formBorderType = (function () {
-        function formBorderType() {
-            this.panel = { id: 'panel', name: 'Panel' };
-            this.well = { id: 'well', name: 'Well' };
-            this.none = { id: 'none', name: 'None' };
-        }
-        return formBorderType;
-    }());
-    var widthUnit = (function () {
-        function widthUnit() {
-            this.px = { id: 'px', name: 'Pixels' };
-            this.per = { id: '%', name: 'Percent' };
-        }
-        widthUnit.prototype.getDefault = function () {
-            return this.per;
-        };
-        return widthUnit;
-    }());
-    var widgetType = (function () {
-        function widgetType() {
-            this.contact = { id: 'contact', name: 'Contact' };
-            this.quote = { id: 'quote', name: 'Quote' };
-            this.rate = { id: 'rate', name: 'Rate' };
-            this.deposit = { id: 'deposit', name: 'Deposit' };
-        }
-        return widgetType;
-    }());
-    var sharedFields = (function () {
-        function sharedFields() {
-            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
-            this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
-        }
-        return sharedFields;
-    }());
-    var contactFields = (function () {
-        function contactFields() {
-            var sf = new sharedFields;
-            this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
-            this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
-            this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
-            this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwLastName', placeholder: 'Last Name', required: true } };
-            this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
-            this.phone = { id: 'phone', name: 'Phone', fieldTemplate: { element: 'input', type: 'tel', id: 'ltwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' } };
-            this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltwCompany', placeholder: 'Company' } };
-            this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
-            this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
-            this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-            this.submit = sf.submit;
-            this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
-            this.label = sf.label;
-            this.title = sf.title;
-            this.paragraph = sf.paragraph;
-            helpers.prototype.SetRequiredFields(this);
-        }
-        return contactFields;
-    }());
-    var depositFields = (function () {
-        function depositFields() {
-            var sf = new sharedFields;
-            this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term' } };
-            this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
-            this.submit = sf.submit;
-            this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-            this.label = sf.label;
-            this.title = sf.title;
-            this.paragraph = sf.paragraph;
-            helpers.prototype.SetRequiredFields(this);
-        }
-        depositFields.prototype.asArray = function () {
-            return helpers.prototype.ConvertObjectToArray(this);
-        };
-        return depositFields;
-    }());
-    var depositResultFields = (function () {
-        function depositResultFields() {
-            var sf = new sharedFields;
-            this.label = sf.label;
-            this.title = sf.title;
-            this.paragraph = sf.paragraph;
-            this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist' } };
-            helpers.prototype.SetRequiredFields(this);
-        }
-        depositResultFields.prototype.asArray = function () {
-            return helpers.prototype.ConvertObjectToArray(this);
-        };
-        return depositResultFields;
-    }());
-    var depositResultDataFields = (function () {
-        function depositResultDataFields() {
-            var sf = new sharedFields;
-            this.label = sf.label;
-            this.title = sf.title;
-            this.paragraph = sf.paragraph;
-            this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
-            this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
-            this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
-        }
-        depositResultDataFields.prototype.asArray = function () {
-            return helpers.prototype.ConvertObjectToArray(this);
-        };
-        return depositResultDataFields;
-    }());
-    var postObjects = (function () {
-        function postObjects() {
-        }
-        postObjects.prototype.contact = function () {
-            return new LoanTekWidget.PostObject_Contact;
-        };
-        return postObjects;
-    }());
     var helpers = (function () {
         function helpers(jq) {
             this.$ = jq;
-            this.hsize = new hSizing;
-            this.bootstrap = new bootstrap;
-            this.formBorderType = new formBorderType;
+            this.hsize = new hSizing();
+            this.bootstrap = new bootstrap();
+            this.formBorderType = new formBorderType();
             this.formBorderTypeArray = this.ConvertObjectToArray(this.formBorderType);
-            this.widthUnit = new widthUnit;
-            this.widgetType = new widgetType;
+            this.widthUnit = new widthUnit();
+            this.widgetType = new widgetType();
             this.defaultVerticalSpacing = 15;
             this.defaultFormSpecifierClass = 'ltwF';
             this.defaultResultSpecifierClass = 'ltwR';
-            this.contactFields = new contactFields;
+            this.contactFields = new contactFields();
             this.contactFieldsArray = this.ConvertObjectToArray(this.contactFields);
-            this.depositFields = new depositFields;
-            this.depositResultFields = new depositResultFields;
-            this.depositResultDataFields = new depositResultDataFields;
-            this.postObjects = new postObjects;
+            this.depositFields = new depositFields();
+            this.depositResultFields = new depositResultFields();
+            this.depositResultDataFields = new depositResultDataFields();
+            this.postObjects = new postObjects();
         }
         helpers.prototype.isNumber = function (numCheck) {
             return typeof numCheck === 'number';
@@ -443,4 +259,252 @@ var LoanTekWidget;
         return helpers;
     }());
     LoanTekWidget.helpers = helpers;
+    var hSizing = (function () {
+        function hSizing() {
+            this.h1 = { id: 1, name: 'Heading 1' };
+            this.h2 = { id: 2, name: 'Heading 2' };
+            this.h3 = { id: 3, name: 'Heading 3' };
+            this.h4 = { id: 4, name: 'Heading 4' };
+            this.h5 = { id: 5, name: 'Heading 5' };
+            this.h6 = { id: 6, name: 'Heading 6' };
+        }
+        hSizing.prototype.getDefault = function () {
+            return this.h4;
+        };
+        hSizing.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return hSizing;
+    }());
+    var inputSizing = (function () {
+        function inputSizing() {
+            this.sm = { id: 'sm', name: 'Small' };
+            this.md = { id: 'md', name: 'Medium' };
+            this.lg = { id: 'lg', name: 'Large' };
+        }
+        inputSizing.prototype.getDefault = function () {
+            return this.md;
+        };
+        return inputSizing;
+    }());
+    var gridSizing = (function () {
+        function gridSizing() {
+            this.xs = { id: 'xs', name: 'xs' };
+            this.sm = { id: 'sm', name: 'sm' };
+            this.md = { id: 'md', name: 'md' };
+            this.lg = { id: 'lg', name: 'lg' };
+        }
+        return gridSizing;
+    }());
+    var gridColumns = (function () {
+        function gridColumns() {
+            this.n3 = { id: 3, name: '1/4th' };
+            this.n4 = { id: 4, name: '1/3rd' };
+            this.n6 = { id: 6, name: '1/2' };
+            this.n8 = { id: 8, name: '2/3rds' };
+            this.n9 = { id: 9, name: '3/4ths' };
+            this.n12 = { id: 12, name: 'Full Width' };
+        }
+        gridColumns.prototype.getDefault = function () {
+            return this.n12;
+        };
+        gridColumns.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return gridColumns;
+    }());
+    var offsetColumns = (function (_super) {
+        __extends(offsetColumns, _super);
+        function offsetColumns() {
+            _super.call(this);
+            this.n12 = { id: 0, name: 'No Offset' };
+        }
+        return offsetColumns;
+    }(gridColumns));
+    var bootstrap = (function () {
+        function bootstrap() {
+            this.inputSizing = new inputSizing;
+            this.gridSizing = new gridSizing;
+            this.gridColumns = new gridColumns;
+            this.offsetColumns = new offsetColumns;
+            this.gridColumnsArray = helpers.prototype.ConvertObjectToArray(this.gridColumns);
+        }
+        return bootstrap;
+    }());
+    var formBorderType = (function () {
+        function formBorderType() {
+            this.panel = { id: 'panel', name: 'Panel' };
+            this.well = { id: 'well', name: 'Well' };
+            this.none = { id: 'none', name: 'None' };
+        }
+        return formBorderType;
+    }());
+    var widthUnit = (function () {
+        function widthUnit() {
+            this.px = { id: 'px', name: 'Pixels' };
+            this.per = { id: '%', name: 'Percent' };
+        }
+        widthUnit.prototype.getDefault = function () {
+            return this.per;
+        };
+        return widthUnit;
+    }());
+    var widgetType = (function () {
+        function widgetType() {
+            this.contact = { id: 'contact', name: 'Contact' };
+            this.quote = { id: 'quote', name: 'Quote' };
+            this.rate = { id: 'rate', name: 'Rate' };
+            this.deposit = { id: 'deposit', name: 'Deposit' };
+        }
+        return widgetType;
+    }());
+    var sharedFields = (function () {
+        function sharedFields() {
+            this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
+            this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
+            this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+            this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+        }
+        return sharedFields;
+    }());
+    var contactFields = (function () {
+        function contactFields() {
+            var sf = new sharedFields;
+            this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
+            this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
+            this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
+            this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwLastName', placeholder: 'Last Name', required: true } };
+            this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
+            this.phone = { id: 'phone', name: 'Phone', fieldTemplate: { element: 'input', type: 'tel', id: 'ltwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' } };
+            this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltwCompany', placeholder: 'Company' } };
+            this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
+            this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
+            this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
+            this.submit = sf.submit;
+            this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            helpers.prototype.SetRequiredFields(this);
+        }
+        return contactFields;
+    }());
+    var depositFields = (function () {
+        function depositFields() {
+            var sf = new sharedFields;
+            this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term' } };
+            this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
+            this.submit = sf.submit;
+            this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            helpers.prototype.SetRequiredFields(this);
+        }
+        depositFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return depositFields;
+    }());
+    var depositResultFields = (function () {
+        function depositResultFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist' } };
+            helpers.prototype.SetRequiredFields(this);
+        }
+        depositResultFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return depositResultFields;
+    }());
+    var depositResultDataFields = (function () {
+        function depositResultDataFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
+            this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
+            this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
+        }
+        depositResultDataFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return depositResultDataFields;
+    }());
+    var postObjects = (function () {
+        function postObjects() {
+        }
+        postObjects.prototype.contact = function () {
+            return new LoanTekWidget.PostObject_Contact;
+        };
+        return postObjects;
+    }());
+    var ApplyFormStyles = (function () {
+        function ApplyFormStyles(lth, currentBuildObject, excludeCaptchaField, specifier) {
+            var _thisC = this;
+            specifier = specifier || '.' + lth.defaultFormSpecifierClass;
+            _thisC._specifier = specifier;
+            _thisC._borderType = currentBuildObject.formBorderType;
+            excludeCaptchaField = excludeCaptchaField || true;
+            var returnStyles = '';
+            if (currentBuildObject.formWidth) {
+                currentBuildObject.formWidthUnit = currentBuildObject.formWidthUnit || lth.widthUnit.getDefault().id;
+                returnStyles += '\n.ltw' + specifier + ' { width: ' + currentBuildObject.formWidth + currentBuildObject.formWidthUnit + '; }';
+            }
+            if (currentBuildObject.formBg) {
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-border { background-color: ' + currentBuildObject.formBg + '; }';
+            }
+            if (lth.isNumber(currentBuildObject.formBorderRadius)) {
+                returnStyles += _thisC.formBorderRadius(currentBuildObject.formBorderRadius, _thisC._borderType);
+            }
+            if (currentBuildObject.formBorderColor) {
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-border, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading { border-color: ' + currentBuildObject.formBorderColor + '; }';
+            }
+            if (currentBuildObject.formTitleColor) {
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { color: ' + currentBuildObject.formTitleColor + '; }';
+            }
+            if (currentBuildObject.formTitleBgColor) {
+                returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { background-color: ' + currentBuildObject.formTitleBgColor + '; }';
+            }
+            if (lth.isNumber(currentBuildObject.formGroupSpacing)) {
+                returnStyles += '\n.ltw' + specifier + ' .form-group, .ltw' + specifier + ' .alert { margin-bottom: ' + currentBuildObject.formGroupSpacing + 'px; }';
+            }
+            if (lth.isNumber(currentBuildObject.formFieldBorderRadius)) {
+                var ffbr = currentBuildObject.formFieldBorderRadius + '';
+                var ffbhr = currentBuildObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentBuildObject.formFieldBorderRadius - 1) + '';
+                returnStyles += '\n.ltw' + specifier + ' .form-group .form-control, .ltw' + specifier + ' .alert { border-radius: ' + ffbr + 'px; }';
+                if (!excludeCaptchaField) {
+                    returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+                    returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+                }
+            }
+            if (lth.isNumber(currentBuildObject.formButtonBorderRadius)) {
+                returnStyles += '\n.ltw' + specifier + ' .btn { border-radius: ' + currentBuildObject.formButtonBorderRadius + 'px; }';
+            }
+            _thisC._returnStyles = returnStyles;
+        }
+        ApplyFormStyles.prototype.getStyles = function () {
+            return this._returnStyles;
+        };
+        ApplyFormStyles.prototype.formBorderRadius = function (borderRadius, borderType, specifier) {
+            var _thisM = this;
+            var lth = LoanTekWidgetHelper;
+            var br = '';
+            var fbr = borderRadius + '';
+            var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+            specifier = specifier || _thisM._specifier;
+            borderType = borderType || _thisM._borderType;
+            br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+            if (borderType === lth.formBorderType.panel.id) {
+                br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+            }
+            return br;
+        };
+        return ApplyFormStyles;
+    }());
+    LoanTekWidget.ApplyFormStyles = ApplyFormStyles;
 })(LoanTekWidget || (LoanTekWidget = {}));

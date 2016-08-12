@@ -55,7 +55,7 @@
 						<div class="row">
 							<div class="col-sm-12">
 								@if (Request.QueryString["viewtemplate"] == "true") {
-									<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>
+									<textarea class="form-control resize-vertical code-mono code-sm" rows="8">{{currentForm}}</textarea>
 								}
 								<!-- @*<pre style="white-space:pre-wrap;">{{currentFormStr}}</pre>
 								<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>*@ -->
@@ -191,7 +191,8 @@
 
 	<script type="text/javascript">
 		var widgetModelData = {
-			modelUrls: ["https://api.loantek.com/DEPOSIT-WIDGET-SUBMIT-URL-GOES-HERE"]
+			scriptsDomain: 'https://localhost:8080'
+			, modelUrls: ["https://api.loantek.com/DEPOSIT-WIDGET-SUBMIT-URL-GOES-HERE"]
 			, modelWidget: {"WidgetTypeType":"DepositWidget","OwnerId":1940,"ClientId":5,"UserId":1940,"WidgetType":"DepositWidget","ScriptText":"ADD SCRIPT HERE"}
 			, widgetTemplates:
 [{
@@ -202,7 +203,7 @@
 	"UserId": 0,
 	"WidgetType": "DepositWidget",
 	"Name": "template1.json",
-	"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]}}",
+	"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\", \"value\": \"Deposit List\"},{\"field\": \"paragraph\", \"value\": \"explanation goes here if needed\"},{\"field\": \"depositdatalist\", \"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\", \"value\": \"repeater paragraph\"},{\"field\": \"api\", \"cols\": 4, \"value\": \"#{APY}% is #{APY}\"},{\"field\": \"totalinterestearned\", \"cols\": 4},{\"field\": \"amountplusinterest\", \"cols\": 4}]}}]}}",
 	"LastModifiedDate": "\/Date(1468004010208)\/",
 	"LastModifiedByUserID": null,
 	"Active": true

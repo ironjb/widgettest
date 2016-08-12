@@ -74,7 +74,87 @@ namespace LoanTekWidget {
 			loadScript(currentIndex);
 		}
 	}
-	export class ApplyFormStyles {
+
+	/*export class ApplyFormStyles {
+		private _returnStyles: string;
+		private _specifier: string;
+		private _borderType: string;
+
+		constructor(currentBuildObject: LTWidget.IBuildOptions, excludeCaptchaField?: boolean, specifier?: string) {
+			var _thisC = this;
+			var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
+			specifier = specifier || '.' + lth.defaultFormSpecifierClass;
+			_thisC._specifier = specifier;
+			_thisC._borderType = currentBuildObject.formBorderType;
+			excludeCaptchaField = excludeCaptchaField || true;
+			var returnStyles = '';
+
+			if (currentBuildObject.formWidth) {
+				currentBuildObject.formWidthUnit = currentBuildObject.formWidthUnit || lth.widthUnit.getDefault().id;
+				returnStyles += '\n.ltw' + specifier + ' { width: ' + currentBuildObject.formWidth + currentBuildObject.formWidthUnit + '; }';
+			}
+
+			if (currentBuildObject.formBg) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-border { background-color: ' + currentBuildObject.formBg + '; }';
+			}
+
+			if (lth.isNumber(currentBuildObject.formBorderRadius)) {
+				returnStyles += _thisC.formBorderRadius(currentBuildObject.formBorderRadius, _thisC._borderType);
+			}
+
+			if (currentBuildObject.formBorderColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-border, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading { border-color: ' + currentBuildObject.formBorderColor + '; }';
+			}
+
+			if (currentBuildObject.formTitleColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { color: ' + currentBuildObject.formTitleColor + '; }';
+			}
+
+			if (currentBuildObject.formTitleBgColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { background-color: ' + currentBuildObject.formTitleBgColor + '; }';
+			}
+
+			if (lth.isNumber(currentBuildObject.formGroupSpacing)) {
+				returnStyles += '\n.ltw' + specifier + ' .form-group, .ltw' + specifier + ' .alert { margin-bottom: ' + currentBuildObject.formGroupSpacing + 'px; }';
+			}
+
+			if (lth.isNumber(currentBuildObject.formFieldBorderRadius)) {
+				var ffbr = currentBuildObject.formFieldBorderRadius + '';
+				var ffbhr = currentBuildObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentBuildObject.formFieldBorderRadius - 1) + '';
+				returnStyles += '\n.ltw' + specifier + ' .form-group .form-control, .ltw' + specifier + ' .alert { border-radius: ' + ffbr + 'px; }';
+				if (!excludeCaptchaField) {
+					returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+					returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
+				}
+			}
+
+			if (lth.isNumber(currentBuildObject.formButtonBorderRadius)) {
+				returnStyles += '\n.ltw' + specifier + ' .btn { border-radius: ' + currentBuildObject.formButtonBorderRadius + 'px; }';
+			}
+			_thisC._returnStyles = returnStyles;
+		}
+
+		getStyles(): string {
+			return this._returnStyles;
+		}
+
+		formBorderRadius(borderRadius: number, borderType?: string, specifier?: string): string {
+			var _thisM = this;
+			var lth = LoanTekWidgetHelper;
+			var br = '';
+			var fbr = borderRadius + '';
+			var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+			specifier = specifier || _thisM._specifier;
+			borderType = borderType || _thisM._borderType;
+			br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			if (borderType === lth.formBorderType.panel.id) {
+				br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+			}
+			return br;
+		}
+	}*/
+
+	/*export class ApplyFormStyles {
 		private _returnStyles: string;
 		private _specifier: string;
 		private _borderType: string;
@@ -151,5 +231,5 @@ namespace LoanTekWidget {
 			}
 			return br;
 		}
-	}
+	}*/
 }

@@ -368,10 +368,12 @@ namespace LoanTekWidget {
 				returnForm.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
 			}*/
 			var returnForm2 = buildTools.BuildFields(returnForm, settings);
+			var returnFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, false, '.' + lth.defaultFormSpecifierClass).getStyles();
+			returnForm2.prepend(el.style().html(returnFormStyles));
 
-			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm);
+			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm2);
 			if (settings.showBuilderTools) {
-				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
+				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'buildObject'));
 			}
 
 			if (typeof settings.postDOMCallback === 'function') {
@@ -643,10 +645,12 @@ namespace LoanTekWidget {
 			var resultsForm = el.form();
 			// window.console && console.log('ResultsBuilder build() settings', settings);
 			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
+			var resultsFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass).getStyles();
+			resultsForm2.prepend(el.style().html(resultsFormStyles));
 
-			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass/* + ' container-fluid'*/).empty().append(resultsForm2);
+			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass).empty().append(resultsForm2);
 			if (_thisM.settings.showBuilderTools) {
-				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'ltFormEditTool'));
+				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'resultObject'));
 			}
 		}
 	}

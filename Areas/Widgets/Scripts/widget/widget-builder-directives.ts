@@ -1,6 +1,18 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
+interface IFormEditOptions {
+	instanceOptions?: IFormEditModalInstanceOptions;
+	saveForm?(updateForm: IWidgetFormObject): void;
+}
+
+interface IFormEditModalInstanceOptions {
+	currentForm?: IWidgetFormObject;
+
+	// buildObject | resultObject
+	formObjectType?: string;
+}
+
 interface IWidgetDirectiveFieldEditToolNgScope extends ng.IScope {
 	currentFieldName?: string;
 	toolInfo?: { index: number; }
@@ -31,6 +43,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 (function () {
 	var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
 	var widgetDirectives = angular.module('ltw.directives', []);
+
 	widgetDirectives.directive('ltCompileCode', ['$compile', function ($compile) {
 		return {
 			restrict: 'A'
@@ -42,15 +55,17 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 		};
 	}]);
+
 	widgetDirectives.directive('ltFormEditTool', ['widgetServices', function (widgetServices: IWidgetNgServices) {
 		return {
 			restrict: 'A'
 			, templateUrl: 'template/widgetFormEditButton.html'
 			, link: (scope, elem, attrs) => {
 				scope.EditWidgetForm = () => {
-					var formEditOptions = {
+					var formEditOptions: IFormEditOptions = {
 						instanceOptions: {
 							currentForm: angular.copy(scope.currentForm)
+							, formObjectType: attrs.ltFormEditTool
 						}
 						, saveForm: (updatedForm) => {
 							scope.currentForm = updatedForm;
@@ -63,6 +78,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 		};
 	}]);
+
 	widgetDirectives.directive('ltFieldEditTool', ['$timeout', 'commonServices', 'widgetServices', function ($timeout, commonServices: ICommonNgServices, widgetServices: IWidgetNgServices) {
 		return {
 			restrict: 'A'

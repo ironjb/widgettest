@@ -18,6 +18,17 @@ declare namespace LTWidget {
 		fieldSize?: string;
 		fieldHelperType?: string;
 		successMessageWrapperId?: string;
+
+		formWidth?: number;
+		formWidthUnit?: string;
+		formBg?: string;
+		formBorderRadius?: number;
+		formBorderColor?: string;
+		formTitleColor?: string;
+		formTitleBgColor?: string;
+		formGroupSpacing?: number;
+		formFieldBorderRadius?: number;
+		formButtonBorderRadius?: number;
 	}
 }
 
@@ -81,6 +92,286 @@ interface IStates {
 }
 
 namespace LoanTekWidget {
+	export class helpers {
+		public $: JQueryStatic;
+		public bootstrap: bootstrap;
+		public hsize: hSizing;
+		public formBorderType: formBorderType;
+		public formBorderTypeArray: IHelperNameId[];
+		public widthUnit: widthUnit;
+		public widgetType: widgetType;
+		public defaultVerticalSpacing: number;
+		public defaultFormSpecifierClass: string;
+		public defaultResultSpecifierClass: string;
+		public contactFields: contactFields;
+		public depositFields: depositFields;
+		public depositResultFields: depositResultFields;
+		public depositResultDataFields: depositResultDataFields;
+		public contactFieldsArray: IWidgetFieldOptions[];
+		public postObjects: postObjects;
+		// public applyFormStyles: Function;
+
+		constructor(jq: JQueryStatic) {
+			this.$ = jq;
+
+			this.hsize = new hSizing();
+			this.bootstrap = new bootstrap();
+			this.formBorderType = new formBorderType();
+			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+			this.widthUnit = new widthUnit();
+			this.widgetType = new widgetType();
+			this.defaultVerticalSpacing = 15;
+			this.defaultFormSpecifierClass = 'ltwF';
+			this.defaultResultSpecifierClass = 'ltwR';
+			this.contactFields = new contactFields();
+			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
+			this.depositFields = new depositFields();
+			this.depositResultFields = new depositResultFields();
+			this.depositResultDataFields = new depositResultDataFields();
+			this.postObjects = new postObjects();
+			// this.applyFormStyles = applyFormStyles;
+		}
+
+		isNumber(numCheck: any): boolean {
+			return typeof numCheck === 'number';
+		}
+
+		isStringNullOrEmpty(stringCheck: string): boolean {
+			return stringCheck === '' || typeof stringCheck !== 'string';
+		}
+
+		getDefaultBorderRadius(fieldSize: string = ''): number {
+			var rad = 4;
+			if (fieldSize === this.bootstrap.inputSizing.sm.id) {
+				rad = 3;
+			} else if (fieldSize === this.bootstrap.inputSizing.lg.id) {
+				rad = 6;
+			}
+			return rad;
+		}
+
+		ConvertObjectToArray<T>(theObj: Object): T[] {
+			var objArray = [];
+			for (var key in theObj) {
+				var objVal = theObj[key];
+				if (objVal && typeof objVal !== 'function') {
+					objArray.push(objVal);
+				}
+			}
+			return objArray;
+		}
+
+		ConvertArrayToObject<T>(theArray: Object[], theKey?: string): T {
+			theKey = theKey || 'id';
+			var returnObj = <T>{};
+			for (var i = 0, l = theArray.length; i < l; i++) {
+				var obj = theArray[i];
+				var objectKey = obj[theKey];
+				if (objectKey) {
+					returnObj[objectKey] = obj;
+				}
+			}
+			return returnObj;
+		}
+
+		GetIndexOfFirstObjectInArray(theArray, theKey, theValue): number {
+			for (var i = 0, l = theArray.length; i < l; i++) {
+				if (theArray[i][theKey] === theValue) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		SetRequiredFields(fields) {
+			for (var fieldName in fields) {
+				var thisField: IWidgetFieldOptions = fields[fieldName];
+				if (thisField.isLTRequired) {
+					thisField.fieldTemplate.required = thisField.isLTRequired;
+				}
+			}
+		}
+
+		/**
+		 * Performs string interpolation similar to the style of Ruby
+		 * @param  {string}   text       String to interpolate
+		 * @param  {Object}   parameters Parameters passed in that will placed in the string
+		 * @param  {Function} fn         Optional: function that performs additional modifications
+		 * @param  {RegExp}   regex      Optional: new RegEx to use
+		 * @return {string}              Return of updated string
+		 */
+		Interpolate(text: string, parameters: Object, fn?: Function, regex?: RegExp): string {
+			text = text || '';
+			parameters = parameters || {};
+			fn = fn || function (x) { return x; };
+			regex = regex || /#{[^\}]+}/g;
+			return text.replace(regex, function (m, p, ft) {
+				var indexOfStart = m.indexOf('{') + 1;
+				var spaceFromEnd = m.length - m.indexOf('}');
+				var rt = m.substr(indexOfStart);
+				rt = rt.substr(0, rt.length - spaceFromEnd);
+				if (!parameters[rt]) {
+					window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
+					rt = m;
+				} else {
+					rt = parameters[rt].toString() || '';
+				}
+				return fn(rt);
+			});
+		}
+
+		ExtendWidgetFieldTemplate(eItem: IWidgetField, templateName: string): IWidgetField {
+			var _this = this;
+			var fOption: IWidgetFieldOptions;
+			var returnWidgetField: IWidgetField;
+			if (_this[templateName] && _this[templateName][eItem.field]) {
+				fOption = _this[templateName][eItem.field];
+				returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
+			} else {
+				window.console && console.error('templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
+				returnWidgetField = eItem;
+			}
+			return returnWidgetField;
+		}
+
+		/**
+		 * Modifies Text Nodes in DOM
+		 * @param {Node}     node		Node/Element to look through for text Nodes/Elements
+		 * @param {Function} callback	Function that receives a <u>string</u> to be modified then returns the modified <u>string</u>.
+		 * <b>(NOTE: Must return a <u>string</u> value)</b>
+		 */
+		ModifyTextElementsInDOM(node: Node, callback: Function) {
+			var _this = this;
+			var next: Node;
+			if (node.nodeType === 1) {
+				// (Element Node)
+				if (node = node.firstChild) {
+					do {
+						// Recursively call this function on each child node
+						next = node.nextSibling;
+						_this.ModifyTextElementsInDOM(node, callback);
+					} while (node = next);
+				}
+			} else if (node.nodeType === 3) {
+				// (Text Node)
+				node.nodeValue = callback(node.nodeValue);
+			}
+		}
+
+		CreateElement() {
+			var $ = this.$;
+			var el = {
+				div: () => { return $('<div/>'); }
+				, script: (src?: string, type: string = 'text/javascript') => {
+					var returnScript = $('<script/>').prop('type', type);
+					returnScript = src ? returnScript.prop('src', src) : returnScript;
+					return returnScript;
+				}
+				, link: (href?: string, rel: string = 'stylesheet') => {
+					var returnLink = $('<link/>').prop('rel', rel);
+					returnLink = href ? returnLink.prop('href', href) : returnLink;
+					return returnLink;
+				}
+				, style: (type: string = 'text/css') => {
+					var returnStyle = $('<style/>').prop('type', type);
+					return returnStyle;
+				}
+				, p: () => { return $('<p/>'); }
+				, a: () => { return $('<a/>'); }
+				, span: () => { return $('<span/>'); }
+				, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
+				, form: () => { return $('<form/>').addClass('form-horizontal'); },
+				label: () => { return $('<label/>').addClass('control-label col-sm-12'); },
+				button: (type: string = 'button') => { return $('<button/>').prop('type', type); },
+				select: () => { return $('<select/>').addClass('form-control'); },
+				option: () => { return $('<option/>'); },
+				input: (type: string = 'text') => {
+					return $('<input/>').prop('type', type);
+				},
+				textarea: () => { return $('<textarea/>').addClass('form-control'); },
+				col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
+				row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
+				formGroup: (formGroupSize?: string) => {
+					if (formGroupSize) {
+						return el.row('form-group').addClass('form-group-' + formGroupSize);
+					} else {
+						return el.row('form-group');
+					}
+				}
+			};
+			return el;
+		}
+
+		ScrollToAnchor(anchorName: string, scrollSpeed?: number, topOffset?: number) {
+			$ = this.$;
+			scrollSpeed = scrollSpeed || 200;
+			topOffset = topOffset || 50;
+			$('html, body').animate({
+				scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
+			}, scrollSpeed);
+		}
+
+		US_States(): IStates {
+			var s: IStates = {
+				country: 'USA',
+				states: [
+					{ abbreviation: 'AL', name: 'Alabama' },
+					{ abbreviation: 'AK', name: 'Alaska' },
+					{ abbreviation: 'AZ', name: 'Arizona' },
+					{ abbreviation: 'AR', name: 'Arkansas' },
+					{ abbreviation: 'CA', name: 'California' },
+					{ abbreviation: 'CO', name: 'Colorado' },
+					{ abbreviation: 'CT', name: 'Connecticut' },
+					{ abbreviation: 'DE', name: 'Delaware' },
+					{ abbreviation: 'DC', name: 'District Of Columbia' },
+					{ abbreviation: 'FL', name: 'Florida' },
+					{ abbreviation: 'GA', name: 'Georgia' },
+					{ abbreviation: 'HI', name: 'Hawaii' },
+					{ abbreviation: 'ID', name: 'Idaho' },
+					{ abbreviation: 'IL', name: 'Illinois' },
+					{ abbreviation: 'IN', name: 'Indiana' },
+					{ abbreviation: 'IA', name: 'Iowa' },
+					{ abbreviation: 'KS', name: 'Kansas' },
+					{ abbreviation: 'KY', name: 'Kentucky' },
+					{ abbreviation: 'LA', name: 'Louisiana' },
+					{ abbreviation: 'ME', name: 'Maine' },
+					{ abbreviation: 'MD', name: 'Maryland' },
+					{ abbreviation: 'MA', name: 'Massachusetts' },
+					{ abbreviation: 'MI', name: 'Michigan' },
+					{ abbreviation: 'MN', name: 'Minnesota' },
+					{ abbreviation: 'MS', name: 'Mississippi' },
+					{ abbreviation: 'MO', name: 'Missouri' },
+					{ abbreviation: 'MT', name: 'Montana' },
+					{ abbreviation: 'NE', name: 'Nebraska' },
+					{ abbreviation: 'NV', name: 'Nevada' },
+					{ abbreviation: 'NH', name: 'New Hampshire' },
+					{ abbreviation: 'NJ', name: 'New Jersey' },
+					{ abbreviation: 'NM', name: 'New Mexico' },
+					{ abbreviation: 'NY', name: 'New York' },
+					{ abbreviation: 'NC', name: 'North Carolina' },
+					{ abbreviation: 'ND', name: 'North Dakota' },
+					{ abbreviation: 'OH', name: 'Ohio' },
+					{ abbreviation: 'OK', name: 'Oklahoma' },
+					{ abbreviation: 'OR', name: 'Oregon' },
+					{ abbreviation: 'PA', name: 'Pennsylvania' },
+					{ abbreviation: 'RI', name: 'Rhode Island' },
+					{ abbreviation: 'SC', name: 'South Carolina' },
+					{ abbreviation: 'SD', name: 'South Dakota' },
+					{ abbreviation: 'TN', name: 'Tennessee' },
+					{ abbreviation: 'TX', name: 'Texas' },
+					{ abbreviation: 'UT', name: 'Utah' },
+					{ abbreviation: 'VT', name: 'Vermont' },
+					{ abbreviation: 'VA', name: 'Virginia' },
+					{ abbreviation: 'WA', name: 'Washington' },
+					{ abbreviation: 'WV', name: 'West Virginia' },
+					{ abbreviation: 'WI', name: 'Wisconsin' },
+					{ abbreviation: 'WY', name: 'Wyoming' }
+				]
+			};
+			return s;
+		}
+	}
+
 	class hSizing {
 		public h1: IHelperNameNumId;
 		public h2: IHelperNameNumId;
@@ -399,281 +690,82 @@ namespace LoanTekWidget {
 		// }
 	}
 
-	export class helpers {
-		public $: JQueryStatic;
-		public bootstrap: bootstrap;
-		public hsize: hSizing;
-		public formBorderType: formBorderType;
-		public formBorderTypeArray: IHelperNameId[];
-		public widthUnit: widthUnit;
-		public widgetType: widgetType;
-		public defaultVerticalSpacing: number;
-		public defaultFormSpecifierClass: string;
-		public defaultResultSpecifierClass: string;
-		public contactFields: contactFields;
-		public depositFields: depositFields;
-		public depositResultFields: depositResultFields;
-		public depositResultDataFields: depositResultDataFields;
-		public contactFieldsArray: IWidgetFieldOptions[];
-		public postObjects: postObjects;
+	export class ApplyFormStyles {
+		private _returnStyles: string;
+		private _specifier: string;
+		private _borderType: string;
 
-		constructor(jq: JQueryStatic) {
-			this.$ = jq;
+		constructor(lth: LoanTekWidget.helpers, currentBuildObject: LTWidget.IBuildOptions, excludeCaptchaField?: boolean, specifier?: string) {
+			var _thisC = this;
+			// var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
+			specifier = specifier || '.' + lth.defaultFormSpecifierClass;
+			_thisC._specifier = specifier;
+			_thisC._borderType = currentBuildObject.formBorderType;
+			excludeCaptchaField = excludeCaptchaField || true;
+			var returnStyles = '';
 
-			this.hsize = new hSizing;
-			this.bootstrap = new bootstrap;
-			this.formBorderType = new formBorderType;
-			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
-			this.widthUnit = new widthUnit;
-			this.widgetType = new widgetType;
-			this.defaultVerticalSpacing = 15;
-			this.defaultFormSpecifierClass = 'ltwF';
-			this.defaultResultSpecifierClass = 'ltwR';
-			this.contactFields = new contactFields;
-			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
-			this.depositFields = new depositFields;
-			this.depositResultFields = new depositResultFields;
-			this.depositResultDataFields = new depositResultDataFields;
-			this.postObjects = new postObjects;
-		}
-
-		isNumber(numCheck: any): boolean {
-			return typeof numCheck === 'number';
-		}
-
-		isStringNullOrEmpty(stringCheck: string): boolean {
-			return stringCheck === '' || typeof stringCheck !== 'string';
-		}
-
-		getDefaultBorderRadius(fieldSize: string = ''): number {
-			var rad = 4;
-			if (fieldSize === this.bootstrap.inputSizing.sm.id) {
-				rad = 3;
-			} else if (fieldSize === this.bootstrap.inputSizing.lg.id) {
-				rad = 6;
+			if (currentBuildObject.formWidth) {
+				currentBuildObject.formWidthUnit = currentBuildObject.formWidthUnit || lth.widthUnit.getDefault().id;
+				returnStyles += '\n.ltw' + specifier + ' { width: ' + currentBuildObject.formWidth + currentBuildObject.formWidthUnit + '; }';
 			}
-			return rad;
-		}
 
-		ConvertObjectToArray<T>(theObj: Object): T[] {
-			var objArray = [];
-			for (var key in theObj) {
-				var objVal = theObj[key];
-				if (objVal && typeof objVal !== 'function') {
-					objArray.push(objVal);
+			if (currentBuildObject.formBg) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-border { background-color: ' + currentBuildObject.formBg + '; }';
+			}
+
+			if (lth.isNumber(currentBuildObject.formBorderRadius)) {
+				returnStyles += _thisC.formBorderRadius(currentBuildObject.formBorderRadius, _thisC._borderType);
+			}
+
+			if (currentBuildObject.formBorderColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-border, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading { border-color: ' + currentBuildObject.formBorderColor + '; }';
+			}
+
+			if (currentBuildObject.formTitleColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { color: ' + currentBuildObject.formTitleColor + '; }';
+			}
+
+			if (currentBuildObject.formTitleBgColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-heading, .ltw' + specifier + ' .lt-widget-border .lt-widget-heading  { background-color: ' + currentBuildObject.formTitleBgColor + '; }';
+			}
+
+			if (lth.isNumber(currentBuildObject.formGroupSpacing)) {
+				returnStyles += '\n.ltw' + specifier + ' .form-group, .ltw' + specifier + ' .alert { margin-bottom: ' + currentBuildObject.formGroupSpacing + 'px; }';
+			}
+
+			if (lth.isNumber(currentBuildObject.formFieldBorderRadius)) {
+				var ffbr = currentBuildObject.formFieldBorderRadius + '';
+				var ffbhr = currentBuildObject.formFieldBorderRadius - 1 < 0 ? '0' : (currentBuildObject.formFieldBorderRadius - 1) + '';
+				returnStyles += '\n.ltw' + specifier + ' .form-group .form-control, .ltw' + specifier + ' .alert { border-radius: ' + ffbr + 'px; }';
+				if (!excludeCaptchaField) {
+					returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel { border-radius: ' + ffbr + 'px; }';
+					returnStyles += '\n.ltw' + specifier + ' .lt-captcha .panel-heading { border-top-right-radius: ' + ffbhr + 'px; border-top-left-radius: ' + ffbhr + 'px; }';
 				}
 			}
-			return objArray;
-		}
 
-		ConvertArrayToObject<T>(theArray: Object[], theKey?: string): T {
-			theKey = theKey || 'id';
-			var returnObj = <T>{};
-			for (var i = 0, l = theArray.length; i < l; i++) {
-				var obj = theArray[i];
-				var objectKey = obj[theKey];
-				if (objectKey) {
-					returnObj[objectKey] = obj;
-				}
+			if (lth.isNumber(currentBuildObject.formButtonBorderRadius)) {
+				returnStyles += '\n.ltw' + specifier + ' .btn { border-radius: ' + currentBuildObject.formButtonBorderRadius + 'px; }';
 			}
-			return returnObj;
+			_thisC._returnStyles = returnStyles;
 		}
 
-		GetIndexOfFirstObjectInArray(theArray, theKey, theValue): number {
-			for (var i = 0, l = theArray.length; i < l; i++) {
-				if (theArray[i][theKey] === theValue) {
-					return i;
-				}
+		getStyles(): string {
+			return this._returnStyles;
+		}
+
+		formBorderRadius(borderRadius: number, borderType?: string, specifier?: string): string {
+			var _thisM = this;
+			var lth = LoanTekWidgetHelper;
+			var br = '';
+			var fbr = borderRadius + '';
+			var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
+			specifier = specifier || _thisM._specifier;
+			borderType = borderType || _thisM._borderType;
+			br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			if (borderType === lth.formBorderType.panel.id) {
+				br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
 			}
-			return -1;
-		}
-
-		SetRequiredFields(fields) {
-			for (var fieldName in fields) {
-				var thisField: IWidgetFieldOptions = fields[fieldName];
-				if (thisField.isLTRequired) {
-					thisField.fieldTemplate.required = thisField.isLTRequired;
-				}
-			}
-		}
-
-		/**
-		 * Performs string interpolation similar to the style of Ruby
-		 * @param  {string}   text       String to interpolate
-		 * @param  {Object}   parameters Parameters passed in that will placed in the string
-		 * @param  {Function} fn         Optional: function that performs additional modifications
-		 * @param  {RegExp}   regex      Optional: new RegEx to use
-		 * @return {string}              Return of updated string
-		 */
-		Interpolate(text: string, parameters: Object, fn?: Function, regex?: RegExp): string {
-			text = text || '';
-			parameters = parameters || {};
-			fn = fn || function (x) { return x; };
-			regex = regex || /#{[^\}]+}/g;
-			return text.replace(regex, function (m, p, ft) {
-				var indexOfStart = m.indexOf('{') + 1;
-				var spaceFromEnd = m.length - m.indexOf('}');
-				var rt = m.substr(indexOfStart);
-				rt = rt.substr(0, rt.length - spaceFromEnd);
-				if (!parameters[rt]) {
-					window.console && console.warn('Interpolate Warning: Parameter not found for ' + m);
-					rt = m;
-				} else {
-					rt = parameters[rt].toString() || '';
-				}
-				return fn(rt);
-			});
-		}
-
-		ExtendWidgetFieldTemplate(eItem: IWidgetField, templateName: string): IWidgetField {
-			var _this = this;
-			var fOption: IWidgetFieldOptions;
-			var returnWidgetField: IWidgetField;
-			if (_this[templateName] && _this[templateName][eItem.field]) {
-				fOption = _this[templateName][eItem.field];
-				returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
-			} else {
-				window.console && console.error('templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
-				returnWidgetField = eItem;
-			}
-			return returnWidgetField;
-		}
-
-		/**
-		 * Modifies Text Nodes in DOM
-		 * @param {Node}     node		Node/Element to look through for text Nodes/Elements
-		 * @param {Function} callback	Function that receives a <u>string</u> to be modified then returns the modified <u>string</u>.
-		 * <b>(NOTE: Must return a <u>string</u> value)</b>
-		 */
-		ModifyTextElementsInDOM(node: Node, callback: Function) {
-			var _this = this;
-			var next: Node;
-			if (node.nodeType === 1) {
-				// (Element Node)
-				if (node = node.firstChild) {
-					do {
-						// Recursively call this function on each child node
-						next = node.nextSibling;
-						_this.ModifyTextElementsInDOM(node, callback);
-					} while (node = next);
-				}
-			} else if (node.nodeType === 3) {
-				// (Text Node)
-				node.nodeValue = callback(node.nodeValue);
-			}
-		}
-
-		CreateElement() {
-			var $ = this.$;
-			var el = {
-				div: () => { return $('<div/>'); }
-				, script: (src?: string, type: string = 'text/javascript') => {
-					var returnScript = $('<script/>').prop('type', type);
-					returnScript = src ? returnScript.prop('src', src) : returnScript;
-					return returnScript;
-				}
-				, link: (href?: string, rel: string = 'stylesheet') => {
-					var returnLink = $('<link/>').prop('rel', rel);
-					returnLink = href ? returnLink.prop('href', href) : returnLink;
-					return returnLink;
-				}
-				, style: (type: string = 'text/css') => {
-					var returnStyle = $('<style/>').prop('type', type);
-					return returnStyle;
-				}
-				, p: () => { return $('<p/>'); }
-				, a: () => { return $('<a/>'); }
-				, span: () => { return $('<span/>'); }
-				, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
-				, form: () => { return $('<form/>').addClass('form-horizontal'); },
-				label: () => { return $('<label/>').addClass('control-label col-sm-12'); },
-				button: (type: string = 'button') => { return $('<button/>').prop('type', type); },
-				select: () => { return $('<select/>').addClass('form-control'); },
-				option: () => { return $('<option/>'); },
-				input: (type: string = 'text') => {
-					return $('<input/>').prop('type', type);
-				},
-				textarea: () => { return $('<textarea/>').addClass('form-control'); },
-				col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
-				row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
-				formGroup: (formGroupSize?: string) => {
-					if (formGroupSize) {
-						return el.row('form-group').addClass('form-group-' + formGroupSize);
-					} else {
-						return el.row('form-group');
-					}
-				}
-			};
-			return el;
-		}
-
-		ScrollToAnchor(anchorName: string, scrollSpeed?: number, topOffset?: number) {
-			$ = this.$;
-			scrollSpeed = scrollSpeed || 200;
-			topOffset = topOffset || 50;
-			$('html, body').animate({
-				scrollTop: ($('a[name=' + anchorName + ']').offset().top) - topOffset
-			}, scrollSpeed);
-		}
-
-		US_States(): IStates {
-			var s: IStates = {
-				country: 'USA',
-				states: [
-					{ abbreviation: 'AL', name: 'Alabama' },
-					{ abbreviation: 'AK', name: 'Alaska' },
-					{ abbreviation: 'AZ', name: 'Arizona' },
-					{ abbreviation: 'AR', name: 'Arkansas' },
-					{ abbreviation: 'CA', name: 'California' },
-					{ abbreviation: 'CO', name: 'Colorado' },
-					{ abbreviation: 'CT', name: 'Connecticut' },
-					{ abbreviation: 'DE', name: 'Delaware' },
-					{ abbreviation: 'DC', name: 'District Of Columbia' },
-					{ abbreviation: 'FL', name: 'Florida' },
-					{ abbreviation: 'GA', name: 'Georgia' },
-					{ abbreviation: 'HI', name: 'Hawaii' },
-					{ abbreviation: 'ID', name: 'Idaho' },
-					{ abbreviation: 'IL', name: 'Illinois' },
-					{ abbreviation: 'IN', name: 'Indiana' },
-					{ abbreviation: 'IA', name: 'Iowa' },
-					{ abbreviation: 'KS', name: 'Kansas' },
-					{ abbreviation: 'KY', name: 'Kentucky' },
-					{ abbreviation: 'LA', name: 'Louisiana' },
-					{ abbreviation: 'ME', name: 'Maine' },
-					{ abbreviation: 'MD', name: 'Maryland' },
-					{ abbreviation: 'MA', name: 'Massachusetts' },
-					{ abbreviation: 'MI', name: 'Michigan' },
-					{ abbreviation: 'MN', name: 'Minnesota' },
-					{ abbreviation: 'MS', name: 'Mississippi' },
-					{ abbreviation: 'MO', name: 'Missouri' },
-					{ abbreviation: 'MT', name: 'Montana' },
-					{ abbreviation: 'NE', name: 'Nebraska' },
-					{ abbreviation: 'NV', name: 'Nevada' },
-					{ abbreviation: 'NH', name: 'New Hampshire' },
-					{ abbreviation: 'NJ', name: 'New Jersey' },
-					{ abbreviation: 'NM', name: 'New Mexico' },
-					{ abbreviation: 'NY', name: 'New York' },
-					{ abbreviation: 'NC', name: 'North Carolina' },
-					{ abbreviation: 'ND', name: 'North Dakota' },
-					{ abbreviation: 'OH', name: 'Ohio' },
-					{ abbreviation: 'OK', name: 'Oklahoma' },
-					{ abbreviation: 'OR', name: 'Oregon' },
-					{ abbreviation: 'PA', name: 'Pennsylvania' },
-					{ abbreviation: 'RI', name: 'Rhode Island' },
-					{ abbreviation: 'SC', name: 'South Carolina' },
-					{ abbreviation: 'SD', name: 'South Dakota' },
-					{ abbreviation: 'TN', name: 'Tennessee' },
-					{ abbreviation: 'TX', name: 'Texas' },
-					{ abbreviation: 'UT', name: 'Utah' },
-					{ abbreviation: 'VT', name: 'Vermont' },
-					{ abbreviation: 'VA', name: 'Virginia' },
-					{ abbreviation: 'WA', name: 'Washington' },
-					{ abbreviation: 'WV', name: 'West Virginia' },
-					{ abbreviation: 'WI', name: 'Wisconsin' },
-					{ abbreviation: 'WY', name: 'Wyoming' }
-				]
-			};
-			return s;
+			return br;
 		}
 	}
 }

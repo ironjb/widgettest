@@ -21,7 +21,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     scope.EditWidgetForm = function () {
                         var formEditOptions = {
                             instanceOptions: {
-                                currentForm: angular.copy(scope.currentForm)
+                                currentForm: angular.copy(scope.currentForm),
+                                formObjectType: attrs.ltFormEditTool
                             },
                             saveForm: function (updatedForm) {
                                 scope.currentForm = updatedForm;
