@@ -536,6 +536,27 @@ namespace LoanTekWidget {
 				var depositPostData: any = {};
 				$(settings.form_submit).prop('disabled', false);
 
+				var appendDataToDataList = function (fieldList: IWidgetField[], data: any) {
+					// window.console && console.log('fieldList', fieldList);
+					for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
+						// window.console && console.log('flIndex', flIndex);
+						var fieldItem = fieldList[flIndex];
+						if (fieldItem.field === 'depositdatalist') {
+							fieldItem.fieldData = data;
+						}
+					}
+				}
+
+				// Show on Create Widget page
+				if (settings.resultDisplayOptions.showBuilderTools) {
+					// window.console && console.log('DepoistFunlity showBldrTools', settings.resultDisplayOptions.showBuilderTools);
+					var fakeData = [{ APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 }];
+					appendDataToDataList(settings.resultDisplayOptions.fields, fakeData);
+					// window.console && console.log('settings.resultDisplayOptions', settings.resultDisplayOptions);
+					var showDepositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
+					showDepositResultBuild.build();
+				}
+
 				$(settings.form_id).submit(function (event) {
 					event.preventDefault();
 					$(settings.form_errorMsgWrapper).hide(100);
@@ -568,17 +589,18 @@ namespace LoanTekWidget {
 						// $(settings.form_id).trigger('reset');
 
 						$(settings.form_submit).prop('disabled', false);
-						// window.console && console.log('request successful: ', result, options.resultDisplayOptions);
+						// window.console && console.log('request successful: ', result, settings.resultDisplayOptions);
 
-						for (var flIndex = options.resultDisplayOptions.fields.length - 1; flIndex >= 0; flIndex--) {
-							var fieldItem = options.resultDisplayOptions.fields[flIndex];
-							if (fieldItem.field === 'depositdatalist') {
-								fieldItem.fieldData = result;
-							}
-							// window.console && console.log('fieldItem', fieldItem);
-						}
-						// var depositResultBuild = new ResultsBuilder(lth, result, options.resultDisplayOptions);
-						var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions);
+						// for (var flIndex = settings.resultDisplayOptions.fields.length - 1; flIndex >= 0; flIndex--) {
+						// 	var fieldItem = settings.resultDisplayOptions.fields[flIndex];
+						// 	if (fieldItem.field === 'depositdatalist') {
+						// 		fieldItem.fieldData = result;
+						// 	}
+						// 	// window.console && console.log('fieldItem', fieldItem);
+						// }
+						appendDataToDataList(settings.resultDisplayOptions.fields, result);
+						// var depositResultBuild = new ResultsBuilder(lth, result, settings.resultDisplayOptions);
+						var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
 						depositResultBuild.build();
 					});
 
@@ -610,6 +632,7 @@ namespace LoanTekWidget {
 		constructor(lth: LoanTekWidget.helpers, options: LTWidget.IResultBuildOptions) {
 			var _settings: LTWidget.IResultBuildOptions = {
 				resultWrapperId: 'ltWidgetResultWrapper'
+				, widgetChannel: 'result'
 				// , resultFields: null
 			};
 
@@ -673,6 +696,7 @@ namespace LoanTekWidget {
 			};
 
 			$.extend(settings, options);
+			window.console && console.log('BuildFields settings', settings);
 			const COLUMNS_IN_ROW: number = 12;
 			var columnCount: number = 0;
 			var row: JQuery = null;
@@ -695,6 +719,8 @@ namespace LoanTekWidget {
 			var el = lth.CreateElement();
 			// var formEl = new FormElement(lth);
 			// window.console && console.log('mainWrapper', mainWrapper);
+
+			settings.widgetChannel = settings.widgetChannel || 'form';
 
 			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
 			$.each(settings.fields, (i, elementItem) => {
@@ -781,7 +807,7 @@ namespace LoanTekWidget {
 					}
 
 					function appendBuilderTools(currentCell) {
-						var passData = { index: fieldIndex };
+						var passData = { index: fieldIndex, channel: settings.widgetChannel };
 						var passString = JSON.stringify(passData);
 						currentCell.addClass('ltw-builder-tools-field').prepend(
 							el.div().addClass('ltw-tool-field-update')
@@ -798,8 +824,8 @@ namespace LoanTekWidget {
 						currentCell.prepend(el.div().addClass('move-hover'));
 
 						currentCell.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }`, { pdi: '' + fieldIndex }))
-							.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`);
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\')' }`, { pdi: '' + fieldIndex, channel: settings.widgetChannel }))
+							.attr('data-jqyoui-options', lth.Interpolate(`{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}`, { channel: settings.widgetChannel }));
 					}
 
 					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -840,7 +866,7 @@ namespace LoanTekWidget {
 											el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->')
 										)
 											.attr('data-drop', 'true')
-											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }`, { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
+											.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\', #{space}, #{isPh})' }`, { pdi: '' + fieldIndex, channel: settings.widgetChannel, space: remainingColSpace, isPh: 'true' }))
 											.attr('data-jqyoui-options', `{accept: '.field-channel', hoverClass: 'on-drag-hover'}`)
 											.prepend(el.div().addClass('move-hover'))
 									)

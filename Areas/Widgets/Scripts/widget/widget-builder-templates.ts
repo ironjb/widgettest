@@ -3,13 +3,15 @@
 (function () {
 	angular.module('ltw.templates', []).run(['$templateCache', function ($templateCache) {
 		$templateCache.put('template/widgetFormEditButton.html', `
-			<div class="pull-right">
-				<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetForm();" title="edit" alt="edit"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+			<div class="row">
+				<div class="pull-right">
+					<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetForm();"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+				</div>
 			</div>
 		`);
 		$templateCache.put('template/widgetFieldEditButtons.html', `
 			<div class="pull-right">
-				<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStartDir({index: toolInfo.index})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" title="move" alt="move"><span class="glyphicon glyphicon-move"></span></a>
+				<a class="btn btn-default btn-xs btn-tool {{toolInfo.channel}}-channel" data-jqyoui-draggable="{onStart:'onDragStartDir({index: toolInfo.index})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" title="move" alt="move"><span class="glyphicon glyphicon-move"></span></a>
 				<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetField();" title="edit" alt="edit"><span class="glyphicon glyphicon-edit"></span></button>
 				<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove" title="remove" alt="remove"><span class="glyphicon glyphicon-trash"></span></button>
 			</div>

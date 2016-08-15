@@ -76,7 +76,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
 			angular.extend(settings, options);
 
-			var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFormNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFormEditModalInstanceOptions) => {
+			var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFormNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFormEditModalInstanceOptions) {
 
 				$scope.modForm = angular.copy(instanceOptions.currentForm);
 				$scope.modBuildOptions = $scope.modForm[instanceOptions.formObjectType];

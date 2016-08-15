@@ -104,8 +104,8 @@
 													<div class="pull-right">
 														<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
 														<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
-														<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
-														<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+														<a class="btn btn-default btn-xs btn-tool form-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+														<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id, 'form');" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
 													</div>
 													<span data-ng-bind="aField.name"></span>
 												</div>
@@ -113,14 +113,22 @@
 										</div>
 									</div>
 								</div>
-								<div class="panel panel-default">
+								<div class="panel panel-default" data-ng-show="allResultFieldsOptionsArray">
 									<div class="panel-heading" data-ng-click="isCollapsedAvailResultFields = !isCollapsedAvailResultFields">
 										<h3 class="panel-title">Result Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailResultFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
 									</div>
 									<div data-uib-collapse="isCollapsedAvailResultFields">
 										<div class="panel-body">
 											<div class="list-group lt-no-bottom-margin">
-												<div class="list-group-item">field list item</div>
+												<div class="list-group-item" data-ng-repeat="aResult in allResultFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
+													<div class="pull-right">
+														<span class="small text-danger" data-ng-show="!!aResult.isLTRequired &amp;&amp; !aResult.isIncluded">Required! &nbsp; </span>
+														<span class="small" data-ng-show="!aResult.allowMultiples &amp;&amp; !!aResult.isIncluded">Can only add once</span>
+														<a class="btn btn-default btn-xs btn-tool result-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aResult.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aResult.allowMultiples || !aResult.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+														<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aResult.id, 'result');" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+													</div>
+													<span data-ng-bind="aResult.name"></span>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -203,7 +211,7 @@
 	"UserId": 0,
 	"WidgetType": "DepositWidget",
 	"Name": "template1.json",
-	"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\", \"value\": \"Deposit List\"},{\"field\": \"paragraph\", \"value\": \"explanation goes here if needed\"},{\"field\": \"depositdatalist\", \"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\", \"value\": \"repeater paragraph\"},{\"field\": \"api\", \"cols\": 4, \"value\": \"#{APY}% is #{APY}\"},{\"field\": \"totalinterestearned\", \"cols\": 4},{\"field\": \"amountplusinterest\", \"cols\": 4}]}}]}}",
+	"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\", \"value\": \"Deposit List\"},{\"field\": \"paragraph\", \"value\": \"explanation goes here if needed\"},{\"field\": \"depositdatalist\", \"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\", \"value\": \"repeater paragraph\"},{\"field\": \"api\", \"cols\": 4, \"value\": \"#{APY}%\"},{\"field\": \"totalinterestearned\", \"cols\": 4},{\"field\": \"amountplusinterest\", \"cols\": 4}]}}]}}",
 	"LastModifiedDate": "\/Date(1468004010208)\/",
 	"LastModifiedByUserID": null,
 	"Active": true

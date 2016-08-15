@@ -12,6 +12,7 @@ declare namespace LTWidget {
 	interface IBuildOptions {
 		formBorderType?: string;
 		widgetType?: string;
+		widgetChannel?: string;		// 'form' | 'result'
 		panelTitle?: string;
 		showBuilderTools?: boolean;
 		fields?: IWidgetField[];

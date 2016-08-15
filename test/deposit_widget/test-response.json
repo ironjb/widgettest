@@ -2,5 +2,5 @@
 	{ "APY": 0.8, "TotalInterestEarned": 10000, "AmountPlusInterest": 5000 },
 	{ "APY": 0.85, "TotalInterestEarned": 5000, "AmountPlusInterest": 4000 },
 	{ "APY": 0.9, "TotalInterestEarned": 1500, "AmountPlusInterest": 3500 },
-	{ "APY": 1, "TotalInterestEarned": 500, "AmountPlusInterest": 100 }
+	{ "APY": 1, "TotalInterestEarned": 100, "AmountPlusInterest": 100 }
 ]

@@ -43,7 +43,7 @@ interface IWidget {
 }
 
 interface IWidgetFormObject {
-	name: string;
+	name?: string;
 	// formWidth?: number;
 	// formWidthUnit?: string;
 	// formBg?: string;
@@ -87,9 +87,9 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	ClearSelectedForm?(): void;
 	SetCurrentForm?(currentForm: IWidgetFormObject): void;
 	FilterAvailableFields?(value, index, array): boolean;
-	addField?(fieldId: string): void;
+	addField?(fieldId: string, channel: string): void;
 	onDragStart: IWidgetOnDragStart;
-	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, columns?: number, isPlaceholder?: boolean): void;
+	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, channel: string, columns?: number, isPlaceholder?: boolean): void;
 	selectedForm?: IWidgetFormObject;
 	passedModelForm?: IWidgetModelDataModelWidget;
 	widgetObject?: IWidget;
@@ -210,12 +210,18 @@ namespace LoanTekWidget {
 				$scope.onDrop = onDrop;
 				BuilderInit();
 
-				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], (newValue) => {
+				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length', 'currentForm.resultObject.fields.length'], (newValue) => {
 					// Checks Available Fields to see if they have been added to widget
 					for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
 						var field = $scope.allFieldsOptionsArray[i];
 						var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
 						field.isIncluded = !!(cIndex >= 0);
+					}
+
+					for(var j = $scope.allResultFieldsOptionsArray.length -1; j >= 0; j--) {
+						var rField = $scope.allResultFieldsOptionsArray[j];
+						var rIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.resultObject.fields, 'field', rField.id);
+						rField.isIncluded = !!(rIndex >= 0);
 					}
 				});
 
@@ -260,13 +266,15 @@ namespace LoanTekWidget {
 					$scope.dragData = data;
 				}
 
-				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, dropIndex: number, columns?: number, isPlaceholder?: boolean) {
+				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, dropIndex: number, channel?: string, columns?: number, isPlaceholder?: boolean) {
+					channel = channel || 'form';
+					var currentObject = (channel === 'result') ? 'resultObject' : 'buildObject';
 					if ($scope.dragData.field) {
 						var newField: IWidgetField = { field: $scope.dragData.field };
 						if (columns) {
 							newField.cols = columns;
 						}
-						$scope.currentForm.buildObject.fields.splice(dropIndex + 1, 0, newField);
+						$scope.currentForm[currentObject].fields.splice(dropIndex + 1, 0, newField);
 						$scope.ClearSelectedForm();
 						$scope.WidgetScriptBuild($scope.currentForm);
 					} else if (lth.isNumber($scope.dragData.index)) {
@@ -275,10 +283,10 @@ namespace LoanTekWidget {
 							dropIndex += 1;
 						}
 
-						ltbh.arrayMove($scope.currentForm.buildObject.fields, previousIndex, dropIndex);
+						ltbh.arrayMove($scope.currentForm[currentObject].fields, previousIndex, dropIndex);
 
 						if (columns) {
-							$scope.currentForm.buildObject.fields[dropIndex].cols = columns;
+							$scope.currentForm[currentObject].fields[dropIndex].cols = columns;
 						}
 
 						$scope.ClearSelectedForm();
@@ -294,9 +302,11 @@ namespace LoanTekWidget {
 					return isInList;
 				}
 
-				function addField(fieldId: string) {
+				function addField(fieldId: string, channel: string) {
+					channel = channel || 'form';
+					var currentObject = (channel === 'result')? 'resultObject': 'buildObject';
 					var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
-					$scope.currentForm.buildObject.fields.push(fieldToAdd);
+					$scope.currentForm[currentObject].fields.push(fieldToAdd);
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 
@@ -325,6 +335,7 @@ namespace LoanTekWidget {
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+					currentFormObj.resultObject.widgetType = widgetObj.widgetType;
 					if (currentFormObj.resultObject) {
 						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
 						window.console && console.log('currentFormObj', currentFormObj);
@@ -341,12 +352,17 @@ namespace LoanTekWidget {
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
+					var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+					var crod: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject): null;
 					var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 					var wScriptDisplay: string = wScript;
 					var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
 					var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
 					var formStyles = '';
 					cbod.showBuilderTools = true;
+					if (crod) {
+						crod.showBuilderTools = true;
+					}
 					cbo.postDOMCallback = '#fn{postDOMFunctions}';
 					cbod.postDOMCallback = '#fn{postDOMFunctions}';
 
@@ -368,6 +384,9 @@ namespace LoanTekWidget {
 
 					// Add Widget Wrapper
 					var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
+					if (cro) {
+						widgetWrapper += '\n<div id="ltWidgetResultWrapper"></div>';
+					}
 					wScript += widgetWrapper;
 					wScriptDisplay += widgetWrapper;
 
@@ -459,8 +478,16 @@ namespace LoanTekWidget {
 
 					var ltWidgetOptionsWrap = `
 						var ltwo = #{cwow};`;
-					mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
-					mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
+					var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
+					var ltWidgetOptionsWithResultsObjDisplay = angular.copy(ltWidgetOptions);
+					if (cro) {
+						ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
+					}
+					if (crod) {
+						ltWidgetOptionsWithResultsObjDisplay.resultDisplayOptions = crod;
+					}
+					mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject) });
+					mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObjDisplay) });
 
 					// Add Execution of Widget
 					var widgetBuildForm = `

@@ -18,6 +18,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 restrict: 'A',
                 templateUrl: 'template/widgetFormEditButton.html',
                 link: function (scope, elem, attrs) {
+                    window.console && console.log('attrs.ltFormEditTool', attrs.ltFormEditTool);
                     scope.EditWidgetForm = function () {
                         var formEditOptions = {
                             instanceOptions: {
@@ -45,13 +46,20 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 templateUrl: 'template/widgetFieldEditButtons.html',
                 link: function (scope, elem, attrs) {
                     scope.onDragStartDir = scope.fieldData.onDragStart;
-                    scope.currentFieldName = scope.fieldData.currentForm.buildObject.fields[scope.toolInfo.index].field;
+                    scope.toolInfo.channel = scope.toolInfo.channel || 'form';
+                    var currentObject = scope.toolInfo.channel === 'form' ? 'buildObject' : 'resultObject';
+                    scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
                     if (scope.fieldData.widgetTypeLower === 'quotewidget') {
                     }
                     else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
                     }
                     else if (scope.fieldData.widgetTypeLower === 'depositwidget') {
-                        scope.currentFieldOptions = lth.depositFields[scope.currentFieldName];
+                        if (currentObject === 'resultObject') {
+                            scope.currentFieldOptions = lth.depositResultFields[scope.currentFieldName];
+                        }
+                        else {
+                            scope.currentFieldOptions = lth.depositFields[scope.currentFieldName];
+                        }
                     }
                     else {
                         scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
@@ -63,7 +71,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     scope.RemoveWidgetField = function () {
                         var confirmInfo = { confirmOptions: { message: 'Are you sure you want to delete?' }, onConfirm: null, onCancel: null };
                         confirmInfo.onConfirm = function () {
-                            delete scope.fieldData.currentForm.buildObject.fields.splice(scope.toolInfo.index, 1);
+                            delete scope.fieldData.currentForm[currentObject].fields.splice(scope.toolInfo.index, 1);
                             scope.fieldData.setCurrentForm(angular.copy(scope.fieldData.currentForm));
                             scope.fieldData.clearSelectedForm();
                             scope.fieldData.buildScript(scope.fieldData.currentForm);
@@ -75,7 +83,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         var fieldEditOptions = {
                             instanceOptions: {
                                 currentForm: angular.copy(scope.fieldData.currentForm),
-                                currentFieldIndex: scope.toolInfo.index
+                                currentFieldIndex: scope.toolInfo.index,
+                                currentFieldChannel: scope.toolInfo.channel
                             },
                             fieldOptions: scope.currentFieldOptions,
                             saveForm: function (updatedForm) {

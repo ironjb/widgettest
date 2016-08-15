@@ -184,6 +184,20 @@ var LoanTekWidget;
             $(function () {
                 var depositPostData = {};
                 $(settings.form_submit).prop('disabled', false);
+                var appendDataToDataList = function (fieldList, data) {
+                    for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
+                        var fieldItem = fieldList[flIndex];
+                        if (fieldItem.field === 'depositdatalist') {
+                            fieldItem.fieldData = data;
+                        }
+                    }
+                };
+                if (settings.resultDisplayOptions.showBuilderTools) {
+                    var fakeData = [{ APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 }];
+                    appendDataToDataList(settings.resultDisplayOptions.fields, fakeData);
+                    var showDepositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
+                    showDepositResultBuild.build();
+                }
                 $(settings.form_id).submit(function (event) {
                     event.preventDefault();
                     $(settings.form_errorMsgWrapper).hide(100);
@@ -204,13 +218,8 @@ var LoanTekWidget;
                     });
                     request.done(function (result) {
                         $(settings.form_submit).prop('disabled', false);
-                        for (var flIndex = options.resultDisplayOptions.fields.length - 1; flIndex >= 0; flIndex--) {
-                            var fieldItem = options.resultDisplayOptions.fields[flIndex];
-                            if (fieldItem.field === 'depositdatalist') {
-                                fieldItem.fieldData = result;
-                            }
-                        }
-                        var depositResultBuild = new ResultsBuilder(lth, options.resultDisplayOptions);
+                        appendDataToDataList(settings.resultDisplayOptions.fields, result);
+                        var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
                         depositResultBuild.build();
                     });
                     request.fail(function (error) {
@@ -236,7 +245,8 @@ var LoanTekWidget;
     var ResultsBuilder = (function () {
         function ResultsBuilder(lth, options) {
             var _settings = {
-                resultWrapperId: 'ltWidgetResultWrapper'
+                resultWrapperId: 'ltWidgetResultWrapper',
+                widgetChannel: 'result'
             };
             lth.$.extend(_settings, options);
             this.settings = _settings;
@@ -289,6 +299,7 @@ var LoanTekWidget;
                 showBuilderTools: false
             };
             $.extend(settings, options);
+            window.console && console.log('BuildFields settings', settings);
             var COLUMNS_IN_ROW = 12;
             var columnCount = 0;
             var row = null;
@@ -307,6 +318,7 @@ var LoanTekWidget;
             var isNextHidden = false;
             var fieldTemplate;
             var el = lth.CreateElement();
+            settings.widgetChannel = settings.widgetChannel || 'form';
             $.each(settings.fields, function (i, elementItem) {
                 if (elementItem.field) {
                     settings.fields[i] = lth.ExtendWidgetFieldTemplate(elementItem, settings.fieldHelperType);
@@ -380,7 +392,7 @@ var LoanTekWidget;
                         cell.addClass('col-sm-offset-' + elementItem.offsetCols);
                     }
                     function appendBuilderTools(currentCell) {
-                        var passData = { index: fieldIndex };
+                        var passData = { index: fieldIndex, channel: settings.widgetChannel };
                         var passString = JSON.stringify(passData);
                         currentCell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
                             .attr('data-lt-field-edit-tool', passString)
@@ -392,8 +404,8 @@ var LoanTekWidget;
                     function appendMoveTools(currentCell) {
                         currentCell.prepend(el.div().addClass('move-hover'));
                         currentCell.attr('data-drop', 'true')
-                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi})' }", { pdi: '' + fieldIndex }))
-                            .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}");
+                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\')' }", { pdi: '' + fieldIndex, channel: settings.widgetChannel }))
+                            .attr('data-jqyoui-options', lth.Interpolate("{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}", { channel: settings.widgetChannel }));
                     }
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
                     isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
@@ -412,7 +424,7 @@ var LoanTekWidget;
                             row.append(el.col(remainingColSpace).addClass('hidden-xs')
                                 .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->'))
                                 .attr('data-drop', 'true')
-                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, #{space}, #{isPh})' }", { pdi: '' + fieldIndex, space: remainingColSpace, isPh: 'true' }))
+                                .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\', #{space}, #{isPh})' }", { pdi: '' + fieldIndex, channel: settings.widgetChannel, space: remainingColSpace, isPh: 'true' }))
                                 .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}")
                                 .prepend(el.div().addClass('move-hover')))));
                         }

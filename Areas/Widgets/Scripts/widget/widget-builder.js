@@ -80,11 +80,16 @@ var LoanTekWidget;
                     $scope.onDragStart = onDragStart;
                     $scope.onDrop = onDrop;
                     BuilderInit();
-                    $scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length'], function (newValue) {
+                    $scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length', 'currentForm.resultObject.fields.length'], function (newValue) {
                         for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
                             var field = $scope.allFieldsOptionsArray[i];
                             var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
                             field.isIncluded = !!(cIndex >= 0);
+                        }
+                        for (var j = $scope.allResultFieldsOptionsArray.length - 1; j >= 0; j--) {
+                            var rField = $scope.allResultFieldsOptionsArray[j];
+                            var rIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.resultObject.fields, 'field', rField.id);
+                            rField.isIncluded = !!(rIndex >= 0);
                         }
                     });
                     function SaveWidget(saveAsNew) {
@@ -124,13 +129,15 @@ var LoanTekWidget;
                     function onDragStart(event, ui, data) {
                         $scope.dragData = data;
                     }
-                    function onDrop(event, ui, dropIndex, columns, isPlaceholder) {
+                    function onDrop(event, ui, dropIndex, channel, columns, isPlaceholder) {
+                        channel = channel || 'form';
+                        var currentObject = (channel === 'result') ? 'resultObject' : 'buildObject';
                         if ($scope.dragData.field) {
                             var newField = { field: $scope.dragData.field };
                             if (columns) {
                                 newField.cols = columns;
                             }
-                            $scope.currentForm.buildObject.fields.splice(dropIndex + 1, 0, newField);
+                            $scope.currentForm[currentObject].fields.splice(dropIndex + 1, 0, newField);
                             $scope.ClearSelectedForm();
                             $scope.WidgetScriptBuild($scope.currentForm);
                         }
@@ -139,9 +146,9 @@ var LoanTekWidget;
                             if (previousIndex > dropIndex && isPlaceholder) {
                                 dropIndex += 1;
                             }
-                            ltbh.arrayMove($scope.currentForm.buildObject.fields, previousIndex, dropIndex);
+                            ltbh.arrayMove($scope.currentForm[currentObject].fields, previousIndex, dropIndex);
                             if (columns) {
-                                $scope.currentForm.buildObject.fields[dropIndex].cols = columns;
+                                $scope.currentForm[currentObject].fields[dropIndex].cols = columns;
                             }
                             $scope.ClearSelectedForm();
                             $scope.WidgetScriptBuild($scope.currentForm);
@@ -155,9 +162,11 @@ var LoanTekWidget;
                         isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
                         return isInList;
                     }
-                    function addField(fieldId) {
+                    function addField(fieldId, channel) {
+                        channel = channel || 'form';
+                        var currentObject = (channel === 'result') ? 'resultObject' : 'buildObject';
                         var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
-                        $scope.currentForm.buildObject.fields.push(fieldToAdd);
+                        $scope.currentForm[currentObject].fields.push(fieldToAdd);
                         $scope.WidgetScriptBuild($scope.currentForm);
                     }
                     function UsePrebuiltForm() {
@@ -182,6 +191,7 @@ var LoanTekWidget;
                     }
                     function WidgetScriptBuild(currentFormObj) {
                         currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+                        currentFormObj.resultObject.widgetType = widgetObj.widgetType;
                         if (currentFormObj.resultObject) {
                             currentFormObj.resultObject.widgetType = widgetObj.widgetType;
                             window.console && console.log('currentFormObj', currentFormObj);
@@ -197,12 +207,17 @@ var LoanTekWidget;
                         var cfo = angular.copy(currentFormObj);
                         var cbo = angular.copy(cfo.buildObject);
                         var cbod = angular.copy(cfo.buildObject);
+                        var cro = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+                        var crod = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
                         var wScript = '<style type="text/css">.ltw {display:none;}</style>';
                         var wScriptDisplay = wScript;
                         var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
                         var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
                         var formStyles = '';
                         cbod.showBuilderTools = true;
+                        if (crod) {
+                            crod.showBuilderTools = true;
+                        }
                         cbo.postDOMCallback = '#fn{postDOMFunctions}';
                         cbod.postDOMCallback = '#fn{postDOMFunctions}';
                         for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
@@ -212,6 +227,9 @@ var LoanTekWidget;
                             wScriptDisplay += cssLink;
                         }
                         var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
+                        if (cro) {
+                            widgetWrapper += '\n<div id="ltWidgetResultWrapper"></div>';
+                        }
                         wScript += widgetWrapper;
                         wScriptDisplay += widgetWrapper;
                         for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
@@ -257,8 +275,16 @@ var LoanTekWidget;
                             userId: widgetData.modelWidget.UserId
                         };
                         var ltWidgetOptionsWrap = "\n\t\t\t\t\t\tvar ltwo = #{cwow};";
-                        mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
-                        mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptions) });
+                        var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
+                        var ltWidgetOptionsWithResultsObjDisplay = angular.copy(ltWidgetOptions);
+                        if (cro) {
+                            ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
+                        }
+                        if (crod) {
+                            ltWidgetOptionsWithResultsObjDisplay.resultDisplayOptions = crod;
+                        }
+                        mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject) });
+                        mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObjDisplay) });
                         var widgetBuildForm = "\n\t\t\t\t\t\tvar ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);";
                         mainScript += widgetBuildForm;
                         mainScriptDisplay += widgetBuildForm;
