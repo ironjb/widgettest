@@ -67,6 +67,14 @@ interface IWidgetOnDragStartData {
 	field?: string;
 }
 
+interface IWidgetEditFormInfo {
+	formObjectType?: string;
+	currentForm?: IWidgetFormObject;
+	clearSelectedForm?(): void;
+	setCurrentForm?(currentForm: IWidgetFormObject): void;
+	buildScript?: IWidgetScriptBuildFunction;
+}
+
 interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
 	currentForm?: IWidgetFormObject;
@@ -97,7 +105,10 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	widgetScriptDisplay?: string;
 	widgetScriptParse?: string;
 	scriptChangedClass?: string;
+	editFormInfo?: IWidgetEditFormInfo;
+	editResultInfo?: IWidgetEditFormInfo;
 	editFieldData?: IWidgetEditFieldData;
+	// SetEditFormInfo?(formType: string): IWidgetEditFormInfo;
 	allFieldsObject?: Object;
 	allFieldsOptionsArray?: IWidgetFieldOptions[];
 	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
@@ -208,6 +219,7 @@ namespace LoanTekWidget {
 				$scope.FilterAvailableFields = FilterAvailableFields;
 				$scope.onDragStart = onDragStart;
 				$scope.onDrop = onDrop;
+				// $scope.SetEditFormInfo = SetEditFormInfo;
 				BuilderInit();
 
 				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length', 'currentForm.resultObject.fields.length'], (newValue) => {
@@ -224,6 +236,17 @@ namespace LoanTekWidget {
 						rField.isIncluded = !!(rIndex >= 0);
 					}
 				});
+
+				// function SetEditFormInfo(formType: string) {
+				// 	var editFormInfo: IWidgetEditFormInfo = {
+				// 		formObjectType: formType
+				// 		, currentForm: $scope.currentForm
+				// 		, clearSelectedForm: $scope.ClearSelectedForm
+				// 		, setCurrentForm: $scope.SetCurrentForm
+				// 		, buildScript: $scope.WidgetScriptBuild
+				// 	};
+				// 	return editFormInfo;
+				// }
 
 				function SaveWidget(saveAsNew: boolean) {
 					var saveData: IWidgetModelDataModelWidget = angular.copy(widgetData.modelWidget);
@@ -338,7 +361,7 @@ namespace LoanTekWidget {
 					currentFormObj.resultObject.widgetType = widgetObj.widgetType;
 					if (currentFormObj.resultObject) {
 						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
-						window.console && console.log('currentFormObj', currentFormObj);
+						// window.console && console.log('currentFormObj', currentFormObj);
 					}
 					// window.console && console.log('currentFormObj', currentFormObj, widgetData.modelWidget.WidgetType);
 					$scope.editFieldData = {
@@ -349,6 +372,25 @@ namespace LoanTekWidget {
 						, setCurrentForm: $scope.SetCurrentForm
 						, buildScript: $scope.WidgetScriptBuild
 					};
+
+					$scope.editFormInfo = {
+						formObjectType: 'buildObject'
+						, currentForm: $scope.currentForm
+						, clearSelectedForm: $scope.ClearSelectedForm
+						, setCurrentForm: $scope.SetCurrentForm
+						, buildScript: $scope.WidgetScriptBuild
+					};
+
+					// $scope.editResultInfo = {
+					// 	formObjectType: 'resultObject'
+					// 	, currentForm: $scope.currentForm
+					// 	, clearSelectedForm: $scope.ClearSelectedForm
+					// 	, setCurrentForm: $scope.SetCurrentForm
+					// 	, buildScript: $scope.WidgetScriptBuild
+					// };
+					$scope.editResultInfo = angular.copy($scope.editFormInfo);
+					$scope.editResultInfo.formObjectType = 'resultObject';
+
 					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);

@@ -16,19 +16,21 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
     widgetDirectives.directive('ltFormEditTool', ['widgetServices', function (widgetServices) {
             return {
                 restrict: 'A',
+                scope: {
+                    toolInfo: '=ltFormEditTool'
+                },
                 templateUrl: 'template/widgetFormEditButton.html',
                 link: function (scope, elem, attrs) {
-                    window.console && console.log('attrs.ltFormEditTool', attrs.ltFormEditTool);
                     scope.EditWidgetForm = function () {
                         var formEditOptions = {
                             instanceOptions: {
-                                currentForm: angular.copy(scope.currentForm),
-                                formObjectType: attrs.ltFormEditTool
+                                currentForm: angular.copy(scope.toolInfo.currentForm),
+                                formObjectType: scope.toolInfo.formObjectType
                             },
                             saveForm: function (updatedForm) {
-                                scope.currentForm = updatedForm;
-                                scope.selectedForm = {};
-                                scope.WidgetScriptBuild(scope.currentForm);
+                                scope.toolInfo.setCurrentForm(updatedForm);
+                                scope.toolInfo.clearSelectedForm();
+                                scope.toolInfo.buildScript(updatedForm);
                             }
                         };
                         widgetServices.editForm(formEditOptions);
@@ -84,7 +86,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             instanceOptions: {
                                 currentForm: angular.copy(scope.fieldData.currentForm),
                                 currentFieldIndex: scope.toolInfo.index,
-                                currentFieldChannel: scope.toolInfo.channel
+                                formObjectType: currentObject
                             },
                             fieldOptions: scope.currentFieldOptions,
                             saveForm: function (updatedForm) {

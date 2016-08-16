@@ -255,7 +255,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', ($scope: IWidgetEditFieldNgScope, $uibModalInstance, instanceOptions: IFieldEditModalInstanceOptions) => {
 				$scope.modelOptions = ngModelOptions;
 				$scope.modForm = angular.copy(instanceOptions.currentForm);
-				$scope.modField = $scope.modForm.buildObject.fields[instanceOptions.currentFieldIndex];
+				$scope.modField = $scope.modForm[instanceOptions.formObjectType].fields[instanceOptions.currentFieldIndex];
 				$scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
 
 				var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modForm, true, '.ltw-preview');
@@ -269,8 +269,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.offsetColumnsArray = lth.bootstrap.offsetColumns.asArray();
 				$scope.headingArray = lth.hsize.asArray();
 
-				if (!$scope.modField.size && $scope.modForm.buildObject.fieldSize) {
-					$scope.modField.size = $scope.modForm.buildObject.fieldSize;
+				if (!$scope.modField.size && $scope.modForm[instanceOptions.formObjectType].fieldSize) {
+					$scope.modField.size = $scope.modForm[instanceOptions.formObjectType].fieldSize;
 				}
 
 				if (!$scope.modField.cols) {
@@ -354,10 +354,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if ($scope.modField.cols === lth.bootstrap.gridColumns.getDefault().id) {
 						delete $scope.modField.cols;
 					}
-					if ($scope.modField.size === $scope.modForm.buildObject.fieldSize) {
+					if ($scope.modField.size === $scope.modForm[instanceOptions.formObjectType].fieldSize) {
 						delete $scope.modField.size;
 					}
-					if ($scope.modField.size === lth.bootstrap.inputSizing.getDefault().id && !$scope.modForm.buildObject.fieldSize) {
+					if ($scope.modField.size === lth.bootstrap.inputSizing.getDefault().id && !$scope.modForm[instanceOptions.formObjectType].fieldSize) {
 						delete $scope.modField.size;
 					}
 					if ($scope.modField.nsize === lth.hsize.getDefault().id) {

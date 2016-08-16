@@ -1,7 +1,8 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
-interface IWidgetDirectiveFormEditToolNgScope extends IWidgetBuilderNgScope {
+interface IWidgetDirectiveFormEditToolNgScope extends ng.IScope {
 	EditWidgetForm?(): void;
+	toolInfo: IWidgetEditFormInfo;
 }
 
 interface IFormEditOptions {
@@ -43,7 +44,7 @@ interface IFieldEditModalInstanceOptions {
 	fieldOptions?: IWidgetFieldOptions;
 	currentForm: IWidgetFormObject;
 	currentFieldIndex?: number;
-	currentFieldChannel?: string;
+	formObjectType?: string;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -66,19 +67,23 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 	widgetDirectives.directive('ltFormEditTool', ['widgetServices', function (widgetServices: IWidgetNgServices) {
 		return {
 			restrict: 'A'
+			, scope: {
+				toolInfo: '=ltFormEditTool'
+			}
+			// , templateUrl: 'http://localhost:58477/Widgets/Home/AngularTemplates/modalEditForm?t=' + new Date().getTime()
 			, templateUrl: 'template/widgetFormEditButton.html'
 			, link: function (scope: IWidgetDirectiveFormEditToolNgScope, elem, attrs) {
-				window.console && console.log('attrs.ltFormEditTool', attrs.ltFormEditTool);
+				// window.console && console.log('scope.toolInfo', scope.toolInfo);
 				scope.EditWidgetForm = function () {
 					var formEditOptions: IFormEditOptions = {
 						instanceOptions: {
-							currentForm: angular.copy(scope.currentForm)
-							, formObjectType: attrs.ltFormEditTool
+							currentForm: angular.copy(scope.toolInfo.currentForm)
+							, formObjectType: scope.toolInfo.formObjectType
 						}
 						, saveForm: (updatedForm) => {
-							scope.currentForm = updatedForm;
-							scope.selectedForm = {};
-							scope.WidgetScriptBuild(scope.currentForm);
+							scope.toolInfo.setCurrentForm(updatedForm);
+							scope.toolInfo.clearSelectedForm();
+							scope.toolInfo.buildScript(updatedForm);
 						}
 					};
 					widgetServices.editForm(formEditOptions);
@@ -137,11 +142,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				scope.EditWidgetField = () => {
+					// window.console && console.log('scope.toolInfo.channel', scope.toolInfo.channel);
 					var fieldEditOptions: IFieldEditOptions = {
 						instanceOptions: {
 							currentForm: angular.copy(scope.fieldData.currentForm)
 							, currentFieldIndex: scope.toolInfo.index
-							, currentFieldChannel: scope.toolInfo.channel
+							, formObjectType: currentObject
 						}
 						, fieldOptions: scope.currentFieldOptions
 						, saveForm: (updatedForm) => {

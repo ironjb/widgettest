@@ -373,7 +373,7 @@ namespace LoanTekWidget {
 
 			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm2);
 			if (settings.showBuilderTools) {
-				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'buildObject'));
+				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editFormInfo'));
 			}
 
 			if (typeof settings.postDOMCallback === 'function') {
@@ -673,7 +673,7 @@ namespace LoanTekWidget {
 
 			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass).empty().append(resultsForm2);
 			if (_thisM.settings.showBuilderTools) {
-				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'resultObject'));
+				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editResultInfo'));
 			}
 		}
 	}
@@ -696,7 +696,7 @@ namespace LoanTekWidget {
 			};
 
 			$.extend(settings, options);
-			window.console && console.log('BuildFields settings', settings);
+			// window.console && console.log('BuildFields settings', settings);
 			const COLUMNS_IN_ROW: number = 12;
 			var columnCount: number = 0;
 			var row: JQuery = null;

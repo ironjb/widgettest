@@ -194,7 +194,6 @@ var LoanTekWidget;
                         currentFormObj.resultObject.widgetType = widgetObj.widgetType;
                         if (currentFormObj.resultObject) {
                             currentFormObj.resultObject.widgetType = widgetObj.widgetType;
-                            window.console && console.log('currentFormObj', currentFormObj);
                         }
                         $scope.editFieldData = {
                             widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase(),
@@ -204,6 +203,15 @@ var LoanTekWidget;
                             setCurrentForm: $scope.SetCurrentForm,
                             buildScript: $scope.WidgetScriptBuild
                         };
+                        $scope.editFormInfo = {
+                            formObjectType: 'buildObject',
+                            currentForm: $scope.currentForm,
+                            clearSelectedForm: $scope.ClearSelectedForm,
+                            setCurrentForm: $scope.SetCurrentForm,
+                            buildScript: $scope.WidgetScriptBuild
+                        };
+                        $scope.editResultInfo = angular.copy($scope.editFormInfo);
+                        $scope.editResultInfo.formObjectType = 'resultObject';
                         var cfo = angular.copy(currentFormObj);
                         var cbo = angular.copy(cfo.buildObject);
                         var cbod = angular.copy(cfo.buildObject);
