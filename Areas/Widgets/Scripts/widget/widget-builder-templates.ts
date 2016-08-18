@@ -5,10 +5,11 @@
 		$templateCache.put('template/widgetFormEditButton.html', `
 			<div class="row">
 				<div class="pull-right">
-					<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetForm();"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+					<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetForm();"><span class="glyphicon glyphicon-edit"></span> Edit</button>
 				</div>
 			</div>
 		`);
+
 		$templateCache.put('template/widgetFieldEditButtons.html', `
 			<div class="pull-right">
 				<a class="btn btn-default btn-xs btn-tool {{toolInfo.channel}}-channel" data-jqyoui-draggable="{onStart:'onDragStartDir({index: toolInfo.index})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" title="move" alt="move"><span class="glyphicon glyphicon-move"></span></a>
@@ -16,6 +17,7 @@
 				<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove" title="remove" alt="remove"><span class="glyphicon glyphicon-trash"></span></button>
 			</div>
 		`);
+
 		$templateCache.put('template/modal/editForm.html', `
 			<form class="form-horizontal" data-ng-submit="saveClick();">
 				<div class="modal-header alert alert-info">
@@ -57,7 +59,7 @@
 										<span class="input-group-addon" data-ng-style="{ backgroundColor: modBuildOptions.formBg, borderColor: modBuildOptions.formBg }">&nbsp; &nbsp;</span>
 										<input type="text" class="form-control" id="ltewFormBgColor" name="ltewFormBgColor" data-ng-model="modBuildOptions.formBg" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent-NOT-USED="true" />
 										<span class="input-group-btn">
-											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeFormItem('formBg');"><span class="glyphicon glyphicon-remove"></span></button>
+											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeBuildObjectItem('formBg');"><span class="glyphicon glyphicon-remove"></span></button>
 										</span>
 									</div>
 								</div>
@@ -68,7 +70,7 @@
 									<div class="input-group input-group-sm">
 										<span class="input-group-addon" data-ng-style="{ backgroundColor: modBuildOptions.formBorderColor, borderColor: modBuildOptions.formBorderColor }">&nbsp; &nbsp;</span>
 										<input type="text" class="form-control" id="ltewFormBorderColor" name="ltewFormBorderColor" data-ng-model="modBuildOptions.formBorderColor" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent-NOT-USED="true" />
-										<span class="input-group-btn"><button class="btn btn-default btn-sm" type="button" data-ng-click="removeFormItem('formBorderColor');"><span class="glyphicon glyphicon-remove"></span></button></span>
+										<span class="input-group-btn"><button class="btn btn-default btn-sm" type="button" data-ng-click="removeBuildObjectItem('formBorderColor');"><span class="glyphicon glyphicon-remove"></span></button></span>
 									</div>
 								</div>
 							</div>
@@ -89,7 +91,7 @@
 										<span class="input-group-addon" data-ng-style="{ backgroundColor: modBuildOptions.formTitleColor, borderColor: modBuildOptions.formTitleColor }">&nbsp; &nbsp;</span>
 										<input type="text" class="form-control" id="ltewFormTitleColor" name="ltewFormTitleColor" data-ng-model="modBuildOptions.formTitleColor" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent-NOT-USED="true" />
 										<span class="input-group-btn">
-											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeFormItem('formTitleColor');"><span class="glyphicon glyphicon-remove"></span></button>
+											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeBuildObjectItem('formTitleColor');"><span class="glyphicon glyphicon-remove"></span></button>
 										</span>
 									</div>
 								</div>
@@ -100,7 +102,7 @@
 									<div class="input-group input-group-sm">
 										<span class="input-group-addon" data-ng-style="{ backgroundColor: modBuildOptions.formTitleBgColor, borderColor: modBuildOptions.formTitleBgColor }">&nbsp; &nbsp;</span>
 										<input type="text" class="form-control" id="ltewFormTitleBgColor" name="ltewFormTitleBgColor" data-ng-model="modBuildOptions.formTitleBgColor" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent-NOT-USED="true" />
-										<span class="input-group-btn"><button class="btn btn-default btn-sm" type="button" data-ng-click="removeFormItem('formTitleBgColor');"><span class="glyphicon glyphicon-remove"></span></button></span>
+										<span class="input-group-btn"><button class="btn btn-default btn-sm" type="button" data-ng-click="removeBuildObjectItem('formTitleBgColor');"><span class="glyphicon glyphicon-remove"></span></button></span>
 									</div>
 								</div>
 							</div>
@@ -212,6 +214,7 @@
 				</div>
 			</form>
 		`);
+
 		$templateCache.put('template/modal/editField.html', `
 			<form class="form-horizontal" data-ng-submit="saveClick();" data-ng-init="ft = fieldOptions.fieldTemplate">
 				<div class="modal-header alert alert-info">
@@ -384,6 +387,9 @@
 					<button class="btn btn-sm btn-default" data-ng-click="cancelClick();">Cancel</button>
 				</div>
 			</form>
+		`);
+
+		$templateCache.put('template/modal/editRepeatField.html', `
 		`);
 	}]);
 })();

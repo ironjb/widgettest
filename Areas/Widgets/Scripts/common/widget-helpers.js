@@ -113,6 +113,41 @@ var LoanTekWidget;
             }
             return returnWidgetField;
         };
+        helpers.prototype.GetSubFieldHelperType = function (widgetType, fieldName) {
+            var fieldHelperName = null;
+            if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+            }
+            else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
+            }
+            else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
+                if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
+                    fieldHelperName = 'depositResultDataFields';
+                }
+            }
+            else {
+            }
+            return fieldHelperName;
+        };
+        helpers.prototype.GetFieldOptionsForWidgetType = function (widgetType, fieldName, objectType) {
+            var _this = this;
+            var returnFieldOptions = null;
+            if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+            }
+            else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
+            }
+            else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
+                if (objectType.toLowerCase().indexOf('result') !== -1) {
+                    returnFieldOptions = _this.depositResultFields[fieldName];
+                }
+                else {
+                    returnFieldOptions = _this.depositFields[fieldName];
+                }
+            }
+            else {
+                returnFieldOptions = _this.contactFields[fieldName];
+            }
+            return returnFieldOptions;
+        };
         helpers.prototype.ModifyTextElementsInDOM = function (node, callback) {
             var _this = this;
             var next;
@@ -498,9 +533,9 @@ var LoanTekWidget;
             var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
             specifier = specifier || _thisM._specifier;
             borderType = borderType || _thisM._borderType;
-            br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+            br += '\n.ltw' + specifier + ' .lt-widget-border { border-radius: ' + fbr + 'px; }';
             if (borderType === lth.formBorderType.panel.id) {
-                br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+                br += '\n.ltw' + specifier + ' .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
             }
             return br;
         };

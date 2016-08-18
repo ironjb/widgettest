@@ -1082,12 +1082,17 @@ namespace LoanTekWidget {
 					if (elementObj.type === 'depositdatalist') {
 						elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
 					}
-					returnElement = el.div();
+					var classQualifier: number = Math.ceil((Math.random()*100000));
+					var repeatElementClass = 'ltw-repeat-data' + classQualifier;
+					returnElement = el.div().addClass(repeatElementClass);
 					for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
 						var dataItem = elementObj.fieldData[dataIndex];
 						var resultDataRow = el.div().addClass('widget-results-repeat-section');
 						resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
 						returnElement.append(resultDataRow);
+
+						var applyFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, elementObj.fieldListOptions, false, '.ltw .' + repeatElementClass).getStyles();
+						resultDataRow.prepend(el.style().html(applyFormStyles));
 					}
 					break;
 				default:

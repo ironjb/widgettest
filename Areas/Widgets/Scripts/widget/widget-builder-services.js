@@ -5,12 +5,20 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
     var ngModelOptions = { updateOn: 'default blur', debounce: { default: 500, blur: 0 } };
     ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal) {
             var widgetMethods = {};
+            widgetMethods.removeFieldItem = function (field, itemName) {
+                switch (itemName) {
+                    case "value":
+                        break;
+                    default:
+                        delete field[itemName];
+                        break;
+                }
+            };
             widgetMethods.editForm = function (options) {
                 var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
                 angular.extend(settings, options);
                 var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
-                        $scope.modForm = angular.copy(instanceOptions.currentForm);
-                        $scope.modBuildOptions = $scope.modForm[instanceOptions.formObjectType];
+                        $scope.modBuildOptions = angular.copy(instanceOptions.currentBuildObject);
                         $scope.borderType = angular.copy(lth.formBorderType);
                         $scope.formWidthUnits = angular.copy(lth.widthUnit);
                         $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
@@ -75,19 +83,17 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             var previewStyles = applyFormStyles.getStyles();
                             $scope.previewStyles = previewStyles;
                         });
-                        $scope.removeFormItem = function (itemName) {
+                        $scope.removeBuildObjectItem = function (itemName) {
                             switch (itemName) {
                                 case "value":
                                     break;
                                 default:
-                                    delete $scope.modForm[itemName];
+                                    delete $scope.modBuildOptions[itemName];
                                     break;
                             }
                         };
                         $scope.saveClick = function () {
                             var newBuildOptions = angular.copy($scope.modBuildOptions);
-                            var newForm = angular.copy($scope.modForm);
-                            newForm.name = 'modified';
                             if (!lth.isNumber(newBuildOptions.formBorderRadius) || newBuildOptions.formBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
                                 delete newBuildOptions.formBorderRadius;
                             }
@@ -121,8 +127,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 delete newBuildOptions.formBorderRadius;
                                 delete newBuildOptions.formBorderColor;
                             }
-                            newForm[instanceOptions.formObjectType] = newBuildOptions;
-                            $uibModalInstance.close(newForm);
+                            $uibModalInstance.close(newBuildOptions);
                         };
                         $scope.cancelClick = function () {
                             $uibModalInstance.dismiss();
@@ -142,19 +147,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 });
             };
             widgetMethods.editField = function (options) {
+                var modalCtrl;
                 var settings = { modalSize: 'lg' };
                 angular.extend(settings, options);
-                var modalCtrl;
-                var removeFieldItem = function (field, itemName) {
-                    switch (itemName) {
-                        case "value":
-                            break;
-                        default:
-                            delete field[itemName];
-                            break;
-                    }
-                };
-                settings.instanceOptions.fieldOptions = settings.fieldOptions;
                 modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
                         $scope.modelOptions = ngModelOptions;
                         $scope.modForm = angular.copy(instanceOptions.currentForm);
@@ -241,7 +236,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                             $scope.fieldStyle = newStyle;
                         });
-                        $scope.removeFieldItem = function (itemName) { removeFieldItem($scope.modField, itemName); };
+                        $scope.removeFieldItem = function (itemName) { widgetMethods.removeFieldItem($scope.modField, itemName); };
                         $scope.saveClick = function () {
                             if ($scope.modField.cols === lth.bootstrap.gridColumns.getDefault().id) {
                                 delete $scope.modField.cols;
@@ -289,6 +284,67 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     }
                 });
                 modalInstance.result.then(function (result) {
+                    settings.saveForm(result);
+                }, function (error) {
+                    window.console && console.error('EditField Error:', error);
+                });
+            };
+            widgetMethods.editRepeatField = function (options) {
+                var modalCtrl;
+                var settings = { modalSize: 'lg' };
+                angular.extend(settings, options);
+                window.console && console.log('erf settings: ', settings);
+                modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
+                        $scope.modelOptions = ngModelOptions;
+                        $scope.modForm = angular.copy(instanceOptions.currentForm);
+                        $scope.modField = $scope.modForm[instanceOptions.formObjectType].fields[instanceOptions.currentFieldIndex];
+                        var x = $scope.modField.fieldListOptions;
+                        var buildTool = new LoanTekWidget.BuildTools(lth);
+                        var el = lth.CreateElement();
+                        var fakeData;
+                        var buildDisplay = function () {
+                            var modFieldForEditDataForm = angular.copy($scope.modField);
+                            modFieldForEditDataForm.fieldListOptions.fieldHelperType = lth.GetSubFieldHelperType(instanceOptions.currentForm.buildObject.widgetType, instanceOptions.fieldOptions.id);
+                            modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
+                            var rFormWrapper = el.div();
+                            var resultForm = el.div().append(buildTool.BuildFields(rFormWrapper, angular.copy(modFieldForEditDataForm.fieldListOptions), fakeData));
+                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, modFieldForEditDataForm.fieldListOptions, true, '.ltw-repeatpreview');
+                            var previewDataFieldStyles = applyFormStyles.getStyles();
+                            $scope.previewDataFieldStyles = previewDataFieldStyles;
+                            $scope.repeatFormDisplay = resultForm.html();
+                        };
+                        fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 };
+                        buildDisplay();
+                        $scope.saveWidget = function () {
+                            var newForm = angular.copy($scope.modForm);
+                            $uibModalInstance.close(newForm);
+                        };
+                        $scope.cancelClick = function () {
+                            $uibModalInstance.dismiss();
+                        };
+                        $scope.editDataForm = function () {
+                            var dataFormEditOptions = {
+                                instanceOptions: {
+                                    currentBuildObject: $scope.modField.fieldListOptions
+                                },
+                                saveForm: function (updatedBuildObject) {
+                                    $scope.modField.fieldListOptions = updatedBuildObject;
+                                    buildDisplay();
+                                }
+                            };
+                            widgetMethods.editForm(dataFormEditOptions);
+                        };
+                    }];
+                var modalInstance = $uibModal.open({
+                    templateUrl: '/template.html?v=' + new Date().getTime(),
+                    controller: modalCtrl,
+                    size: settings.modalSize,
+                    resolve: {
+                        instanceOptions: function () { return settings.instanceOptions; }
+                    }
+                });
+                modalInstance.result.then(function (result) {
+                    window.console && console.log('modalInstance result then save');
                     settings.saveForm(result);
                 }, function (error) {
                 });

@@ -235,6 +235,41 @@ namespace LoanTekWidget {
 			return returnWidgetField;
 		}
 
+		GetSubFieldHelperType(widgetType: string, fieldName: string): string {
+			var fieldHelperName: string = null;
+			if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+				//
+			} else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
+				//
+			} else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
+				if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
+					fieldHelperName = 'depositResultDataFields';
+				}
+			} else {
+				//
+			}
+			return fieldHelperName;
+		}
+
+		GetFieldOptionsForWidgetType(widgetType: string, fieldName: string, objectType?: string): IWidgetFieldOptions {
+			var _this = this;
+			var returnFieldOptions: IWidgetFieldOptions = null;
+			if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+				// get quote widget fieldOptions
+			} else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
+				// get rate widget fieldOptions
+			} else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
+				if (objectType.toLowerCase().indexOf('result') !== -1) {
+					returnFieldOptions = _this.depositResultFields[fieldName];
+				} else {
+					returnFieldOptions = _this.depositFields[fieldName];
+				}
+			} else {
+				returnFieldOptions = _this.contactFields[fieldName];
+			}
+			return returnFieldOptions;
+		}
+
 		/**
 		 * Modifies Text Nodes in DOM
 		 * @param {Node}     node		Node/Element to look through for text Nodes/Elements
@@ -762,9 +797,9 @@ namespace LoanTekWidget {
 			var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';
 			specifier = specifier || _thisM._specifier;
 			borderType = borderType || _thisM._borderType;
-			br += '\n' + specifier + '.ltw  .lt-widget-border { border-radius: ' + fbr + 'px; }';
+			br += '\n.ltw' + specifier + ' .lt-widget-border { border-radius: ' + fbr + 'px; }';
 			if (borderType === lth.formBorderType.panel.id) {
-				br += '\n' + specifier + '.ltw  .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
+				br += '\n.ltw' + specifier + ' .lt-widget-border .lt-widget-heading { border-top-right-radius: ' + fbhr + 'px; border-top-left-radius: ' + fbhr + 'px; }';
 			}
 			return br;
 		}

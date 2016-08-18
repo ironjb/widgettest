@@ -1,9 +1,31 @@
-			<!-- template/widgetFieldEditButtons.html -->
-			<div class="pull-right">
-				<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStartDir({index: toolInfo.index})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true"><span class="glyphicon glyphicon-move"></span></a>
-				<!-- <a class="btn btn-default btn-xs btn-tool drag-handleX"><span class="glyphicon glyphicon-move drag-handleX"></span></a> -->
-				<!-- <a class="btn btn-default btn-xs btn-tool" data-ui-draggable="true" data-drag-channel="fieldschannel" data-drag="{{::toolInfo.index}}"><span class="glyphicon glyphicon-move"></span></a> -->
-				<button type="button" class="btn btn-default btn-xs btn-tool" data-ng-click="EditWidgetField();"><span class="glyphicon glyphicon-pencil"></span></button>
-				<button type="button" class="btn btn-danger btn-xs btn-tool ng-hide" data-ng-click="RemoveWidgetField();" data-ng-show="showRemove"><span class="glyphicon glyphicon-trash"></span></button>
-			</div>
+			<!-- template/modal/editRepeatField.html -->
+			<form class="form-horizontal" data-ng-submit="saveWidget();" data-ng-init="ft = fieldOptions.fieldTemplate">
+				<div class="modal-header alert alert-info">
+					<h3 class="modal-title">Edit Widget Data Field</h3>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<pre class="pre-code">{{modField}}</pre>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							<div class="pull-right">
+								<button class="btn btn-default btn-xs" type="button" data-ng-click="editDataForm();"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<style type="text/css">{{previewDataFieldStyles}}</style>
+							<div class="ltw ltw-repeatpreview" data-lt-compile-code="repeatFormDisplay"></div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-sm btn-primary" type="submit">Save</button>
+					<button class="btn btn-sm btn-default" data-ng-click="cancelClick();">Cancel</button>
+				</div>
+			</form>
 			<!-- <ng-transclude></ng-transclude> -->

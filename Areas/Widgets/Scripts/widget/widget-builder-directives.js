@@ -21,16 +21,18 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 },
                 templateUrl: 'template/widgetFormEditButton.html',
                 link: function (scope, elem, attrs) {
+                    var currentBuildObj = angular.copy(scope.toolInfo.currentForm[scope.toolInfo.formObjectType]);
                     scope.EditWidgetForm = function () {
                         var formEditOptions = {
                             instanceOptions: {
-                                currentForm: angular.copy(scope.toolInfo.currentForm),
-                                formObjectType: scope.toolInfo.formObjectType
+                                currentBuildObject: currentBuildObj
                             },
-                            saveForm: function (updatedForm) {
-                                scope.toolInfo.setCurrentForm(updatedForm);
+                            saveForm: function (updatedBuildObject) {
+                                scope.toolInfo.currentForm[scope.toolInfo.formObjectType] = updatedBuildObject;
+                                scope.toolInfo.currentForm.name = 'modified';
+                                scope.toolInfo.setCurrentForm(scope.toolInfo.currentForm);
                                 scope.toolInfo.clearSelectedForm();
-                                scope.toolInfo.buildScript(updatedForm);
+                                scope.toolInfo.buildScript(scope.toolInfo.currentForm);
                             }
                         };
                         widgetServices.editForm(formEditOptions);
@@ -51,21 +53,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     scope.toolInfo.channel = scope.toolInfo.channel || 'form';
                     var currentObject = scope.toolInfo.channel === 'form' ? 'buildObject' : 'resultObject';
                     scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
-                    if (scope.fieldData.widgetTypeLower === 'quotewidget') {
-                    }
-                    else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
-                    }
-                    else if (scope.fieldData.widgetTypeLower === 'depositwidget') {
-                        if (currentObject === 'resultObject') {
-                            scope.currentFieldOptions = lth.depositResultFields[scope.currentFieldName];
-                        }
-                        else {
-                            scope.currentFieldOptions = lth.depositFields[scope.currentFieldName];
-                        }
-                    }
-                    else {
-                        scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
-                    }
+                    scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
                     scope.showRemove = false;
                     if (!scope.currentFieldOptions.isLTRequired) {
                         scope.showRemove = true;
@@ -86,16 +74,21 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             instanceOptions: {
                                 currentForm: angular.copy(scope.fieldData.currentForm),
                                 currentFieldIndex: scope.toolInfo.index,
-                                formObjectType: currentObject
+                                formObjectType: currentObject,
+                                fieldOptions: scope.currentFieldOptions
                             },
-                            fieldOptions: scope.currentFieldOptions,
                             saveForm: function (updatedForm) {
                                 scope.fieldData.setCurrentForm(updatedForm);
                                 scope.fieldData.clearSelectedForm();
                                 scope.fieldData.buildScript(updatedForm);
                             }
                         };
-                        widgetServices.editField(fieldEditOptions);
+                        if (scope.currentFieldOptions.fieldTemplate.element === 'repeat') {
+                            widgetServices.editRepeatField(fieldEditOptions);
+                        }
+                        else {
+                            widgetServices.editField(fieldEditOptions);
+                        }
                     };
                 }
             };
