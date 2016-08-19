@@ -56,6 +56,10 @@ interface IWidgetFormObject {
 	// formButtonBorderRadius?: number;
 	buildObject?: IWidgetFormBuildObject;
 	resultObject?: LTWidget.IResultBuildOptions;
+
+	// Part of Repeating form object
+	field?: string;
+	fieldListOptions?: LTWidget.IFieldListOptions;
 }
 
 interface IWidgetOnDragStart {
@@ -65,6 +69,10 @@ interface IWidgetOnDragStart {
 interface IWidgetOnDragStartData {
 	index?: number;
 	field?: string;
+}
+
+interface IWidgetOnDrop {
+	(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, channel: string, columns?: number, isPlaceholder?: boolean): void;
 }
 
 interface IWidgetEditFormInfo {
@@ -78,6 +86,7 @@ interface IWidgetEditFormInfo {
 interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
 	currentForm?: IWidgetFormObject;
+	// currentBuildObject?: LTWidget.IBuildOptions;
 	clearSelectedForm?(): void;
 	onDragStart: IWidgetOnDragStart;
 	setCurrentForm?(currentForm: IWidgetFormObject): void;
@@ -96,8 +105,8 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	SetCurrentForm?(currentForm: IWidgetFormObject): void;
 	FilterAvailableFields?(value, index, array): boolean;
 	addField?(fieldId: string, channel: string): void;
-	onDragStart: IWidgetOnDragStart;
-	onDrop?(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, channel: string, columns?: number, isPlaceholder?: boolean): void;
+	onDragStart?: IWidgetOnDragStart;
+	onDrop?: IWidgetOnDrop;
 	selectedForm?: IWidgetFormObject;
 	passedModelForm?: IWidgetModelDataModelWidget;
 	widgetObject?: IWidget;
@@ -117,7 +126,7 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 }
 
 interface IWidgetScriptBuildFunction {
-	(widgetFormObject: IWidgetFormObject): void;
+	(widgetFormObject?: IWidgetFormObject): void;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);

@@ -17,7 +17,10 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-sm-12">
+						<div class="col-sm-3">
+							<!-- .panel.panel-default>.panel-heading[data-ng-click="isCollapsedAvailableRepeatFields = !isCollapsedAvailableRepeatFields"]>h3.panel-title{Fields}>span.glyphicon.pull-right[data-ng-class="isCollapsedAvailableRepeatFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"]^^div[data-uib-collapse=isCollapsedAvailableRepeatFields]>.panel-body>.list-group.lt-no-bottom-margin>.list-group-item[data-ng-repeat="rField in allRepeatFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']"]>(.pull-right>span.small.text-danger[data-ng-show="!!rField.isLTRequired &amp;&amp; !rField.isIncluded"]{Required &nbsp; }+span.small[data-ng-show="!rField.allowMultiples &amp;&amp; !!rField.isIncluded"]{Can only add once}+a.btn.btn-default.btn-xs.btn-tool.repeat-channel[data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{rField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = rField.allowMultiples || !rField.isIncluded"]>span.glyphicon.glyphicon-move^button.btn.btn-default.btn-xs[type="button" data-ng-click="addField(rField.id, 'result');" data-ng-show="showAddBtns"]>span.glyphicon.glyphicon-plus)+span[data-ng-bind="rField.name"] -->
+						</div>
+						<div class="col-sm-9">
 							<style type="text/css">{{previewDataFieldStyles}}</style>
 							<div class="ltw ltw-repeatpreview" data-lt-compile-code="repeatFormDisplay"></div>
 						</div>
@@ -28,4 +31,3 @@
 					<button class="btn btn-sm btn-default" data-ng-click="cancelClick();">Cancel</button>
 				</div>
 			</form>
-			<!-- <ng-transclude></ng-transclude> -->

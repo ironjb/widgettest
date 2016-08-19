@@ -113,25 +113,20 @@ var LoanTekWidget;
             }
             return returnWidgetField;
         };
-        helpers.prototype.GetSubFieldHelperType = function (widgetType, fieldName) {
+        helpers.prototype.GetSubFieldHelperType = function (fieldName) {
             var fieldHelperName = null;
-            if (widgetType.toLowerCase().indexOf('quote') !== -1) {
-            }
-            else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
-            }
-            else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
-                if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
-                    fieldHelperName = 'depositResultDataFields';
-                }
-            }
-            else {
+            if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
+                fieldHelperName = 'depositResultDataFields';
             }
             return fieldHelperName;
         };
         helpers.prototype.GetFieldOptionsForWidgetType = function (widgetType, fieldName, objectType) {
             var _this = this;
             var returnFieldOptions = null;
-            if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+            if (widgetType.toLowerCase().indexOf('depositdatalist') !== -1) {
+                returnFieldOptions = _this.depositResultDataFields[fieldName];
+            }
+            else if (widgetType.toLowerCase().indexOf('quote') !== -1) {
             }
             else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
             }

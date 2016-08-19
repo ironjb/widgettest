@@ -369,7 +369,9 @@ namespace LoanTekWidget {
 			}*/
 			var returnForm2 = buildTools.BuildFields(returnForm, settings);
 			var returnFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, false, '.' + lth.defaultFormSpecifierClass).getStyles();
-			returnForm2.prepend(el.style().html(returnFormStyles));
+			if (returnFormStyles) {
+				returnForm2.prepend(el.style().html(returnFormStyles));
+			}
 
 			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm2);
 			if (settings.showBuilderTools) {
@@ -669,7 +671,9 @@ namespace LoanTekWidget {
 			// window.console && console.log('ResultsBuilder build() settings', settings);
 			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
 			var resultsFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass).getStyles();
-			resultsForm2.prepend(el.style().html(resultsFormStyles));
+			if (resultsFormStyles) {
+				resultsForm2.prepend(el.style().html(resultsFormStyles));
+			}
 
 			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass).empty().append(resultsForm2);
 			if (_thisM.settings.showBuilderTools) {
@@ -1092,7 +1096,9 @@ namespace LoanTekWidget {
 						returnElement.append(resultDataRow);
 
 						var applyFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, elementObj.fieldListOptions, false, '.ltw .' + repeatElementClass).getStyles();
-						resultDataRow.prepend(el.style().html(applyFormStyles));
+						if (applyFormStyles) {
+							resultDataRow.prepend(el.style().html(applyFormStyles));
+						}
 					}
 					break;
 				default:

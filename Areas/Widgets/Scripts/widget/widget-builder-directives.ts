@@ -30,7 +30,8 @@ interface IFieldEditOptions {
 interface IFieldEditModalInstanceOptions {
 	// fieldType?: string;
 	fieldOptions?: IWidgetFieldOptions;
-	currentForm: IWidgetFormObject;
+	// currentForm: IWidgetFormObject;
+	currentBuildObject: IWidgetFormBuildObject;
 	currentFieldIndex?: number;
 	formObjectType?: string;
 }
@@ -96,10 +97,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 			, templateUrl: 'template/widgetFieldEditButtons.html'
 			, link: (scope: IWidgetDirectiveFieldEditToolNgScope, elem, attrs) => {
+				// window.console && console.log('fieldedit tool... toolinfo: ', scope.toolInfo, 'fieldData', scope.fieldData);
 				scope.onDragStartDir = scope.fieldData.onDragStart;
 
 				scope.toolInfo.channel = scope.toolInfo.channel || 'form';
-				var currentObject = scope.toolInfo.channel === 'form'? 'buildObject' : 'resultObject';
+				var currentObject: string;
+				if (scope.toolInfo.channel === 'result') {
+					currentObject = 'resultObject';
+				} else if (scope.toolInfo.channel === 'repeat') {
+					currentObject = 'fieldListOptions';
+				} else {
+					currentObject = 'buildObject';
+				}
+
 				scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
 				// window.console && console.log('currentFieldName', scope.currentFieldName);
 
@@ -116,7 +126,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				// } else {
 				// 	scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
 				// }
+				// window.console && console.log('currentForm', scope.fieldData.widgetTypeLower, scope.fieldData.currentForm);
+				// window.console && console.log('currentFieldOptions params... [widgetType]:', scope.fieldData.widgetTypeLower, '[fieldName]:', scope.currentFieldName, '[objectType]?:', currentObject);
 				scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
+				// window.console && console.log('currentFieldOptions is:', scope.currentFieldOptions);
 
 				scope.showRemove = false;
 				if (!scope.currentFieldOptions.isLTRequired) {
@@ -143,19 +156,30 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// window.console && console.log('currentFieldOptions', scope.currentFieldOptions);
 					var fieldEditOptions: IFieldEditOptions = {
 						instanceOptions: {
-							currentForm: angular.copy(scope.fieldData.currentForm)
+							currentBuildObject: angular.copy(scope.fieldData.currentForm[currentObject])
+							// currentForm: angular.copy(scope.fieldData.currentForm)
 							, currentFieldIndex: scope.toolInfo.index
 							, formObjectType: currentObject
 							, fieldOptions: scope.currentFieldOptions
 						}
 						// , fieldOptions: scope.currentFieldOptions
-						, saveForm: (updatedForm) => {
-							scope.fieldData.setCurrentForm(updatedForm);
+						, saveForm: function (updatedBuildObject: IWidgetFormBuildObject) {
+							scope.fieldData.currentForm[currentObject] = updatedBuildObject;
+							scope.fieldData.setCurrentForm(scope.fieldData.currentForm);
 							scope.fieldData.clearSelectedForm();
-							scope.fieldData.buildScript(updatedForm);
+							scope.fieldData.buildScript(scope.fieldData.currentForm);
 						}
 					};
+					window.console && console.log('scope.currentFieldOptions.fieldTemplate.element', scope.currentFieldOptions.fieldTemplate.element);
 					if (scope.currentFieldOptions.fieldTemplate.element === 'repeat') {
+						// Override save functionality for Repeat field 'form'
+						fieldEditOptions.saveForm = function (updatedRepeatField) {
+							window.console && console.log('scope.fieldData', scope.fieldData);
+							scope.fieldData.currentForm[currentObject] = updatedRepeatField;
+							scope.fieldData.setCurrentForm(updatedRepeatField);
+							scope.fieldData.buildScript();
+						};
+
 						widgetServices.editRepeatField(fieldEditOptions);
 					} else {
 						widgetServices.editField(fieldEditOptions);

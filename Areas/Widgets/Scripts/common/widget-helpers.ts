@@ -235,18 +235,10 @@ namespace LoanTekWidget {
 			return returnWidgetField;
 		}
 
-		GetSubFieldHelperType(widgetType: string, fieldName: string): string {
+		GetSubFieldHelperType(fieldName: string): string {
 			var fieldHelperName: string = null;
-			if (widgetType.toLowerCase().indexOf('quote') !== -1) {
-				//
-			} else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
-				//
-			} else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
-				if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
-					fieldHelperName = 'depositResultDataFields';
-				}
-			} else {
-				//
+			if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
+				fieldHelperName = 'depositResultDataFields';
 			}
 			return fieldHelperName;
 		}
@@ -254,7 +246,9 @@ namespace LoanTekWidget {
 		GetFieldOptionsForWidgetType(widgetType: string, fieldName: string, objectType?: string): IWidgetFieldOptions {
 			var _this = this;
 			var returnFieldOptions: IWidgetFieldOptions = null;
-			if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+			if (widgetType.toLowerCase().indexOf('depositdatalist') !== -1) {
+				returnFieldOptions = _this.depositResultDataFields[fieldName];
+			} else if (widgetType.toLowerCase().indexOf('quote') !== -1) {
 				// get quote widget fieldOptions
 			} else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
 				// get rate widget fieldOptions
@@ -732,6 +726,7 @@ namespace LoanTekWidget {
 		private _borderType: string;
 
 		constructor(lth: LoanTekWidget.helpers, currentBuildObject: LTWidget.IBuildOptions, excludeCaptchaField?: boolean, specifier?: string) {
+			// window.console && console.log('applyformstyles cbo: ', currentBuildObject);
 			var _thisC = this;
 			// var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
 			specifier = specifier || '.' + lth.defaultFormSpecifierClass;
@@ -786,6 +781,7 @@ namespace LoanTekWidget {
 		}
 
 		getStyles(): string {
+			// window.console && console.log('getStyles');
 			return this._returnStyles;
 		}
 

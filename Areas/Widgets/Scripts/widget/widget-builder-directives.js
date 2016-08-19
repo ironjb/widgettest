@@ -51,7 +51,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 link: function (scope, elem, attrs) {
                     scope.onDragStartDir = scope.fieldData.onDragStart;
                     scope.toolInfo.channel = scope.toolInfo.channel || 'form';
-                    var currentObject = scope.toolInfo.channel === 'form' ? 'buildObject' : 'resultObject';
+                    var currentObject;
+                    if (scope.toolInfo.channel === 'result') {
+                        currentObject = 'resultObject';
+                    }
+                    else if (scope.toolInfo.channel === 'repeat') {
+                        currentObject = 'fieldListOptions';
+                    }
+                    else {
+                        currentObject = 'buildObject';
+                    }
                     scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
                     scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
                     scope.showRemove = false;
@@ -72,18 +81,26 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     scope.EditWidgetField = function () {
                         var fieldEditOptions = {
                             instanceOptions: {
-                                currentForm: angular.copy(scope.fieldData.currentForm),
+                                currentBuildObject: angular.copy(scope.fieldData.currentForm[currentObject]),
                                 currentFieldIndex: scope.toolInfo.index,
                                 formObjectType: currentObject,
                                 fieldOptions: scope.currentFieldOptions
                             },
-                            saveForm: function (updatedForm) {
-                                scope.fieldData.setCurrentForm(updatedForm);
+                            saveForm: function (updatedBuildObject) {
+                                scope.fieldData.currentForm[currentObject] = updatedBuildObject;
+                                scope.fieldData.setCurrentForm(scope.fieldData.currentForm);
                                 scope.fieldData.clearSelectedForm();
-                                scope.fieldData.buildScript(updatedForm);
+                                scope.fieldData.buildScript(scope.fieldData.currentForm);
                             }
                         };
+                        window.console && console.log('scope.currentFieldOptions.fieldTemplate.element', scope.currentFieldOptions.fieldTemplate.element);
                         if (scope.currentFieldOptions.fieldTemplate.element === 'repeat') {
+                            fieldEditOptions.saveForm = function (updatedRepeatField) {
+                                window.console && console.log('scope.fieldData', scope.fieldData);
+                                scope.fieldData.currentForm[currentObject] = updatedRepeatField;
+                                scope.fieldData.setCurrentForm(updatedRepeatField);
+                                scope.fieldData.buildScript();
+                            };
                             widgetServices.editRepeatField(fieldEditOptions);
                         }
                         else {

@@ -48,7 +48,9 @@ var LoanTekWidget;
             var returnForm = el.form().prop('id', settings.formId).append(errorRow);
             var returnForm2 = buildTools.BuildFields(returnForm, settings);
             var returnFormStyles = new LoanTekWidget.ApplyFormStyles(lth, settings, false, '.' + lth.defaultFormSpecifierClass).getStyles();
-            returnForm2.prepend(el.style().html(returnFormStyles));
+            if (returnFormStyles) {
+                returnForm2.prepend(el.style().html(returnFormStyles));
+            }
             var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm2);
             if (settings.showBuilderTools) {
                 widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editFormInfo'));
@@ -276,7 +278,9 @@ var LoanTekWidget;
             var resultsForm = el.form();
             var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
             var resultsFormStyles = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass).getStyles();
-            resultsForm2.prepend(el.style().html(resultsFormStyles));
+            if (resultsFormStyles) {
+                resultsForm2.prepend(el.style().html(resultsFormStyles));
+            }
             var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass).empty().append(resultsForm2);
             if (_thisM.settings.showBuilderTools) {
                 widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editResultInfo'));
@@ -605,7 +609,9 @@ var LoanTekWidget;
                         resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
                         returnElement.append(resultDataRow);
                         var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, elementObj.fieldListOptions, false, '.ltw .' + repeatElementClass).getStyles();
-                        resultDataRow.prepend(el.style().html(applyFormStyles));
+                        if (applyFormStyles) {
+                            resultDataRow.prepend(el.style().html(applyFormStyles));
+                        }
                     }
                     break;
                 default:
