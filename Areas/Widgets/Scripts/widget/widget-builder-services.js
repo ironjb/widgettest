@@ -286,7 +286,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 modalInstance.result.then(function (result) {
                     settings.saveForm(result);
                 }, function (error) {
-                    window.console && console.error('EditField Error:', error);
                 });
             };
             widgetMethods.editRepeatField = function (options) {
@@ -305,28 +304,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         var buildTool = new LoanTekWidget.BuildTools(lth);
                         var el = lth.CreateElement();
                         var fakeData;
-                        $scope.modField.fieldListOptions.showBuilderTools = true;
                         fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 };
-                        var buildDisplay = function () {
-                            $scope.editFieldData = {
-                                widgetTypeLower: instanceOptions.fieldOptions.id.toLowerCase(),
-                                currentForm: $scope.modBuildObject.fields[instanceOptions.currentFieldIndex],
-                                clearSelectedForm: function () { },
-                                onDragStart: $scope.onDragStart,
-                                setCurrentForm: $scope.setCurrentRepeatForm,
-                                buildScript: $scope.buildDisplay
-                            };
-                            var modFieldForEditDataForm = angular.copy($scope.modField);
-                            modFieldForEditDataForm.fieldListOptions.fieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
-                            modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
-                            var rFormWrapper = el.div();
-                            var resultForm = el.div().append(buildTool.BuildFields(rFormWrapper, angular.copy(modFieldForEditDataForm.fieldListOptions), fakeData));
-                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, modFieldForEditDataForm.fieldListOptions, true, '.ltw-repeatpreview');
-                            var previewDataFieldStyles = applyFormStyles.getStyles();
-                            $scope.previewDataFieldStyles = previewDataFieldStyles;
-                            $scope.repeatFormDisplay = resultForm.html();
-                        };
-                        buildDisplay();
+                        $scope.buildDisplay();
                         $scope.saveWidget = function () {
                             var newBuildObject = angular.copy($scope.modBuildObject);
                             $uibModalInstance.close(newBuildObject);
@@ -354,6 +333,27 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         function setCurrentRepeatForm(currentRepeatForm) {
                             window.console && console.log('setCurrentRepeatForm... currentRepeatForm', currentRepeatForm);
                         }
+                        function buildDisplay() {
+                            $scope.editFieldData = {
+                                widgetTypeLower: instanceOptions.fieldOptions.id.toLowerCase(),
+                                currentForm: $scope.modBuildObject.fields[instanceOptions.currentFieldIndex],
+                                clearSelectedForm: function () { window.console && console.log('do nothing'); },
+                                onDragStart: $scope.onDragStart,
+                                setCurrentForm: $scope.setCurrentRepeatForm,
+                                buildScript: $scope.buildDisplay
+                            };
+                            var modFieldForEditDataForm = angular.copy($scope.modField);
+                            modFieldForEditDataForm.fieldListOptions.fieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
+                            modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
+                            modFieldForEditDataForm.fieldListOptions.showBuilderTools = true;
+                            var rFormWrapper = el.div();
+                            var resultForm = el.div().append(buildTool.BuildFields(rFormWrapper, angular.copy(modFieldForEditDataForm.fieldListOptions), fakeData));
+                            var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, modFieldForEditDataForm.fieldListOptions, true, '.ltw-repeatpreview');
+                            var previewDataFieldStyles = applyFormStyles.getStyles();
+                            $scope.previewDataFieldStyles = previewDataFieldStyles;
+                            $scope.repeatFormDisplay = resultForm.html();
+                        }
+                        ;
                     }];
                 var modalInstance = $uibModal.open({
                     templateUrl: '/template.html?v=' + new Date().getTime(),

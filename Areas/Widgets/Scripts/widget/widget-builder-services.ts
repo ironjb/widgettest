@@ -453,7 +453,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			modalInstance.result.then(function (result) {
 				settings.saveForm(result);
 			}, function (error) {
-				window.console && console.error('EditField Error:', error);
+				// window.console && console.error('EditField Error:', error);
 			});
 		};
 
@@ -480,36 +480,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				var el = lth.CreateElement();
 				var fakeData: any;
 
-				$scope.modField.fieldListOptions.showBuilderTools = true;
 				fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 };
 
-				var buildDisplay = function () {
-					$scope.editFieldData = {
-						widgetTypeLower: instanceOptions.fieldOptions.id.toLowerCase()
-						// , currentBuildObject: $scope.modBuildObject
-						, currentForm: $scope.modBuildObject.fields[instanceOptions.currentFieldIndex]						// should be depositdatalist field which contains 'fieldListOptions' instead of 'buildObject' and 'resultObject'
-						, clearSelectedForm: function () {}					// not sure this needs to happen at this level???
-						, onDragStart: $scope.onDragStart					//
-						, setCurrentForm: $scope.setCurrentRepeatForm		// should be used to set the datadepositlist field (similar to setting currentform)
-						, buildScript: $scope.buildDisplay					// should be used to run buildDisplay
-					};
-
-					var modFieldForEditDataForm = angular.copy($scope.modField);
-					modFieldForEditDataForm.fieldListOptions.fieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
-					modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
-
-					var rFormWrapper = el.div();
-					var resultForm = el.div().append(buildTool.BuildFields(rFormWrapper, angular.copy(modFieldForEditDataForm.fieldListOptions), fakeData));
-
-					var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, modFieldForEditDataForm.fieldListOptions, true, '.ltw-repeatpreview');
-					var previewDataFieldStyles: string = applyFormStyles.getStyles();
-
-					$scope.previewDataFieldStyles = previewDataFieldStyles;
-
-					// window.console && console.log('resultForm', resultForm);
-					$scope.repeatFormDisplay = resultForm.html();
-				};
-				buildDisplay();
+				// Initialize display
+				$scope.buildDisplay();
 
 				$scope.saveWidget = function () {
 					var newBuildObject: IWidgetFormObject = angular.copy($scope.modBuildObject);
@@ -546,6 +520,34 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				function setCurrentRepeatForm(currentRepeatForm: IWidgetFormObject) {
 					window.console && console.log('setCurrentRepeatForm... currentRepeatForm', currentRepeatForm);
 				}
+
+				function buildDisplay () {
+					$scope.editFieldData = {
+						widgetTypeLower: instanceOptions.fieldOptions.id.toLowerCase()
+						// , currentBuildObject: $scope.modBuildObject
+						, currentForm: $scope.modBuildObject.fields[instanceOptions.currentFieldIndex]						// should be depositdatalist field which contains 'fieldListOptions' instead of 'buildObject' and 'resultObject'
+						, clearSelectedForm: function () {window.console && console.log('do nothing');}					// not sure this needs to happen at this level???
+						, onDragStart: $scope.onDragStart					//
+						, setCurrentForm: $scope.setCurrentRepeatForm		// should be used to set the datadepositlist field (similar to setting currentform)
+						, buildScript: $scope.buildDisplay					// should be used to run buildDisplay
+					};
+
+					var modFieldForEditDataForm = angular.copy($scope.modField);
+					modFieldForEditDataForm.fieldListOptions.fieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
+					modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
+					modFieldForEditDataForm.fieldListOptions.showBuilderTools = true;
+
+					var rFormWrapper = el.div();
+					var resultForm = el.div().append(buildTool.BuildFields(rFormWrapper, angular.copy(modFieldForEditDataForm.fieldListOptions), fakeData));
+
+					var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, modFieldForEditDataForm.fieldListOptions, true, '.ltw-repeatpreview');
+					var previewDataFieldStyles: string = applyFormStyles.getStyles();
+
+					$scope.previewDataFieldStyles = previewDataFieldStyles;
+
+					// window.console && console.log('resultForm', resultForm);
+					$scope.repeatFormDisplay = resultForm.html();
+				};
 			}];
 
 			var modalInstance = $uibModal.open({
