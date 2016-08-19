@@ -972,6 +972,9 @@ namespace LoanTekWidget {
 					returnElement = el.p();
 					returnElement.html(elementObj.value);
 					break;
+				case 'hr':
+					returnElement = el.hr();
+					break;
 				case 'button':
 					returnElement = el.button(elementObj.type ? elementObj.type : 'button');
 					elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
@@ -1143,6 +1146,10 @@ namespace LoanTekWidget {
 
 				if (lth.isNumber(elementObj.padding)) {
 					returnElement.css({ padding: elementObj.padding + 'px' });
+				}
+
+				if(lth.isNumber(elementObj.marginTopBottom)) {
+					returnElement.css({ marginTop: elementObj.marginTopBottom + 'px', marginBottom: elementObj.marginTopBottom + 'px' });
 				}
 
 				if (elementObj.style) {

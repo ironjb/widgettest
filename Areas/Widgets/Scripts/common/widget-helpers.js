@@ -180,6 +180,7 @@ var LoanTekWidget;
                     return returnStyle;
                 },
                 p: function () { return $('<p/>'); },
+                hr: function () { return $('<hr/>'); },
                 a: function () { return $('<a/>'); },
                 span: function () { return $('<span/>'); },
                 h: function (headNumber) {
@@ -393,6 +394,7 @@ var LoanTekWidget;
             this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
             this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
             this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+            this.hr = { id: 'hr', name: 'Horizontal Line', allowMultiples: true, fieldTemplate: { element: 'hr' } };
             this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
         }
         return sharedFields;
@@ -415,6 +417,7 @@ var LoanTekWidget;
             this.label = sf.label;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
             helpers.prototype.SetRequiredFields(this);
         }
         return contactFields;
@@ -429,6 +432,7 @@ var LoanTekWidget;
             this.label = sf.label;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
             helpers.prototype.SetRequiredFields(this);
         }
         depositFields.prototype.asArray = function () {
@@ -442,6 +446,7 @@ var LoanTekWidget;
             this.label = sf.label;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
             this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist' } };
             helpers.prototype.SetRequiredFields(this);
         }
@@ -456,6 +461,7 @@ var LoanTekWidget;
             this.label = sf.label;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
             this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
             this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
             this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };

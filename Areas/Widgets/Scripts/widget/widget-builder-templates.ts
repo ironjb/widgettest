@@ -218,12 +218,11 @@
 		$templateCache.put('template/modal/editField.html', `
 			<form class="form-horizontal" data-ng-submit="saveClick();" data-ng-init="ft = fieldOptions.fieldTemplate">
 				<div class="modal-header alert alert-info">
-					<h3 class="modal-title">Edit Widget Field</h3>
+					<h3 class="modal-title">Edit Widget Field: {{::fieldOptions.name}}</h3>
 				</div>
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-sm-8">
-
 							<div class="form-group form-group-sm">
 								<label for="ltewFieldCols" class="col-sm-4 control-label">Grid Width</label>
 								<div class="col-sm-4"><select name="ltewFieldCols" id="ltewFieldCols" class="form-control" data-ng-model="modField.cols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::gridColumnsArray | orderBy: '-id'"></select></div>
@@ -232,7 +231,7 @@
 								<label for="ltewFieldOffsetCols" class="col-sm-4 control-label">Offset Width</label>
 								<div class="col-sm-4"><select name="ltewFieldOffsetCols" id="ltewFieldOffsetCols" class="form-control" data-ng-model="modField.offsetCols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::offsetColumnsArray | orderBy: 'id'"></select></div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="!(['p','title'].indexOf(ft.element) >= 0 || ['successmessage'].indexOf(ft.type) >= 0)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['p','div','hr','title'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1)">
 								<label for="ltewFieldSize" class="col-sm-4 control-label">Field Size</label>
 								<div class="col-sm-8">
 									<div class="btn-group btn-group-sm">
@@ -240,17 +239,17 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="ft.element === 'title'">
+							<div class="form-group form-group-sm" data-ng-show="::ft.element === 'title'">
 								<label for="ltewFieldHeaderSize" class="col-sm-4 control-label">Heading Size</label>
 								<div class="col-sm-4"><select name="ltewFieldHeaderSize" id="ltewFieldHeaderSize" class="form-control" data-ng-model="modField.nsize" data-ng-options="hd.id as hd.name for hd in ::headingArray"></select></div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="!(['captcha'].indexOf(ft.element) >= 0)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['captcha','hr'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldFontSize" class="col-sm-4 control-label">Font Size</label>
 								<div class="col-sm-4">
 									<input type="number" min="8" max="32" class="form-control" id="ltewFieldFontSize" name="ltewFieldFontSize" data-ng-model="modField.fontSize" data-ng-model-options="modelOptions" />
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="!(['captcha'].indexOf(ft.element) >= 0)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['captcha','hr'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldFontColor" class="col-sm-4 control-label">Font Color</label>
 								<div class="col-sm-4">
 									<div class="input-group input-group-sm">
@@ -262,7 +261,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="!(['label','captcha','title'].indexOf(ft.element) >= 0)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBgColor" class="col-sm-4 control-label">Background Color</label>
 								<div class="col-sm-4">
 									<div class="input-group input-group-sm">
@@ -274,7 +273,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="!(['label','captcha','title'].indexOf(ft.element) >= 0)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBorderColor" class="col-sm-4 control-label">Border Color</label>
 								<div class="col-sm-4">
 									<div class="input-group input-group-sm">
@@ -286,35 +285,47 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="!(['label','captcha','title'].indexOf(ft.element) >= 0)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBorderRadius" class="col-sm-4 control-label">Border Radius</label>
 								<div class="col-sm-4">
 									<input type="number" min="0" class="form-control" id="ltewFieldBorderRadius" name="ltewFieldBorderRadius" data-ng-model="modField.borderRadius" data-ng-model-options="modelOptions" />
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="['p','textarea','title','button'].indexOf(ft.element) >= 0 || ['successmessage'].indexOf(ft.type) >= 0">
+							<div class="form-group form-group-sm" data-ng-show="::['p','div','textarea','title','button'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1">
 								<label for="ltewFieldPadding" class="col-sm-4 control-label">Padding</label>
 								<div class="col-sm-4">
 									<input type="number" min="0" class="form-control" id="ltewFieldPadding" name="ltewFieldPadding" data-ng-model="modField.padding" data-ng-model-options="modelOptions" />
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="['p'].indexOf(ft.element) >= 0 || ['successmessage'].indexOf(ft.type) >= 0">
+							<div class="form-group form-group-sm" data-ng-show="::['p','div','hr','textarea','title','button'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1">
+								<label for="ltewFieldMarginTopBottom" class="col-sm-4 control-label">Margin Top/Bottom</label>
+								<div class="col-sm-4">
+									<input type="number" min="0" class="form-control" id="ltewFieldMarginTopBottom" name="ltewFieldMarginTopBottom" data-ng-model="modField.marginTopBottom" data-ng-model-options="modelOptions" />
+								</div>
+							</div>
+							<div class="form-group form-group-sm" data-ng-show="::['p','div'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1">
 								<label for="ltewFieldValueTextArea" class="col-sm-4 control-label">Text</label>
-								<div class="col-sm-8"><textarea name="ltewFieldValueTextArea" id="ltewFieldValueTextArea" cols="30" rows="2" class="form-control" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}"></textarea></div>
+								<div class="col-sm-8">
+									<textarea name="ltewFieldValueTextArea" id="ltewFieldValueTextArea" cols="30" rows="2" class="form-control" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}"></textarea>
+									<div class="small text-muted" data-ng-show="::valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
+								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="['label','title','button'].indexOf(ft.element) >= 0">
+							<div class="form-group form-group-sm" data-ng-show="::['label','title','button'].indexOf(ft.element) !== -1">
 								<label for="ltewFieldValue" class="col-sm-4 control-label">Text</label>
-								<div class="col-sm-4"><input type="text" class="form-control" id="ltewFieldValue" name="ltewFieldValue" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}" /></div>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" id="ltewFieldValue" name="ltewFieldValue" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}" />
+									<div class="small text-muted" data-ng-show="::valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
+								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="['input','select','textarea'].indexOf(ft.element) >= 0">
+							<div class="form-group form-group-sm" data-ng-show="::['input','select','textarea'].indexOf(ft.element) !== -1">
 								<label for="ltewFieldPlaceholder" class="col-sm-4 control-label">Placeholder Text</label>
 								<div class="col-sm-4"><input type="text" class="form-control" id="ltewFieldPlaceholder" name="ltewFieldPlaceholder" data-ng-model="modField.placeholder" data-ng-model-options="modelOptions" /></div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="ft.element === 'textarea'">
+							<div class="form-group form-group-sm" data-ng-show="::ft.element === 'textarea'">
 								<label for="ltewFieldRows" class="col-sm-4 control-label">Textarea Rows</label>
 								<div class="col-sm-4"><input type="number" min="1" max="50" class="form-control" id="ltewFieldRows" name="ltewFieldRows" data-ng-model="modField.rows" data-ng-model-options="modelOptions" /></div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="(['input','select','textarea'].indexOf(ft.element) >= 0) &amp;&amp; !fieldOptions.isLTRequired">
+							<div class="form-group form-group-sm" data-ng-show="::(['input','select','textarea'].indexOf(ft.element) !== -1) &amp;&amp; !fieldOptions.isLTRequired">
 								<label for="ltewFieldRequired" class="col-sm-4 control-label">Require Field</label>
 								<div class="col-sm-4">
 									<div class="checkbox">
@@ -328,7 +339,7 @@
 							<hr />
 							<style type="text/css">{{previewStyles}}</style>
 							<div class="ltw ltw-preview" style="width:100%;">
-								<div data-ng-show="ft.element === 'input'">
+								<div data-ng-show="::ft.element === 'input'">
 									<div class="form-group">
 										<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="Field Placeholder Text" value="Text Field" /></div>
 									</div>
@@ -336,14 +347,15 @@
 										<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color" /></div>
 									</div>
 								</div>
-								<div class="form-group" data-ng-show="ft.element === 'select'">
+								<div data-ng-if="::ft.element === 'select'">select</div>
+								<div class="form-group" data-ng-show="::ft.element === 'select'">
 									<div class="col-sm-12">
 										<select class="form-control" data-ng-style="fieldStyle", data-ng-class="fieldSizeClass">
 											<option value="">{{modField.placeholder}}</option>
 										</select>
 									</div>
 								</div>
-								<div data-ng-show="ft.element === 'textarea'">
+								<div data-ng-show="::ft.element === 'textarea'">
 									<div class="form-group">
 										<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color">Textarea</textarea></div>
 									</div>
@@ -351,24 +363,34 @@
 										<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color"></textarea></div>
 									</div>
 								</div>
-								<div class="form-group" data-ng-show="ft.element === 'button'">
+								<div class="form-group" data-ng-show="::ft.element === 'button'">
 									<div class="col-sm-12"><button class="btn btn-primary" type="button" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass">{{modField.value || 'Submit'}}</button></div>
 								</div>
-								<div class="form-group" data-ng-show="ft.element === 'p'">
+								<div class="form-group" data-ng-show="::ft.element === 'p'">
 									<div class="col-sm-12">
 										<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 									</div>
 								</div>
-								<div class="form-group" data-ng-show="ft.type === 'successmessage'">
+								<div class="form-group" data-ng-show="::ft.element === 'div'">
+									<div class="col-sm-12">
+										<div data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+									</div>
+								</div>
+								<div class="form-group" data-ng-show="::ft.element === 'hr'">
+									<div class="col-sm-12">
+										<hr data-ng-style="fieldStyle" />
+									</div>
+								</div>
+								<div class="form-group" data-ng-show="::ft.type === 'successmessage'">
 									<div class="col-sm-12">
 										<p data-ng-style="fieldStyle">{{modField.value || ft.value || 'Thank you. After submit form text.'}}</p>
 									</div>
 								</div>
-								<div class="form-group" data-ng-show="ft.element === 'label'">
+								<div class="form-group" data-ng-show="::ft.element === 'label'">
 									<label for="" class="control-label col-sm-8" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass">{{modField.value || 'Input Label'}}</label>
 									<div class="col-sm-4"><input type="text" class="form-control" data-ng-class="fieldSizeClass" placeholder="&lt;- Label" /></div>
 								</div>
-								<div class="form-group" data-ng-show="ft.element === 'title'">
+								<div class="form-group" data-ng-show="::ft.element === 'title'">
 									<div class="col-sm-12">
 										<h1 data-ng-show="modField.nsize === 1" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h1>
 										<h2 data-ng-show="modField.nsize === 2" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h2>
@@ -390,6 +412,44 @@
 		`);
 
 		$templateCache.put('template/modal/editRepeatField.html', `
+			<form class="form-horizontal" data-ng-submit="saveWidget();" data-ng-init="ft = fieldOptions.fieldTemplate">
+				<div class="modal-header alert alert-info">
+					<h3 class="modal-title">Edit Widget Data Field</h3>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<pre class="pre-code">{{modField}}</pre>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							TODO:
+							<ul>
+								<li>update fieldEdit template so that it can handle 'div'</li>
+								<li>get drag/drop working</li>
+								<li>get side panel with availableFields working</li>
+							</ul>
+							<div class="pull-right">
+								<button class="btn btn-default btn-xs" type="button" data-ng-click="editDataForm();"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-3">
+							<!-- .panel.panel-default>.panel-heading[data-ng-click="isCollapsedAvailableRepeatFields = !isCollapsedAvailableRepeatFields"]>h3.panel-title{Fields}>span.glyphicon.pull-right[data-ng-class="isCollapsedAvailableRepeatFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"]^^div[data-uib-collapse=isCollapsedAvailableRepeatFields]>.panel-body>.list-group.lt-no-bottom-margin>.list-group-item[data-ng-repeat="rField in allRepeatFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']"]>(.pull-right>span.small.text-danger[data-ng-show="!!rField.isLTRequired &amp;&amp; !rField.isIncluded"]{Required &nbsp; }+span.small[data-ng-show="!rField.allowMultiples &amp;&amp; !!rField.isIncluded"]{Can only add once}+a.btn.btn-default.btn-xs.btn-tool.repeat-channel[data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{rField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = rField.allowMultiples || !rField.isIncluded"]>span.glyphicon.glyphicon-move^button.btn.btn-default.btn-xs[type="button" data-ng-click="addField(rField.id, 'result');" data-ng-show="showAddBtns"]>span.glyphicon.glyphicon-plus)+span[data-ng-bind="rField.name"] -->
+						</div>
+						<div class="col-sm-9">
+							<style type="text/css">{{previewDataFieldStyles}}</style>
+							<div class="ltw ltw-repeatpreview ltw-builder-tools" data-lt-compile-code="repeatFormDisplay"></div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-sm btn-primary" type="submit">Save</button>
+					<button class="btn btn-sm btn-default" data-ng-click="cancelClick();">Cancel</button>
+				</div>
+			</form>
 		`);
 	}]);
 })();

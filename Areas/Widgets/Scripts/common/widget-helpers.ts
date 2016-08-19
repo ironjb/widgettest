@@ -77,6 +77,7 @@ interface IWidgetField {
 	borderRadius?: number;
 	borderColor?: string;
 	padding?: number;
+	marginTopBottom?: number;
 
 	fieldListOptions?: LTWidget.IFieldListOptions;
 	fieldData?: any;
@@ -307,6 +308,7 @@ namespace LoanTekWidget {
 					return returnStyle;
 				}
 				, p: () => { return $('<p/>'); }
+				, hr: () => { return $('<hr/>'); }
 				, a: () => { return $('<a/>'); }
 				, span: () => { return $('<span/>'); }
 				, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
@@ -561,11 +563,13 @@ namespace LoanTekWidget {
 		label: IWidgetFieldOptions;
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
 		submit: IWidgetFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
 			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			this.hr = { id: 'hr', name: 'Horizontal Line', allowMultiples: true, fieldTemplate: { element: 'hr' } };
 			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
 		}
 	}
@@ -586,6 +590,7 @@ namespace LoanTekWidget {
 		label: IWidgetFieldOptions;
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
@@ -608,7 +613,7 @@ namespace LoanTekWidget {
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			//this.spacer
-			//this.hr
+			this.hr = sf.hr;
 
 			// for (var fieldName in this) {
 			// 	var contactField: IWidgetFieldOptions = this[fieldName];
@@ -630,6 +635,7 @@ namespace LoanTekWidget {
 		label: IWidgetFieldOptions;
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			// this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
@@ -645,6 +651,7 @@ namespace LoanTekWidget {
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
+			this.hr = sf.hr;
 
 			// for (var fieldName in this) {
 			// 	var depositField: IWidgetFieldOptions = this[fieldName];
@@ -664,6 +671,7 @@ namespace LoanTekWidget {
 		label: IWidgetFieldOptions;
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
 		depositdatalist: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
@@ -673,6 +681,7 @@ namespace LoanTekWidget {
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
+			this.hr = sf.hr;
 			this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist'} };
 
 			helpers.prototype.SetRequiredFields(this);
@@ -687,6 +696,7 @@ namespace LoanTekWidget {
 		label: IWidgetFieldOptions;
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
 		api: IWidgetFieldOptions;
 		totalinterestearned: IWidgetFieldOptions;
 		amountplusinterest: IWidgetFieldOptions;
@@ -695,6 +705,7 @@ namespace LoanTekWidget {
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
+			this.hr = sf.hr;
 			this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
 			this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
 			this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };

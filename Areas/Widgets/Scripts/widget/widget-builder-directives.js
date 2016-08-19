@@ -87,14 +87,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 fieldOptions: scope.currentFieldOptions
                             },
                             saveForm: function (updatedBuildObject) {
-                                window.console && console.log('default saveForm');
                                 scope.fieldData.currentForm[currentObject] = updatedBuildObject;
                                 scope.fieldData.setCurrentForm(scope.fieldData.currentForm);
                                 scope.fieldData.clearSelectedForm();
                                 scope.fieldData.buildScript(scope.fieldData.currentForm);
                             }
                         };
-                        window.console && console.log('fieldEditOptions', fieldEditOptions);
                         if (scope.currentFieldOptions.fieldTemplate.element === 'repeat') {
                             widgetServices.editRepeatField(fieldEditOptions);
                         }

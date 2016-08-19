@@ -1,6 +1,7 @@
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function () {
     var lth = LoanTekWidgetHelper;
+    var ltbh = new LoanTekWidget.BuilderHelpers();
     var ltWidgetServices = angular.module('ltw.services', ['ngSanitize']);
     var ngModelOptions = { updateOn: 'default blur', debounce: { default: 500, blur: 0 } };
     ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal) {
@@ -180,7 +181,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         if (!$scope.modField.offsetCols) {
                             $scope.modField.offsetCols = 0;
                         }
-                        if (['p', 'title', 'label', 'textarea'].indexOf(el) >= 0 || ['successmessage', 'submit'].indexOf(ty) >= 0) {
+                        if (['p', 'div', 'title', 'label', 'textarea'].indexOf(el) >= 0 || ['successmessage', 'submit'].indexOf(ty) >= 0) {
                             $scope.valuePlaceholder = $scope.fieldOptions.fieldTemplate.value || '';
                         }
                         $scope.fieldSizeChange = function () {
@@ -205,7 +206,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             'modField.backgroundColor',
                             'modField.borderColor',
                             'modField.borderRadius',
-                            'modField.padding'
+                            'modField.padding',
+                            'modField.marginTopBottom'
                         ];
                         $scope.$watchGroup(watchList, function (newValue) {
                             var newStyle = {};
@@ -229,6 +231,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                             if (lth.isNumber($scope.modField.padding)) {
                                 newStyle.padding = $scope.modField.padding + 'px';
+                            }
+                            if (lth.isNumber($scope.modField.marginTopBottom)) {
+                                newStyle.marginTop = $scope.modField.marginTopBottom + 'px';
+                                newStyle.marginBottom = $scope.modField.marginTopBottom + 'px';
                             }
                             if ((el === 'p' || el === 'div') && newStyle.borderColor) {
                                 newStyle.borderWidth = '1px';
@@ -268,6 +274,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             if ($scope.modField.required === false) {
                                 delete $scope.modField.required;
                             }
+                            if (!lth.isNumber($scope.modField.marginTopBottom)) {
+                                delete $scope.modField.marginTopBottom;
+                            }
                             var newBuildObject = angular.copy($scope.modBuildObject);
                             $uibModalInstance.close(newBuildObject);
                         };
@@ -276,7 +285,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         };
                     }];
                 var modalInstance = $uibModal.open({
-                    templateUrl: 'template/modal/editField.html',
+                    templateUrl: '/template.html?v=' + new Date().getTime(),
                     controller: modalCtrl,
                     size: settings.modalSize,
                     resolve: {
@@ -298,9 +307,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         $scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
                         $scope.onDragStart = onDragStart;
                         $scope.onDrop = onDrop;
-                        $scope.setCurrentRepeatForm = setCurrentRepeatForm;
                         $scope.buildDisplay = buildDisplay;
-                        window.console && console.log('\n\neditRepeatField service modelInstance');
                         var buildTool = new LoanTekWidget.BuildTools(lth);
                         var el = lth.CreateElement();
                         var fakeData;
@@ -329,17 +336,36 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             $scope.dragData = data;
                         }
                         function onDrop(event, ui, dropIndex, channel, columns, isPlaceholder) {
-                        }
-                        function setCurrentRepeatForm(currentRepeatForm) {
-                            window.console && console.log('setCurrentRepeatForm... currentRepeatForm', currentRepeatForm);
+                            if ($scope.dragData.field) {
+                                var newField = { field: $scope.dragData.field };
+                                if (columns) {
+                                    newField.cols = columns;
+                                }
+                                $scope.modField.fieldListOptions.fields.splice(dropIndex + 1, 0, newField);
+                                $scope.buildDisplay();
+                            }
+                            else if (lth.isNumber($scope.dragData.index)) {
+                                var previousIndex = $scope.dragData.index;
+                                if (previousIndex > dropIndex && isPlaceholder) {
+                                    dropIndex += 1;
+                                }
+                                ltbh.arrayMove($scope.modField.fieldListOptions.fields, previousIndex, dropIndex);
+                                if (columns) {
+                                    $scope.modField.fieldListOptions.fields[dropIndex].cols = columns;
+                                }
+                                $scope.buildDisplay();
+                            }
+                            else {
+                                window.console && console.error('EditRepeatField Error: No Data Passed from Draggable!!');
+                            }
                         }
                         function buildDisplay() {
                             $scope.editFieldData = {
                                 widgetTypeLower: instanceOptions.fieldOptions.id.toLowerCase(),
                                 currentForm: $scope.modBuildObject.fields[instanceOptions.currentFieldIndex],
-                                clearSelectedForm: function () { window.console && console.log('do nothing'); },
+                                clearSelectedForm: function () { },
                                 onDragStart: $scope.onDragStart,
-                                setCurrentForm: $scope.setCurrentRepeatForm,
+                                setCurrentForm: function () { },
                                 buildScript: $scope.buildDisplay
                             };
                             var modFieldForEditDataForm = angular.copy($scope.modField);
@@ -356,7 +382,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         ;
                     }];
                 var modalInstance = $uibModal.open({
-                    templateUrl: '/template.html?v=' + new Date().getTime(),
+                    templateUrl: 'template/modal/editRepeatField.html',
                     controller: modalCtrl,
                     size: settings.modalSize,
                     resolve: {
