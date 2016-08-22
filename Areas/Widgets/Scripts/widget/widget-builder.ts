@@ -37,7 +37,8 @@ interface IWidgetModelDataTemplate {
 interface IWidget {
 	widgetType?: string;
 	allFieldsObject?: Object;
-	allFieldsOptionsArray: IWidgetFieldOptions[];
+	allFieldsOptionsArray?: IWidgetFieldOptions[];
+	allResultFieldsObject?: Object;
 	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 	prebuiltForms?: IWidgetFormObject[];
 }
@@ -93,7 +94,7 @@ interface IWidgetEditFieldData {
 	buildScript?: IWidgetScriptBuildFunction;
 }
 
-interface IWidgetBuilderNgScope extends ng.IScope {
+interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 	currentForm?: IWidgetFormObject;
 	currentFormStr?: string;
 	SaveWidget?(saveAsNew?: boolean): void;
@@ -118,11 +119,13 @@ interface IWidgetBuilderNgScope extends ng.IScope {
 	editResultInfo?: IWidgetEditFormInfo;
 	editFieldData?: IWidgetEditFieldData;
 	// SetEditFormInfo?(formType: string): IWidgetEditFormInfo;
-	allFieldsObject?: Object;
-	allFieldsOptionsArray?: IWidgetFieldOptions[];
-	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 	dragData?: IWidgetOnDragStartData;
 	isExistingModel?: boolean;
+
+	// allFieldsObject?: Object;
+	// allFieldsOptionsArray?: IWidgetFieldOptions[];
+	// allResultFieldsObject?: Object;
+	// allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 }
 
 interface IWidgetScriptBuildFunction {
@@ -142,7 +145,7 @@ namespace LoanTekWidget {
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
+			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
 				widgetObj.widgetType = lth.widgetType.quote.id;
@@ -154,6 +157,7 @@ namespace LoanTekWidget {
 				widgetObj.widgetType = lth.widgetType.deposit.id;
 				widgetObj.allFieldsObject = lth.depositFields;
 				widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
+				widgetObj.allResultFieldsObject = lth.depositResultFields;
 				widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
 			} else {
 				widgetObj.widgetType = lth.widgetType.contact.id;
@@ -214,7 +218,8 @@ namespace LoanTekWidget {
 
 				$scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
 				$scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
-				if (widgetObj.allResultFieldsOptionsArray) {
+				if (widgetObj.allResultFieldsObject) {
+					$scope.allResultFieldsObject = angular.copy(widgetObj.allResultFieldsObject);
 					$scope.allResultFieldsOptionsArray = angular.copy(widgetObj.allResultFieldsOptionsArray);
 				}
 
@@ -336,8 +341,15 @@ namespace LoanTekWidget {
 
 				function addField(fieldId: string, channel: string) {
 					channel = channel || 'form';
-					var currentObject = (channel === 'result')? 'resultObject': 'buildObject';
-					var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
+					var currentObject: string;
+					var fieldToAdd: Object;
+					if (channel === 'result') {
+						currentObject = 'resultObject';
+						fieldToAdd = { field: $scope.allResultFieldsObject[fieldId].id };
+					} else {
+						currentObject = 'buildObject';
+						fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
+					}
 					$scope.currentForm[currentObject].fields.push(fieldToAdd);
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}

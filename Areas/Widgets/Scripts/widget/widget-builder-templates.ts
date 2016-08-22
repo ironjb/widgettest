@@ -417,29 +417,37 @@
 					<h3 class="modal-title">Edit Widget Data Field</h3>
 				</div>
 				<div class="modal-body">
-					<div class="row">
-						<div class="col-sm-12">
-							<pre class="pre-code">{{modField}}</pre>
-						</div>
-					</div>
 					<div class="form-group">
 						<div class="col-sm-12">
-							TODO:
-							<ul>
-								<li>update fieldEdit template so that it can handle 'div'</li>
-								<li>get drag/drop working</li>
-								<li>get side panel with availableFields working</li>
-							</ul>
 							<div class="pull-right">
 								<button class="btn btn-default btn-xs" type="button" data-ng-click="editDataForm();"><span class="glyphicon glyphicon-edit"></span> Edit</button>
 							</div>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-sm-3">
-							<!-- .panel.panel-default>.panel-heading[data-ng-click="isCollapsedAvailableRepeatFields = !isCollapsedAvailableRepeatFields"]>h3.panel-title{Fields}>span.glyphicon.pull-right[data-ng-class="isCollapsedAvailableRepeatFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"]^^div[data-uib-collapse=isCollapsedAvailableRepeatFields]>.panel-body>.list-group.lt-no-bottom-margin>.list-group-item[data-ng-repeat="rField in allRepeatFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']"]>(.pull-right>span.small.text-danger[data-ng-show="!!rField.isLTRequired &amp;&amp; !rField.isIncluded"]{Required &nbsp; }+span.small[data-ng-show="!rField.allowMultiples &amp;&amp; !!rField.isIncluded"]{Can only add once}+a.btn.btn-default.btn-xs.btn-tool.repeat-channel[data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{rField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = rField.allowMultiples || !rField.isIncluded"]>span.glyphicon.glyphicon-move^button.btn.btn-default.btn-xs[type="button" data-ng-click="addField(rField.id, 'result');" data-ng-show="showAddBtns"]>span.glyphicon.glyphicon-plus)+span[data-ng-bind="rField.name"] -->
+						<div class="col-sm-4">
+							<div class="panel panel-default">
+								<div class="panel-heading" data-ng-click="isCollapsedAvailableRepeatDataFields = !isCollapsedAvailableRepeatDataFields">
+									<h3 class="panel-title">Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableRepeatDataFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+								</div>
+								<div data-uib-collapse="isCollapsedAvailableRepeatDataFields">
+									<div class="panel-body">
+										<div class="list-group lt-no-bottom-margin">
+											<div class="list-group-item" data-ng-repeat="rdField in allRepeatDataFieldsOptionsArray | filter: FilterAvailableDataFields | orderBy: ['allowMultiples']">
+												<div class="pull-right">
+													<span class="small text-danger" data-ng-show="!!rdField.isLTRequired &amp;&amp; !rdField.isIncluded">Required &nbsp; </span>
+													<span class="small" data-ng-show="!rdField.allowMultiples &amp;&amp; !!rdField.isIncluded">Can only add once</span>
+													<a href="" class="btn btn-default btn-xs btn-tool repeat-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{rdField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = rdField.allowMultiples || !rdField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+													<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(rdField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+												</div>
+												<span data-ng-bind="rdField.name"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-						<div class="col-sm-9">
+						<div class="col-sm-8">
 							<style type="text/css">{{previewDataFieldStyles}}</style>
 							<div class="ltw ltw-repeatpreview ltw-builder-tools" data-lt-compile-code="repeatFormDisplay"></div>
 						</div>

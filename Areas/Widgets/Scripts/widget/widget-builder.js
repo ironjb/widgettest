@@ -8,7 +8,7 @@ var LoanTekWidget;
             var ltbh = new LoanTekWidget.BuilderHelpers();
             var el = lth.CreateElement();
             $('input textarea').placeholder();
-            var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
+            var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
             if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
                 widgetObj.widgetType = lth.widgetType.quote.id;
             }
@@ -19,6 +19,7 @@ var LoanTekWidget;
                 widgetObj.widgetType = lth.widgetType.deposit.id;
                 widgetObj.allFieldsObject = lth.depositFields;
                 widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
+                widgetObj.allResultFieldsObject = lth.depositResultFields;
                 widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
             }
             else {
@@ -66,7 +67,8 @@ var LoanTekWidget;
                     }
                     $scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
                     $scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
-                    if (widgetObj.allResultFieldsOptionsArray) {
+                    if (widgetObj.allResultFieldsObject) {
+                        $scope.allResultFieldsObject = angular.copy(widgetObj.allResultFieldsObject);
                         $scope.allResultFieldsOptionsArray = angular.copy(widgetObj.allResultFieldsOptionsArray);
                     }
                     $scope.WidgetScriptBuild = WidgetScriptBuild;
@@ -164,8 +166,16 @@ var LoanTekWidget;
                     }
                     function addField(fieldId, channel) {
                         channel = channel || 'form';
-                        var currentObject = (channel === 'result') ? 'resultObject' : 'buildObject';
-                        var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
+                        var currentObject;
+                        var fieldToAdd;
+                        if (channel === 'result') {
+                            currentObject = 'resultObject';
+                            fieldToAdd = { field: $scope.allResultFieldsObject[fieldId].id };
+                        }
+                        else {
+                            currentObject = 'buildObject';
+                            fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
+                        }
                         $scope.currentForm[currentObject].fields.push(fieldToAdd);
                         $scope.WidgetScriptBuild($scope.currentForm);
                     }

@@ -285,7 +285,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         };
                     }];
                 var modalInstance = $uibModal.open({
-                    templateUrl: '/template.html?v=' + new Date().getTime(),
+                    templateUrl: 'template/modal/editField.html',
                     controller: modalCtrl,
                     size: settings.modalSize,
                     resolve: {
@@ -305,12 +305,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         $scope.modelOptions = ngModelOptions;
                         $scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
                         $scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
+                        $scope.addField = addField;
                         $scope.onDragStart = onDragStart;
                         $scope.onDrop = onDrop;
                         $scope.buildDisplay = buildDisplay;
                         var buildTool = new LoanTekWidget.BuildTools(lth);
                         var el = lth.CreateElement();
                         var fakeData;
+                        var repeatFieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
+                        $scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
+                        $scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
                         fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 };
                         $scope.buildDisplay();
                         $scope.saveWidget = function () {
@@ -332,6 +336,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             };
                             widgetMethods.editForm(dataFormEditOptions);
                         };
+                        function addField(fieldId) {
+                            var fieldToAdd = { field: $scope.allRepeatDataFieldsObject[fieldId].id };
+                            $scope.modField.fieldListOptions.fields.push(fieldToAdd);
+                            $scope.buildDisplay();
+                        }
+                        ;
                         function onDragStart(event, ui, data) {
                             $scope.dragData = data;
                         }
