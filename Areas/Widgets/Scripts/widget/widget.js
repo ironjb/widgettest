@@ -184,7 +184,7 @@ var LoanTekWidget;
             $.extend(true, settings, options);
             $('input, textarea').placeholder({ customClass: 'placeholder-text' });
             $(function () {
-                var depositPostData = {};
+                var depositPostData = lth.postObjects.deposit();
                 $(settings.form_submit).prop('disabled', false);
                 var appendDataToDataList = function (fieldList, data) {
                     for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
@@ -208,21 +208,37 @@ var LoanTekWidget;
                         $(settings.form_submit).prop('disabled', false);
                         return false;
                     }
-                    depositPostData.ForType = 'DepositCd';
-                    depositPostData.TermInMonths = $(settings.form_term).val();
-                    depositPostData.Amount = $(settings.form_amount).val();
+                    depositPostData.UserId = settings.userId;
+                    depositPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
+                    depositPostData.DepositRequest.ForType = 130;
+                    depositPostData.DepositRequest.TermInMonths = $(settings.form_term).val() * 1;
+                    depositPostData.DepositRequest.Amount = $(settings.form_amount).val() * 1;
                     var request = $.ajax({
                         url: settings.postUrl,
-                        method: 'GET',
+                        method: 'POST',
                         contentType: 'application/json',
                         dataType: 'json',
-                        data: depositPostData
+                        data: JSON.stringify(depositPostData)
                     });
                     request.done(function (result) {
                         $(settings.form_submit).prop('disabled', false);
-                        appendDataToDataList(settings.resultDisplayOptions.fields, result);
-                        var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
-                        depositResultBuild.build();
+                        var resultsData = [];
+                        if (result.Submissions && result.Submissions.length > 0) {
+                            for (var iSubmission = 0, subLen = result.Submissions.length; iSubmission < subLen; iSubmission++) {
+                                var submission = result.Submissions[iSubmission];
+                                if (submission.Quotes && submission.Quotes.length > 0) {
+                                    for (var iQuote = 0, qLen = submission.Quotes.length; iQuote < qLen; iQuote++) {
+                                        var quote = submission.Quotes[iQuote];
+                                        resultsData.push(quote);
+                                    }
+                                }
+                            }
+                        }
+                        if (resultsData && resultsData.length > 0) {
+                            appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+                            var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
+                            depositResultBuild.build();
+                        }
                     });
                     request.fail(function (error) {
                         $(settings.form_submit).prop('disabled', false);
@@ -656,8 +672,21 @@ var LoanTekWidget;
                 if (lth.isNumber(elementObj.marginTopBottom)) {
                     returnElement.css({ marginTop: elementObj.marginTopBottom + 'px', marginBottom: elementObj.marginTopBottom + 'px' });
                 }
+                if (elementObj.align) {
+                    returnElement.css({ textAlign: elementObj.align });
+                }
                 if (elementObj.style) {
-                    returnElement.css(elementObj.style);
+                    var styleSplit = elementObj.style.trim().split(';');
+                    for (var iStyle = styleSplit.length - 1; iStyle >= 0; iStyle--) {
+                        var style = styleSplit[iStyle].trim();
+                        if (!lth.isStringNullOrEmpty(style)) {
+                            var styleKey = style.substring(0, style.indexOf(':')).trim();
+                            var styleValue = style.substring(style.indexOf(':') + 1, style.length).trim();
+                            if (styleKey && styleValue) {
+                                returnElement.css(styleKey, styleValue);
+                            }
+                        }
+                    }
                 }
                 if (elementObj.required) {
                     returnElement.prop('required', true);

@@ -4,17 +4,6 @@
 .code-sm {
   font-size: 0.7em;
 }
-@-webkit-keyframes codechange {
-  10% {
-    background-color: #dddddd;
-  }
-  50% {
-    background-color: #ddffdd;
-  }
-  100% {
-    background-color: #dddddd;
-  }
-}
 @keyframes codechange {
   10% {
     background-color: #dddddd;
@@ -27,19 +16,17 @@
   }
 }
 .code-change.ng-animate {
-  -webkit-animation-name: codechange;
-          animation-name: codechange;
-  -webkit-animation-duration: 1s;
-          animation-duration: 1s;
-  -webkit-animation-iteration-count: 2;
-          animation-iteration-count: 2;
+  animation-name: codechange;
+  animation-duration: 1s;
+  animation-iteration-count: 2;
 }
 .ltw-builder-tools {
   position: relative;
+  margin-bottom: 50px;
 }
 .ltw-builder-tools .ltw-tool-form-update {
   position: absolute;
-  top: -5px;
+  top: -30px;
   left: 0;
   z-index: 4;
   width: 100%;

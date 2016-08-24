@@ -52,6 +52,7 @@ interface IWidgetFieldStyle {
 	padding?: string
 	marginTop?: string;
 	marginBottom?: string;
+	textAlign?: string;
 }
 
 interface IWidgetEditFieldNgScope extends ng.IScope {
@@ -372,9 +373,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					, 'modField.borderRadius'
 					, 'modField.padding'
 					, 'modField.marginTopBottom'
+					, 'modField.align'
 				];
 				$scope.$watchGroup(watchList, function (newValue) {
 					var newStyle: IWidgetFieldStyle = {};
+					// window.console && console.log('watch modField', newValue);
 
 					if ($scope.modField.fontSize) {
 						newStyle.fontSize = $scope.modField.fontSize + 'px';
@@ -403,6 +406,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if ((el === 'p' || el === 'div') && newStyle.borderColor) {
 						newStyle.borderWidth = '1px';
 						newStyle.borderStyle = 'solid';
+					}
+					if (!lth.isStringNullOrEmpty($scope.modField.align)) {
+						newStyle.textAlign = $scope.modField.align;
 					}
 
 					$scope.fieldStyle = newStyle;
@@ -443,6 +449,15 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if (!lth.isNumber($scope.modField.marginTopBottom)) {
 						delete $scope.modField.marginTopBottom;
 					}
+					if (lth.isStringNullOrEmpty($scope.modField.align)) {
+						delete $scope.modField.align;
+					}
+					if (!lth.isNumber($scope.modField.padding)) {
+						delete $scope.modField.padding;
+					}
+					if (!lth.isNumber($scope.modField.borderRadius)) {
+						delete $scope.modField.borderRadius;
+					}
 					// var newForm: IWidgetFormObject = angular.copy($scope.modForm);
 					// $uibModalInstance.close(newForm);
 					var newBuildObject: IWidgetFormObject = angular.copy($scope.modBuildObject);
@@ -455,8 +470,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}];
 
 			var modalInstance = $uibModal.open({
-				// templateUrl: '/Widgets/Home/AngularTemplates/modalEditField?t=' + new Date().getTime()
-				templateUrl: 'template/modal/editField.html'
+				templateUrl: '/Widgets/Home/AngularTemplates/modalEditField?t=' + new Date().getTime()
+				// templateUrl: 'template/modal/editField.html'
 				// templateUrl: '/template.html?v=' + new Date().getTime()
 				, controller: modalCtrl
 				, size: settings.modalSize
@@ -604,6 +619,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}];
 
 			var modalInstance = $uibModal.open({
+				// templateUrl: '/Widgets/Home/AngularTemplates/modalEditRepeatField?t=' + new Date().getTime()
 				templateUrl: 'template/modal/editRepeatField.html'
 				// templateUrl: '/template.html?v=' + new Date().getTime()
 				, controller: modalCtrl

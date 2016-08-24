@@ -396,14 +396,13 @@ var LoanTekWidget;
             this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
             this.hr = { id: 'hr', name: 'Horizontal Line', allowMultiples: true, fieldTemplate: { element: 'hr' } };
             this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+            this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text' } };
         }
         return sharedFields;
     }());
     var contactFields = (function () {
         function contactFields() {
             var sf = new sharedFields;
-            this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
-            this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
             this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
             this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwLastName', placeholder: 'Last Name', required: true } };
             this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
@@ -425,8 +424,8 @@ var LoanTekWidget;
     var depositFields = (function () {
         function depositFields() {
             var sf = new sharedFields;
-            this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term' } };
-            this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
+            this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months' } };
+            this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
             this.submit = sf.submit;
             this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
             this.label = sf.label;
@@ -477,6 +476,9 @@ var LoanTekWidget;
         postObjects.prototype.contact = function () {
             return new LoanTekWidget.PostObject_Contact;
         };
+        postObjects.prototype.deposit = function () {
+            return new LoanTekWidget.PostObject_Deposit;
+        };
         return postObjects;
     }());
     var ApplyFormStyles = (function () {
@@ -485,6 +487,7 @@ var LoanTekWidget;
             specifier = specifier || '.' + lth.defaultFormSpecifierClass;
             _thisC._specifier = specifier;
             _thisC._borderType = currentBuildObject.formBorderType;
+            _thisC._lth = lth;
             excludeCaptchaField = excludeCaptchaField || true;
             var returnStyles = '';
             if (currentBuildObject.formWidth) {
@@ -528,7 +531,7 @@ var LoanTekWidget;
         };
         ApplyFormStyles.prototype.formBorderRadius = function (borderRadius, borderType, specifier) {
             var _thisM = this;
-            var lth = LoanTekWidgetHelper;
+            var lth = _thisM._lth;
             var br = '';
             var fbr = borderRadius + '';
             var fbhr = borderRadius - 1 < 0 ? '0' : (borderRadius - 1) + '';

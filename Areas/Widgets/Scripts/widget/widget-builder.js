@@ -45,6 +45,7 @@ var LoanTekWidget;
                             '/Scripts/lib/jquery-1/jquery.min.js',
                             '/Scripts/lib/jquery/jquery.placeholder.min.js',
                             '/Areas/Widgets/Scripts/post-object/contact.js',
+                            '/Areas/Widgets/Scripts/post-object/deposit.js',
                             '/Areas/Widgets/Scripts/common/lt-captcha.js',
                             '/Areas/Widgets/Scripts/common/widget-helpers.js',
                             '/Areas/Widgets/Scripts/widget/widget.js'
@@ -88,10 +89,12 @@ var LoanTekWidget;
                             var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
                             field.isIncluded = !!(cIndex >= 0);
                         }
-                        for (var j = $scope.allResultFieldsOptionsArray.length - 1; j >= 0; j--) {
-                            var rField = $scope.allResultFieldsOptionsArray[j];
-                            var rIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.resultObject.fields, 'field', rField.id);
-                            rField.isIncluded = !!(rIndex >= 0);
+                        if ($scope.allResultFieldsOptionsArray) {
+                            for (var j = $scope.allResultFieldsOptionsArray.length - 1; j >= 0; j--) {
+                                var rField = $scope.allResultFieldsOptionsArray[j];
+                                var rIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.resultObject.fields, 'field', rField.id);
+                                rField.isIncluded = !!(rIndex >= 0);
+                            }
                         }
                     });
                     function SaveWidget(saveAsNew) {
@@ -201,7 +204,6 @@ var LoanTekWidget;
                     }
                     function WidgetScriptBuild(currentFormObj) {
                         currentFormObj.buildObject.widgetType = widgetObj.widgetType;
-                        currentFormObj.resultObject.widgetType = widgetObj.widgetType;
                         if (currentFormObj.resultObject) {
                             currentFormObj.resultObject.widgetType = widgetObj.widgetType;
                         }

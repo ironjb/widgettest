@@ -207,7 +207,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             'modField.borderColor',
                             'modField.borderRadius',
                             'modField.padding',
-                            'modField.marginTopBottom'
+                            'modField.marginTopBottom',
+                            'modField.align'
                         ];
                         $scope.$watchGroup(watchList, function (newValue) {
                             var newStyle = {};
@@ -239,6 +240,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             if ((el === 'p' || el === 'div') && newStyle.borderColor) {
                                 newStyle.borderWidth = '1px';
                                 newStyle.borderStyle = 'solid';
+                            }
+                            if (!lth.isStringNullOrEmpty($scope.modField.align)) {
+                                newStyle.textAlign = $scope.modField.align;
                             }
                             $scope.fieldStyle = newStyle;
                         });
@@ -277,6 +281,15 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             if (!lth.isNumber($scope.modField.marginTopBottom)) {
                                 delete $scope.modField.marginTopBottom;
                             }
+                            if (lth.isStringNullOrEmpty($scope.modField.align)) {
+                                delete $scope.modField.align;
+                            }
+                            if (!lth.isNumber($scope.modField.padding)) {
+                                delete $scope.modField.padding;
+                            }
+                            if (!lth.isNumber($scope.modField.borderRadius)) {
+                                delete $scope.modField.borderRadius;
+                            }
                             var newBuildObject = angular.copy($scope.modBuildObject);
                             $uibModalInstance.close(newBuildObject);
                         };
@@ -285,7 +298,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         };
                     }];
                 var modalInstance = $uibModal.open({
-                    templateUrl: 'template/modal/editField.html',
+                    templateUrl: '/Widgets/Home/AngularTemplates/modalEditField?t=' + new Date().getTime(),
                     controller: modalCtrl,
                     size: settings.modalSize,
                     resolve: {

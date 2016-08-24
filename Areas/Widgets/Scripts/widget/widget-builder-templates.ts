@@ -437,7 +437,7 @@
 												<div class="pull-right">
 													<span class="small text-danger" data-ng-show="!!rdField.isLTRequired &amp;&amp; !rdField.isIncluded">Required &nbsp; </span>
 													<span class="small" data-ng-show="!rdField.allowMultiples &amp;&amp; !!rdField.isIncluded">Can only add once</span>
-													<a href="" class="btn btn-default btn-xs btn-tool repeat-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{rdField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = rdField.allowMultiples || !rdField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+													<a href="" class="btn btn-default btn-xs btn-tool repeat-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\\'{{rdField.id}}\\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = rdField.allowMultiples || !rdField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
 													<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(rdField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
 												</div>
 												<span data-ng-bind="rdField.name"></span>

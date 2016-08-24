@@ -185,7 +185,7 @@ namespace LoanTekWidgetTest {
 			// 	captcha: { element: 'captcha' }
 			// };
 
-			function ExtendFieldTemplate(eItem: IWidgetField): IWidgetField {
+			function ExtendFieldTemplate(eItem: IW.IWidgetField): IW.IWidgetField {
 				// return $.extend({}, fieldTemplates[eItem.field], eItem);
 				return $.extend({}, lth.contactFields[eItem.field].fieldTemplate, eItem);
 			}
@@ -458,7 +458,7 @@ namespace LoanTekWidgetTest {
 			}
 		}
 
-		CreateFormElement (elementObj: IWidgetField) {
+		CreateFormElement (elementObj: IW.IWidgetField) {
 			var _thisM = this;
 			var el = _thisM._lth.CreateElement();
 			var returnElement: JQuery = null;
