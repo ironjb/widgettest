@@ -226,6 +226,62 @@ namespace LoanTekWidget {
 			});
 		}
 
+		FormatNumber(n: number, decimalPlaces?: number): string {
+			var newNumber: string;
+
+			if (this.isNumber(decimalPlaces)) {
+				var decimalPower = Math.pow(10, decimalPlaces);
+				n = Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+				// window.console && console.log('n', n, decimalPower);
+			}
+
+			newNumber = n + '';
+
+			var decimalIndex = newNumber.indexOf('.');
+			// window.console && console.log('decimalIndex', decimalIndex);
+			var integerPart: string = '';
+			var decimalPart: string = '';
+
+			// Splits number into part before and after decimal place
+			if (decimalIndex !== -1) {
+				integerPart = newNumber.substring(0, decimalIndex);
+				decimalPart = newNumber.substring(decimalIndex);
+			} else {
+				integerPart = newNumber;
+			}
+			// window.console && console.log('intPart', integerPart, 'decPart', decimalPart);
+
+			// Add extra zeros at end
+			while (decimalPlaces && decimalPart.length < decimalPlaces + 1) {
+				decimalPart += '0';
+				// window.console && console.log('decimalPart', decimalPart);
+			}
+
+			// Add commas in number
+			var startIndex = 0;
+			var commaIndex = (integerPart.length % 3);
+			var integerPartArray: string[] = [];
+			// window.console && console.log('commaIndex', commaIndex);
+
+			if (commaIndex > startIndex) {
+				do {
+					// window.console && console.log('from/to', startIndex, commaIndex);
+					integerPartArray.push(integerPart.substring(startIndex, commaIndex));
+					startIndex = commaIndex;
+					commaIndex += 3;
+					// window.console && console.log('commaIndex < integerPart.length', commaIndex, '<', integerPart.length);
+				} while (commaIndex <= integerPart.length)
+
+				if (integerPartArray.length > 0) {
+					integerPart =integerPartArray.join(',');
+				}
+			}
+
+			// window.console && console.log('intPartArray', integerPartArray);
+
+			return integerPart + decimalPart;
+		}
+
 		ExtendWidgetFieldTemplate(eItem: IWidgetField, templateName: string): IWidgetField {
 			var _this = this;
 			var fOption: IWidgetFieldOptions;

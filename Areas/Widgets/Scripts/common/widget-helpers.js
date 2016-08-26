@@ -99,6 +99,41 @@ var LoanTekWidget;
                 return fn(rt);
             });
         };
+        helpers.prototype.FormatNumber = function (n, decimalPlaces) {
+            var newNumber;
+            if (this.isNumber(decimalPlaces)) {
+                var decimalPower = Math.pow(10, decimalPlaces);
+                n = Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+            }
+            newNumber = n + '';
+            var decimalIndex = newNumber.indexOf('.');
+            var integerPart = '';
+            var decimalPart = '';
+            if (decimalIndex !== -1) {
+                integerPart = newNumber.substring(0, decimalIndex);
+                decimalPart = newNumber.substring(decimalIndex);
+            }
+            else {
+                integerPart = newNumber;
+            }
+            while (decimalPlaces && decimalPart.length < decimalPlaces + 1) {
+                decimalPart += '0';
+            }
+            var startIndex = 0;
+            var commaIndex = (integerPart.length % 3);
+            var integerPartArray = [];
+            if (commaIndex > startIndex) {
+                do {
+                    integerPartArray.push(integerPart.substring(startIndex, commaIndex));
+                    startIndex = commaIndex;
+                    commaIndex += 3;
+                } while (commaIndex <= integerPart.length);
+                if (integerPartArray.length > 0) {
+                    integerPart = integerPartArray.join(',');
+                }
+            }
+            return integerPart + decimalPart;
+        };
         helpers.prototype.ExtendWidgetFieldTemplate = function (eItem, templateName) {
             var _this = this;
             var fOption;

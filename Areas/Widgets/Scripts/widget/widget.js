@@ -223,7 +223,6 @@ var LoanTekWidget;
                     });
                     request.done(function (result) {
                         $(settings.form_submit).prop('disabled', false);
-                        window.console && console.log('request successful: ', result);
                         var resultsData = [];
                         if (result.Submissions && result.Submissions.length > 0) {
                             for (var iSubmission = 0, subLen = result.Submissions.length; iSubmission < subLen; iSubmission++) {
@@ -231,6 +230,8 @@ var LoanTekWidget;
                                 if (submission.Quotes && submission.Quotes.length > 0) {
                                     for (var iQuote = 0, qLen = submission.Quotes.length; iQuote < qLen; iQuote++) {
                                         var quote = submission.Quotes[iQuote];
+                                        quote.TotalInterestEarned = lth.FormatNumber(quote.TotalInterestEarned, 2);
+                                        quote.AmountPlusInterest = lth.FormatNumber(quote.AmountPlusInterest, 2);
                                         resultsData.push(quote);
                                     }
                                 }
@@ -244,7 +245,6 @@ var LoanTekWidget;
                         }
                         appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
                         var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
-                        window.console && console.log('build');
                         depositResultBuild.build();
                     });
                     request.fail(function (error) {
@@ -344,7 +344,6 @@ var LoanTekWidget;
             var remainingColSpace = 0;
             var isNextHidden = false;
             var fieldTemplate;
-            window.console && console.log('data', data);
             var el = lth.CreateElement();
             settings.widgetChannel = settings.widgetChannel || 'form';
             $.each(settings.fields, function (i, elementItem) {

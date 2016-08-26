@@ -19,7 +19,7 @@ namespace LoanTekWidget {
 			if (newIndex >= arr.length) {
 				newIndex = arr.length;
 			}
-			window.console && console.log('oldIndex', oldIndex, 'newIndex', newIndex);
+			// window.console && console.log('oldIndex', oldIndex, 'newIndex', newIndex);
 
 			arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
 			return arr;

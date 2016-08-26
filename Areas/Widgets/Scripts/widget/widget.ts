@@ -344,7 +344,7 @@ namespace LoanTekWidget {
 						$(settings.form_submit).prop('disabled', false);
 						// }, 10000);
 						// window.console && console.log('request successful: ', result, settings.resultDisplayOptions);
-						window.console && console.log('request successful: ', result);
+						// window.console && console.log('request successful: ', result);
 
 						// for (var flIndex = settings.resultDisplayOptions.fields.length - 1; flIndex >= 0; flIndex--) {
 						// 	var fieldItem = settings.resultDisplayOptions.fields[flIndex];
@@ -364,6 +364,10 @@ namespace LoanTekWidget {
 									// window.console && console.log('quote');
 									for (var iQuote = 0, qLen = submission.Quotes.length; iQuote < qLen; iQuote++) {
 										var quote = submission.Quotes[iQuote];
+										// window.console && console.log('quote1', quote);
+										quote.TotalInterestEarned = lth.FormatNumber(quote.TotalInterestEarned, 2);
+										quote.AmountPlusInterest = lth.FormatNumber(quote.AmountPlusInterest, 2);
+										// window.console && console.log('quote2', quote);
 										resultsData.push(quote);
 									}
 								}
@@ -390,7 +394,7 @@ namespace LoanTekWidget {
 						// 	// depositResultBuild.build();
 						// }
 						var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
-						window.console && console.log('build');
+						// window.console && console.log('build');
 						depositResultBuild.build();
 					});
 
@@ -504,7 +508,7 @@ namespace LoanTekWidget {
 			var isNextHidden: boolean = false;
 			var fieldTemplate: Object;
 
-			window.console && console.log('data', data);
+			// window.console && console.log('data', data);
 
 			var el = lth.CreateElement();
 
