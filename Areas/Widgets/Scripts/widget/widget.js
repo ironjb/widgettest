@@ -177,6 +177,7 @@ var LoanTekWidget;
                 form_errorMsg: '#ltwErrorMessage',
                 form_term: '#ltwDepositTerm',
                 form_amount: '#ltwDepositAmount',
+                form_noDataMessage: '#ltwNoDataMessage',
                 resultDisplayOptions: {
                     fieldHelperType: 'depositResultFields'
                 }
@@ -195,7 +196,7 @@ var LoanTekWidget;
                     }
                 };
                 if (settings.resultDisplayOptions.showBuilderTools) {
-                    var fakeData = [{ APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 }];
+                    var fakeData = [lth.FakeData().deposit];
                     appendDataToDataList(settings.resultDisplayOptions.fields, fakeData);
                     var showDepositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
                     showDepositResultBuild.build();
@@ -222,6 +223,7 @@ var LoanTekWidget;
                     });
                     request.done(function (result) {
                         $(settings.form_submit).prop('disabled', false);
+                        window.console && console.log('request successful: ', result);
                         var resultsData = [];
                         if (result.Submissions && result.Submissions.length > 0) {
                             for (var iSubmission = 0, subLen = result.Submissions.length; iSubmission < subLen; iSubmission++) {
@@ -234,11 +236,16 @@ var LoanTekWidget;
                                 }
                             }
                         }
-                        if (resultsData && resultsData.length > 0) {
-                            appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
-                            var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
-                            depositResultBuild.build();
+                        if (resultsData.length) {
+                            settings.resultDisplayOptions.showNoDataMessage = false;
                         }
+                        else {
+                            settings.resultDisplayOptions.showNoDataMessage = true;
+                        }
+                        appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+                        var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
+                        window.console && console.log('build');
+                        depositResultBuild.build();
                     });
                     request.fail(function (error) {
                         $(settings.form_submit).prop('disabled', false);
@@ -264,6 +271,7 @@ var LoanTekWidget;
         function ResultsBuilder(lth, options) {
             var _settings = {
                 resultWrapperId: 'ltWidgetResultWrapper',
+                noDataMessageWrapperId: 'ltwNoDataMessageWrapper',
                 widgetChannel: 'result'
             };
             lth.$.extend(_settings, options);
@@ -336,6 +344,7 @@ var LoanTekWidget;
             var remainingColSpace = 0;
             var isNextHidden = false;
             var fieldTemplate;
+            window.console && console.log('data', data);
             var el = lth.CreateElement();
             settings.widgetChannel = settings.widgetChannel || 'form';
             $.each(settings.fields, function (i, elementItem) {
@@ -435,6 +444,13 @@ var LoanTekWidget;
                             wrapElement.css({ display: 'none' });
                         }
                     }
+                    if (lth[settings.fieldHelperType].nodatamessage && elementItem.type === lth[settings.fieldHelperType].nodatamessage.id) {
+                        var wrapElement = isSingleRow ? row : cell;
+                        wrapElement.prop('id', settings.noDataMessageWrapperId);
+                        if (!settings.showBuilderTools && !settings.showNoDataMessage) {
+                            wrapElement.css({ display: 'none' });
+                        }
+                    }
                     row.append(cell);
                     if (isSpaceLeftOver) {
                         isTimeToAddRow = true;
@@ -502,7 +518,7 @@ var LoanTekWidget;
                 case 'title':
                     elementObj.nsize = elementObj.nsize || lth.hsize.getDefault().id;
                     returnElement = el.h(elementObj.nsize);
-                    returnElement.html(elementObj.value);
+                    returnElement.html(elementObj.value + '');
                     break;
                 case 'label':
                     returnElement = el.label();
@@ -510,12 +526,12 @@ var LoanTekWidget;
                         returnElement.addClass(elementObj.cssClass);
                     }
                     elementObj.value = elementObj.value || 'label';
-                    returnElement.html(elementObj.value);
+                    returnElement.html(elementObj.value + '');
                     break;
                 case 'p':
                     elementObj.value = elementObj.value || ' ';
                     returnElement = el.p();
-                    returnElement.html(elementObj.value);
+                    returnElement.html(elementObj.value + '');
                     break;
                 case 'hr':
                     returnElement = el.hr();
@@ -524,7 +540,7 @@ var LoanTekWidget;
                     returnElement = el.button(elementObj.type ? elementObj.type : 'button');
                     elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
                     elementObj.value = elementObj.value ? elementObj.value : 'OK';
-                    returnElement.addClass(elementObj.cssClass).html(elementObj.value);
+                    returnElement.addClass(elementObj.cssClass).html(elementObj.value + '');
                     break;
                 case 'select':
                     returnElement = el.select();
@@ -539,24 +555,35 @@ var LoanTekWidget;
                                 returnElement.append(el.option().val(state.abbreviation).html(state.name));
                             });
                             break;
-                        case 'depositterm':
+                        case 'deposittermdd':
                             var depositTermsList = [
                                 { value: 3, name: '3-month' },
                                 { value: 6, name: '6-month' },
+                                { value: 9, name: '9-month' },
                                 { value: 12, name: '1-year' },
-                                { value: 24, name: '2-year' }
+                                { value: 18, name: '1&frac12;-year' },
+                                { value: 24, name: '2-year' },
+                                { value: 36, name: '3-year' },
+                                { value: 48, name: '4-year' },
+                                { value: 60, name: '5-year' }
                             ];
                             $.each(depositTermsList, function (i, term) {
                                 returnElement.append(el.option().val(term.value).html(term.name));
                             });
                             break;
-                        case 'depositamount':
+                        case 'depositamountdd':
                             var depositAmountList = [
-                                { value: 4999, name: '&lt; 5000' },
-                                { value: 9999, name: '$5,000 - $9,999' },
-                                { value: 14999, name: '$10,000 - 14,999' },
-                                { value: 24999, name: '$15,000 - 24,999' },
-                                { value: 49999, name: '$25,000 - 49,999' }
+                                { value: 500, name: '$500' },
+                                { value: 1000, name: '$1,000' },
+                                { value: 2000, name: '$2,000' },
+                                { value: 2500, name: '$2,500' },
+                                { value: 5000, name: '$5,000' },
+                                { value: 10000, name: '$10,000' },
+                                { value: 15000, name: '$15,000' },
+                                { value: 20000, name: '$20,000' },
+                                { value: 25000, name: '$25,000' },
+                                { value: 50000, name: '$50,000' },
+                                { value: 100000, name: '$100,000' }
                             ];
                             $.each(depositAmountList, function (i, amnt) {
                                 returnElement.append(el.option().val(amnt.value).html(amnt.name));
@@ -636,7 +663,10 @@ var LoanTekWidget;
                 default:
                     elementObj.value = elementObj.value || ' ';
                     returnElement = el.div();
-                    returnElement.html(elementObj.value);
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
+                    returnElement.html(elementObj.value + '');
                     break;
             }
             if (returnElement) {
@@ -710,6 +740,9 @@ var LoanTekWidget;
                             returnElement.attr('placeholder', elementObj.placeholder);
                             break;
                     }
+                }
+                if (elementObj.field === 'custominput' && lth.isStringNullOrEmpty(elementObj.id)) {
+                    returnElement.attr('placeholder', 'NEEDS ID (please edit to add id)');
                 }
                 if (elementObj.pattern) {
                     returnElement.prop('pattern', elementObj.pattern);

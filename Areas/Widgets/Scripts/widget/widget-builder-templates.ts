@@ -45,6 +45,18 @@
 								</div>
 							</div>
 							<div class="form-group form-group-sm">
+								<label for="ltewFormFontColor" class="col-sm-4 control-label">Font Color</label>
+								<div class="col-sm-4">
+									<div class="input-group input-group-sm">
+										<span class="input-group-addon" data-ng-style="{ backgroundColor: modBuildOptions.formFontColor, borderColor: modBuildOptions.formFontColor }">&nbsp; &nbsp;</span>
+										<input type="text" class="form-control" id="ltewFormFontColor" name="ltewFormFontColor" data-ng-model="modBuildOptions.formFontColor" data-ng-model-options="modelOptions" data-colorpicker data-colorpicker-parent-NOT-USED="true" />
+										<span class="input-group-btn">
+											<button class="btn btn-default btn-sm" type="button" data-ng-click="removeBuildObjectItem('formFontColor');"><span class="glyphicon glyphicon-remove"></span></button>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm">
 								<label for="ltewBorderType" class="col-sm-4 control-label">Border Type</label>
 								<div class="col-sm-6">
 									<div class="btn-group btn-group-sm">
@@ -223,6 +235,8 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-sm-8">
+							<!--
+							 -->
 							<div class="form-group form-group-sm">
 								<label for="ltewFieldCols" class="col-sm-4 control-label">Grid Width</label>
 								<div class="col-sm-4"><select name="ltewFieldCols" id="ltewFieldCols" class="form-control" data-ng-model="modField.cols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::gridColumnsArray | orderBy: '-id'"></select></div>
@@ -310,11 +324,11 @@
 									<div class="small text-muted" data-ng-show="::valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::['label','title','button'].indexOf(ft.element) !== -1">
-								<label for="ltewFieldValue" class="col-sm-4 control-label">Text</label>
+							<div class="form-group form-group-sm" data-ng-show="::['label','title','button','input'].indexOf(ft.element) !== -1">
+								<label for="ltewFieldValue" class="col-sm-4 control-label">{{::ft.element === 'input' ? 'Default Value' : 'Text'}}</label>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" id="ltewFieldValue" name="ltewFieldValue" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}" />
-									<div class="small text-muted" data-ng-show="::valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
+									<input type="{{::ft.type === 'number' ? 'number' : 'text'}}" class="form-control" id="ltewFieldValue" name="ltewFieldValue" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}" />
+									<div class="small text-muted" data-ng-show="::valuePlaceholder &amp;&amp; valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
 								</div>
 							</div>
 							<div class="form-group form-group-sm" data-ng-show="::['input','select','textarea'].indexOf(ft.element) !== -1">
@@ -325,6 +339,17 @@
 								<label for="ltewFieldRows" class="col-sm-4 control-label">Textarea Rows</label>
 								<div class="col-sm-4"><input type="number" min="1" max="50" class="form-control" id="ltewFieldRows" name="ltewFieldRows" data-ng-model="modField.rows" data-ng-model-options="modelOptions" /></div>
 							</div>
+							<div class="form-group form-group-sm" data-ng-show="::['p','div','label','title'].indexOf(ft.element) !== -1">
+								<label for="ltewAlign" class="col-sm-4 control-label">Align</label>
+								<div class="col-sm-4">
+									<select name="ltewAlign" id="ltewAlign" class="form-control" data-ng-model="modField.align">
+										<option value="">Default</option>
+										<option value="left">Left</option>
+										<option value="center">Center</option>
+										<option value="right">Right</option>
+									</select>
+								</div>
+							</div>
 							<div class="form-group form-group-sm" data-ng-show="::(['input','select','textarea'].indexOf(ft.element) !== -1) &amp;&amp; !fieldOptions.isLTRequired">
 								<label for="ltewFieldRequired" class="col-sm-4 control-label">Require Field</label>
 								<div class="col-sm-4">
@@ -333,72 +358,76 @@
 									</div>
 								</div>
 							</div>
+							<!--  -->
 						</div>
 						<div class="col-sm-4">
 							<h4>Preview:</h4>
 							<hr />
 							<style type="text/css">{{previewStyles}}</style>
 							<div class="ltw ltw-preview" style="width:100%;">
-								<div data-ng-show="::ft.element === 'input'">
-									<div class="form-group">
-										<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="Field Placeholder Text" value="Text Field" /></div>
+								<div class="lt-widget-border">
+									<div data-ng-show="::ft.element === 'input'">
+										<div class="form-group">
+											<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="Field Placeholder Text" value="Text Field" /></div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color" /></div>
+										</div>
 									</div>
-									<div class="form-group">
-										<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color" /></div>
+									<div data-ng-if="::ft.element === 'select'">select</div>
+									<div class="form-group" data-ng-show="::ft.element === 'select'">
+										<div class="col-sm-12">
+											<select class="form-control" data-ng-style="fieldStyle", data-ng-class="fieldSizeClass">
+												<option value="">{{modField.placeholder}}</option>
+											</select>
+										</div>
 									</div>
-								</div>
-								<div data-ng-if="::ft.element === 'select'">select</div>
-								<div class="form-group" data-ng-show="::ft.element === 'select'">
-									<div class="col-sm-12">
-										<select class="form-control" data-ng-style="fieldStyle", data-ng-class="fieldSizeClass">
-											<option value="">{{modField.placeholder}}</option>
-										</select>
+									<div data-ng-show="::ft.element === 'textarea'">
+										<div class="form-group">
+											<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color">Textarea</textarea></div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color"></textarea></div>
+										</div>
 									</div>
-								</div>
-								<div data-ng-show="::ft.element === 'textarea'">
-									<div class="form-group">
-										<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color">Textarea</textarea></div>
+									<div class="form-group" data-ng-show="::ft.element === 'button'">
+										<div class="col-sm-12"><button class="btn btn-primary" type="button" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass">{{modField.value || 'Submit'}}</button></div>
 									</div>
-									<div class="form-group">
-										<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color"></textarea></div>
+									<div class="form-group" data-ng-show="::ft.element === 'p'">
+										<div class="col-sm-12">
+											<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+										</div>
 									</div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.element === 'button'">
-									<div class="col-sm-12"><button class="btn btn-primary" type="button" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass">{{modField.value || 'Submit'}}</button></div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.element === 'p'">
-									<div class="col-sm-12">
-										<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+									<div class="form-group" data-ng-show="::ft.element === 'div'">
+										<div class="col-sm-12">
+											<div data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+										</div>
 									</div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.element === 'div'">
-									<div class="col-sm-12">
-										<div data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+									<div class="form-group" data-ng-show="::ft.element === 'hr'">
+										<div class="col-sm-12">
+											<hr data-ng-style="fieldStyle" />
+										</div>
 									</div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.element === 'hr'">
-									<div class="col-sm-12">
-										<hr data-ng-style="fieldStyle" />
+									<div class="form-group" data-ng-show="::ft.type === 'successmessage'">
+										<div class="col-sm-12">
+											<p data-ng-style="fieldStyle">{{modField.value || ft.value || 'Thank you. After submit form text.'}}</p>
+										</div>
 									</div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.type === 'successmessage'">
-									<div class="col-sm-12">
-										<p data-ng-style="fieldStyle">{{modField.value || ft.value || 'Thank you. After submit form text.'}}</p>
+									<div class="form-group" data-ng-show="::ft.element === 'label'">
+										<label for="" class="control-label col-sm-8" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass">{{modField.value || 'Input Label'}}</label>
+										<div class="col-sm-4"><input type="text" class="form-control" data-ng-class="fieldSizeClass" placeholder="&lt;- Label" /></div>
 									</div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.element === 'label'">
-									<label for="" class="control-label col-sm-8" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass">{{modField.value || 'Input Label'}}</label>
-									<div class="col-sm-4"><input type="text" class="form-control" data-ng-class="fieldSizeClass" placeholder="&lt;- Label" /></div>
-								</div>
-								<div class="form-group" data-ng-show="::ft.element === 'title'">
-									<div class="col-sm-12">
-										<h1 data-ng-show="modField.nsize === 1" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h1>
-										<h2 data-ng-show="modField.nsize === 2" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h2>
-										<h3 data-ng-show="modField.nsize === 3" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h3>
-										<h4 data-ng-show="modField.nsize === 4" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h4>
-										<h5 data-ng-show="modField.nsize === 5" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h5>
-										<h6 data-ng-show="modField.nsize === 6" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h6>
+									<div class="form-group" data-ng-show="::ft.element === 'title'">
+										<div class="col-sm-12">
+											<h1 data-ng-show="modField.nsize === 1" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h1>
+											<h2 data-ng-show="modField.nsize === 2" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h2>
+											<h3 data-ng-show="modField.nsize === 3" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h3>
+											<h4 data-ng-show="modField.nsize === 4" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h4>
+											<h5 data-ng-show="modField.nsize === 5" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h5>
+											<h6 data-ng-show="modField.nsize === 6" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h6>
+										</div>
 									</div>
+									<!--  -->
 								</div>
 							</div>
 						</div>

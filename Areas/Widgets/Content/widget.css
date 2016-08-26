@@ -4208,6 +4208,9 @@
     display: none !important;
   }
 }
+.ltw button[type=submit]:disabled {
+  background: url('/Content/images/input-spinner.gif') no-repeat center center;
+}
 .ltw .placeholder-text {
   color: #999;
 }

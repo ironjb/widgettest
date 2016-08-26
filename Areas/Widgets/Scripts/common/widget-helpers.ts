@@ -15,13 +15,16 @@ declare namespace LTWidget {
 		widgetChannel?: string;		// 'form' | 'result'
 		panelTitle?: string;
 		showBuilderTools?: boolean;
+		showNoDataMessage?: boolean;
 		fields?: IWidgetField[];
 		fieldSize?: string;
 		fieldHelperType?: string;
 		successMessageWrapperId?: string;
+		noDataMessageWrapperId?: string;
 
 		formWidth?: number;
 		formWidthUnit?: string;
+		formFontColor?: string;
 		formBg?: string;
 		formBorderRadius?: number;
 		formBorderColor?: string;
@@ -64,7 +67,7 @@ interface IWidgetField {
 	offsetCols?: number;
 	rows?: number;
 	cssClass?: string;
-	value?: string;
+	value?: string|number;
 	size?: string;
 	pattern?: string;
 	alttext?: string;
@@ -290,6 +293,12 @@ namespace LoanTekWidget {
 			}
 		}
 
+		FakeData() {
+			return {
+				deposit: { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100, CompoundInterestType: 'Quarterly', BaseRate: 1.7500, FinalRate: 1.7400 }
+			}
+		}
+
 		CreateElement() {
 			var $ = this.$;
 			var el = {
@@ -318,9 +327,7 @@ namespace LoanTekWidget {
 				button: (type: string = 'button') => { return $('<button/>').prop('type', type); },
 				select: () => { return $('<select/>').addClass('form-control'); },
 				option: () => { return $('<option/>'); },
-				input: (type: string = 'text') => {
-					return $('<input/>').prop('type', type);
-				},
+				input: (type: string = 'text') => { return $('<input/>').prop('type', type); },
 				textarea: () => { return $('<textarea/>').addClass('form-control'); },
 				col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
 				row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
@@ -565,15 +572,19 @@ namespace LoanTekWidget {
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
 		hr: IWidgetFieldOptions;
+		captcha: IWidgetFieldOptions;
 		submit: IWidgetFieldOptions;
+		nodatamessage: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
 			this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
 			this.hr = { id: 'hr', name: 'Horizontal Line', allowMultiples: true, fieldTemplate: { element: 'hr' } };
+			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
 			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
-			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text' } };
+			this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
+			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text', cssClass: 'lt-custom-input' } };
 		}
 	}
 
@@ -606,13 +617,9 @@ namespace LoanTekWidget {
 			this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltwCompany', placeholder: 'Company' } };
 			this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
 			this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
-			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-			// this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			this.captcha = sf.captcha;
 			this.submit = sf.submit;
 			this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
-			// this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-			// this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-			// this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
@@ -620,21 +627,15 @@ namespace LoanTekWidget {
 			this.hr = sf.hr;
 			// this.custominput = sf.custominput;
 
-			// for (var fieldName in this) {
-			// 	var contactField: IWidgetFieldOptions = this[fieldName];
-			// 	if (contactField.isLTRequired) {
-			// 		contactField.fieldTemplate.required = contactField.isLTRequired;
-			// 	}
-			// }
 			helpers.prototype.SetRequiredFields(this);
 		}
 	}
 
 	class depositFields {
-		// clientid: IWidgetFieldOptions;
-		// userid: IWidgetFieldOptions;
 		depositterm: IWidgetFieldOptions;
 		depositamount: IWidgetFieldOptions;
+		deposittermdd: IWidgetFieldOptions;
+		depositamountdd: IWidgetFieldOptions;
 		submit: IWidgetFieldOptions;
 		captcha: IWidgetFieldOptions;
 		label: IWidgetFieldOptions;
@@ -643,29 +644,17 @@ namespace LoanTekWidget {
 		hr: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
-			// this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
-			// this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
-			// this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositterm', id: 'ltwDepositTerm', placeholder: 'Select a Term'} };
-			// this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamount', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
-			this.depositterm = { id: 'depositterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
-			this.depositamount = { id: 'depositamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
-			// this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
+			this.depositterm = { id: 'depositterm', name: 'Term [textbox]', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
+			this.deposittermdd = { id: 'deposittermdd', name: 'Term [dropdown]', fieldTemplate: { element: 'select', type: 'deposittermdd', id: 'ltwDepositTerm', placeholder: 'Select a Term'} };
+			this.depositamount = { id: 'depositamount', name: 'Amount [textbox]', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
+			this.depositamountdd = { id: 'depositamountdd', name: 'Amount [dropdown]', fieldTemplate: { element: 'select', type: 'depositamountdd', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
 			this.submit = sf.submit;
-			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
-			// this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-			// this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-			// this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
+			this.captcha = sf.captcha;
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
 
-			// for (var fieldName in this) {
-			// 	var depositField: IWidgetFieldOptions = this[fieldName];
-			// 	if (depositField.isLTRequired) {
-			// 		depositField.fieldTemplate.required = depositField.isLTRequired;
-			// 	}
-			// }
 			helpers.prototype.SetRequiredFields(this);
 		}
 
@@ -679,16 +668,15 @@ namespace LoanTekWidget {
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
 		hr: IWidgetFieldOptions;
+		nodatamessage: IWidgetFieldOptions;
 		depositdatalist: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
-			// this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
-			// this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
-			// this.paragraph = { id: 'paragraph', name: 'Paragraph', allowMultiples: true, fieldTemplate: { element: 'p', value: 'paragraph text' } };
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
+			this.nodatamessage = sf.nodatamessage;
 			this.depositdatalist = { id: 'depositdatalist', name: 'Deposit Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'depositdatalist'} };
 
 			helpers.prototype.SetRequiredFields(this);
@@ -707,15 +695,21 @@ namespace LoanTekWidget {
 		api: IWidgetFieldOptions;
 		totalinterestearned: IWidgetFieldOptions;
 		amountplusinterest: IWidgetFieldOptions;
+		compoundinteresttype: IWidgetFieldOptions;
+		baserate: IWidgetFieldOptions;
+		finalrate: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
-			this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}' } };
-			this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}' } };
-			this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}' } };
+			this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}', cssClass: 'form-control-static' } };
+			this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}', cssClass: 'form-control-static' } };
+			this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}', cssClass: 'form-control-static' } };
+			this.compoundinteresttype = { id: 'compoundinteresttype', name: 'Compound Interest Type', fieldTemplate: { element: 'div', value: '#{CompoundInterestType}', cssClass: 'form-control-static' } };
+			this.baserate = { id: 'baserate', name: 'Base Rate', fieldTemplate: { element: 'div', value: '#{BaseRate}', cssClass: 'form-control-static' } };
+			this.finalrate = { id: 'finalrate', name: 'Final Rate', fieldTemplate: { element: 'div', value: '#{FinalRate}', cssClass: 'form-control-static' } };
 		}
 
 		asArray() {
@@ -760,6 +754,10 @@ namespace LoanTekWidget {
 				returnStyles += '\n.ltw' + specifier + ' { width: ' + currentBuildObject.formWidth + currentBuildObject.formWidthUnit + '; }';
 			}
 
+			if (currentBuildObject.formFontColor) {
+				returnStyles += '\n.ltw' + specifier + ' .lt-widget-border { color: ' + currentBuildObject.formFontColor + '; }';
+			}
+
 			if (currentBuildObject.formBg) {
 				returnStyles += '\n.ltw' + specifier + ' .lt-widget-border { background-color: ' + currentBuildObject.formBg + '; }';
 			}
@@ -801,7 +799,6 @@ namespace LoanTekWidget {
 		}
 
 		getStyles(): string {
-			// window.console && console.log('getStyles');
 			return this._returnStyles;
 		}
 

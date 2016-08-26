@@ -531,8 +531,8 @@ namespace LoanTekWidgetTest {
 					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					break;
 				case 'captcha':
-					var captchaInputObj: IWidgetField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
-					var captchaResetBtnObj: IWidgetField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+					var captchaInputObj: IW.IWidgetField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
+					var captchaResetBtnObj: IW.IWidgetField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
 					if (elementObj.size) {
 						captchaInputObj.size = elementObj.size;
 						captchaResetBtnObj.size = elementObj.size;

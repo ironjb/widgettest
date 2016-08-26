@@ -254,17 +254,6 @@ namespace LoanTekWidget {
 					}
 				});
 
-				// function SetEditFormInfo(formType: string) {
-				// 	var editFormInfo: IWidgetEditFormInfo = {
-				// 		formObjectType: formType
-				// 		, currentForm: $scope.currentForm
-				// 		, clearSelectedForm: $scope.ClearSelectedForm
-				// 		, setCurrentForm: $scope.SetCurrentForm
-				// 		, buildScript: $scope.WidgetScriptBuild
-				// 	};
-				// 	return editFormInfo;
-				// }
-
 				function SaveWidget(saveAsNew: boolean) {
 					var saveData: IWidgetModelDataModelWidget = angular.copy(widgetData.modelWidget);
 					if ($scope.passedModelForm && $scope.passedModelForm.Name && !saveAsNew) {
@@ -276,7 +265,9 @@ namespace LoanTekWidget {
 					var postData = {
 						httpOptions: { method: 'POST', url: '/Widgets/Builder/Save?v=' + new Date().getTime(), data: saveData },
 						onSuccessFunction: function (result) {
-							location.assign('/Widgets');
+							if (result.data.DataObject.Id !== widgetData.modelWidget.Id) {
+								location.assign('/Widgets/Builder/Index/' + result.data.DataObject.Id);
+							}
 						},
 						onErrorFunction: function (error) {
 							window.console && console.error('error save result', error);
@@ -336,12 +327,6 @@ namespace LoanTekWidget {
 					}
 				}
 
-				function FilterAvailableFields(value, index, array): boolean {
-					var isInList = true;
-					isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
-					return isInList;
-				}
-
 				function addField(fieldId: string, channel: string) {
 					channel = channel || 'form';
 					var currentObject: string;
@@ -355,6 +340,12 @@ namespace LoanTekWidget {
 					}
 					$scope.currentForm[currentObject].fields.push(fieldToAdd);
 					$scope.WidgetScriptBuild($scope.currentForm);
+				}
+
+				function FilterAvailableFields(value, index, array): boolean {
+					var isInList = true;
+					isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
+					return isInList;
 				}
 
 				function UsePrebuiltForm() {

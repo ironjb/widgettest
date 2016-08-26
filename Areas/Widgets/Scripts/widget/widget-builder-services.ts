@@ -190,6 +190,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					'modBuildOptions.formBorderType'
 					, 'modBuildOptions.fieldSize'
 					, 'modBuildOptions.formBg'
+					, 'modBuildOptions.formFontColor'
 					, 'modBuildOptions.formBorderColor'
 					, 'modBuildOptions.formBorderRadius'
 					, 'modBuildOptions.formTitleColor'
@@ -225,6 +226,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 					if (!lth.isNumber(newBuildOptions.formBorderRadius) || newBuildOptions.formBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
 						delete newBuildOptions.formBorderRadius;
+					}
+
+					if (lth.isStringNullOrEmpty(newBuildOptions.formFontColor)) {
+						delete newBuildOptions.formFontColor;
 					}
 
 					if (lth.isStringNullOrEmpty(newBuildOptions.panelTitle)) {
@@ -276,6 +281,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 			var modalInstance = $uibModal.open({
 				templateUrl: 'template/modal/editForm.html'
+				// templateUrl: '/Widgets/Home/AngularTemplates/modalEditForm?t=' + new Date().getTime()
 				, controller: modalCtrl
 				, size: settings.modalSize
 				, resolve: {
@@ -293,27 +299,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			var modalCtrl: [string | Function];
 			var settings: IFieldEditOptions = { modalSize: 'lg' };
 			angular.extend(settings, options);
-			// var removeFieldItem = function (field: IWidgetField, itemName: string) {
-			// 	switch (itemName) {
-			// 		case "value":
-			// 			// code...
-			// 			break;
-
-			// 		default:
-			// 			delete field[itemName];
-			// 			break;
-			// 	}
-			// };
-			// settings.instanceOptions.fieldOptions = settings.fieldOptions;
 
 			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFieldNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFieldEditModalInstanceOptions) {
 				$scope.modelOptions = ngModelOptions;
-				// $scope.modForm = angular.copy(instanceOptions.currentForm);
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
 				$scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
 
-				// window.console && console.log('editField service applyFormStyles modBuildObjectc:', $scope.modBuildObjectc);
 				var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modBuildObject, true, '.ltw-preview');
 				var previewStyles: string = applyFormStyles.getStyles();
 				var ft = instanceOptions.fieldOptions.fieldTemplate;
@@ -346,7 +338,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				}
 
 				if(['p','div','title','label','textarea'].indexOf(el) >= 0 || ['successmessage','submit'].indexOf(ty) >= 0) {
-					$scope.valuePlaceholder = $scope.fieldOptions.fieldTemplate.value || '';
+					$scope.valuePlaceholder = $scope.fieldOptions.fieldTemplate.value + '' || '';
+				} else if (el === 'input' && ['text','number'].indexOf(ty) !== -1) {
+					$scope.valuePlaceholder = 'Enter default value';
 				}
 
 				$scope.fieldSizeChange = function () {
@@ -377,11 +371,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				];
 				$scope.$watchGroup(watchList, function (newValue) {
 					var newStyle: IWidgetFieldStyle = {};
-					// window.console && console.log('watch modField', newValue);
 
 					if ($scope.modField.fontSize) {
 						newStyle.fontSize = $scope.modField.fontSize + 'px';
-					} else if (ty === 'successmessage') {
+					} else if (ty === 'successmessage' || ty === 'nodatamessage') {
 						newStyle.fontSize = ft.fontSize ? ft.fontSize + 'px' : '20px';
 					}
 					if ($scope.modField.color) {
@@ -417,6 +410,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.removeFieldItem = function (itemName) { widgetMethods.removeFieldItem($scope.modField, itemName); };
 
 				$scope.saveClick = function () {
+					// window.console && console.log('modField', $scope.modField);
 					if ($scope.modField.cols === lth.bootstrap.gridColumns.getDefault().id) {
 						delete $scope.modField.cols;
 					}
@@ -432,12 +426,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if (lth.isStringNullOrEmpty($scope.modField.placeholder)) {
 						delete $scope.modField.placeholder;
 					}
-					if (lth.isStringNullOrEmpty($scope.modField.value)) {
+					if (lth.isStringNullOrEmpty($scope.modField.value + '')) {
 						delete $scope.modField.value;
 					}
 					if (!lth.isNumber($scope.modField.fontSize)) {
 						delete $scope.modField.fontSize;
-					} else if (ty === 'successmessage' && ft.fontSize && ft.fontSize === $scope.modField.fontSize) {
+					} else if ((ty === 'successmessage' || ty === 'nodatamessage') && ft.fontSize && ft.fontSize === $scope.modField.fontSize) {
 						delete $scope.modField.fontSize;
 					}
 					if (!$scope.modField.offsetCols) {
@@ -461,6 +455,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// var newForm: IWidgetFormObject = angular.copy($scope.modForm);
 					// $uibModalInstance.close(newForm);
 					var newBuildObject: IWidgetFormObject = angular.copy($scope.modBuildObject);
+					// window.console && console.log('newBuildObject', newBuildObject);
 					$uibModalInstance.close(newBuildObject);
 				};
 
@@ -470,8 +465,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}];
 
 			var modalInstance = $uibModal.open({
-				templateUrl: '/Widgets/Home/AngularTemplates/modalEditField?t=' + new Date().getTime()
-				// templateUrl: 'template/modal/editField.html'
+				// templateUrl: '/Widgets/Home/AngularTemplates/modalEditField?t=' + new Date().getTime()
+				templateUrl: 'template/modal/editField.html'
 				// templateUrl: '/template.html?v=' + new Date().getTime()
 				, controller: modalCtrl
 				, size: settings.modalSize
@@ -514,7 +509,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
 				$scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
 
-				fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 };
+				// fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100, CompoundInterestType: 'Quarterly', BaseRate: 1.7500, FinalRate: 1.7400 };
+				fakeData = lth.FakeData().deposit;
 
 				// Initialize display
 				$scope.buildDisplay();
@@ -630,7 +626,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			});
 
 			modalInstance.result.then(function (result) {
-				window.console && console.log('modalInstance result then save');
+				// window.console && console.log('modalInstance result then save');
 				settings.saveForm(result);
 			}, function (error) {
 				//

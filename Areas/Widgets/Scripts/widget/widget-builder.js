@@ -107,7 +107,9 @@ var LoanTekWidget;
                         var postData = {
                             httpOptions: { method: 'POST', url: '/Widgets/Builder/Save?v=' + new Date().getTime(), data: saveData },
                             onSuccessFunction: function (result) {
-                                location.assign('/Widgets');
+                                if (result.data.DataObject.Id !== widgetData.modelWidget.Id) {
+                                    location.assign('/Widgets/Builder/Index/' + result.data.DataObject.Id);
+                                }
                             },
                             onErrorFunction: function (error) {
                                 window.console && console.error('error save result', error);
@@ -162,11 +164,6 @@ var LoanTekWidget;
                             window.console && console.error('No Data Passed from Draggable!!');
                         }
                     }
-                    function FilterAvailableFields(value, index, array) {
-                        var isInList = true;
-                        isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
-                        return isInList;
-                    }
                     function addField(fieldId, channel) {
                         channel = channel || 'form';
                         var currentObject;
@@ -181,6 +178,11 @@ var LoanTekWidget;
                         }
                         $scope.currentForm[currentObject].fields.push(fieldToAdd);
                         $scope.WidgetScriptBuild($scope.currentForm);
+                    }
+                    function FilterAvailableFields(value, index, array) {
+                        var isInList = true;
+                        isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
+                        return isInList;
                     }
                     function UsePrebuiltForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];

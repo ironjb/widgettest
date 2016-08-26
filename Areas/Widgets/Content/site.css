@@ -22,7 +22,7 @@
 }
 .ltw-builder-tools {
   position: relative;
-  margin-bottom: 50px;
+  margin-top: 50px;
 }
 .ltw-builder-tools .ltw-tool-form-update {
   position: absolute;
@@ -106,6 +106,9 @@
 .ltw-builder-tools .on-drag-hover.move-between-cells {
   opacity: 0.8;
   filter: alpha(opacity=80);
+}
+.ltw-preview .lt-widget-border {
+  padding: 8px;
 }
 .show-on-active-inline-block {
   display: none;

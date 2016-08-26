@@ -18,6 +18,10 @@
 	@import (less) url('widget-bootstrap.css');
 	/*@import 'captcha.less';*/
 
+	button[type=submit]:disabled {
+		background:url('/Content/images/input-spinner.gif') no-repeat center center;
+	}
+
 	.placeholder-text { color: @input-color-placeholder; }
 
 	.visible-on-hover {

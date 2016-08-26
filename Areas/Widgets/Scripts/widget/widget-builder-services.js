@@ -71,6 +71,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             'modBuildOptions.formBorderType',
                             'modBuildOptions.fieldSize',
                             'modBuildOptions.formBg',
+                            'modBuildOptions.formFontColor',
                             'modBuildOptions.formBorderColor',
                             'modBuildOptions.formBorderRadius',
                             'modBuildOptions.formTitleColor',
@@ -97,6 +98,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             var newBuildOptions = angular.copy($scope.modBuildOptions);
                             if (!lth.isNumber(newBuildOptions.formBorderRadius) || newBuildOptions.formBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
                                 delete newBuildOptions.formBorderRadius;
+                            }
+                            if (lth.isStringNullOrEmpty(newBuildOptions.formFontColor)) {
+                                delete newBuildOptions.formFontColor;
                             }
                             if (lth.isStringNullOrEmpty(newBuildOptions.panelTitle)) {
                                 delete newBuildOptions.panelTitle;
@@ -182,7 +186,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             $scope.modField.offsetCols = 0;
                         }
                         if (['p', 'div', 'title', 'label', 'textarea'].indexOf(el) >= 0 || ['successmessage', 'submit'].indexOf(ty) >= 0) {
-                            $scope.valuePlaceholder = $scope.fieldOptions.fieldTemplate.value || '';
+                            $scope.valuePlaceholder = $scope.fieldOptions.fieldTemplate.value + '' || '';
+                        }
+                        else if (el === 'input' && ['text', 'number'].indexOf(ty) !== -1) {
+                            $scope.valuePlaceholder = 'Enter default value';
                         }
                         $scope.fieldSizeChange = function () {
                             if ($scope.modField.size === lth.bootstrap.inputSizing.sm.id) {
@@ -215,7 +222,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             if ($scope.modField.fontSize) {
                                 newStyle.fontSize = $scope.modField.fontSize + 'px';
                             }
-                            else if (ty === 'successmessage') {
+                            else if (ty === 'successmessage' || ty === 'nodatamessage') {
                                 newStyle.fontSize = ft.fontSize ? ft.fontSize + 'px' : '20px';
                             }
                             if ($scope.modField.color) {
@@ -263,13 +270,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             if (lth.isStringNullOrEmpty($scope.modField.placeholder)) {
                                 delete $scope.modField.placeholder;
                             }
-                            if (lth.isStringNullOrEmpty($scope.modField.value)) {
+                            if (lth.isStringNullOrEmpty($scope.modField.value + '')) {
                                 delete $scope.modField.value;
                             }
                             if (!lth.isNumber($scope.modField.fontSize)) {
                                 delete $scope.modField.fontSize;
                             }
-                            else if (ty === 'successmessage' && ft.fontSize && ft.fontSize === $scope.modField.fontSize) {
+                            else if ((ty === 'successmessage' || ty === 'nodatamessage') && ft.fontSize && ft.fontSize === $scope.modField.fontSize) {
                                 delete $scope.modField.fontSize;
                             }
                             if (!$scope.modField.offsetCols) {
@@ -298,7 +305,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         };
                     }];
                 var modalInstance = $uibModal.open({
-                    templateUrl: '/Widgets/Home/AngularTemplates/modalEditField?t=' + new Date().getTime(),
+                    templateUrl: 'template/modal/editField.html',
                     controller: modalCtrl,
                     size: settings.modalSize,
                     resolve: {
@@ -328,7 +335,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         var repeatFieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
                         $scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
                         $scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
-                        fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100 };
+                        fakeData = lth.FakeData().deposit;
                         $scope.buildDisplay();
                         $scope.saveWidget = function () {
                             var newBuildObject = angular.copy($scope.modBuildObject);
@@ -413,7 +420,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     }
                 });
                 modalInstance.result.then(function (result) {
-                    window.console && console.log('modalInstance result then save');
                     settings.saveForm(result);
                 }, function (error) {
                 });

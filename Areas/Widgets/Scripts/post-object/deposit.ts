@@ -27,21 +27,6 @@ namespace LoanTekWidget {
 				CustomData: null
 			};
 			this.CustomQuoteResponseJson = null;
-			// return {
-			// 	"UserId":861,
-			// 	"ReturnFailedRequirementRules":false,
-			// 	"ClientDefinedIdentifier":"Test992aab88128d4a9a",
-			// 	"PassThroughItems":null,
-			// 	"DepositRequest":{
-			// 		"RequestId":null,
-			// 		"ForType":130,
-			// 		"QuotingChannelType":0,
-			// 		"Amount":15000.0,
-			// 		"TermInMonths":24,
-			// 		"CustomData":null
-			// 	},
-			// 	"CustomQuoteResponseJson":null
-			// };
 		}
 	}
 }
