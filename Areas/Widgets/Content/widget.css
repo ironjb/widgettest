@@ -1041,7 +1041,6 @@
   text-decoration: underline;
 }
 .ltw a:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -2265,7 +2264,6 @@
 .ltw input[type="file"]:focus,
 .ltw input[type="radio"]:focus,
 .ltw input[type="checkbox"]:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -2756,7 +2754,6 @@
 .ltw .btn.focus,
 .ltw .btn:active.focus,
 .ltw .btn.active.focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }

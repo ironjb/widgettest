@@ -439,6 +439,7 @@ var LoanTekWidget;
             this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
             this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
             this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text', cssClass: 'lt-custom-input' } };
+            this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden', cssClass: 'lt-custom-input' } };
         }
         return sharedFields;
     }());
@@ -459,6 +460,8 @@ var LoanTekWidget;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
             this.hr = sf.hr;
+            this.custominput = sf.custominput;
+            this.customhidden = sf.customhidden;
             helpers.prototype.SetRequiredFields(this);
         }
         return contactFields;
@@ -466,16 +469,18 @@ var LoanTekWidget;
     var depositFields = (function () {
         function depositFields() {
             var sf = new sharedFields;
-            this.depositterm = { id: 'depositterm', name: 'Term [textbox]', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months' } };
-            this.deposittermdd = { id: 'deposittermdd', name: 'Term [dropdown]', fieldTemplate: { element: 'select', type: 'deposittermdd', id: 'ltwDepositTerm', placeholder: 'Select a Term' } };
-            this.depositamount = { id: 'depositamount', name: 'Amount [textbox]', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
-            this.depositamountdd = { id: 'depositamountdd', name: 'Amount [dropdown]', fieldTemplate: { element: 'select', type: 'depositamountdd', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
+            this.depositterm = { id: 'depositterm', name: 'Term [textbox]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months' } };
+            this.deposittermdd = { id: 'deposittermdd', name: 'Term [dropdown]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'select', type: 'deposittermdd', id: 'ltwDepositTerm', placeholder: 'Select a Term' } };
+            this.depositamount = { id: 'depositamount', name: 'Amount [textbox]', groupName: 'depositamount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
+            this.depositamountdd = { id: 'depositamountdd', name: 'Amount [dropdown]', groupName: 'depositamount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamountdd', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
             this.submit = sf.submit;
             this.captcha = sf.captcha;
             this.label = sf.label;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
             this.hr = sf.hr;
+            this.custominput = sf.custominput;
+            this.customhidden = sf.customhidden;
             helpers.prototype.SetRequiredFields(this);
         }
         depositFields.prototype.asArray = function () {

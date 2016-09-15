@@ -38,14 +38,14 @@ declare namespace CommonNgServices {
 		close?(): void;
 	}
 
-	interface ISpinnerModalOptions {
-		animation?: boolean;
-		template?: string;
-		windowTemplateUrl?: string;
-		templateUrl?: string;
-		backdrop?: boolean | string;
-		keyboard?: boolean;
-		size?: string;
+	interface ISpinnerModalOptions extends ng.ui.bootstrap.IModalSettings {
+		// animation?: boolean;
+		// template?: string;
+		// windowTemplateUrl?: string;
+		// templateUrl?: string;
+		// backdrop?: boolean | string;
+		// keyboard?: boolean;
+		// size?: string;
 		modalCloseDelay?: number;
 	}
 
@@ -201,12 +201,13 @@ declare namespace CommonNgServices {
 			}
 		};
 		commonMethods.isInvalidField = function (form: ng.IFormController, fieldName: string, validatorType?: string) {
+			// window.console && console.log('form', form);
 			validatorType = validatorType || 'required';
 			var isInvalid: boolean = false;
 			var field: ng.INgModelController = form[fieldName];
-			var isErrorPresentForType = field.$error[validatorType];
+			var isErrorPresentForType: boolean = field ? field.$error[validatorType]: false;
 			// window.console && console.log('field.$error', field.$error);
-			if (form.$submitted || field.$touched) {
+			if (form.$submitted || (field && field.$touched)) {
 				isInvalid = isErrorPresentForType || false;
 			}
 			return isInvalid;

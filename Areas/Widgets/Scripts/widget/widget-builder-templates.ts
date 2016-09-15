@@ -235,8 +235,6 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-sm-8">
-							<!--
-							 -->
 							<div class="form-group form-group-sm">
 								<label for="ltewFieldCols" class="col-sm-4 control-label">Grid Width</label>
 								<div class="col-sm-4"><select name="ltewFieldCols" id="ltewFieldCols" class="form-control" data-ng-model="modField.cols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::gridColumnsArray | orderBy: '-id'"></select></div>
@@ -358,7 +356,12 @@
 									</div>
 								</div>
 							</div>
-							<!--  -->
+							<div class="form-group form-group-sm" data-ng-show="::showCustomField = fieldOptions.id === 'custominput'">
+								<label for="ltewCustomInput" class="col-sm-4 control-label">*Custom Input Name</label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" id="ltewCustomInput" name="ltewCustomInput" data-ng-model="customFieldKeyValue" data-ng-model-options="modelOptions" data-ng-required="::showCustomField" />
+								</div>
+							</div>
 						</div>
 						<div class="col-sm-4">
 							<h4>Preview:</h4>
@@ -427,7 +430,6 @@
 											<h6 data-ng-show="modField.nsize === 6" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h6>
 										</div>
 									</div>
-									<!--  -->
 								</div>
 							</div>
 						</div>

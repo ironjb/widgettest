@@ -64,7 +64,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
                     scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
                     scope.showRemove = false;
-                    if (!scope.currentFieldOptions.isLTRequired) {
+                    if (!scope.currentFieldOptions.isLTRequired || scope.currentFieldOptions.groupName) {
                         scope.showRemove = true;
                     }
                     scope.RemoveWidgetField = function () {
@@ -100,6 +100,32 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             widgetServices.editField(fieldEditOptions);
                         }
                     };
+                }
+            };
+        }]);
+    widgetDirectives.directive('ltAssignAdditionalInfoKey', ['commonServices', function (commonServices) {
+            return {
+                restrict: 'A',
+                scope: {
+                    toolInfo: '=ltAssignAdditionalInfoKey'
+                },
+                link: function (scope, elem, attrs) {
+                    var field = scope.toolInfo.editInfo.currentForm[scope.toolInfo.editInfo.formObjectType].fields[scope.toolInfo.fieldIndex];
+                    var promptInfo = {
+                        promptSize: 'md',
+                        promptOptions: {
+                            title: 'Enter a Name:',
+                            message: 'Please choose a Name for the Custom Input field:',
+                            promptTextRequired: true
+                        },
+                        onOk: function (result) {
+                            field.attrs = field.attrs || [];
+                            field.attrs.push({ name: 'data-lt-additional-info-key', value: result });
+                            scope.toolInfo.editInfo.buildScript(scope.toolInfo.editInfo.currentForm);
+                            scope.toolInfo.editInfo.clearSelectedForm();
+                        }
+                    };
+                    commonServices.promptModal(promptInfo);
                 }
             };
         }]);

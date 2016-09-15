@@ -7,6 +7,7 @@ var LoanTekWidget;
             var lth = LoanTekWidgetHelper;
             var ltbh = new LoanTekWidget.BuilderHelpers();
             var el = lth.CreateElement();
+            var ngModelOptions = { updateOn: 'default blur', debounce: { default: 1000, blur: 0 } };
             $('input textarea').placeholder();
             var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
             if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
@@ -16,6 +17,7 @@ var LoanTekWidget;
                 widgetObj.widgetType = lth.widgetType.rate.id;
             }
             else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
+                widgetObj.fieldHelperType = 'depositFields';
                 widgetObj.widgetType = lth.widgetType.deposit.id;
                 widgetObj.allFieldsObject = lth.depositFields;
                 widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
@@ -23,6 +25,7 @@ var LoanTekWidget;
                 widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
             }
             else {
+                widgetObj.fieldHelperType = 'contactFields';
                 widgetObj.widgetType = lth.widgetType.contact.id;
                 widgetObj.allFieldsObject = lth.contactFields;
                 widgetObj.allFieldsOptionsArray = lth.contactFieldsArray;
@@ -66,6 +69,8 @@ var LoanTekWidget;
                         $scope.currentForm = JSON.parse(widgetData.modelWidget.ScriptText);
                         $scope.isExistingModel = true;
                     }
+                    $scope.ngModelOptions = ngModelOptions;
+                    $scope.fieldHelperType = angular.copy(widgetObj.fieldHelperType);
                     $scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
                     $scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
                     if (widgetObj.allResultFieldsObject) {
@@ -82,6 +87,10 @@ var LoanTekWidget;
                     $scope.FilterAvailableFields = FilterAvailableFields;
                     $scope.onDragStart = onDragStart;
                     $scope.onDrop = onDrop;
+                    $scope.FilterHiddenFormFields = FilterHiddenFormFields;
+                    $scope.FieldExtended = FieldExtended;
+                    $scope.UpdateWidget = UpdateWidget;
+                    $scope.RemoveField = RemoveField;
                     BuilderInit();
                     $scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length', 'currentForm.resultObject.fields.length'], function (newValue) {
                         for (var i = $scope.allFieldsOptionsArray.length - 1; i >= 0; i--) {
@@ -179,10 +188,59 @@ var LoanTekWidget;
                         $scope.currentForm[currentObject].fields.push(fieldToAdd);
                         $scope.WidgetScriptBuild($scope.currentForm);
                     }
-                    function FilterAvailableFields(value, index, array) {
+                    function FilterAvailableFields(field, index, fieldArray) {
                         var isInList = true;
-                        isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
+                        if (field.groupName) {
+                            for (var i = fieldArray.length - 1; i >= 0; i--) {
+                                var iField = fieldArray[i];
+                                if (field.groupName === iField.groupName && iField.isIncluded) {
+                                    isInList = false;
+                                }
+                            }
+                        }
+                        else {
+                            isInList = !field.hideFromList && !(!!field.isIncluded && !field.allowMultiples);
+                        }
                         return isInList;
+                    }
+                    function FilterHiddenFormFields(fieldObj, index, fieldArray) {
+                        var isHiddenField = false;
+                        var fOption = widgetObj.allFieldsObject[fieldObj.field];
+                        if (fOption.fieldTemplate.element === 'input' && fOption.fieldTemplate.type === 'hidden') {
+                            isHiddenField = true;
+                        }
+                        return isHiddenField;
+                    }
+                    function FieldExtended(fieldObj, formObjectType, fieldObjectType) {
+                        var fIndex = $scope.currentForm[formObjectType].fields.indexOf(fieldObj);
+                        var fieldOpts = lth[fieldObjectType][fieldObj.field];
+                        var customFieldNameIndex = null;
+                        if (fieldOpts.id === 'customhidden') {
+                            fieldObj.attrs = fieldObj.attrs || [];
+                            customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs, 'name', 'data-lt-additional-info-key');
+                            if (customFieldNameIndex === -1) {
+                                fieldObj.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
+                                customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs, 'name', 'data-lt-additional-info-key');
+                            }
+                        }
+                        return { index: fIndex, fieldOptions: fieldOpts, additionalInfoIndex: customFieldNameIndex };
+                    }
+                    function RemoveField(index, formObjectType) {
+                        var confirmRemove = {
+                            confirmOptions: {
+                                title: 'Remove:',
+                                headerStyle: 'alert alert-danger',
+                                message: 'Are you sure you want to remove?'
+                            },
+                            onConfirm: function () {
+                                $scope.currentForm[formObjectType].fields.splice(index, 1);
+                                UpdateWidget();
+                            }
+                        };
+                        commonServices.confirmModal(confirmRemove);
+                    }
+                    function UpdateWidget() {
+                        WidgetScriptBuild($scope.currentForm);
                     }
                     function UsePrebuiltForm() {
                         $scope.selectedForm = $scope.selectedForm || $scope.widgetObject.prebuiltForms[0];

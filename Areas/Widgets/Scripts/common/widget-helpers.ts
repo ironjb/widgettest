@@ -39,6 +39,7 @@ declare namespace LTWidget {
 interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
 interface IHelperNameId { id: string; name: string; }
 interface IHelperNameNumId { id: number; name: string; }
+interface IHelperNameValue { name: string; value: string; }
 
 interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHelperBsGridSizing; }
 interface IHelperBsInputSizing { sm: string; lg: string; }
@@ -48,6 +49,7 @@ interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; 
 interface IWidgetFieldOptions {
 	id?: string;
 	name: string;
+	groupName?: string;
 	isLTRequired?: boolean;
 	isIncluded?: boolean;
 	allowMultiples?: boolean;
@@ -73,6 +75,7 @@ interface IWidgetField {
 	alttext?: string;
 	tabindex?: number;
 	nsize?: number;
+	attrs?: IHelperNameValue[];
 
 	color?: string;
 	fontSize?: number;
@@ -115,7 +118,6 @@ namespace LoanTekWidget {
 		public depositResultDataFields: depositResultDataFields;
 		public contactFieldsArray: IWidgetFieldOptions[];
 		public postObjects: postObjects;
-		// public applyFormStyles: Function;
 
 		constructor(jq: JQueryStatic) {
 			this.$ = jq;
@@ -135,7 +137,6 @@ namespace LoanTekWidget {
 			this.depositResultFields = new depositResultFields();
 			this.depositResultDataFields = new depositResultDataFields();
 			this.postObjects = new postObjects();
-			// this.applyFormStyles = applyFormStyles;
 		}
 
 		isNumber(numCheck: any): boolean {
@@ -232,13 +233,11 @@ namespace LoanTekWidget {
 			if (this.isNumber(decimalPlaces)) {
 				var decimalPower = Math.pow(10, decimalPlaces);
 				n = Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
-				// window.console && console.log('n', n, decimalPower);
 			}
 
 			newNumber = n + '';
 
 			var decimalIndex = newNumber.indexOf('.');
-			// window.console && console.log('decimalIndex', decimalIndex);
 			var integerPart: string = '';
 			var decimalPart: string = '';
 
@@ -249,27 +248,22 @@ namespace LoanTekWidget {
 			} else {
 				integerPart = newNumber;
 			}
-			// window.console && console.log('intPart', integerPart, 'decPart', decimalPart);
 
 			// Add extra zeros at end
 			while (decimalPlaces && decimalPart.length < decimalPlaces + 1) {
 				decimalPart += '0';
-				// window.console && console.log('decimalPart', decimalPart);
 			}
 
 			// Add commas in number
 			var startIndex = 0;
 			var commaIndex = (integerPart.length % 3);
 			var integerPartArray: string[] = [];
-			// window.console && console.log('commaIndex', commaIndex);
 
 			if (commaIndex > startIndex) {
 				do {
-					// window.console && console.log('from/to', startIndex, commaIndex);
 					integerPartArray.push(integerPart.substring(startIndex, commaIndex));
 					startIndex = commaIndex;
 					commaIndex += 3;
-					// window.console && console.log('commaIndex < integerPart.length', commaIndex, '<', integerPart.length);
 				} while (commaIndex <= integerPart.length)
 
 				if (integerPartArray.length > 0) {
@@ -277,7 +271,6 @@ namespace LoanTekWidget {
 				}
 			}
 
-			// window.console && console.log('intPartArray', integerPartArray);
 
 			return integerPart + decimalPart;
 		}
@@ -475,7 +468,6 @@ namespace LoanTekWidget {
 		public h4: IHelperNameNumId;
 		public h5: IHelperNameNumId;
 		public h6: IHelperNameNumId;
-		// public default: IHelperNameNumId;
 		constructor() {
 			this.h1 = { id: 1, name: 'Heading 1' };
 			this.h2 = { id: 2, name: 'Heading 2' };
@@ -483,7 +475,6 @@ namespace LoanTekWidget {
 			this.h4 = { id: 4, name: 'Heading 4' };
 			this.h5 = { id: 5, name: 'Heading 5' };
 			this.h6 = { id: 6, name: 'Heading 6' };
-			// this.default = this.h4;
 		}
 
 		getDefault(): IHelperNameNumId {
@@ -632,6 +623,7 @@ namespace LoanTekWidget {
 		submit: IWidgetFieldOptions;
 		nodatamessage: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
+		customhidden: IWidgetFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
@@ -641,12 +633,11 @@ namespace LoanTekWidget {
 			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
 			this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
 			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text', cssClass: 'lt-custom-input' } };
+			this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden', cssClass: 'lt-custom-input' } };
 		}
 	}
 
 	class contactFields {
-		clientid: IWidgetFieldOptions;
-		userid: IWidgetFieldOptions;
 		firstname: IWidgetFieldOptions;
 		lastname: IWidgetFieldOptions;
 		email: IWidgetFieldOptions;
@@ -662,10 +653,9 @@ namespace LoanTekWidget {
 		paragraph: IWidgetFieldOptions;
 		hr: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
+		customhidden: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
-			// this.clientid = { id: 'clientid', name: 'Client ID', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwClientId', value: 'ClientId###' } };
-			// this.userid = { id: 'userid', name: 'User Id', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwUserId', value: 'UserId###' } };
 			this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
 			this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwLastName', placeholder: 'Last Name', required: true } };
 			this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
@@ -679,9 +669,9 @@ namespace LoanTekWidget {
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
-			//this.spacer
 			this.hr = sf.hr;
-			// this.custominput = sf.custominput;
+			this.custominput = sf.custominput;
+			this.customhidden = sf.customhidden;
 
 			helpers.prototype.SetRequiredFields(this);
 		}
@@ -698,18 +688,22 @@ namespace LoanTekWidget {
 		title: IWidgetFieldOptions;
 		paragraph: IWidgetFieldOptions;
 		hr: IWidgetFieldOptions;
+		custominput: IWidgetFieldOptions;
+		customhidden: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
-			this.depositterm = { id: 'depositterm', name: 'Term [textbox]', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
-			this.deposittermdd = { id: 'deposittermdd', name: 'Term [dropdown]', fieldTemplate: { element: 'select', type: 'deposittermdd', id: 'ltwDepositTerm', placeholder: 'Select a Term'} };
-			this.depositamount = { id: 'depositamount', name: 'Amount [textbox]', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
-			this.depositamountdd = { id: 'depositamountdd', name: 'Amount [dropdown]', fieldTemplate: { element: 'select', type: 'depositamountdd', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
+			this.depositterm = { id: 'depositterm', name: 'Term [textbox]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
+			this.deposittermdd = { id: 'deposittermdd', name: 'Term [dropdown]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'select', type: 'deposittermdd', id: 'ltwDepositTerm', placeholder: 'Select a Term'} };
+			this.depositamount = { id: 'depositamount', name: 'Amount [textbox]', groupName: 'depositamount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositAmount', placeholder: 'Enter Amount' } };
+			this.depositamountdd = { id: 'depositamountdd', name: 'Amount [dropdown]', groupName: 'depositamount', isLTRequired: true, fieldTemplate: { element: 'select', type: 'depositamountdd', id: 'ltwDepositAmount', placeholder: 'Select Amount' } };
 			this.submit = sf.submit;
 			this.captcha = sf.captcha;
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
+			this.custominput = sf.custominput;
+			this.customhidden = sf.customhidden;
 
 			helpers.prototype.SetRequiredFields(this);
 		}
@@ -774,9 +768,8 @@ namespace LoanTekWidget {
 	}
 
 	class postObjects {
-		// public contact: LoanTekWidget.PostObject_Contact
 		constructor() {
-			// this.contact = new LoanTekWidget.PostObject_Contact;
+			//
 		}
 
 		contact(): LoanTekWidget.PostObject_Contact {
@@ -795,9 +788,7 @@ namespace LoanTekWidget {
 		private _lth: LoanTekWidget.helpers;
 
 		constructor(lth: LoanTekWidget.helpers, currentBuildObject: LTWidget.IBuildOptions, excludeCaptchaField?: boolean, specifier?: string) {
-			// window.console && console.log('applyformstyles cbo: ', currentBuildObject);
 			var _thisC = this;
-			// var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
 			specifier = specifier || '.' + lth.defaultFormSpecifierClass;
 			_thisC._specifier = specifier;
 			_thisC._borderType = currentBuildObject.formBorderType;

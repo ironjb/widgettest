@@ -12,7 +12,8 @@ var LoanTekWidget;
                 QuotingChannelType: 0,
                 Amount: null,
                 TermInMonths: null,
-                CustomData: null
+                CustomData: null,
+                CustomFields: null
             };
             this.CustomQuoteResponseJson = null;
         }

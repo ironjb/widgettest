@@ -10,7 +10,8 @@ namespace LoanTekWidget {
 			QuotingChannelType: number;
 			Amount: number;
 			TermInMonths: number;
-			CustomData: any;
+			CustomData: { Name: string; Value: string; }[];
+			CustomFields: any[];
 		};
 		CustomQuoteResponseJson: any;
 		constructor() {
@@ -24,7 +25,8 @@ namespace LoanTekWidget {
 				QuotingChannelType: 0,
 				Amount: null,
 				TermInMonths: null,
-				CustomData: null
+				CustomData: null,
+				CustomFields: null
 			};
 			this.CustomQuoteResponseJson = null;
 		}

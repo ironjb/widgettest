@@ -164,3 +164,10 @@ input.ng-invalid.ng-dirty {
 		}
 	}
 }*/
+/* ADDED BY ERIC @ 8/26/16 resize the h1 and h2 titles */
+h1 {
+  font-size: 26px;
+}
+h2 {
+  font-size: 20px;
+}

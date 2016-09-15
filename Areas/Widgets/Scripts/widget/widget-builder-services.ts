@@ -15,14 +15,9 @@ interface IFormEditOptions {
 
 interface IFormEditModalInstanceOptions {
 	currentBuildObject: LTWidget.IBuildOptions;
-	// currentForm?: IWidgetFormObject;
-
-	// buildObject | resultObject
-	// formObjectType?: string;
 }
 
 interface IWidgetEditFormNgScope extends ng.IScope {
-	// modForm: IWidgetFormObject;
 	modBuildOptions: LTWidget.IBuildOptions;
 	isBorderTypeNone: boolean;
 	isBorderTypePanel: boolean;
@@ -60,8 +55,8 @@ interface IWidgetEditFieldNgScope extends ng.IScope {
 	buttonSizeClass: string;
 	previewStyles: string;
 	valuePlaceholder: string;
+	customFieldKeyValue: string;
 	fieldStyle: IWidgetFieldStyle;
-	// modForm: IWidgetFormObject;
 	modBuildObject: LTWidget.IBuildOptions
 	modField: IWidgetField;
 	fieldOptions: IWidgetFieldOptions;
@@ -84,7 +79,6 @@ interface IWidgetEditFieldNgScope extends ng.IScope {
 }
 
 interface IWidgetEditRepeatFieldNgScope extends ng.IScope {
-	// modForm: IWidgetFormObject;
 	modBuildObject: IWidgetFormBuildObject;
 	modelOptions: Object;
 	modField: IWidgetField;
@@ -101,7 +95,6 @@ interface IWidgetEditRepeatFieldNgScope extends ng.IScope {
 	onDragStart: IWidgetOnDragStart;
 	dragData?: IWidgetOnDragStartData;
 	onDrop?: IWidgetOnDrop;
-	// setCurrentRepeatForm?(currentRepeatForm: IWidgetFormObject): void;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -131,8 +124,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 			var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFormNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFormEditModalInstanceOptions) {
 
-				// $scope.modForm = angular.copy(instanceOptions.currentForm);
-				// $scope.modBuildOptions = $scope.modForm[instanceOptions.formObjectType];
 				$scope.modBuildOptions = angular.copy(instanceOptions.currentBuildObject);
 				$scope.borderType = angular.copy(lth.formBorderType);
 				$scope.formWidthUnits = angular.copy(lth.widthUnit);
@@ -221,8 +212,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 				$scope.saveClick = () => {
 					var newBuildOptions: LTWidget.IBuildOptions = angular.copy($scope.modBuildOptions);
-					// var newForm: IWidgetFormObject = angular.copy($scope.modForm);
-					// newForm.name = 'modified';
 
 					if (!lth.isNumber(newBuildOptions.formBorderRadius) || newBuildOptions.formBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
 						delete newBuildOptions.formBorderRadius;
@@ -270,7 +259,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						delete newBuildOptions.formBorderColor;
 					}
 
-					// newForm[instanceOptions.formObjectType] = newBuildOptions;
 					$uibModalInstance.close(newBuildOptions);
 				};
 
@@ -311,11 +299,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				var ft = instanceOptions.fieldOptions.fieldTemplate;
 				var el = ft.element;
 				var ty = ft.type;
+				var customFieldNameIndex: number = null;
 				$scope.fieldOptions = instanceOptions.fieldOptions;
 				$scope.previewStyles = previewStyles;
 				$scope.gridColumnsArray = lth.bootstrap.gridColumns.asArray();
 				$scope.offsetColumnsArray = lth.bootstrap.offsetColumns.asArray();
 				$scope.headingArray = lth.hsize.asArray();
+				$scope.modField.attrs = $scope.modField.attrs || [];
 
 				if (!$scope.modField.size && $scope.modBuildObject.fieldSize) {
 					$scope.modField.size = $scope.modBuildObject.fieldSize;
@@ -341,6 +331,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					$scope.valuePlaceholder = $scope.fieldOptions.fieldTemplate.value + '' || '';
 				} else if (el === 'input' && ['text','number'].indexOf(ty) !== -1) {
 					$scope.valuePlaceholder = 'Enter default value';
+				}
+
+				if ($scope.modField.field === 'custominput') {
+					customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs,'name', 'data-lt-additional-info-key');
+					if (customFieldNameIndex !== -1) {
+						$scope.customFieldKeyValue = $scope.modField.attrs[customFieldNameIndex].value;
+					} else {
+						$scope.modField.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
+						customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs,'name', 'data-lt-additional-info-key');
+					}
 				}
 
 				$scope.fieldSizeChange = function () {
@@ -410,7 +410,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.removeFieldItem = function (itemName) { widgetMethods.removeFieldItem($scope.modField, itemName); };
 
 				$scope.saveClick = function () {
-					// window.console && console.log('modField', $scope.modField);
 					if ($scope.modField.cols === lth.bootstrap.gridColumns.getDefault().id) {
 						delete $scope.modField.cols;
 					}
@@ -452,10 +451,14 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if (!lth.isNumber($scope.modField.borderRadius)) {
 						delete $scope.modField.borderRadius;
 					}
-					// var newForm: IWidgetFormObject = angular.copy($scope.modForm);
-					// $uibModalInstance.close(newForm);
+					if (lth.isNumber(customFieldNameIndex) && customFieldNameIndex !== -1) {
+						window.console && console.log('apply customFieldKeyValue:', $scope.customFieldKeyValue, ' index: ', customFieldNameIndex);
+						$scope.modField.attrs[customFieldNameIndex].value = $scope.customFieldKeyValue;
+					}
+					if ($scope.modField.attrs.length === 0) {
+						delete $scope.modField.attrs;
+					}
 					var newBuildObject: IWidgetFormObject = angular.copy($scope.modBuildObject);
-					// window.console && console.log('newBuildObject', newBuildObject);
 					$uibModalInstance.close(newBuildObject);
 				};
 
@@ -486,21 +489,15 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			var modalCtrl: [string | Function];
 			var settings: IFieldEditOptions = { modalSize: 'lg' };
 			angular.extend(settings, options);
-			// window.console && console.log('editRepeatField service... settings: ', settings);
-
-			// settings.instanceOptions.fieldOptions = settings.fieldOptions;
 
 			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function($scope: IWidgetEditRepeatFieldNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFieldEditModalInstanceOptions) {
 				$scope.modelOptions = ngModelOptions;
-				// $scope.modForm = angular.copy(instanceOptions.currentForm);
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
 				$scope.addField = addField;
 				$scope.onDragStart = onDragStart;
 				$scope.onDrop = onDrop;
-				// $scope.setCurrentRepeatForm = setCurrentRepeatForm;
 				$scope.buildDisplay = buildDisplay;
-				// window.console && console.log('\n\neditRepeatField service modelInstance');
 
 				var buildTool = new LoanTekWidget.BuildTools(lth);
 				var el = lth.CreateElement();
@@ -509,7 +506,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
 				$scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
 
-				// fakeData = { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100, CompoundInterestType: 'Quarterly', BaseRate: 1.7500, FinalRate: 1.7400 };
 				fakeData = lth.FakeData().deposit;
 
 				// Initialize display
@@ -528,8 +524,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					var dataFormEditOptions: IFormEditOptions = {
 						instanceOptions: {
 							currentBuildObject: $scope.modField.fieldListOptions
-							// currentForm: angular.copy($scope.modForm)
-							// , formObjectType: 'fieldListOptions'
 						}
 						, saveForm: function (updatedBuildObject: IWidgetFormBuildObject) {
 							$scope.modField.fieldListOptions = updatedBuildObject;
@@ -540,11 +534,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				function addField(fieldId: string) {
-					// channel = channel || 'repeat';
-					// var currentObject = (channel === 'result')? 'resultObject': 'buildObject';
-					// var fieldToAdd = { field: $scope.allFieldsObject[fieldId].id };
-					// $scope.currentForm[currentObject].fields.push(fieldToAdd);
-					// $scope.WidgetScriptBuild($scope.currentForm);
 					var fieldToAdd: Object = { field: $scope.allRepeatDataFieldsObject[fieldId].id };
 					$scope.modField.fieldListOptions.fields.push(fieldToAdd);
 					$scope.buildDisplay();
@@ -573,25 +562,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						if (columns) {
 							$scope.modField.fieldListOptions.fields[dropIndex].cols = columns;
 						}
-						// window.console && console.log('onDrop from EditRepeatField');
+
 						$scope.buildDisplay();
 					} else {
 						window.console && console.error('EditRepeatField Error: No Data Passed from Draggable!!');
 					}
 				}
 
-				// function setCurrentRepeatForm(currentRepeatForm: IWidgetFormObject) {
-				// 	window.console && console.log('setCurrentRepeatForm... currentRepeatForm', currentRepeatForm);
-				// }
-
 				function buildDisplay () {
 					$scope.editFieldData = {
 						widgetTypeLower: instanceOptions.fieldOptions.id.toLowerCase()
-						// , currentBuildObject: $scope.modBuildObject
 						, currentForm: $scope.modBuildObject.fields[instanceOptions.currentFieldIndex]			// should be depositdatalist field which contains 'fieldListOptions' instead of 'buildObject' and 'resultObject'
 						, clearSelectedForm: ()=>{}																// not sure this needs to happen at this level???
 						, onDragStart: $scope.onDragStart														//
-						// , setCurrentForm: $scope.setCurrentRepeatForm										// (update: does not need to do anything... see below)should be used to set the datadepositlist field (similar to setting currentform)
 						, setCurrentForm: ()=>{}																// does not need to do anything here
 						, buildScript: $scope.buildDisplay														// should be used to run buildDisplay
 					};
@@ -609,7 +592,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 					$scope.previewDataFieldStyles = previewDataFieldStyles;
 
-					// window.console && console.log('resultForm', resultForm);
 					$scope.repeatFormDisplay = resultForm.html();
 				};
 			}];
@@ -626,7 +608,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			});
 
 			modalInstance.result.then(function (result) {
-				// window.console && console.log('modalInstance result then save');
 				settings.saveForm(result);
 			}, function (error) {
 				//

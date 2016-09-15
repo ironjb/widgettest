@@ -145,3 +145,6 @@ textarea {
   opacity: 0;
   filter: alpha(opacity=0);
 }
+footer {
+  text-align: center;
+}

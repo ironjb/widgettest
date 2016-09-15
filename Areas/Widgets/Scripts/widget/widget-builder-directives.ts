@@ -1,5 +1,15 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
+
+declare namespace IWidgetDirectives {
+	interface AssignAdditionalInfoKey extends ng.IScope {
+		toolInfo: {
+			fieldIndex: number;
+			editInfo: IWidgetEditFormInfo;
+		}
+	}
+}
+
 interface IWidgetDirectiveFormEditToolNgScope extends ng.IScope {
 	EditWidgetForm?(): void;
 	toolInfo: IWidgetEditFormInfo;
@@ -21,16 +31,12 @@ interface IWidgetDirectiveFieldEditToolNgScope extends ng.IScope {
 
 interface IFieldEditOptions {
 	modalSize?: string;
-	// fieldType?: string;
-	// fieldOptions?: IWidgetFieldOptions;
 	instanceOptions?: IFieldEditModalInstanceOptions;
 	saveForm?(updatedBuildObject: IWidgetFormBuildObject): void;
 }
 
 interface IFieldEditModalInstanceOptions {
-	// fieldType?: string;
 	fieldOptions?: IWidgetFieldOptions;
-	// currentForm: IWidgetFormObject;
 	currentBuildObject: IWidgetFormBuildObject;
 	currentFieldIndex?: number;
 	formObjectType?: string;
@@ -62,14 +68,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			// , templateUrl: 'http://localhost:58477/Widgets/Home/AngularTemplates/modalEditForm?t=' + new Date().getTime()
 			, templateUrl: 'template/widgetFormEditButton.html'
 			, link: function (scope: IWidgetDirectiveFormEditToolNgScope, elem, attrs) {
-				// window.console && console.log('scope.toolInfo', scope.toolInfo);
 				var currentBuildObj: IWidgetFormBuildObject = angular.copy(scope.toolInfo.currentForm[scope.toolInfo.formObjectType]);
 				scope.EditWidgetForm = function () {
 					var formEditOptions: IFormEditOptions = {
 						instanceOptions: {
 							currentBuildObject: currentBuildObj
-							// currentForm: angular.copy(scope.toolInfo.currentForm)
-							// , formObjectType: scope.toolInfo.formObjectType
 						}
 						, saveForm: function (updatedBuildObject) {
 							scope.toolInfo.currentForm[scope.toolInfo.formObjectType] = updatedBuildObject;
@@ -77,9 +80,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 							scope.toolInfo.setCurrentForm(scope.toolInfo.currentForm);
 							scope.toolInfo.clearSelectedForm();
 							scope.toolInfo.buildScript(scope.toolInfo.currentForm);
-							// scope.toolInfo.setCurrentForm(updatedForm);
-							// scope.toolInfo.clearSelectedForm();
-							// scope.toolInfo.buildScript(updatedForm);
 						}
 					};
 					widgetServices.editForm(formEditOptions);
@@ -97,7 +97,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 			, templateUrl: 'template/widgetFieldEditButtons.html'
 			, link: (scope: IWidgetDirectiveFieldEditToolNgScope, elem, attrs) => {
-				// window.console && console.log('fieldedit tool... toolinfo: ', scope.toolInfo, 'fieldData', scope.fieldData);
 				scope.onDragStartDir = scope.fieldData.onDragStart;
 
 				scope.toolInfo.channel = scope.toolInfo.channel || 'form';
@@ -111,28 +110,10 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				}
 
 				scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
-				// window.console && console.log('currentFieldName', scope.currentFieldName);
-
-				// if (scope.fieldData.widgetTypeLower === 'quotewidget') {
-				// 	// get quotewidget fields
-				// } else if (scope.fieldData.widgetTypeLower === 'ratewidget') {
-				// 	// get ratewidget fields
-				// } else if (scope.fieldData.widgetTypeLower === 'depositwidget') {
-				// 	if (currentObject === 'resultObject') {
-				// 		scope.currentFieldOptions = lth.depositResultFields[scope.currentFieldName];
-				// 	} else {
-				// 		scope.currentFieldOptions = lth.depositFields[scope.currentFieldName];
-				// 	}
-				// } else {
-				// 	scope.currentFieldOptions = lth.contactFields[scope.currentFieldName];
-				// }
-				// window.console && console.log('currentForm', scope.fieldData.widgetTypeLower, scope.fieldData.currentForm);
-				// window.console && console.log('currentFieldOptions params... [widgetType]:', scope.fieldData.widgetTypeLower, '[fieldName]:', scope.currentFieldName, '[objectType]?:', currentObject);
 				scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
-				// window.console && console.log('currentFieldOptions is:', scope.currentFieldOptions);
 
 				scope.showRemove = false;
-				if (!scope.currentFieldOptions.isLTRequired) {
+				if (!scope.currentFieldOptions.isLTRequired || scope.currentFieldOptions.groupName) {
 					scope.showRemove = true;
 				}
 
@@ -151,18 +132,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				scope.EditWidgetField = () => {
-					// window.console && console.log('scope.toolInfo.channel', scope.toolInfo.channel);
-					// window.console && console.log('scoob', scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index]);
-					// window.console && console.log('currentFieldOptions', scope.currentFieldOptions);
 					var fieldEditOptions: IFieldEditOptions = {
 						instanceOptions: {
 							currentBuildObject: angular.copy(scope.fieldData.currentForm[currentObject])
-							// currentForm: angular.copy(scope.fieldData.currentForm)
 							, currentFieldIndex: scope.toolInfo.index
 							, formObjectType: currentObject
 							, fieldOptions: scope.currentFieldOptions
 						}
-						// , fieldOptions: scope.currentFieldOptions
 						, saveForm: function (updatedBuildObject: IWidgetFormBuildObject) {
 							scope.fieldData.currentForm[currentObject] = updatedBuildObject;
 							scope.fieldData.setCurrentForm(scope.fieldData.currentForm);
@@ -170,13 +146,39 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 							scope.fieldData.buildScript(scope.fieldData.currentForm);
 						}
 					};
-					// window.console && console.log('fieldEditOptions', fieldEditOptions);
 					if (scope.currentFieldOptions.fieldTemplate.element === 'repeat') {
 						widgetServices.editRepeatField(fieldEditOptions);
 					} else {
 						widgetServices.editField(fieldEditOptions);
 					}
 				};
+			}
+		};
+	}]);
+
+	widgetDirectives.directive('ltAssignAdditionalInfoKey', ['commonServices', function (commonServices: ICommonNgServices) {
+		return {
+			restrict: 'A'
+			, scope: {
+				toolInfo: '=ltAssignAdditionalInfoKey'
+			}
+			, link: function (scope: IWidgetDirectives.AssignAdditionalInfoKey, elem, attrs) {
+				var field: IWidgetField = scope.toolInfo.editInfo.currentForm[scope.toolInfo.editInfo.formObjectType].fields[scope.toolInfo.fieldIndex];
+				var promptInfo: CommonNgServices.IModalPromptInfo = {
+					promptSize: 'md'
+					, promptOptions: {
+						title: 'Enter a Name:'
+						, message: 'Please choose a Name for the Custom Input field:'
+						, promptTextRequired: true
+					}
+					, onOk: function (result) {
+						field.attrs = field.attrs || [];
+						field.attrs.push({ name: 'data-lt-additional-info-key', value: result });
+						scope.toolInfo.editInfo.buildScript(scope.toolInfo.editInfo.currentForm);
+						scope.toolInfo.editInfo.clearSelectedForm();
+					}
+				};
+				commonServices.promptModal(promptInfo);
 			}
 		};
 	}]);

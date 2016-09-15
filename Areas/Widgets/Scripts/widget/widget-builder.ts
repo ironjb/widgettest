@@ -1,6 +1,14 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
+declare namespace IWidgetBuilder {
+	interface IFieldExtended {
+		index: number;
+		fieldOptions: IWidgetFieldOptions;
+		additionalInfoIndex: number;
+	}
+}
+
 interface IWidgetModelData {
 	scriptsDomain?: string;
 	modelUrls?: string[];
@@ -41,20 +49,11 @@ interface IWidget {
 	allResultFieldsObject?: Object;
 	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 	prebuiltForms?: IWidgetFormObject[];
+	fieldHelperType?: string;
 }
 
 interface IWidgetFormObject {
 	name?: string;
-	// formWidth?: number;
-	// formWidthUnit?: string;
-	// formBg?: string;
-	// formBorderRadius?: number;
-	// formBorderColor?: string;
-	// formTitleColor?: string;
-	// formTitleBgColor?: string;
-	// formGroupSpacing?: number;
-	// formFieldBorderRadius?: number;
-	// formButtonBorderRadius?: number;
 	buildObject?: IWidgetFormBuildObject;
 	resultObject?: LTWidget.IResultBuildOptions;
 
@@ -87,7 +86,6 @@ interface IWidgetEditFormInfo {
 interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
 	currentForm?: IWidgetFormObject;
-	// currentBuildObject?: LTWidget.IBuildOptions;
 	clearSelectedForm?(): void;
 	onDragStart: IWidgetOnDragStart;
 	setCurrentForm?(currentForm: IWidgetFormObject): void;
@@ -95,6 +93,7 @@ interface IWidgetEditFieldData {
 }
 
 interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
+	ngModelOptions?: Object;
 	currentForm?: IWidgetFormObject;
 	currentFormStr?: string;
 	SaveWidget?(saveAsNew?: boolean): void;
@@ -102,12 +101,16 @@ interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 	UsePrebuiltForm?(): void;
 	UpdateWidgetDisplay?(): void;
 	WidgetScriptBuild?: IWidgetScriptBuildFunction;
+	UpdateWidget?(): void;
 	ClearSelectedForm?(): void;
 	SetCurrentForm?(currentForm: IWidgetFormObject): void;
 	FilterAvailableFields?(value, index, array): boolean;
+	RemoveField?(index: number, formObjectType: string): void;
 	addField?(fieldId: string, channel: string): void;
 	onDragStart?: IWidgetOnDragStart;
 	onDrop?: IWidgetOnDrop;
+	FilterHiddenFormFields?(value, index, array): boolean;
+	FieldExtended?(field: IWidgetField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended;
 	selectedForm?: IWidgetFormObject;
 	passedModelForm?: IWidgetModelDataModelWidget;
 	widgetObject?: IWidget;
@@ -118,14 +121,8 @@ interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 	editFormInfo?: IWidgetEditFormInfo;
 	editResultInfo?: IWidgetEditFormInfo;
 	editFieldData?: IWidgetEditFieldData;
-	// SetEditFormInfo?(formType: string): IWidgetEditFormInfo;
 	dragData?: IWidgetOnDragStartData;
 	isExistingModel?: boolean;
-
-	// allFieldsObject?: Object;
-	// allFieldsOptionsArray?: IWidgetFieldOptions[];
-	// allResultFieldsObject?: Object;
-	// allResultFieldsOptionsArray?: IWidgetFieldOptions[];
 }
 
 interface IWidgetScriptBuildFunction {
@@ -142,6 +139,7 @@ namespace LoanTekWidget {
 			var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
 			var ltbh: LoanTekWidget.BuilderHelpers = new LoanTekWidget.BuilderHelpers();
 			var el = lth.CreateElement();
+			var ngModelOptions = { updateOn: 'default blur', debounce: { default: 1000, blur: 0 } };
 
 			$('input textarea').placeholder();
 
@@ -154,12 +152,14 @@ namespace LoanTekWidget {
 				widgetObj.widgetType = lth.widgetType.rate.id;
 				// TODO: code for rate widget
 			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
+				widgetObj.fieldHelperType = 'depositFields';
 				widgetObj.widgetType = lth.widgetType.deposit.id;
 				widgetObj.allFieldsObject = lth.depositFields;
 				widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
 				widgetObj.allResultFieldsObject = lth.depositResultFields;
 				widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
 			} else {
+				widgetObj.fieldHelperType = 'contactFields';
 				widgetObj.widgetType = lth.widgetType.contact.id;
 				widgetObj.allFieldsObject = lth.contactFields;
 				widgetObj.allFieldsOptionsArray = lth.contactFieldsArray;
@@ -217,6 +217,8 @@ namespace LoanTekWidget {
 					$scope.isExistingModel = true;
 				}
 
+				$scope.ngModelOptions = ngModelOptions;
+				$scope.fieldHelperType = angular.copy(widgetObj.fieldHelperType);
 				$scope.allFieldsObject = angular.copy(widgetObj.allFieldsObject);
 				$scope.allFieldsOptionsArray = angular.copy(widgetObj.allFieldsOptionsArray);
 				if (widgetObj.allResultFieldsObject) {
@@ -234,7 +236,10 @@ namespace LoanTekWidget {
 				$scope.FilterAvailableFields = FilterAvailableFields;
 				$scope.onDragStart = onDragStart;
 				$scope.onDrop = onDrop;
-				// $scope.SetEditFormInfo = SetEditFormInfo;
+				$scope.FilterHiddenFormFields = FilterHiddenFormFields;
+				$scope.FieldExtended = FieldExtended;
+				$scope.UpdateWidget = UpdateWidget;
+				$scope.RemoveField = RemoveField;
 				BuilderInit();
 
 				$scope.$watchGroup(['currentForm', 'currentForm.buildObject.fields.length', 'currentForm.resultObject.fields.length'], (newValue) => {
@@ -342,10 +347,64 @@ namespace LoanTekWidget {
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 
-				function FilterAvailableFields(value, index, array): boolean {
+				function FilterAvailableFields(field: IWidgetFieldOptions, index: number, fieldArray: IWidgetFieldOptions[]): boolean {
 					var isInList = true;
-					isInList = !value.hideFromList && !(!!value.isIncluded && !value.allowMultiples);
+					if (field.groupName) {
+						for (var i = fieldArray.length - 1; i >= 0; i--) {
+							var iField: IWidgetFieldOptions = fieldArray[i];
+							if (field.groupName === iField.groupName && iField.isIncluded) {
+								isInList = false;
+							}
+						}
+					} else {
+						isInList = !field.hideFromList && !(!!field.isIncluded && !field.allowMultiples);
+					}
 					return isInList;
+				}
+
+				function FilterHiddenFormFields(fieldObj: IWidgetField, index: number, fieldArray: IWidgetField[]): boolean {
+					var isHiddenField: boolean = false;
+					var fOption: IWidgetFieldOptions = widgetObj.allFieldsObject[fieldObj.field];
+					if (fOption.fieldTemplate.element === 'input' && fOption.fieldTemplate.type === 'hidden') {
+						isHiddenField = true;
+					}
+					return isHiddenField;
+				}
+
+				function FieldExtended(fieldObj: IWidgetField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended {
+					var fIndex = $scope.currentForm[formObjectType].fields.indexOf(fieldObj);
+					var fieldOpts: IWidgetFieldOptions = lth[fieldObjectType][fieldObj.field];
+					var customFieldNameIndex: number = null;
+
+					if (fieldOpts.id === 'customhidden') {
+						fieldObj.attrs = fieldObj.attrs || [];
+						customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs,'name', 'data-lt-additional-info-key');
+						if (customFieldNameIndex === -1) {
+							fieldObj.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
+							customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs,'name', 'data-lt-additional-info-key');
+						}
+					}
+					return { index: fIndex, fieldOptions: fieldOpts, additionalInfoIndex: customFieldNameIndex };
+				}
+
+				function RemoveField(index: number, formObjectType: string) {
+					// Creates Confirm modal before removing. Removes field on affirmation.
+					var confirmRemove: CommonNgServices.IModalConfirmInfo = {
+						confirmOptions: {
+							title: 'Remove:'
+							, headerStyle: 'alert alert-danger'
+							, message: 'Are you sure you want to remove?'
+						}
+						, onConfirm: function() {
+							$scope.currentForm[formObjectType].fields.splice(index, 1);
+							UpdateWidget();
+						}
+					};
+					commonServices.confirmModal(confirmRemove);
+				}
+
+				function UpdateWidget() {
+					WidgetScriptBuild($scope.currentForm);
 				}
 
 				function UsePrebuiltForm() {
@@ -373,12 +432,10 @@ namespace LoanTekWidget {
 
 				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
 					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
-					// currentFormObj.resultObject.widgetType = widgetObj.widgetType;
 					if (currentFormObj.resultObject) {
 						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
-						// window.console && console.log('currentFormObj', currentFormObj);
 					}
-					// window.console && console.log('currentFormObj', currentFormObj, widgetData.modelWidget.WidgetType);
+
 					$scope.editFieldData = {
 						widgetTypeLower: widgetData.modelWidget.WidgetType.toLowerCase()
 						, currentForm: $scope.currentForm
@@ -396,13 +453,6 @@ namespace LoanTekWidget {
 						, buildScript: $scope.WidgetScriptBuild
 					};
 
-					// $scope.editResultInfo = {
-					// 	formObjectType: 'resultObject'
-					// 	, currentForm: $scope.currentForm
-					// 	, clearSelectedForm: $scope.ClearSelectedForm
-					// 	, setCurrentForm: $scope.SetCurrentForm
-					// 	, buildScript: $scope.WidgetScriptBuild
-					// };
 					$scope.editResultInfo = angular.copy($scope.editFormInfo);
 					$scope.editResultInfo.formObjectType = 'resultObject';
 
@@ -430,14 +480,6 @@ namespace LoanTekWidget {
 						wScript += cssLink;
 						wScriptDisplay += cssLink;
 					}
-
-					// // Add styles
-					// var styleWrap = '\n<style type="text/css">#{styles}\n</style>';
-					// formStyles = new ApplyFormStyles(cfo, !hasCaptchaField).getStyles();
-					// if (formStyles) {
-					// 	wScript += lth.Interpolate(styleWrap, { styles: formStyles });
-					// 	wScriptDisplay += lth.Interpolate(styleWrap, { styles: formStyles });
-					// }
 
 					// Add Widget Wrapper
 					var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';

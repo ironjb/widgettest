@@ -110,6 +110,9 @@ var LoanTekWidget;
                         $(settings.form_submit).prop('disabled', false);
                         return false;
                     }
+                    if (settings.AdditionalPostData) {
+                        $.extend(true, contactPostData, settings.AdditionalPostData);
+                    }
                     contactPostData.Persons[0].FirstName = $(settings.form_firstName).val();
                     contactPostData.Persons[0].LastName = $(settings.form_lastName).val();
                     contactPostData.Persons[0].ContactMethods[0].Address = $(settings.form_email).val();
@@ -121,9 +124,9 @@ var LoanTekWidget;
                     contactPostData.UserId = settings.userId;
                     contactPostData.Reason = $(settings.form_comments).val();
                     contactPostData.MiscData[0].Value = '';
-                    if (settings.AdditionalPostData) {
-                        $.extend(true, contactPostData, settings.AdditionalPostData);
-                    }
+                    $('.lt-custom-input').each(function (customIndex, elem) {
+                        contactPostData.MiscData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
+                    });
                     var request = $.ajax({
                         url: settings.postUrl,
                         method: 'POST',
@@ -170,6 +173,7 @@ var LoanTekWidget;
                 externalValidatorFunction: null,
                 userId: null,
                 clientId: null,
+                AdditionalPostData: null,
                 form_id: '#ltWidgetForm',
                 form_submit: '#ltwSubmit',
                 form_errorAnchor: 'ltwErrorAnchor',
@@ -209,11 +213,21 @@ var LoanTekWidget;
                         $(settings.form_submit).prop('disabled', false);
                         return false;
                     }
+                    if (settings.AdditionalPostData) {
+                        $.extend(true, depositPostData, settings.AdditionalPostData);
+                    }
                     depositPostData.UserId = settings.userId;
                     depositPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
                     depositPostData.DepositRequest.ForType = 130;
                     depositPostData.DepositRequest.TermInMonths = $(settings.form_term).val() * 1;
                     depositPostData.DepositRequest.Amount = $(settings.form_amount).val() * 1;
+                    if ($('.lt-custom-input').length > 0) {
+                        depositPostData.DepositRequest.CustomData = [];
+                    }
+                    $('.lt-custom-input').each(function (customIndex, elem) {
+                        depositPostData.DepositRequest.CustomData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
+                    });
+                    window.console && console.log('depositPostData', depositPostData);
                     var request = $.ajax({
                         url: settings.postUrl,
                         method: 'POST',
@@ -344,6 +358,7 @@ var LoanTekWidget;
             var remainingColSpace = 0;
             var isNextHidden = false;
             var fieldTemplate;
+            var addedAssignAddInfoKey = false;
             var el = lth.CreateElement();
             settings.widgetChannel = settings.widgetChannel || 'form';
             $.each(settings.fields, function (i, elementItem) {
@@ -361,6 +376,27 @@ var LoanTekWidget;
                 elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
                 isLastField = fieldIndex >= fieldsLength - 1;
                 isLabel = elementItem.element === 'label';
+                if (elementItem.field === 'custominput' && settings.showBuilderTools) {
+                    elementItem.attrs = elementItem.attrs || [];
+                    var custAdditionalInfoIndex = lth.GetIndexOfFirstObjectInArray(elementItem.attrs, 'name', 'data-lt-additional-info-key');
+                    if (!elementItem.attrs[custAdditionalInfoIndex] && !addedAssignAddInfoKey) {
+                        var editInfo;
+                        if (settings.widgetChannel === 'result') {
+                            editInfo = 'editResultInfo';
+                        }
+                        else {
+                            editInfo = 'editFormInfo';
+                        }
+                        for (var iAttrs = elementItem.attrs.length - 1; iAttrs >= 0; iAttrs--) {
+                            var attr = elementItem.attrs[iAttrs];
+                            if (attr.name === 'data-lt-assign-additional-info-key') {
+                                elementItem.attrs.splice(iAttrs, 1);
+                            }
+                        }
+                        elementItem.attrs.push({ name: 'data-lt-assign-additional-info-key', value: lth.Interpolate("{ fieldIndex: #{fi}, editInfo: #{eInfo} }", { fi: fieldIndex + '', eInfo: editInfo }) });
+                        addedAssignAddInfoKey = true;
+                    }
+                }
                 nextIndex = fieldIndex + 1;
                 do {
                     isNextHidden = settings.fields[nextIndex] && settings.fields[nextIndex].type === 'hidden';
@@ -459,7 +495,7 @@ var LoanTekWidget;
                                 .append(el.formGroup(elementItem.size).append(el.col().append(el.div().addClass('form-control-static bg-infox visible-on-hoverx').html('<!-- cols: ' + remainingColSpace + ' -->'))
                                 .attr('data-drop', 'true')
                                 .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\', #{space}, #{isPh})' }", { pdi: '' + fieldIndex, channel: settings.widgetChannel, space: remainingColSpace, isPh: 'true' }))
-                                .attr('data-jqyoui-options', "{accept: '.field-channel', hoverClass: 'on-drag-hover'}")
+                                .attr('data-jqyoui-options', lth.Interpolate("{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}", { channel: settings.widgetChannel }))
                                 .prepend(el.div().addClass('move-hover')))));
                         }
                     }
@@ -740,9 +776,6 @@ var LoanTekWidget;
                             break;
                     }
                 }
-                if (elementObj.field === 'custominput' && lth.isStringNullOrEmpty(elementObj.id)) {
-                    returnElement.attr('placeholder', 'NEEDS ID (please edit to add id)');
-                }
                 if (elementObj.pattern) {
                     returnElement.prop('pattern', elementObj.pattern);
                 }
@@ -769,6 +802,12 @@ var LoanTekWidget;
                             break;
                         default:
                             break;
+                    }
+                }
+                if (elementObj.attrs) {
+                    for (var iAttrs = elementObj.attrs.length - 1; iAttrs >= 0; iAttrs--) {
+                        var attr = elementObj.attrs[iAttrs];
+                        returnElement.attr(attr.name, attr.value);
                     }
                 }
             }

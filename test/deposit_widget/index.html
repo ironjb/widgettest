@@ -46,126 +46,151 @@
 	<div class="container">
 		<!-- START WIDGET INDEX CONTENT -->
 
-		<div data-ng-app="WidgetBuilderApp" data-ng-controller="WidgetBuilderController">
-			<a name="widgetTop"></a>
-			<h1>@Model.WidgetType.Description() Builder</h1>
-			<div class="row">
-				<div class="col-sm-4">
-					<form action="" class="form-horizontal">
-						<div class="row">
-							<div class="col-sm-12">
-								@if (Request.QueryString["viewtemplate"] == "true") {
-									<textarea class="form-control resize-vertical code-mono code-sm" rows="8">{{currentForm}}</textarea>
-								}
-								<!-- @*<pre style="white-space:pre-wrap;">{{currentFormStr}}</pre>
-								<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>*@ -->
-								<div class="panel panel-default">
-									<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
-										<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+<div data-ng-app="WidgetBuilderApp" data-ng-controller="WidgetBuilderController">
+	<a name="widgetTop"></a>
+	<h1 class="title">@Model.WidgetType.Description() Builder</h1>
+	<div class="row">
+		<div class="col-sm-4">
+			<form action="" class="form-horizontal">
+				<div class="row">
+					<div class="col-sm-12">
+						@if (Request.QueryString["viewtemplate"] == "true") {
+							<textarea class="form-control resize-vertical code-mono code-sm" rows="8">{{currentForm}}</textarea>
+						}
+						<!-- @*<pre style="white-space:pre-wrap;">{{currentFormStr}}</pre>
+						<textarea class="form-control resize-vertical" rows="8">{{currentForm}}</textarea>*@ -->
+						<div class="panel panel-default">
+							<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
+								<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+							</div>
+							<div data-uib-collapse="isCollapsedSaved">
+								<div class="panel-body">
+									<div class="form-group form-group-sm ng-hide" data-ng-show="isExistingModel">
+										<label for="WidgetName" class="control-label col-sm-12 text-left">Widget Name</label>
+										<div class="col-sm-12"><input type="text" class="form-control" id="WidgetName" name="WidgetName" data-ng-model="passedModelForm.Name" /></div>
 									</div>
-									<div data-uib-collapse="isCollapsedSaved">
-										<div class="panel-body">
-											<div class="form-group form-group-sm ng-hide" data-ng-show="isExistingModel">
-												<label for="WidgetName" class="control-label col-sm-12 text-left">Widget Name</label>
-												<div class="col-sm-12"><input type="text" class="form-control" id="WidgetName" name="WidgetName" data-ng-model="passedModelForm.Name" /></div>
-											</div>
-											<div class="form-group form-group-sm">
-												<div class="col-sm-12">
-													<button class="btn btn-xs btn-primary ng-hide" data-ng-click="SaveWidget();" type="button" data-ng-show="isExistingModel">save</button>
-													<button class="btn btn-xs btn-success" data-ng-click="SaveWidget(true);" type="button">save as new</button>
-													<button class="btn btn-xs btn-default ng-hide" data-ng-click="RevertWidget();" type="button" data-ng-show="isExistingModel">revert</button>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="panel panel-default">
-									<div class="panel-heading" data-ng-click="isCollapsedTemplates = !isCollapsedTemplates">
-										<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedTemplates &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-									</div>
-									<div data-uib-collapse="isCollapsedTemplates">
-										<div class="panel-body">
-											<div class="form-group form-group-sm">
-												<div class="col-sm-12">
-													<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltForm();" data-ng-model="selectedForm" data-ng-options="pform.name for pform in widgetObject.prebuiltForms"></select>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="panel panel-default">
-									<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
-										<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-									</div>
-									<div data-uib-collapse="isCollapsedAvailableFields">
-										<div class="panel-body">
-											<div class="list-group lt-no-bottom-margin">
-												<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
-													<div class="pull-right">
-														<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
-														<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
-														<a class="btn btn-default btn-xs btn-tool form-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
-														<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id, 'form');" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
-													</div>
-													<span data-ng-bind="aField.name"></span>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="panel panel-default" data-ng-show="allResultFieldsOptionsArray">
-									<div class="panel-heading" data-ng-click="isCollapsedAvailResultFields = !isCollapsedAvailResultFields">
-										<h3 class="panel-title">Result Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailResultFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-									</div>
-									<div data-uib-collapse="isCollapsedAvailResultFields">
-										<div class="panel-body">
-											<div class="list-group lt-no-bottom-margin">
-												<div class="list-group-item" data-ng-repeat="aResult in allResultFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
-													<div class="pull-right">
-														<span class="small text-danger" data-ng-show="!!aResult.isLTRequired &amp;&amp; !aResult.isIncluded">Required! &nbsp; </span>
-														<span class="small" data-ng-show="!aResult.allowMultiples &amp;&amp; !!aResult.isIncluded">Can only add once</span>
-														<a class="btn btn-default btn-xs btn-tool result-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aResult.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aResult.allowMultiples || !aResult.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
-														<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aResult.id, 'result');" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
-													</div>
-													<span data-ng-bind="aResult.name"></span>
-												</div>
-											</div>
+									<div class="form-group form-group-sm">
+										<div class="col-sm-12">
+											<button class="btn btn-xs btn-primary ng-hide" data-ng-click="SaveWidget();" type="button" data-ng-show="isExistingModel">save</button>
+											<button class="btn btn-xs btn-success" data-ng-click="SaveWidget(true);" type="button">save as new</button>
+											<button class="btn btn-xs btn-default ng-hide" data-ng-click="RevertWidget();" type="button" data-ng-show="isExistingModel">revert</button>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</form>
-				</div>
-				<div class="col-sm-8">
-					<div class="panel panel-default">
-						<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
-							<h3 class="panel-title">@Model.WidgetType.Description() Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-						</div>
-						<div data-uib-collapse="isCollapsedScriptCopy">
-							<div class="panel-body">
-								<form action="" class="form-horizontal">
-									<div class="form-group">
+						<div class="panel panel-default">
+							<div class="panel-heading" data-ng-click="isCollapsedTemplates = !isCollapsedTemplates">
+								<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedTemplates &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+							</div>
+							<div data-uib-collapse="isCollapsedTemplates">
+								<div class="panel-body">
+									<div class="form-group form-group-sm">
 										<div class="col-sm-12">
-											<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
+											<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltForm();" data-ng-model="selectedForm" data-ng-options="pform.name for pform in widgetObject.prebuiltForms"></select>
 										</div>
 									</div>
-								</form>
-								<!-- @using (Html.BeginForm("Demo", "Builder", FormMethod.Post, new { @target = "_blank" })) {
-									@Html.Hidden("script", "{{widgetScriptParse}}")
-									<button class="btn btn-default btn-sm" type="submit">Demo</button>
-								} -->
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-default">
+							<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
+								<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+							</div>
+							<div data-uib-collapse="isCollapsedAvailableFields">
+								<div class="panel-body">
+									<div class="list-group lt-no-bottom-margin">
+										<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
+											<div class="pull-right">
+												<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
+												<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
+												<a class="btn btn-default btn-xs btn-tool form-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="(showAddBtns = aField.allowMultiples || !aField.isIncluded) &amp;&amp; aField.id !== 'customhidden'"><span class="glyphicon glyphicon-move"></span></a>
+												<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id, 'form');" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+											</div>
+											<span data-ng-bind="aField.name"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-default" data-ng-show="allResultFieldsOptionsArray">
+							<div class="panel-heading" data-ng-click="isCollapsedAvailResultFields = !isCollapsedAvailResultFields">
+								<h3 class="panel-title">Result Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailResultFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+							</div>
+							<div data-uib-collapse="isCollapsedAvailResultFields">
+								<div class="panel-body">
+									<div class="list-group lt-no-bottom-margin">
+										<div class="list-group-item" data-ng-repeat="aResult in allResultFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
+											<div class="pull-right">
+												<span class="small text-danger" data-ng-show="!!aResult.isLTRequired &amp;&amp; !aResult.isIncluded">Required! &nbsp; </span>
+												<span class="small" data-ng-show="!aResult.allowMultiples &amp;&amp; !!aResult.isIncluded">Can only add once</span>
+												<a class="btn btn-default btn-xs btn-tool result-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aResult.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aResult.allowMultiples || !aResult.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
+												<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aResult.id, 'result');" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
+											</div>
+											<span data-ng-bind="aResult.name"></span>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-					<div class="row">
-						<div class="col-sm-12">
-							<div data-lt-compile-code="widgetScriptDisplay"></div>
-						</div>
+				</div>
+			</form>
+		</div>
+		<div class="col-sm-8">
+			<div class="panel panel-default">
+				<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
+					<h3 class="panel-title">@Model.WidgetType.Description() Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+				</div>
+				<div data-uib-collapse="isCollapsedScriptCopy">
+					<div class="panel-body">
+						<form action="" class="form-horizontal">
+							<div class="form-group">
+								<div class="col-sm-12">
+									<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
+								</div>
+							</div>
+						</form>
+						<!-- @using (Html.BeginForm("Demo", "Builder", FormMethod.Post, new { @target = "_blank" })) {
+							@Html.Hidden("script", "{{widgetScriptParse}}")
+							<button class="btn btn-default btn-sm" type="submit">Demo</button>
+						} -->
 					</div>
 				</div>
 			</div>
+			<div class="panel panel-default ng-hide" data-ng-show="filteredFields.length > 0">
+				<div class="panel-heading" data-ng-click="isCollapsedHidden = !isCollapsedHidden">
+					<h3 class="panel-title">Hidden Fields <span class="glyphicon pull-right" data-ng-class="isCollapsedHidden &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
+				</div>
+				<div data-uib-collapse="isCollapsedHidden">
+					<div class="panel-body">
+						<form class="form-horizontal">
+							<div class="list-group lt-no-bottom-margin">
+								<div class="list-group-item" data-ng-repeat="hField in filteredFields = (currentForm.buildObject.fields | filter: FilterHiddenFormFields)" data-ng-init="fieldExt = FieldExtended(hField, 'buildObject', fieldHelperType);">
+									<div class="row">
+										<div class="col-sm-3">
+											<div class="form-control-static input-sm">
+												<span data-ng-bind="fieldExt.fieldOptions.name"></span>
+											</div>
+										</div>
+										<div class="col-sm-3"><input type="text" class="form-control input-sm" data-ng-model="hField.attrs[fieldExt.additionalInfoIndex].value" data-ng-model-options="ngModelOptions" data-ng-change="UpdateWidget();" placeholder="Key name" /></div>
+										<div class="col-sm-3"><input type="text" class="form-control input-sm" data-ng-model="hField.value" data-ng-model-options="ngModelOptions" data-ng-change="UpdateWidget();" placeholder="Value of hidden field" /></div>
+										<div class="col-sm-3 text-right"><button class="btn btn-danger btn-sm" type="button" data-ng-click="RemoveField(fieldExt.index, 'buildObject');"><span class="glyphicon glyphicon-trash"></span></button></div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<div data-lt-compile-code="widgetScriptDisplay"></div>
+				</div>
+			</div>
 		</div>
+	</div>
+</div>
 
 		<!-- END WIDGET INDEX CONTENT -->
 	</div>
@@ -183,12 +208,12 @@
 	<script type="text/javascript" src="/Scripts/lib/angular/angular.min.js"></script>
 	<script type="text/javascript" src="/Scripts/lib/angular/angular-animate.min.js"></script>
 	<script type="text/javascript" src="/Scripts/lib/angular/angular-sanitize.min.js"></script>
-	<script type="text/javascript" src="/Scripts/lib/angular/angular-dragdrop.min.js"></script>
 	<script type="text/javascript" src="/Scripts/lib/angular/ui-bootstrap-tpls.min.js"></script>
-	<script type="text/javascript" src="/Scripts/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
 	<script type="text/javascript" src="/Scripts/common/ng/services.js"></script>
 	<script type="text/javascript" src="/Scripts/common/ng/directives.js"></script>
 
+	<script type="text/javascript" src="/Scripts/lib/angular/angular-dragdrop.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
 	<script type="text/javascript" src="/Areas/Widgets/Scripts/post-object/contact.js"></script>
 	<script type="text/javascript" src="/Areas/Widgets/Scripts/post-object/deposit.js"></script>
 	<script type="text/javascript" src="/Areas/Widgets/Scripts/common/widget-helpers.js"></script>
@@ -199,27 +224,33 @@
 	<script type="text/javascript" src="/Areas/Widgets/Scripts/widget/widget-builder.js"></script>
 
 	<script type="text/javascript">
-		var widgetModelData = {
-			scriptsDomain: 'https://localhost:8080'
-			, modelUrls: ["https://api.loantek.com/DEPOSIT-WIDGET-SUBMIT-URL-GOES-HERE"]
-			, modelWidget: {"WidgetTypeType":"DepositWidget","OwnerId":1940,"ClientId":5,"UserId":1940,"WidgetType":"DepositWidget","ScriptText":"ADD SCRIPT HERE"}
-			, widgetTemplates:
-[{
-	"WidgetTypeType": 3,
-	"OwnerId": 0,
-	"Id": 0,
-	"ClientId": 0,
-	"UserId": 0,
-	"WidgetType": "DepositWidget",
-	"Name": "template1.json",
-	"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\", \"value\": \"Deposit List\"},{\"field\": \"paragraph\", \"value\": \"explanation goes here if needed\"},{\"field\": \"depositdatalist\", \"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\", \"value\": \"repeater paragraph\"},{\"field\": \"api\", \"cols\": 4, \"value\": \"#{APY}%\"},{\"field\": \"totalinterestearned\", \"cols\": 4},{\"field\": \"amountplusinterest\", \"cols\": 4}]}}]}}",
-	// "ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\",\"value\": \"Deposit List\"}, {\"field\": \"paragraph\",\"value\": \"explanation goes here if needed\"}, {\"field\": \"depositdatalist\",\"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\",\"value\": \"repeater paragraph\"}, {\"field\": \"api\",\"cols\": 4,\"value\": \"#{APY}%\"}, {\"field\": \"totalinterestearned\",\"cols\": 4}, {\"field\": \"amountplusinterest\",\"cols\": 4}]}}, {\"field\": \"depositdatalist\",\"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\",\"value\": \"repeater paragraph\"}, {\"field\": \"api\",\"cols\": 4,\"value\": \"#{APY}%\"}, {\"field\": \"totalinterestearned\",\"cols\": 4}, {\"field\": \"amountplusinterest\",\"cols\": 4}]}}]}}",
-	"LastModifiedDate": "\/Date(1468004010208)\/",
-	"LastModifiedByUserID": null,
-	"Active": true
-}]
-		};
+	var widgetModelData = {
+		scriptsDomain: 'http://localhost:8080'
+		, modelUrls: ["http://clients-pricing-api-wa1.LoanTek.com/v1.0/Deposit/N05KN3YraUFwZ0Y5bWhKYjZEVGhIa0ZvWjlpWmljcXNMNjBrN05rUTg4SEZpL1BjUUNHNktzeDY5c3Rjb0E0c0FBPT01/ApyRequest"]
+		, modelWidget: {"WidgetTypeType":"DepositWidget","OwnerId":1940,"CreatedByUserName":"Joe Bell","LastUpdatedByUserName":"Joe Bell","Id":3,"ClientId":5,"UserId":1940,"WidgetType":"DepositWidget","Name":"Blue","ScriptText":"{\"name\":\"Blue\",\"buildObject\":{\"panelTitle\":\"Deposit Rates\",\"fields\":[{\"field\":\"depositterm\",\"cols\":6},{\"field\":\"depositamount\",\"cols\":6},{\"field\":\"custominput\",\"attrs\":[{\"name\":\"data-lt-additional-info-key\",\"value\":\"MyCustomInput\"}],\"placeholder\":\"Custom Input\"},{\"field\":\"submit\"},{\"field\":\"customhidden\",\"$$hashKey\":\"object:405\",\"attrs\":[{\"name\":\"data-lt-additional-info-key\",\"value\":\"MyCustomHidden\"}],\"value\":\"hiddenValue\"}],\"widgetType\":\"deposit\",\"formBorderType\":\"panel\",\"formBg\":\"#def\",\"formBorderColor\":\"#08f\",\"formBorderRadius\":0,\"formTitleColor\":\"#ddf\",\"formTitleBgColor\":\"#06d\",\"formGroupSpacing\":4,\"formFieldBorderRadius\":0,\"fieldSize\":\"sm\",\"formButtonBorderRadius\":0},\"resultObject\":{\"fieldSize\":\"sm\",\"fields\":[{\"field\":\"depositdatalist\",\"fieldListOptions\":{\"fields\":[{\"field\":\"label\",\"cols\":3,\"value\":\"APY\",\"fontSize\":16},{\"field\":\"api\",\"cols\":3,\"value\":\"#{APY}%\",\"color\":\"#5384bf\",\"fontSize\":16},{\"field\":\"label\",\"value\":\"Total Interest Earned\",\"cols\":3},{\"field\":\"totalinterestearned\",\"cols\":3,\"value\":\"$#{TotalInterestEarned}\",\"fontSize\":16,\"color\":\"#50be67\"},{\"field\":\"label\",\"cols\":3,\"value\":\"Base Rate\",\"fontSize\":16},{\"field\":\"baserate\",\"cols\":3,\"fontSize\":16,\"color\":\"#5384bf\"},{\"field\":\"label\",\"cols\":3,\"value\":\"Amount Plus Interest\"},{\"field\":\"amountplusinterest\",\"cols\":3,\"value\":\"$#{AmountPlusInterest}\",\"color\":\"#50be67\",\"fontSize\":16},{\"field\":\"label\",\"cols\":3,\"fontSize\":16,\"value\":\"Final Rate\"},{\"field\":\"finalrate\",\"cols\":3,\"fontSize\":16,\"color\":\"#5384bf\"}],\"fieldSize\":\"sm\",\"formBorderType\":\"panel\",\"formBg\":\"#def\",\"formBorderColor\":\"#08f\",\"formGroupSpacing\":2,\"formBorderRadius\":0}},{\"field\":\"nodatamessage\"}],\"widgetType\":\"deposit\"}}","LastModifiedDate":"2016-09-08T12:28:53.387","LastModifiedByUserID":1940,"Active":true}
+		, widgetTemplates: [{"WidgetTypeType":40,"OwnerId":0,"CreatedByUserName":"","LastUpdatedByUserName":"","Id":0,"ClientId":0,"UserId":0,"WidgetType":"DepositWidget","Name":"template1.json","ScriptText":"{\"name\": \"Default Deposit Widget\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\",\"cols\": 6}, {\"field\": \"depositamount\",\"cols\": 6}, {\"field\": \"submit\"}],\"widgetType\": \"deposit\"},\"resultObject\": {\"fieldSize\": \"sm\",\"fields\": [{\"field\": \"label\",\"cols\": 4,\"align\": \"left\",\"value\": \"APY\"}, {\"field\": \"label\",\"cols\": 4,\"align\": \"left\",\"value\": \"Amount Plus Interest\"}, {\"field\": \"label\",\"cols\": 4,\"align\": \"left\",\"value\": \"Total Interest Earned\"}, {\"field\": \"hr\",\"marginTopBottom\": 4}, {\"field\": \"nodatamessage\"}, {\"field\": \"depositdatalist\",\"fieldListOptions\": {\"fields\": [{\"field\": \"api\",\"cols\": 4,\"value\": \"#{APY}%\",\"color\": \"#5384bf\",\"fontSize\": 24}, {\"field\": \"amountplusinterest\",\"cols\": 4,\"value\": \"$#{AmountPlusInterest}\",\"color\": \"#50be67\",\"fontSize\": 24}, {\"field\": \"totalinterestearned\",\"cols\": 4,\"value\": \"$#{TotalInterestEarned}\",\"fontSize\": 24,\"color\": \"#50be67\"}, {\"field\": \"hr\",\"marginTopBottom\": 0}]}}],\"widgetType\": \"deposit\"}}","LastModifiedDate":"\/Date(1472171602736)\/","LastModifiedByUserID":null,"Active":true},{"WidgetTypeType":40,"OwnerId":0,"CreatedByUserName":"","LastUpdatedByUserName":"","Id":0,"ClientId":0,"UserId":0,"WidgetType":"DepositWidget","Name":"template2.json","ScriptText":"{\"name\": \"Deposit Widget 2\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"deposittermdd\",\"cols\": 6}, {\"field\": \"depositamountdd\",\"cols\": 6}, {\"field\": \"submit\"}],\"widgetType\": \"deposit\",\"formWidthUnit\": \"px\",\"formBorderType\": \"panel\",\"formWidth\": 500,\"formBg\": \"#def\",\"formBorderColor\": \"#08f\",\"formBorderRadius\": 0,\"formTitleColor\": \"#ddf\",\"formTitleBgColor\": \"#06d\",\"formGroupSpacing\": 4,\"formFieldBorderRadius\": 0,\"fieldSize\": \"sm\",\"formButtonBorderRadius\": 0},\"resultObject\": {\"fieldSize\": \"sm\",\"fields\": [{\"field\": \"nodatamessage\"}, {\"field\": \"depositdatalist\",\"fieldListOptions\": {\"fields\": [{\"field\": \"label\",\"cols\": 3,\"value\": \"APY\",\"fontSize\": 16}, {\"field\": \"api\",\"cols\": 3,\"value\": \"#{APY}%\",\"color\": \"#5384bf\",\"fontSize\": 16}, {\"field\": \"label\",\"cols\": 3,\"value\": \"Amount Plus Interest\"}, {\"field\": \"amountplusinterest\",\"cols\": 3,\"value\": \"$#{AmountPlusInterest}\",\"color\": \"#50be67\",\"fontSize\": 20}, {\"field\": \"label\",\"cols\": 3,\"value\": \"Base Rate\",\"fontSize\": 16}, {\"field\": \"baserate\",\"cols\": 3,\"fontSize\": 16,\"color\": \"#5384bf\"}, {\"field\": \"label\",\"value\": \"Total Interest Earned\",\"cols\": 3}, {\"field\": \"totalinterestearned\",\"cols\": 3,\"value\": \"$#{TotalInterestEarned}\",\"fontSize\": 20,\"color\": \"#50be67\"}, {\"field\": \"label\",\"cols\": 3,\"fontSize\": 16,\"value\": \"Final Rate\"}, {\"field\": \"finalrate\",\"cols\": 3,\"fontSize\": 16,\"color\": \"#5384bf\"}],\"fieldSize\": \"sm\",\"formBorderType\": \"panel\",\"formBg\": \"#def\",\"formBorderColor\": \"#08f\",\"formGroupSpacing\": 2,\"formBorderRadius\": 0}}],\"widgetType\": \"deposit\",\"formWidthUnit\": \"px\",\"formWidth\": 500}}","LastModifiedDate":"\/Date(1472171672040)\/","LastModifiedByUserID":null,"Active":true}] };
 		var wbuilder = new LoanTekWidget.WidgetBuilder(jQuery, widgetModelData);
+		// var widgetModelData = {
+		// 	scriptsDomain: 'https://localhost:8080'
+		// 	, modelUrls: ["https://api.loantek.com/DEPOSIT-WIDGET-SUBMIT-URL-GOES-HERE"]
+		// 	, modelWidget: {"WidgetTypeType":"DepositWidget","OwnerId":1940,"ClientId":5,"UserId":1940,"WidgetType":"DepositWidget","ScriptText":"ADD SCRIPT HERE"}
+		// 	, widgetTemplates:
+		// 		[{
+		// 			"WidgetTypeType": 3,
+		// 			"OwnerId": 0,
+		// 			"Id": 0,
+		// 			"ClientId": 0,
+		// 			"UserId": 0,
+		// 			"WidgetType": "DepositWidget",
+		// 			"Name": "template1.json",
+		// 			"ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\", \"value\": \"Deposit List\"},{\"field\": \"paragraph\", \"value\": \"explanation goes here if needed\"},{\"field\": \"depositdatalist\", \"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\", \"value\": \"repeater paragraph\"},{\"field\": \"api\", \"cols\": 4, \"value\": \"#{APY}%\"},{\"field\": \"totalinterestearned\", \"cols\": 4},{\"field\": \"amountplusinterest\", \"cols\": 4}]}}]}}",
+		// 			// "ScriptText": "{\"name\": \"basic deposit\",\"buildObject\": {\"panelTitle\": \"Deposit Rates\",\"fields\": [{\"field\": \"depositterm\"}, {\"field\": \"depositamount\"}, {\"field\": \"submit\"}]},\"resultObject\": {\"formBorderType\": \"panel\",\"fieldSize\": \"sm\",\"panelTitle\": \"my results panel title\",\"fields\": [{\"field\": \"title\",\"value\": \"Deposit List\"}, {\"field\": \"paragraph\",\"value\": \"explanation goes here if needed\"}, {\"field\": \"depositdatalist\",\"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\",\"value\": \"repeater paragraph\"}, {\"field\": \"api\",\"cols\": 4,\"value\": \"#{APY}%\"}, {\"field\": \"totalinterestearned\",\"cols\": 4}, {\"field\": \"amountplusinterest\",\"cols\": 4}]}}, {\"field\": \"depositdatalist\",\"fieldListOptions\": {\"formBorderType\": \"panel\",\"fields\": [{\"field\": \"paragraph\",\"value\": \"repeater paragraph\"}, {\"field\": \"api\",\"cols\": 4,\"value\": \"#{APY}%\"}, {\"field\": \"totalinterestearned\",\"cols\": 4}, {\"field\": \"amountplusinterest\",\"cols\": 4}]}}]}}",
+		// 			"LastModifiedDate": "\/Date(1468004010208)\/",
+		// 			"LastModifiedByUserID": null,
+		// 			"Active": true
+		// 		}]
+		// };
+		// var wbuilder = new LoanTekWidget.WidgetBuilder(jQuery, widgetModelData);
 	</script>
 </body>
 </html>

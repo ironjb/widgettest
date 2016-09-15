@@ -55,8 +55,8 @@
                 validatorType = validatorType || 'required';
                 var isInvalid = false;
                 var field = form[fieldName];
-                var isErrorPresentForType = field.$error[validatorType];
-                if (form.$submitted || field.$touched) {
+                var isErrorPresentForType = field ? field.$error[validatorType] : false;
+                if (form.$submitted || (field && field.$touched)) {
                     isInvalid = isErrorPresentForType || false;
                 }
                 return isInvalid;

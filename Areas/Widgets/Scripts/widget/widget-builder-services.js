@@ -165,11 +165,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         var ft = instanceOptions.fieldOptions.fieldTemplate;
                         var el = ft.element;
                         var ty = ft.type;
+                        var customFieldNameIndex = null;
                         $scope.fieldOptions = instanceOptions.fieldOptions;
                         $scope.previewStyles = previewStyles;
                         $scope.gridColumnsArray = lth.bootstrap.gridColumns.asArray();
                         $scope.offsetColumnsArray = lth.bootstrap.offsetColumns.asArray();
                         $scope.headingArray = lth.hsize.asArray();
+                        $scope.modField.attrs = $scope.modField.attrs || [];
                         if (!$scope.modField.size && $scope.modBuildObject.fieldSize) {
                             $scope.modField.size = $scope.modBuildObject.fieldSize;
                         }
@@ -190,6 +192,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         }
                         else if (el === 'input' && ['text', 'number'].indexOf(ty) !== -1) {
                             $scope.valuePlaceholder = 'Enter default value';
+                        }
+                        if ($scope.modField.field === 'custominput') {
+                            customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs, 'name', 'data-lt-additional-info-key');
+                            if (customFieldNameIndex !== -1) {
+                                $scope.customFieldKeyValue = $scope.modField.attrs[customFieldNameIndex].value;
+                            }
+                            else {
+                                $scope.modField.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
+                                customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs, 'name', 'data-lt-additional-info-key');
+                            }
                         }
                         $scope.fieldSizeChange = function () {
                             if ($scope.modField.size === lth.bootstrap.inputSizing.sm.id) {
@@ -296,6 +308,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                             if (!lth.isNumber($scope.modField.borderRadius)) {
                                 delete $scope.modField.borderRadius;
+                            }
+                            if (lth.isNumber(customFieldNameIndex) && customFieldNameIndex !== -1) {
+                                window.console && console.log('apply customFieldKeyValue:', $scope.customFieldKeyValue, ' index: ', customFieldNameIndex);
+                                $scope.modField.attrs[customFieldNameIndex].value = $scope.customFieldKeyValue;
+                            }
+                            if ($scope.modField.attrs.length === 0) {
+                                delete $scope.modField.attrs;
                             }
                             var newBuildObject = angular.copy($scope.modBuildObject);
                             $uibModalInstance.close(newBuildObject);
