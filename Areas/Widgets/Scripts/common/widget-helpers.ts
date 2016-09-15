@@ -247,6 +247,7 @@ namespace LoanTekWidget {
 				decimalPart = newNumber.substring(decimalIndex);
 			} else {
 				integerPart = newNumber;
+				decimalPart = '.';
 			}
 
 			// Add extra zeros at end
@@ -259,18 +260,19 @@ namespace LoanTekWidget {
 			var commaIndex = (integerPart.length % 3);
 			var integerPartArray: string[] = [];
 
-			if (commaIndex > startIndex) {
-				do {
+			do {
+				if (commaIndex !== 0) {
 					integerPartArray.push(integerPart.substring(startIndex, commaIndex));
-					startIndex = commaIndex;
-					commaIndex += 3;
-				} while (commaIndex <= integerPart.length)
-
-				if (integerPartArray.length > 0) {
-					integerPart =integerPartArray.join(',');
 				}
+				startIndex = commaIndex;
+				commaIndex += 3
+			} while (commaIndex <= integerPart.length)
+
+			if (integerPartArray.length > 0) {
+				integerPart =integerPartArray.join(',');
 			}
 
+			decimalPart = (decimalPart === '.') ? '' : decimalPart;
 
 			return integerPart + decimalPart;
 		}

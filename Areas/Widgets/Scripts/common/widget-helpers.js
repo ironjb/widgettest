@@ -115,6 +115,7 @@ var LoanTekWidget;
             }
             else {
                 integerPart = newNumber;
+                decimalPart = '.';
             }
             while (decimalPlaces && decimalPart.length < decimalPlaces + 1) {
                 decimalPart += '0';
@@ -122,16 +123,17 @@ var LoanTekWidget;
             var startIndex = 0;
             var commaIndex = (integerPart.length % 3);
             var integerPartArray = [];
-            if (commaIndex > startIndex) {
-                do {
+            do {
+                if (commaIndex !== 0) {
                     integerPartArray.push(integerPart.substring(startIndex, commaIndex));
-                    startIndex = commaIndex;
-                    commaIndex += 3;
-                } while (commaIndex <= integerPart.length);
-                if (integerPartArray.length > 0) {
-                    integerPart = integerPartArray.join(',');
                 }
+                startIndex = commaIndex;
+                commaIndex += 3;
+            } while (commaIndex <= integerPart.length);
+            if (integerPartArray.length > 0) {
+                integerPart = integerPartArray.join(',');
             }
+            decimalPart = (decimalPart === '.') ? '' : decimalPart;
             return integerPart + decimalPart;
         };
         helpers.prototype.ExtendWidgetFieldTemplate = function (eItem, templateName) {
