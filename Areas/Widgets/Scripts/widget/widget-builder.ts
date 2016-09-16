@@ -140,6 +140,7 @@ namespace LoanTekWidget {
 			var ltbh: LoanTekWidget.BuilderHelpers = new LoanTekWidget.BuilderHelpers();
 			var el = lth.CreateElement();
 			var ngModelOptions = { updateOn: 'default blur', debounce: { default: 1000, blur: 0 } };
+			// var unique
 
 			$('input textarea').placeholder();
 
@@ -465,13 +466,22 @@ namespace LoanTekWidget {
 					var wScriptDisplay: string = wScript;
 					var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
 					var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+					var unReplaceRegEx = /#un{[^\}]+}/g;
 					var formStyles = '';
+					var uniqueQualifierForm = lth.getUniqueQualifier('f');
+					var uniqueQualifierResult = lth.getUniqueQualifier('r');
 					cbod.showBuilderTools = true;
 					if (crod) {
 						crod.showBuilderTools = true;
 					}
 					cbo.postDOMCallback = '#fn{postDOMFunctions}';
 					cbod.postDOMCallback = '#fn{postDOMFunctions}';
+
+					cbo.uniqueQualifier = uniqueQualifierForm;
+					cbod.uniqueQualifier = uniqueQualifierForm;
+
+					cro.uniqueQualifier = uniqueQualifierResult;
+					crod.uniqueQualifier = uniqueQualifierResult;
 
 					// Add CSS files
 					for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
@@ -482,9 +492,9 @@ namespace LoanTekWidget {
 					}
 
 					// Add Widget Wrapper
-					var widgetWrapper = '\n<div id="ltWidgetWrapper"></div>';
+					var widgetWrapper = lth.Interpolate('\n<div id="ltWidgetWrapper_#{uniqueF}"></div>', { uniqueF: uniqueQualifierForm });
 					if (cro) {
-						widgetWrapper += '\n<div id="ltWidgetResultWrapper"></div>';
+						widgetWrapper += lth.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
 					}
 					wScript += widgetWrapper;
 					wScriptDisplay += widgetWrapper;
@@ -508,7 +518,7 @@ namespace LoanTekWidget {
 
 					// Captcha var
 					var captchaVar = `
-						var ltCap;`;
+						var ltCap#un{unique};`;
 					if (hasCaptchaField) {
 						mainScript += captchaVar;
 						mainScriptDisplay += captchaVar;
@@ -521,7 +531,7 @@ namespace LoanTekWidget {
 						};`;
 					if (hasCaptchaField) {
 						postDomCode += `
-							ltCap = new LoanTekCaptcha(ltjq);`;
+							ltCap#un{unique} = new LoanTekCaptcha(ltjq);`;
 					}
 					mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
 					mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
@@ -533,8 +543,8 @@ namespace LoanTekWidget {
 							#{validReturn}
 						};`;
 					if (hasCaptchaField) {
-						extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return ltCap.IsValidEntry();' });
-						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: `return ltCap.IsValidEntry() && false;` });
+						extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry();' });
+						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: `return ltCap#un{unique}.IsValidEntry() && false;` });
 					} else {
 						extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return true;' });
 						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: `return false;` });
@@ -544,9 +554,9 @@ namespace LoanTekWidget {
 
 					// Add buildObject to mainScript
 					var buildObjectWrap = `
-						var ltwbo = #{bow};`;
-					var cboString = JSON.stringify(cbo/*, null, 2*/);
-					var cbodString = JSON.stringify(cbod/*, null, 2*/);
+						var ltwbo#un{unique} = #{bow};`;
+					var cboString = JSON.stringify(cbo, null, 2);
+					var cbodString = JSON.stringify(cbod, null, 2);
 					mainScript += lth.Interpolate(buildObjectWrap, { bow: cboString });
 					mainScriptDisplay += lth.Interpolate(buildObjectWrap, { bow: cbodString });
 
@@ -576,7 +586,7 @@ namespace LoanTekWidget {
 					// }
 
 					var ltWidgetOptionsWrap = `
-						var ltwo = #{cwow};`;
+						var ltwo#un{unique} = #{cwow};`;
 					var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
 					var ltWidgetOptionsWithResultsObjDisplay = angular.copy(ltWidgetOptions);
 					if (cro) {
@@ -585,14 +595,16 @@ namespace LoanTekWidget {
 					if (crod) {
 						ltWidgetOptionsWithResultsObjDisplay.resultDisplayOptions = crod;
 					}
-					mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject) });
-					mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObjDisplay) });
+					mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject, null, 2) });
+					mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObjDisplay, null, 2) });
 
 					// Add Execution of Widget
 					var widgetBuildForm = `
-						var ltwfb = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo, ltwo);`;
+						var ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo#un{unique}, ltwo#un{unique});`;
 					mainScript += widgetBuildForm;
 					mainScriptDisplay += widgetBuildForm;
+
+					// window.console && console.log('mainscript?', mainScript);
 
 					mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
 					mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
@@ -605,6 +617,9 @@ namespace LoanTekWidget {
 						</script>`;
 					mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
 					mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
+
+					mainScript = lth.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
+					mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
 
 					// Add Main Script to rest of code
 					wScript += mainScript;

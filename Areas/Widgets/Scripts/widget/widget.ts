@@ -13,6 +13,7 @@ declare namespace LTWidget {
 		form_errorAnchor?: string;
 		form_errorMsgWrapper?: string;
 		form_errorMsg?: string;
+		uniqueQualifier?: string;
 
 		resultDisplayOptions?: IResultBuildOptions;
 	}
@@ -32,6 +33,7 @@ interface IWidgetFormBuildObject extends LTWidget.IBuildOptions {
 	errorMessageWrapperId?: string;
 	errrorMessageId?: string;
 	postDOMCallback?: any;
+	uniqueQualifier?: string;
 }
 
 interface IWidgetContactFunctionalityOptions {
@@ -79,6 +81,7 @@ namespace LoanTekWidget {
 				, panelTitle: null
 				, showBuilderTools: false
 				, fields: null
+				, uniqueQualifier: ''
 			};
 			$.extend(settings, options);
 
@@ -119,12 +122,12 @@ namespace LoanTekWidget {
 			var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 
 			var returnForm2 = buildTools.BuildFields(returnForm, settings);
-			var returnFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, false, '.' + lth.defaultFormSpecifierClass).getStyles();
+			var returnFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, false, '.' + lth.defaultFormSpecifierClass + '_' + settings.uniqueQualifier).getStyles();
 			if (returnFormStyles) {
 				returnForm2.prepend(el.style().html(returnFormStyles));
 			}
 
-			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass).empty().append(returnForm2);
+			var widgetWrapper = $('#' + settings.wrapperId + '_' + settings.uniqueQualifier).addClass('ltw ' + lth.defaultFormSpecifierClass + '_' + settings.uniqueQualifier).empty().append(returnForm2);
 			if (settings.showBuilderTools) {
 				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editFormInfo'));
 			}
@@ -151,30 +154,30 @@ namespace LoanTekWidget {
 
 		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: IWidgetContactFunctionalityOptions) {
 			var settings: IWidgetContactFunctionalityOptions = {
-				redirectUrl: null,
-				postUrl: null,
+				redirectUrl: null
+				, postUrl: null
 				// postUrl: 'https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/[authToken]',
 				// postUrl: '/widgets/home/angulartemplates/jsonSuccess',
-				successMessage: 'Thank you. You will be contacted shortly.',
-				externalValidatorFunction: null,
-				userId: null,
-				clientId: null,
-				AdditionalPostData: null,
+				, successMessage: 'Thank you. You will be contacted shortly.'
+				, externalValidatorFunction: null
+				, userId: null
+				, clientId: null
+				, AdditionalPostData: null
 
 				// Default form element IDs
-				form_id: '#ltWidgetForm',
-				form_firstName: '#ltwFirstName',
-				form_lastName: '#ltwLastName',
-				form_email: '#ltwEmail',
-				form_phone: '#ltwPhone',
-				form_company: '#ltwCompany',
-				form_state: '#ltwState',
-				form_comments: '#ltwComments',
-				form_submit: '#ltwSubmit',
-				form_successMessageWrapper: '#ltwSuccessMessageWrapper',
-				form_errorAnchor: 'ltwErrorAnchor',
-				form_errorMsgWrapper: '#ltwErrorMessageWrapper',
-				form_errorMsg: '#ltwErrorMessage',
+				, form_id: '#ltWidgetForm'
+				, form_firstName: '#ltwFirstName'
+				, form_lastName: '#ltwLastName'
+				, form_email: '#ltwEmail'
+				, form_phone: '#ltwPhone'
+				, form_company: '#ltwCompany'
+				, form_state: '#ltwState'
+				, form_comments: '#ltwComments'
+				, form_submit: '#ltwSubmit'
+				, form_successMessageWrapper: '#ltwSuccessMessageWrapper'
+				, form_errorAnchor: 'ltwErrorAnchor'
+				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
+				, form_errorMsg: '#ltwErrorMessage'
 			};
 			$.extend(settings, options);
 
@@ -412,6 +415,7 @@ namespace LoanTekWidget {
 				resultWrapperId: 'ltWidgetResultWrapper'
 				, noDataMessageWrapperId: 'ltwNoDataMessageWrapper'
 				, widgetChannel: 'result'
+				, uniqueQualifier: ''
 			};
 
 			lth.$.extend(_settings, options)
@@ -443,12 +447,12 @@ namespace LoanTekWidget {
 
 			var resultsForm = el.form();
 			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
-			var resultsFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass).getStyles();
+			var resultsFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass + '_' + settings.uniqueQualifier).getStyles();
 			if (resultsFormStyles) {
 				resultsForm2.prepend(el.style().html(resultsFormStyles));
 			}
 
-			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass).empty().append(resultsForm2);
+			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId + '_' + settings.uniqueQualifier).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass + '_' + settings.uniqueQualifier).empty().append(resultsForm2);
 			if (_thisM.settings.showBuilderTools) {
 				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editResultInfo'));
 			}

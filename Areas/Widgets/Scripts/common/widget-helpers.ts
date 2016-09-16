@@ -21,6 +21,7 @@ declare namespace LTWidget {
 		fieldHelperType?: string;
 		successMessageWrapperId?: string;
 		noDataMessageWrapperId?: string;
+		uniqueQualifier?: string;
 
 		formWidth?: number;
 		formWidthUnit?: string;
@@ -155,6 +156,42 @@ namespace LoanTekWidget {
 				rad = 6;
 			}
 			return rad;
+		}
+
+		getRandomInt(intMax?: number, intMin?: number): number {
+			var returnNumber: number = 0;
+			var defaultMax = 999999999;
+			var maxVal = Number.MAX_VALUE - 1 || Math.pow(2,53) - 1 || defaultMax;
+			intMax = intMax || defaultMax;
+			intMin = intMin || 0;
+
+			// Max should not be less than or equal to 0
+			if (intMax <= 0) { intMax = 1; }
+
+			// Max should not be too high or may cause problems
+			if (intMax > maxVal) { intMax = maxVal; }
+
+			// Min should not be less than 0
+			if (intMin < 0) { intMin = 0; }
+
+			// Min should be less than Max
+			if (intMin >= intMax) { intMin = intMax - 1; }
+
+			intMax = intMax - intMin;
+
+			returnNumber = Math.floor(Math.random() * (intMax + 1)) + intMin;
+			return returnNumber;
+		}
+
+		getDateTimeTicks(dateTime?: Date): number {
+			dateTime = dateTime || new Date();
+			return dateTime.getTime();
+		}
+
+		getUniqueQualifier(prefix?: string): string {
+			prefix = prefix || 'LT';
+			var ticks: string = this.getDateTimeTicks() + '';
+			return prefix + ticks.substring(ticks.length - 2, ticks.length) + this.getRandomInt(999, 1);
 		}
 
 		ConvertObjectToArray<T>(theObj: Object): T[] {

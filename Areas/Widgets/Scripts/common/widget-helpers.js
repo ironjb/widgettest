@@ -41,6 +41,37 @@ var LoanTekWidget;
             }
             return rad;
         };
+        helpers.prototype.getRandomInt = function (intMax, intMin) {
+            var returnNumber = 0;
+            var defaultMax = 999999999;
+            var maxVal = Number.MAX_VALUE - 1 || Math.pow(2, 53) - 1 || defaultMax;
+            intMax = intMax || defaultMax;
+            intMin = intMin || 0;
+            if (intMax <= 0) {
+                intMax = 1;
+            }
+            if (intMax > maxVal) {
+                intMax = maxVal;
+            }
+            if (intMin < 0) {
+                intMin = 0;
+            }
+            if (intMin >= intMax) {
+                intMin = intMax - 1;
+            }
+            intMax = intMax - intMin;
+            returnNumber = Math.floor(Math.random() * (intMax + 1)) + intMin;
+            return returnNumber;
+        };
+        helpers.prototype.getDateTimeTicks = function (dateTime) {
+            dateTime = dateTime || new Date();
+            return dateTime.getTime();
+        };
+        helpers.prototype.getUniqueQualifier = function (prefix) {
+            prefix = prefix || 'LT';
+            var ticks = this.getDateTimeTicks() + '';
+            return prefix + ticks.substring(ticks.length - 2, ticks.length) + this.getRandomInt(999, 1);
+        };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
             for (var key in theObj) {
