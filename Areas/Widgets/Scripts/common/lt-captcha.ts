@@ -1,13 +1,14 @@
 /// <reference path="../../../../Scripts/typings/jquery/jquery.d.ts" />
 interface ICaptchaSettings {
-	imgId: string;
-	inputId: string;
-	resetId: string;
-	errorMsgId: string;
-	backgroundClasses: string[];
-	fontClasses: string[];
-	characters: string;
-	characterLength: number;
+	imgId?: string;
+	inputId?: string;
+	resetId?: string;
+	errorMsgId?: string;
+	backgroundClasses?: string[];
+	fontClasses?: string[];
+	characters?: string;
+	characterLength?: number;
+	uniqueQualifier?: string;
 }
 
 class LoanTekCaptcha {
@@ -22,17 +23,25 @@ class LoanTekCaptcha {
 	constructor(cjq: JQueryStatic, options?: ICaptchaSettings) {
 		var _thisC = this;
 		var settings: ICaptchaSettings = {
-			imgId: 'ltCaptchaImg',
-			inputId: 'ltCaptchaInput',
-			resetId: 'ltCaptchaReset',
-			errorMsgId: 'ltCaptchaErrorMsg',
-			backgroundClasses: ['captcha01', 'captcha02', 'captcha03'],
-			// fontClasses: ['font01', 'font02', 'font03', 'font04', 'font05', 'font06', 'font07', 'font08', 'font09', 'font10', 'font11', 'font12', 'font13'],
-			fontClasses: ['alpha-sans', 'alpha-arial', 'alpha-comic-sans', 'alpha-consolas', 'alpha-courier', 'alpha-georgia', 'alpha-impact', 'alpha-palatino', 'alpha-trebuchet'],
-			characters: '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-			characterLength: 5
+			imgId: 'ltCaptchaImg'
+			, inputId: 'ltCaptchaInput'
+			, resetId: 'ltCaptchaReset'
+			, errorMsgId: 'ltCaptchaErrorMsg'
+			, backgroundClasses: ['captcha01', 'captcha02', 'captcha03']
+			// , fontClasses: ['font01', 'font02', 'font03', 'font04', 'font05', 'font06', 'font07', 'font08', 'font09', 'font10', 'font11', 'font12', 'font13']
+			, fontClasses: ['alpha-sans', 'alpha-arial', 'alpha-comic-sans', 'alpha-consolas', 'alpha-courier', 'alpha-georgia', 'alpha-impact', 'alpha-palatino', 'alpha-trebuchet']
+			, characters: '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+			, characterLength: 5
+			, uniqueQualifier: ''
 		};
 		cjq.extend(settings, options);
+
+		if (settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+			settings.imgId += '_' + settings.uniqueQualifier;
+			settings.inputId += '_' + settings.uniqueQualifier;
+			settings.resetId += '_' + settings.uniqueQualifier;
+			settings.errorMsgId += '_' + settings.uniqueQualifier;
+		}
 
 		_thisC._captchaInput = cjq('#' + settings.inputId);
 		_thisC._captchaErrorMsg = cjq('#' + settings.errorMsgId);

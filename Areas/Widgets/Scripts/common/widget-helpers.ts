@@ -77,6 +77,7 @@ interface IWidgetField {
 	tabindex?: number;
 	nsize?: number;
 	attrs?: IHelperNameValue[];
+	uniqueQualifier?: string;
 
 	color?: string;
 	fontSize?: number;
@@ -671,8 +672,8 @@ namespace LoanTekWidget {
 			this.captcha = { id: 'captcha', name: 'Captcha', fieldTemplate: { element: 'captcha' } };
 			this.submit = { id: 'submit', name: 'Submit', isLTRequired: true, hideFromList: true, fieldTemplate: { element: 'button', type: 'submit', id: 'ltwSubmit', cssClass: 'btn-primary', value: 'Submit' } };
 			this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
-			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text', cssClass: 'lt-custom-input' } };
-			this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden', cssClass: 'lt-custom-input' } };
+			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text'/*, cssClass: 'lt-custom-input'*/ } };
+			this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden'/*, cssClass: 'lt-custom-input'*/ } };
 		}
 	}
 

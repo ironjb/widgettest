@@ -33,19 +33,13 @@ interface IWidgetFormBuildObject extends LTWidget.IBuildOptions {
 	errorMessageWrapperId?: string;
 	errrorMessageId?: string;
 	postDOMCallback?: any;
-	uniqueQualifier?: string;
 }
 
-interface IWidgetContactFunctionalityOptions {
+interface IWidgetContactFunctionalityOptions extends LTWidget.IFunctionalityOptions {
 	redirectUrl?: string;
-	postUrl?: string;
 	successMessage?: string;
-	externalValidatorFunction?: Function;
-	userId?: number;
-	clientId?: number;
 	AdditionalPostData?: LoanTekWidget.PostObject_Contact;
 
-	form_id?: string;
 	form_firstName?: string;
 	form_lastName?: string;
 	form_email?: string;
@@ -53,11 +47,7 @@ interface IWidgetContactFunctionalityOptions {
 	form_company?: string;
 	form_state?: string;
 	form_comments?: string;
-	form_submit?: string;
 	form_successMessageWrapper?: string;
-	form_errorAnchor?: string;
-	form_errorMsgWrapper?: string;
-	form_errorMsg?: string;
 }
 
 namespace LoanTekWidget {
@@ -84,6 +74,15 @@ namespace LoanTekWidget {
 				, uniqueQualifier: ''
 			};
 			$.extend(settings, options);
+
+			if (settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+				settings.wrapperId += '_' + settings.uniqueQualifier;
+				settings.formId += '_' + settings.uniqueQualifier;
+				settings.successMessageWrapperId += '_' + settings.uniqueQualifier;
+				settings.errorAnchor += '_' + settings.uniqueQualifier;
+				settings.errorMessageWrapperId += '_' + settings.uniqueQualifier;
+				settings.errrorMessageId += '_' + settings.uniqueQualifier;
+			}
 
 			var fieldHelperType: string;
 
@@ -127,7 +126,7 @@ namespace LoanTekWidget {
 				returnForm2.prepend(el.style().html(returnFormStyles));
 			}
 
-			var widgetWrapper = $('#' + settings.wrapperId + '_' + settings.uniqueQualifier).addClass('ltw ' + lth.defaultFormSpecifierClass + '_' + settings.uniqueQualifier).empty().append(returnForm2);
+			var widgetWrapper = $('#' + settings.wrapperId).addClass('ltw ' + lth.defaultFormSpecifierClass + '_' + settings.uniqueQualifier).empty().append(returnForm2);
 			if (settings.showBuilderTools) {
 				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editFormInfo'));
 			}
@@ -163,9 +162,16 @@ namespace LoanTekWidget {
 				, userId: null
 				, clientId: null
 				, AdditionalPostData: null
+				, uniqueQualifier: ''
 
 				// Default form element IDs
 				, form_id: '#ltWidgetForm'
+				, form_submit: '#ltwSubmit'
+				, form_errorAnchor: 'ltwErrorAnchor'
+				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
+				, form_errorMsg: '#ltwErrorMessage'
+
+				// Contact fields
 				, form_firstName: '#ltwFirstName'
 				, form_lastName: '#ltwLastName'
 				, form_email: '#ltwEmail'
@@ -173,13 +179,27 @@ namespace LoanTekWidget {
 				, form_company: '#ltwCompany'
 				, form_state: '#ltwState'
 				, form_comments: '#ltwComments'
-				, form_submit: '#ltwSubmit'
 				, form_successMessageWrapper: '#ltwSuccessMessageWrapper'
-				, form_errorAnchor: 'ltwErrorAnchor'
-				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
-				, form_errorMsg: '#ltwErrorMessage'
 			};
 			$.extend(settings, options);
+			var customInputClass = '.lt-custom-input';
+
+			if (settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+				settings.form_id += '_' + settings.uniqueQualifier;
+				settings.form_firstName += '_' + settings.uniqueQualifier;
+				settings.form_lastName += '_' + settings.uniqueQualifier;
+				settings.form_email += '_' + settings.uniqueQualifier;
+				settings.form_phone += '_' + settings.uniqueQualifier;
+				settings.form_company += '_' + settings.uniqueQualifier;
+				settings.form_state += '_' + settings.uniqueQualifier;
+				settings.form_comments += '_' + settings.uniqueQualifier;
+				settings.form_submit += '_' + settings.uniqueQualifier;
+				settings.form_successMessageWrapper += '_' + settings.uniqueQualifier;
+				settings.form_errorAnchor += '_' + settings.uniqueQualifier;
+				settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
+				settings.form_errorMsg += '_' + settings.uniqueQualifier;
+				customInputClass += '_' + settings.uniqueQualifier;
+			}
 
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 
@@ -214,7 +234,7 @@ namespace LoanTekWidget {
 					contactPostData.Reason = $(settings.form_comments).val();
 					contactPostData.MiscData[0].Value = '';
 
-					$('.lt-custom-input').each(function (customIndex: number, elem: Element) {
+					$(customInputClass).each(function (customIndex: number, elem: Element) {
 						contactPostData.MiscData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
 					});
 
@@ -289,11 +309,24 @@ namespace LoanTekWidget {
 				}
 			};
 			$.extend(true, settings, options);
+			var customInputClass = '.lt-custom-input';
+
+			if (settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+				settings.form_id += '_' + settings.uniqueQualifier;
+				settings.form_submit += '_' + settings.uniqueQualifier;
+				settings.form_errorAnchor += '_' + settings.uniqueQualifier;
+				settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
+				settings.form_errorMsg += '_' + settings.uniqueQualifier;
+				settings.form_term += '_' + settings.uniqueQualifier;
+				settings.form_amount += '_' + settings.uniqueQualifier;
+				settings.form_noDataMessage += '_' + settings.uniqueQualifier;
+				customInputClass += '_' + settings.uniqueQualifier;
+			}
+
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 
 			$(function () {
 				var depositPostData: LoanTekWidget.PostObject_Deposit = lth.postObjects.deposit();
-				// window.console && console.log('depositPostData', depositPostData);
 
 				$(settings.form_submit).prop('disabled', false);
 
@@ -335,15 +368,13 @@ namespace LoanTekWidget {
 					depositPostData.DepositRequest.ForType = 130;
 					depositPostData.DepositRequest.TermInMonths = $(settings.form_term).val()*1;
 					depositPostData.DepositRequest.Amount = $(settings.form_amount).val()*1;
-					if ($('.lt-custom-input').length > 0) {
+					if ($(customInputClass).length > 0) {
 						depositPostData.DepositRequest.CustomData = [];
 					}
 
-					$('.lt-custom-input').each(function (customIndex: number, elem: Element) {
+					$(customInputClass).each(function (customIndex: number, elem: Element) {
 						depositPostData.DepositRequest.CustomData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
 					});
-
-					window.console && console.log('depositPostData', depositPostData);
 
 					var request = $.ajax({
 						// url: 'http://node-cors-server.herokuapp.com/no-cors'
@@ -420,6 +451,11 @@ namespace LoanTekWidget {
 
 			lth.$.extend(_settings, options)
 
+			if (_settings.uniqueQualifier && _settings.uniqueQualifier.length > 0) {
+				_settings.resultWrapperId += '_' + _settings.uniqueQualifier;
+				_settings.noDataMessageWrapperId += '_' + _settings.uniqueQualifier;
+			}
+
 			this.settings = _settings;
 			this.lth = lth;
 		}
@@ -452,7 +488,7 @@ namespace LoanTekWidget {
 				resultsForm2.prepend(el.style().html(resultsFormStyles));
 			}
 
-			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId + '_' + settings.uniqueQualifier).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass + '_' + settings.uniqueQualifier).empty().append(resultsForm2);
+			var widgetResultWrapper = $('#' + _thisM.settings.resultWrapperId).addClass('ltw ' + _thisM.lth.defaultResultSpecifierClass + '_' + settings.uniqueQualifier).empty().append(resultsForm2);
 			if (_thisM.settings.showBuilderTools) {
 				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editResultInfo'));
 			}
@@ -506,6 +542,9 @@ namespace LoanTekWidget {
 			});
 
 			$.each(settings.fields, (fieldIndex, elementItem) => {
+				if (elementItem.id && settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+					elementItem.id += '_' + settings.uniqueQualifier;
+				}
 				if (elementItem.offsetCols && !elementItem.cols) {
 					elementItem.cols = COLUMNS_IN_ROW - elementItem.offsetCols;
 				}
@@ -516,6 +555,19 @@ namespace LoanTekWidget {
 				elementItem.size = elementItem.size ? elementItem.size : settings.fieldSize;
 				isLastField = fieldIndex >= fieldsLength - 1;
 				isLabel = elementItem.element === 'label';
+
+				if (elementItem.field === 'captcha' && settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+					elementItem.uniqueQualifier = settings.uniqueQualifier;
+				}
+
+				if (elementItem.field === 'customhidden' || elementItem.field === 'custominput') {
+					elementItem.cssClass = elementItem.cssClass || '';
+					if (settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+						elementItem.cssClass += ' lt-custom-input_' + settings.uniqueQualifier;
+					} else {
+						elementItem.cssClass += 'lt-custom-input';
+					}
+				}
 
 				if (elementItem.field === 'custominput' && settings.showBuilderTools) {
 					elementItem.attrs = elementItem.attrs || [];
@@ -861,8 +913,21 @@ namespace LoanTekWidget {
 					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					break;
 				case 'captcha':
-					var captchaInputObj: IWidgetField = { element: 'input', id: 'ltCaptchaInput', placeholder: 'Enter the characters', required: true };
-					var captchaResetBtnObj: IWidgetField = { element: 'button', id: 'ltCaptchaReset', cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+					var settings = {
+						capImg: 'ltCaptchaImg'
+						, capInput: 'ltCaptchaInput'
+						, capReset: 'ltCaptchaReset'
+						, capErMsg: 'ltCaptchaErrorMsg'
+					};
+					if (elementObj.uniqueQualifier && elementObj.uniqueQualifier.length > 0) {
+						settings.capImg += '_' + elementObj.uniqueQualifier;
+						settings.capInput += '_' + elementObj.uniqueQualifier;
+						settings.capReset += '_' + elementObj.uniqueQualifier;
+						settings.capErMsg += '_' + elementObj.uniqueQualifier;
+					}
+
+					var captchaInputObj: IWidgetField = { element: 'input', id: settings.capInput, placeholder: 'Enter the characters', required: true };
+					var captchaResetBtnObj: IWidgetField = { element: 'button', id: settings.capReset, cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
 					if (elementObj.size) {
 						captchaInputObj.size = elementObj.size;
 						captchaResetBtnObj.size = elementObj.size;
@@ -877,7 +942,7 @@ namespace LoanTekWidget {
 							el.div().addClass('panel-body').append(
 								el.formGroup().append(
 									el.col().append(
-										el.div().prop('id', 'ltCaptchaImg').addClass('captcha-font')
+										el.div().prop('id', settings.capImg).addClass('captcha-font')
 									)
 								)
 							).append(
@@ -885,7 +950,7 @@ namespace LoanTekWidget {
 									el.col(8, 'xs').append(
 										captchaInput
 									).append(
-										el.span().prop('id', 'ltCaptchaErrorMsg').addClass('text-danger small').text('The code you entered does not match the one shown in the image.')
+										el.span().prop('id', settings.capErMsg).addClass('text-danger small').text('The code you entered does not match the one shown in the image.')
 										)
 								).append(
 									el.col(4, 'xs').addClass('text-right').append(
@@ -927,6 +992,9 @@ namespace LoanTekWidget {
 
 			if (returnElement) {
 				if (elementObj.id) {
+					if (elementObj.uniqueQualifier && elementObj.uniqueQualifier.length > 0) {
+						elementObj.id += '_' + elementObj.uniqueQualifier;
+					}
 					returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
 				}
 

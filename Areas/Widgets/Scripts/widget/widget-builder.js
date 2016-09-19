@@ -295,18 +295,20 @@ var LoanTekWidget;
                         var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
                         var unReplaceRegEx = /#un{[^\}]+}/g;
                         var formStyles = '';
-                        var uniqueQualifierForm = lth.getUniqueQualifier('f');
-                        var uniqueQualifierResult = lth.getUniqueQualifier('r');
+                        var uniqueQualifierForm = lth.getUniqueQualifier('F');
+                        var uniqueQualifierResult = lth.getUniqueQualifier('R');
                         cbod.showBuilderTools = true;
-                        if (crod) {
-                            crod.showBuilderTools = true;
-                        }
                         cbo.postDOMCallback = '#fn{postDOMFunctions}';
                         cbod.postDOMCallback = '#fn{postDOMFunctions}';
                         cbo.uniqueQualifier = uniqueQualifierForm;
                         cbod.uniqueQualifier = uniqueQualifierForm;
-                        cro.uniqueQualifier = uniqueQualifierResult;
-                        crod.uniqueQualifier = uniqueQualifierResult;
+                        if (cro) {
+                            cro.uniqueQualifier = uniqueQualifierResult;
+                        }
+                        if (crod) {
+                            crod.showBuilderTools = true;
+                            crod.uniqueQualifier = uniqueQualifierResult;
+                        }
                         for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
                             var cssHref = ltWidgetCSS[iCss];
                             var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
@@ -327,14 +329,16 @@ var LoanTekWidget;
                         var mainScript = '';
                         var mainScriptDisplay = '';
                         mainScript += scriptHelpersCode;
-                        var captchaVar = "\n\t\t\t\t\t\tvar ltCap#un{unique};";
+                        var captchaOptions = { uniqueQualifier: uniqueQualifierForm };
+                        var captchaVar = "\n\t\t\t\t\t\tvar ltCap#un{unique};\n\t\t\t\t\t\tvar ltCapOpts#un{unique} = #{capOp};";
+                        captchaVar = lth.Interpolate(captchaVar, { capOp: JSON.stringify(captchaOptions, null, 2) });
                         if (hasCaptchaField) {
                             mainScript += captchaVar;
                             mainScriptDisplay += captchaVar;
                         }
                         var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\t\t\t\t\t\tvar pdfun = function () {\n\t\t\t\t\t\t\t#{code}\n\t\t\t\t\t\t};";
                         if (hasCaptchaField) {
-                            postDomCode += "\n\t\t\t\t\t\t\tltCap#un{unique} = new LoanTekCaptcha(ltjq);";
+                            postDomCode += "\n\t\t\t\t\t\t\tltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});";
                         }
                         mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
                         mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
@@ -342,11 +346,11 @@ var LoanTekWidget;
                         var extValid = "\n\t\t\t\t\t\tvar ev = function () {\n\t\t\t\t\t\t\t#{validReturn}\n\t\t\t\t\t\t};";
                         if (hasCaptchaField) {
                             extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry();' });
-                            extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: "return ltCap#un{unique}.IsValidEntry() && false;" });
+                            extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry() && false;' });
                         }
                         else {
                             extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return true;' });
-                            extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: "return false;" });
+                            extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: 'return false;' });
                         }
                         mainScript += extValid_mainScript;
                         mainScriptDisplay += extValid_mainScriptDisplay;
@@ -359,7 +363,8 @@ var LoanTekWidget;
                             postUrl: widgetData.modelUrls[0],
                             externalValidatorFunction: '#fn{externalValidators}',
                             clientId: widgetData.modelWidget.ClientId,
-                            userId: widgetData.modelWidget.UserId
+                            userId: widgetData.modelWidget.UserId,
+                            uniqueQualifier: uniqueQualifierForm
                         };
                         var ltWidgetOptionsWrap = "\n\t\t\t\t\t\tvar ltwo#un{unique} = #{cwow};";
                         var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);

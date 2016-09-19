@@ -13,9 +13,16 @@ var LoanTekCaptcha = (function () {
             backgroundClasses: ['captcha01', 'captcha02', 'captcha03'],
             fontClasses: ['alpha-sans', 'alpha-arial', 'alpha-comic-sans', 'alpha-consolas', 'alpha-courier', 'alpha-georgia', 'alpha-impact', 'alpha-palatino', 'alpha-trebuchet'],
             characters: '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-            characterLength: 5
+            characterLength: 5,
+            uniqueQualifier: ''
         };
         cjq.extend(settings, options);
+        if (settings.uniqueQualifier && settings.uniqueQualifier.length > 0) {
+            settings.imgId += '_' + settings.uniqueQualifier;
+            settings.inputId += '_' + settings.uniqueQualifier;
+            settings.resetId += '_' + settings.uniqueQualifier;
+            settings.errorMsgId += '_' + settings.uniqueQualifier;
+        }
         _thisC._captchaInput = cjq('#' + settings.inputId);
         _thisC._captchaErrorMsg = cjq('#' + settings.errorMsgId);
         _thisC._charArray = settings.characters.split('');

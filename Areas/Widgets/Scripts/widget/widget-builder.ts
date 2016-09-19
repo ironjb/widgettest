@@ -468,20 +468,22 @@ namespace LoanTekWidget {
 					var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
 					var unReplaceRegEx = /#un{[^\}]+}/g;
 					var formStyles = '';
-					var uniqueQualifierForm = lth.getUniqueQualifier('f');
-					var uniqueQualifierResult = lth.getUniqueQualifier('r');
+					var uniqueQualifierForm = lth.getUniqueQualifier('F');
+					var uniqueQualifierResult = lth.getUniqueQualifier('R');
 					cbod.showBuilderTools = true;
-					if (crod) {
-						crod.showBuilderTools = true;
-					}
 					cbo.postDOMCallback = '#fn{postDOMFunctions}';
 					cbod.postDOMCallback = '#fn{postDOMFunctions}';
 
 					cbo.uniqueQualifier = uniqueQualifierForm;
 					cbod.uniqueQualifier = uniqueQualifierForm;
 
-					cro.uniqueQualifier = uniqueQualifierResult;
-					crod.uniqueQualifier = uniqueQualifierResult;
+					if (cro) {
+						cro.uniqueQualifier = uniqueQualifierResult;
+					}
+					if (crod) {
+						crod.showBuilderTools = true;
+						crod.uniqueQualifier = uniqueQualifierResult;
+					}
 
 					// Add CSS files
 					for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
@@ -516,9 +518,12 @@ namespace LoanTekWidget {
 					// Add jQuery and LoanTek Widget Helpers
 					mainScript += scriptHelpersCode;
 
-					// Captcha var
+					// Captcha vars
+					var captchaOptions: ICaptchaSettings = { uniqueQualifier: uniqueQualifierForm };
 					var captchaVar = `
-						var ltCap#un{unique};`;
+						var ltCap#un{unique};
+						var ltCapOpts#un{unique} = #{capOp};`;
+					captchaVar = lth.Interpolate(captchaVar, { capOp: JSON.stringify(captchaOptions, null, 2) });
 					if (hasCaptchaField) {
 						mainScript += captchaVar;
 						mainScriptDisplay += captchaVar;
@@ -531,7 +536,7 @@ namespace LoanTekWidget {
 						};`;
 					if (hasCaptchaField) {
 						postDomCode += `
-							ltCap#un{unique} = new LoanTekCaptcha(ltjq);`;
+							ltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});`;
 					}
 					mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
 					mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
@@ -544,10 +549,10 @@ namespace LoanTekWidget {
 						};`;
 					if (hasCaptchaField) {
 						extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry();' });
-						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: `return ltCap#un{unique}.IsValidEntry() && false;` });
+						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry() && false;' });
 					} else {
 						extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return true;' });
-						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: `return false;` });
+						extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: 'return false;' });
 					}
 					mainScript += extValid_mainScript;
 					mainScriptDisplay += extValid_mainScriptDisplay;
@@ -571,6 +576,7 @@ namespace LoanTekWidget {
 						, externalValidatorFunction: '#fn{externalValidators}'
 						, clientId: widgetData.modelWidget.ClientId
 						, userId: widgetData.modelWidget.UserId
+						, uniqueQualifier: uniqueQualifierForm
 					};
 
 					// //Test for amending POST data. this functionality may be added in later.
