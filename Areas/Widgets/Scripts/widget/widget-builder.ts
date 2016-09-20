@@ -48,19 +48,19 @@ interface IWidget {
 	allFieldsOptionsArray?: IWidgetFieldOptions[];
 	allResultFieldsObject?: Object;
 	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
-	prebuiltForms?: IWidgetFormObject[];
+	prebuiltForms?: LTWidget.IFormObject[];
 	fieldHelperType?: string;
 }
 
-interface IWidgetFormObject {
-	name?: string;
-	buildObject?: IWidgetFormBuildObject;
-	resultObject?: LTWidget.IResultBuildOptions;
+// interface IWidgetFormObject {
+// 	name?: string;
+// 	buildObject?: IWidgetFormBuildObject;
+// 	resultObject?: LTWidget.IResultBuildOptions;
 
-	// Part of Repeating form object
-	field?: string;
-	fieldListOptions?: LTWidget.IFieldListOptions;
-}
+// 	// Part of Repeating form object
+// 	field?: string;
+// 	fieldListOptions?: LTWidget.IFieldListOptions;
+// }
 
 interface IWidgetOnDragStart {
 	(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
@@ -77,24 +77,24 @@ interface IWidgetOnDrop {
 
 interface IWidgetEditFormInfo {
 	formObjectType?: string;
-	currentForm?: IWidgetFormObject;
+	currentForm?: LTWidget.IFormObject;
 	clearSelectedForm?(): void;
-	setCurrentForm?(currentForm: IWidgetFormObject): void;
+	setCurrentForm?(currentForm: LTWidget.IFormObject): void;
 	buildScript?: IWidgetScriptBuildFunction;
 }
 
 interface IWidgetEditFieldData {
 	widgetTypeLower?: string;
-	currentForm?: IWidgetFormObject;
+	currentForm?: LTWidget.IFormObject;
 	clearSelectedForm?(): void;
 	onDragStart: IWidgetOnDragStart;
-	setCurrentForm?(currentForm: IWidgetFormObject): void;
+	setCurrentForm?(currentForm: LTWidget.IFormObject): void;
 	buildScript?: IWidgetScriptBuildFunction;
 }
 
 interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 	ngModelOptions?: Object;
-	currentForm?: IWidgetFormObject;
+	currentForm?: LTWidget.IFormObject;
 	currentFormStr?: string;
 	SaveWidget?(saveAsNew?: boolean): void;
 	RevertWidget?(): void;
@@ -103,7 +103,7 @@ interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 	WidgetScriptBuild?: IWidgetScriptBuildFunction;
 	UpdateWidget?(): void;
 	ClearSelectedForm?(): void;
-	SetCurrentForm?(currentForm: IWidgetFormObject): void;
+	SetCurrentForm?(currentForm: LTWidget.IFormObject): void;
 	FilterAvailableFields?(value, index, array): boolean;
 	RemoveField?(index: number, formObjectType: string): void;
 	addField?(fieldId: string, channel: string): void;
@@ -111,7 +111,7 @@ interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 	onDrop?: IWidgetOnDrop;
 	FilterHiddenFormFields?(value, index, array): boolean;
 	FieldExtended?(field: IWidgetField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended;
-	selectedForm?: IWidgetFormObject;
+	selectedForm?: LTWidget.IFormObject;
 	passedModelForm?: IWidgetModelDataModelWidget;
 	widgetObject?: IWidget;
 	widgetScript?: string;
@@ -126,7 +126,7 @@ interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
 }
 
 interface IWidgetScriptBuildFunction {
-	(widgetFormObject?: IWidgetFormObject): void;
+	(widgetFormObject?: LTWidget.IFormObject): void;
 }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
@@ -427,11 +427,11 @@ namespace LoanTekWidget {
 					$scope.selectedForm = { name: 'modified' };
 				}
 
-				function SetCurrentForm(currentForm: IWidgetFormObject) {
+				function SetCurrentForm(currentForm: LTWidget.IFormObject) {
 					$scope.currentForm = currentForm;
 				}
 
-				function WidgetScriptBuild(currentFormObj: IWidgetFormObject) {
+				function WidgetScriptBuild(currentFormObj: LTWidget.IFormObject) {
 					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
 					if (currentFormObj.resultObject) {
 						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
@@ -457,7 +457,7 @@ namespace LoanTekWidget {
 					$scope.editResultInfo = angular.copy($scope.editFormInfo);
 					$scope.editResultInfo.formObjectType = 'resultObject';
 
-					var cfo: IWidgetFormObject = angular.copy(currentFormObj);
+					var cfo: LTWidget.IFormObject = angular.copy(currentFormObj);
 					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
@@ -493,14 +493,6 @@ namespace LoanTekWidget {
 						wScriptDisplay += cssLink;
 					}
 
-					// Add Widget Wrapper
-					var widgetWrapper = lth.Interpolate('\n<div id="ltWidgetWrapper_#{uniqueF}"></div>', { uniqueF: uniqueQualifierForm });
-					if (cro) {
-						widgetWrapper += lth.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
-					}
-					wScript += widgetWrapper;
-					wScriptDisplay += widgetWrapper;
-
 					// Add scripts
 					for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
 						var scriptSrc = widgetScripts[iScript];
@@ -510,6 +502,16 @@ namespace LoanTekWidget {
 						// DO NOT ADD to wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
 						// Instead, each of these scripts should be added already via the LoadScriptsInSequence function.
 					}
+
+					////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+					/*// Add Widget Wrapper
+					var widgetWrapper = lth.Interpolate('\n<div id="ltWidgetWrapper_#{uniqueF}"></div>', { uniqueF: uniqueQualifierForm });
+					if (cro) {
+						widgetWrapper += lth.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
+					}
+					wScript += widgetWrapper;
+					wScriptDisplay += widgetWrapper;
 
 					// Build Main Script
 					var mainScript = '';
@@ -530,7 +532,7 @@ namespace LoanTekWidget {
 					}
 
 					// PostDOMFunctions
-					var postDomCode = '/*code ran after DOM created*/', postDomFn = `
+					var postDomCode = '/' + '*code ran after DOM created*' + '/', postDomFn = `
 						var pdfun = function () {
 							#{code}
 						};`;
@@ -612,6 +614,7 @@ namespace LoanTekWidget {
 
 					// window.console && console.log('mainscript?', mainScript);
 
+					// Replace function placeholders
 					mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
 					mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
 
@@ -624,13 +627,30 @@ namespace LoanTekWidget {
 					mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
 					mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
 
+					// Replace with unique qualifier
 					mainScript = lth.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
 					mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
 
 					// Add Main Script to rest of code
 					wScript += mainScript;
 					wScriptDisplay += mainScriptDisplay;
-					wScript = wScript.replace(/\s+/gm, ' ');
+					// wScript = wScript.replace(/\s+/gm, ' ');*/
+
+					////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+					var scriptBuildInfo = {
+						url: widgetData.modelUrls[0]
+						, ClientId: widgetData.modelWidget.ClientId
+						, UserId: widgetData.modelWidget.UserId
+						, formObject: currentFormObj
+					};
+					var scriptBuild = lth.BuildWidgetScript(scriptBuildInfo);
+					var scriptBuildDisplay = lth.BuildWidgetScript(scriptBuildInfo, true);
+
+					// Add Main Script to rest of code
+					wScript += scriptBuild;
+					wScriptDisplay += scriptBuildDisplay;
+					// wScript = wScript.replace(/\s+/gm, ' ');
 
 					// Updates the page display and Script textbox
 					$scope.UpdateWidgetDisplay = function () {

@@ -35,6 +35,32 @@ declare namespace LTWidget {
 		formFieldBorderRadius?: number;
 		formButtonBorderRadius?: number;
 	}
+
+	interface IFormObject {
+		name?: string;
+		buildObject?: IWidgetFormBuildObject;
+		resultObject?: LTWidget.IResultBuildOptions;
+
+		// Part of Repeating form object
+		field?: string;
+		fieldListOptions?: LTWidget.IFieldListOptions;
+	}
+
+	interface IWidgetOptions {
+		postUrl?: string;
+		externalValidatorFunction?: string;
+		clientId?: number;
+		userId?: number;
+		uniqueQualifier?: string;
+		resultDisplayOptions?: IResultBuildOptions;
+	}
+
+	interface IWidgetInfo {
+		url?: string;
+		ClientId?: number;
+		UserId?: number;
+		formObject?: IFormObject;
+	}
 }
 
 interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
@@ -499,6 +525,137 @@ namespace LoanTekWidget {
 			};
 			return s;
 		}
+
+		BuildWidgetScript(widgetInfo: LTWidget.IWidgetInfo, isBuilderVersion?: boolean): string {
+			isBuilderVersion = isBuilderVersion || false;
+			var scriptHelpersCode = `
+				var ltjq = ltjq || jQuery.noConflict(true);
+				var lthlpr = new LoanTekWidget.helpers(ltjq);`;
+			var cfo: LTWidget.IFormObject = angular.copy(widgetInfo.formObject);
+			var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
+			var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+			var wScript: string = '';
+			var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
+			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+			var unReplaceRegEx = /#un{[^\}]+}/g;
+			var formStyles = '';
+			var uniqueQualifierForm = this.getUniqueQualifier('F');
+			var uniqueQualifierResult = this.getUniqueQualifier('R');
+			if (isBuilderVersion) {
+				cbo.showBuilderTools = isBuilderVersion;
+			}
+			cbo.postDOMCallback = '#fn{postDOMFunctions}';
+
+			cbo.uniqueQualifier = uniqueQualifierForm;
+
+			if (cro) {
+				if (isBuilderVersion) {
+					cro.showBuilderTools = isBuilderVersion;
+				}
+				cro.uniqueQualifier = uniqueQualifierResult;
+			}
+
+			// Add Widget Wrapper
+			var widgetWrapper = this.Interpolate('\n<div id="ltWidgetWrapper_#{uniqueF}"></div>', { uniqueF: uniqueQualifierForm });
+			if (cro) {
+				widgetWrapper += this.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
+			}
+			wScript += widgetWrapper;
+
+			// Build Main Script
+			var mainScript = '';
+
+			// Add jQuery and LoanTek Widget Helpers
+			if (!isBuilderVersion) {
+				mainScript += scriptHelpersCode;
+			}
+
+			// Captcha vars
+			var captchaOptions: ICaptchaSettings = { uniqueQualifier: uniqueQualifierForm };
+			var captchaVar = `
+				var ltCap#un{unique};
+				var ltCapOpts#un{unique} = #{capOp};`;
+			captchaVar = this.Interpolate(captchaVar, { capOp: JSON.stringify(captchaOptions, null, 2) });
+			if (hasCaptchaField) {
+				mainScript += captchaVar;
+			}
+
+			// PostDOMFunctions
+			var postDomCode = '/*code ran after DOM created*/', postDomFn = `
+				var pdfun = function () {
+					#{code}
+				};`;
+			if (hasCaptchaField) {
+				postDomCode += `
+					ltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});`;
+			}
+			mainScript += this.Interpolate(postDomFn, { code: postDomCode });
+
+			// External Validator
+			var extValid_Code: string;
+			var extValid = `
+				var ev = function () {
+					#{validReturn}
+				};`;
+			if (hasCaptchaField && isBuilderVersion) {
+				extValid_Code = 'return ltCap#un{unique}.IsValidEntry() && false;';
+			} else if (hasCaptchaField) {
+				extValid_Code = 'return ltCap#un{unique}.IsValidEntry();';
+			} else if (isBuilderVersion) {
+				extValid_Code = 'return false;';
+			} else {
+				extValid_Code = 'return true;';
+			}
+			mainScript += this.Interpolate(extValid, { validReturn: extValid_Code });
+
+			// Add buildObject to mainScript
+			var buildObjectWrap = `
+				var ltwbo#un{unique} = #{bow};`;
+			var cboString = JSON.stringify(cbo, null, 2);
+			mainScript += this.Interpolate(buildObjectWrap, { bow: cboString });
+
+			// Widget Options Object setup
+			var ltWidgetOptions: LTWidget.IWidgetOptions = {
+				// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
+				// postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
+				postUrl: widgetInfo.url
+				, externalValidatorFunction: '#fn{externalValidators}'
+				, clientId: widgetInfo.ClientId
+				, userId: widgetInfo.UserId
+				, uniqueQualifier: uniqueQualifierForm
+			};
+			var ltWidgetOptionsWrap = `
+				var ltwo#un{unique} = #{cwow};`;
+			var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
+			if (cro) {
+				ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
+			}
+			mainScript += this.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject, null, 2) });
+
+			// Add Execution of Widget
+			var widgetBuildForm = `
+				var ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo#un{unique}, ltwo#un{unique});`;
+			mainScript += widgetBuildForm;
+
+			// Replace function placeholders
+			mainScript = this.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
+
+			// Wrap Main Script
+			var mainScriptWrap = `
+				<script type="text/javascript">
+				(function () {#{m}
+				})();
+				</script>`;
+			mainScript = this.Interpolate(mainScriptWrap, { m: mainScript });
+
+			// Replace with unique qualifier
+			mainScript = this.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
+
+			// Add Main Script to rest of code
+			wScript += mainScript;
+
+			return wScript;
+		}
 	}
 
 	class hSizing {
@@ -664,6 +821,7 @@ namespace LoanTekWidget {
 		nodatamessage: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
 		customhidden: IWidgetFieldOptions;
+		emailwidget: IWidgetFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
@@ -674,6 +832,7 @@ namespace LoanTekWidget {
 			this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
 			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text'/*, cssClass: 'lt-custom-input'*/ } };
 			this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden'/*, cssClass: 'lt-custom-input'*/ } };
+			this.emailwidget = { id: 'emailwidget', name: 'E-mail Widget', fieldTemplate: { element: 'widget', type: 'emailwidget' } };
 		}
 	}
 
@@ -730,6 +889,7 @@ namespace LoanTekWidget {
 		hr: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
 		customhidden: IWidgetFieldOptions;
+		emailwidget: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.depositterm = { id: 'depositterm', name: 'Term [textbox]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
@@ -744,6 +904,7 @@ namespace LoanTekWidget {
 			this.hr = sf.hr;
 			this.custominput = sf.custominput;
 			this.customhidden = sf.customhidden;
+			this.emailwidget = sf.emailwidget;
 
 			helpers.prototype.SetRequiredFields(this);
 		}

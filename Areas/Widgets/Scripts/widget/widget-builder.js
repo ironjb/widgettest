@@ -315,81 +315,21 @@ var LoanTekWidget;
                             wScript += cssLink;
                             wScriptDisplay += cssLink;
                         }
-                        var widgetWrapper = lth.Interpolate('\n<div id="ltWidgetWrapper_#{uniqueF}"></div>', { uniqueF: uniqueQualifierForm });
-                        if (cro) {
-                            widgetWrapper += lth.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
-                        }
-                        wScript += widgetWrapper;
-                        wScriptDisplay += widgetWrapper;
                         for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
                             var scriptSrc = widgetScripts[iScript];
                             var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
                             wScript += scriptLink;
                         }
-                        var mainScript = '';
-                        var mainScriptDisplay = '';
-                        mainScript += scriptHelpersCode;
-                        var captchaOptions = { uniqueQualifier: uniqueQualifierForm };
-                        var captchaVar = "\n\t\t\t\t\t\tvar ltCap#un{unique};\n\t\t\t\t\t\tvar ltCapOpts#un{unique} = #{capOp};";
-                        captchaVar = lth.Interpolate(captchaVar, { capOp: JSON.stringify(captchaOptions, null, 2) });
-                        if (hasCaptchaField) {
-                            mainScript += captchaVar;
-                            mainScriptDisplay += captchaVar;
-                        }
-                        var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\t\t\t\t\t\tvar pdfun = function () {\n\t\t\t\t\t\t\t#{code}\n\t\t\t\t\t\t};";
-                        if (hasCaptchaField) {
-                            postDomCode += "\n\t\t\t\t\t\t\tltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});";
-                        }
-                        mainScript += lth.Interpolate(postDomFn, { code: postDomCode });
-                        mainScriptDisplay += lth.Interpolate(postDomFn, { code: postDomCode });
-                        var extValid_mainScript, extValid_mainScriptDisplay;
-                        var extValid = "\n\t\t\t\t\t\tvar ev = function () {\n\t\t\t\t\t\t\t#{validReturn}\n\t\t\t\t\t\t};";
-                        if (hasCaptchaField) {
-                            extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry();' });
-                            extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: 'return ltCap#un{unique}.IsValidEntry() && false;' });
-                        }
-                        else {
-                            extValid_mainScript = lth.Interpolate(extValid, { validReturn: 'return true;' });
-                            extValid_mainScriptDisplay = lth.Interpolate(extValid, { validReturn: 'return false;' });
-                        }
-                        mainScript += extValid_mainScript;
-                        mainScriptDisplay += extValid_mainScriptDisplay;
-                        var buildObjectWrap = "\n\t\t\t\t\t\tvar ltwbo#un{unique} = #{bow};";
-                        var cboString = JSON.stringify(cbo, null, 2);
-                        var cbodString = JSON.stringify(cbod, null, 2);
-                        mainScript += lth.Interpolate(buildObjectWrap, { bow: cboString });
-                        mainScriptDisplay += lth.Interpolate(buildObjectWrap, { bow: cbodString });
-                        var ltWidgetOptions = {
-                            postUrl: widgetData.modelUrls[0],
-                            externalValidatorFunction: '#fn{externalValidators}',
-                            clientId: widgetData.modelWidget.ClientId,
-                            userId: widgetData.modelWidget.UserId,
-                            uniqueQualifier: uniqueQualifierForm
+                        var scriptBuildInfo = {
+                            url: widgetData.modelUrls[0],
+                            ClientId: widgetData.modelWidget.ClientId,
+                            UserId: widgetData.modelWidget.UserId,
+                            formObject: currentFormObj
                         };
-                        var ltWidgetOptionsWrap = "\n\t\t\t\t\t\tvar ltwo#un{unique} = #{cwow};";
-                        var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
-                        var ltWidgetOptionsWithResultsObjDisplay = angular.copy(ltWidgetOptions);
-                        if (cro) {
-                            ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
-                        }
-                        if (crod) {
-                            ltWidgetOptionsWithResultsObjDisplay.resultDisplayOptions = crod;
-                        }
-                        mainScript += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject, null, 2) });
-                        mainScriptDisplay += lth.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObjDisplay, null, 2) });
-                        var widgetBuildForm = "\n\t\t\t\t\t\tvar ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo#un{unique}, ltwo#un{unique});";
-                        mainScript += widgetBuildForm;
-                        mainScriptDisplay += widgetBuildForm;
-                        mainScript = lth.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
-                        mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
-                        var mainScriptWrap = "\n\t\t\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\t\t\t(function () {#{m}\n\t\t\t\t\t\t})();\n\t\t\t\t\t\t</script>";
-                        mainScript = lth.Interpolate(mainScriptWrap, { m: mainScript });
-                        mainScriptDisplay = lth.Interpolate(mainScriptWrap, { m: mainScriptDisplay });
-                        mainScript = lth.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
-                        mainScriptDisplay = lth.Interpolate(mainScriptDisplay, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
-                        wScript += mainScript;
-                        wScriptDisplay += mainScriptDisplay;
-                        wScript = wScript.replace(/\s+/gm, ' ');
+                        var scriptBuild = lth.BuildWidgetScript(scriptBuildInfo);
+                        var scriptBuildDisplay = lth.BuildWidgetScript(scriptBuildInfo, true);
+                        wScript += scriptBuild;
+                        wScriptDisplay += scriptBuildDisplay;
                         $scope.UpdateWidgetDisplay = function () {
                             $timeout(function () {
                                 $scope.widgetScript = wScript;

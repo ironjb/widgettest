@@ -360,6 +360,90 @@ var LoanTekWidget;
             };
             return s;
         };
+        helpers.prototype.BuildWidgetScript = function (widgetInfo, isBuilderVersion) {
+            isBuilderVersion = isBuilderVersion || false;
+            var scriptHelpersCode = "\n\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
+            var cfo = angular.copy(widgetInfo.formObject);
+            var cbo = angular.copy(cfo.buildObject);
+            var cro = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+            var wScript = '';
+            var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
+            var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+            var unReplaceRegEx = /#un{[^\}]+}/g;
+            var formStyles = '';
+            var uniqueQualifierForm = this.getUniqueQualifier('F');
+            var uniqueQualifierResult = this.getUniqueQualifier('R');
+            if (isBuilderVersion) {
+                cbo.showBuilderTools = isBuilderVersion;
+            }
+            cbo.postDOMCallback = '#fn{postDOMFunctions}';
+            cbo.uniqueQualifier = uniqueQualifierForm;
+            if (cro) {
+                if (isBuilderVersion) {
+                    cro.showBuilderTools = isBuilderVersion;
+                }
+                cro.uniqueQualifier = uniqueQualifierResult;
+            }
+            var widgetWrapper = this.Interpolate('\n<div id="ltWidgetWrapper_#{uniqueF}"></div>', { uniqueF: uniqueQualifierForm });
+            if (cro) {
+                widgetWrapper += this.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
+            }
+            wScript += widgetWrapper;
+            var mainScript = '';
+            if (!isBuilderVersion) {
+                mainScript += scriptHelpersCode;
+            }
+            var captchaOptions = { uniqueQualifier: uniqueQualifierForm };
+            var captchaVar = "\n\t\t\t\tvar ltCap#un{unique};\n\t\t\t\tvar ltCapOpts#un{unique} = #{capOp};";
+            captchaVar = this.Interpolate(captchaVar, { capOp: JSON.stringify(captchaOptions, null, 2) });
+            if (hasCaptchaField) {
+                mainScript += captchaVar;
+            }
+            var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\t\t\t\tvar pdfun = function () {\n\t\t\t\t\t#{code}\n\t\t\t\t};";
+            if (hasCaptchaField) {
+                postDomCode += "\n\t\t\t\t\tltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});";
+            }
+            mainScript += this.Interpolate(postDomFn, { code: postDomCode });
+            var extValid_Code;
+            var extValid = "\n\t\t\t\tvar ev = function () {\n\t\t\t\t\t#{validReturn}\n\t\t\t\t};";
+            if (hasCaptchaField && isBuilderVersion) {
+                extValid_Code = 'return ltCap#un{unique}.IsValidEntry() && false;';
+            }
+            else if (hasCaptchaField) {
+                extValid_Code = 'return ltCap#un{unique}.IsValidEntry();';
+            }
+            else if (isBuilderVersion) {
+                extValid_Code = 'return false;';
+            }
+            else {
+                extValid_Code = 'return true;';
+            }
+            mainScript += this.Interpolate(extValid, { validReturn: extValid_Code });
+            var buildObjectWrap = "\n\t\t\t\tvar ltwbo#un{unique} = #{bow};";
+            var cboString = JSON.stringify(cbo, null, 2);
+            mainScript += this.Interpolate(buildObjectWrap, { bow: cboString });
+            var ltWidgetOptions = {
+                postUrl: widgetInfo.url,
+                externalValidatorFunction: '#fn{externalValidators}',
+                clientId: widgetInfo.ClientId,
+                userId: widgetInfo.UserId,
+                uniqueQualifier: uniqueQualifierForm
+            };
+            var ltWidgetOptionsWrap = "\n\t\t\t\tvar ltwo#un{unique} = #{cwow};";
+            var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
+            if (cro) {
+                ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
+            }
+            mainScript += this.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject, null, 2) });
+            var widgetBuildForm = "\n\t\t\t\tvar ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo#un{unique}, ltwo#un{unique});";
+            mainScript += widgetBuildForm;
+            mainScript = this.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
+            var mainScriptWrap = "\n\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\t(function () {#{m}\n\t\t\t\t})();\n\t\t\t\t</script>";
+            mainScript = this.Interpolate(mainScriptWrap, { m: mainScript });
+            mainScript = this.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
+            wScript += mainScript;
+            return wScript;
+        };
         return helpers;
     }());
     LoanTekWidget.helpers = helpers;
@@ -473,6 +557,7 @@ var LoanTekWidget;
             this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
             this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text' } };
             this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden' } };
+            this.emailwidget = { id: 'emailwidget', name: 'E-mail Widget', fieldTemplate: { element: 'widget', type: 'emailwidget' } };
         }
         return sharedFields;
     }());
@@ -514,6 +599,7 @@ var LoanTekWidget;
             this.hr = sf.hr;
             this.custominput = sf.custominput;
             this.customhidden = sf.customhidden;
+            this.emailwidget = sf.emailwidget;
             helpers.prototype.SetRequiredFields(this);
         }
         depositFields.prototype.asArray = function () {

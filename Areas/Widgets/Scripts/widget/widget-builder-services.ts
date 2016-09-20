@@ -10,7 +10,7 @@ interface IWidgetNgServices {
 
 interface IFormEditOptions {
 	instanceOptions?: IFormEditModalInstanceOptions;
-	saveForm?(updateForm: IWidgetFormObject): void;
+	saveForm?(updateForm: LTWidget.IFormObject): void;
 }
 
 interface IFormEditModalInstanceOptions {
@@ -458,7 +458,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if ($scope.modField.attrs.length === 0) {
 						delete $scope.modField.attrs;
 					}
-					var newBuildObject: IWidgetFormObject = angular.copy($scope.modBuildObject);
+					var newBuildObject: LTWidget.IFormObject = angular.copy($scope.modBuildObject);
 					$uibModalInstance.close(newBuildObject);
 				};
 
@@ -512,7 +512,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.buildDisplay();
 
 				$scope.saveWidget = function () {
-					var newBuildObject: IWidgetFormObject = angular.copy($scope.modBuildObject);
+					var newBuildObject: LTWidget.IFormObject = angular.copy($scope.modBuildObject);
 					$uibModalInstance.close(newBuildObject);
 				};
 
