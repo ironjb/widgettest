@@ -530,7 +530,7 @@ namespace LoanTekWidget {
 			var remainingColSpace: number = 0;
 			var isNextHidden: boolean = false;
 			var fieldTemplate: Object;
-			var addedAssignAddInfoKey: boolean = false;
+			var isAlreadyInProcessOfAddingAdditionalInfoKey: boolean = false;
 			var el = lth.CreateElement();
 			settings.widgetChannel = settings.widgetChannel || 'form';
 
@@ -572,7 +572,8 @@ namespace LoanTekWidget {
 				if (elementItem.field === 'custominput' && settings.showBuilderTools) {
 					elementItem.attrs = elementItem.attrs || [];
 					var custAdditionalInfoIndex =  lth.GetIndexOfFirstObjectInArray(elementItem.attrs,'name','data-lt-additional-info-key');
-					if (!elementItem.attrs[custAdditionalInfoIndex] && !addedAssignAddInfoKey) {
+					if (!elementItem.attrs[custAdditionalInfoIndex] && !isAlreadyInProcessOfAddingAdditionalInfoKey) {
+						isAlreadyInProcessOfAddingAdditionalInfoKey = true;
 						var editInfo: string;
 						if (settings.widgetChannel === 'result') {
 							editInfo = 'editResultInfo';
@@ -581,18 +582,23 @@ namespace LoanTekWidget {
 						}
 
 						// Removes 'data-lt-assign-additional-info-key' if it was added before... Must remove old one before adding again
-						for (var iAttrs = elementItem.attrs.length - 1; iAttrs >= 0; iAttrs--) {
-							var attr = elementItem.attrs[iAttrs];
-							if (attr.name === 'data-lt-assign-additional-info-key') {
-								elementItem.attrs.splice(iAttrs, 1);
-							}
-						}
+						lth.RemoveObjectFromArray(elementItem.attrs, 'name', 'data-lt-assign-additional-info-key');
+						// window.console && console.log('bef elementItem.attrs.length', elementItem.attrs.length);
+						// for (var iAttrs = elementItem.attrs.length - 1; iAttrs >= 0; iAttrs--) {
+						// 	var attr = elementItem.attrs[iAttrs];
+						// 	if (attr.name === 'data-lt-assign-additional-info-key') {
+						// 		elementItem.attrs.splice(iAttrs, 1);
+						// 	}
+						// }
 
 						// Adds 'data-lt-assign-additional-info-key'
 						elementItem.attrs.push({ name: 'data-lt-assign-additional-info-key', value: lth.Interpolate(`{ fieldIndex: #{fi}, editInfo: #{eInfo} }`, { fi: fieldIndex+'', eInfo: editInfo }) });
-
-						addedAssignAddInfoKey = true;
+						// window.console && console.log('aft elementItem.attrs.length', elementItem.attrs.length);
 					}
+				}
+
+				if (elementItem.element === 'widget' && settings.showBuilderTools) {
+					//
 				}
 
 				// if (elementItem.field === 'emailwidget') {
@@ -990,7 +996,16 @@ namespace LoanTekWidget {
 					}
 					break;
 				case 'widget':
-					window.console && console.log('case is widget for element and type is: ', elementObj.type);
+					// window.console && console.log('case is widget for element and type is: ', elementObj.type);
+					returnElement = el.div();
+					if (elementObj.widgetInfo) {
+						var widgetCode = lth.BuildWidgetScript(elementObj.widgetInfo);
+						// window.console && console.log('widgetCode: ', widgetCode);
+						returnElement.html(widgetCode);
+					} else {
+						// returnElement.addClass('lt-assign-widget-info').html('<br /><br />');
+						returnElement.html('<br />[please edit to choose widget]<br />');
+					}
 					break;
 				default:
 					elementObj.value = elementObj.value || ' ';

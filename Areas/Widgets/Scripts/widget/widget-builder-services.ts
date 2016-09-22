@@ -306,6 +306,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.offsetColumnsArray = lth.bootstrap.offsetColumns.asArray();
 				$scope.headingArray = lth.hsize.asArray();
 				$scope.modField.attrs = $scope.modField.attrs || [];
+				//$scope.widgetList = [];
 
 				if (!$scope.modField.size && $scope.modBuildObject.fieldSize) {
 					$scope.modField.size = $scope.modBuildObject.fieldSize;

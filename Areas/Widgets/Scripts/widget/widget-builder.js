@@ -54,12 +54,9 @@ var LoanTekWidget;
                             '/Areas/Widgets/Scripts/widget/widget.js'
                         ];
                     }
-                    var scriptHelpersCode = "\n\t\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
                     var scriptLoader = function () {
                         var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
                             var body = $('body')[0];
-                            var script = el.script().html(scriptHelpersCode)[0];
-                            body.appendChild(script);
                             $scope.UpdateWidgetDisplay();
                         });
                         loadScripts.run();
@@ -284,49 +281,33 @@ var LoanTekWidget;
                         };
                         $scope.editResultInfo = angular.copy($scope.editFormInfo);
                         $scope.editResultInfo.formObjectType = 'resultObject';
-                        var cfo = angular.copy(currentFormObj);
-                        var cbo = angular.copy(cfo.buildObject);
-                        var cbod = angular.copy(cfo.buildObject);
-                        var cro = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
-                        var crod = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
                         var wScript = '<style type="text/css">.ltw {display:none;}</style>';
                         var wScriptDisplay = wScript;
-                        var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
-                        var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
-                        var unReplaceRegEx = /#un{[^\}]+}/g;
-                        var formStyles = '';
-                        var uniqueQualifierForm = lth.getUniqueQualifier('F');
-                        var uniqueQualifierResult = lth.getUniqueQualifier('R');
-                        cbod.showBuilderTools = true;
-                        cbo.postDOMCallback = '#fn{postDOMFunctions}';
-                        cbod.postDOMCallback = '#fn{postDOMFunctions}';
-                        cbo.uniqueQualifier = uniqueQualifierForm;
-                        cbod.uniqueQualifier = uniqueQualifierForm;
-                        if (cro) {
-                            cro.uniqueQualifier = uniqueQualifierResult;
-                        }
-                        if (crod) {
-                            crod.showBuilderTools = true;
-                            crod.uniqueQualifier = uniqueQualifierResult;
-                        }
                         for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
                             var cssHref = ltWidgetCSS[iCss];
                             var cssLink = lth.Interpolate('\n<link rel="stylesheet" href="#{href}">', { href: wwwRoot + cssHref });
                             wScript += cssLink;
                             wScriptDisplay += cssLink;
                         }
+                        var initialScripts = '';
+                        var initialScriptsDisplay = '';
+                        var scriptHelpersCode = "\n\t\t\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\t\t\t\tvar ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);\n\t\t\t\t\t\t\tvar ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);\n\t\t\t\t\t\t</script>";
                         for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
                             var scriptSrc = widgetScripts[iScript];
                             var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
-                            wScript += scriptLink;
+                            initialScripts += scriptLink;
                         }
+                        initialScripts += scriptHelpersCode;
+                        initialScriptsDisplay += scriptHelpersCode;
                         var scriptBuildInfo = {
                             url: widgetData.modelUrls[0],
                             ClientId: widgetData.modelWidget.ClientId,
                             UserId: widgetData.modelWidget.UserId,
-                            formObject: currentFormObj
+                            formObject: currentFormObj,
+                            initialScript: initialScripts
                         };
                         var scriptBuild = lth.BuildWidgetScript(scriptBuildInfo);
+                        scriptBuildInfo.initialScript = initialScriptsDisplay;
                         var scriptBuildDisplay = lth.BuildWidgetScript(scriptBuildInfo, true);
                         wScript += scriptBuild;
                         wScriptDisplay += scriptBuildDisplay;

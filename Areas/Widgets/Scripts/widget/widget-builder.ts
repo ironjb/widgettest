@@ -196,15 +196,15 @@ namespace LoanTekWidget {
 					]
 				}
 
-				var scriptHelpersCode = `
-					var ltjq = ltjq || jQuery.noConflict(true);
-					var lthlpr = new LoanTekWidget.helpers(ltjq);`;
+				// var scriptHelpersCode = `
+				// 	var ltjq = ltjq || jQuery.noConflict(true);
+				// 	var lthlpr = new LoanTekWidget.helpers(ltjq);`;
 
 				var scriptLoader = function () {
 					var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
 						var body = $('body')[0];
-						var script = el.script().html(scriptHelpersCode)[0];
-						body.appendChild(script);
+						// var script = el.script().html(scriptHelpersCode)[0];
+						// body.appendChild(script);
 						$scope.UpdateWidgetDisplay();
 					});
 
@@ -457,33 +457,33 @@ namespace LoanTekWidget {
 					$scope.editResultInfo = angular.copy($scope.editFormInfo);
 					$scope.editResultInfo.formObjectType = 'resultObject';
 
-					var cfo: LTWidget.IFormObject = angular.copy(currentFormObj);
-					var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-					var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-					var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
-					var crod: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject): null;
+					// var cfo: LTWidget.IFormObject = angular.copy(currentFormObj);
+					// var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
+					// var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
+					// var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+					// var crod: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject): null;
 					var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 					var wScriptDisplay: string = wScript;
-					var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
-					var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
-					var unReplaceRegEx = /#un{[^\}]+}/g;
-					var formStyles = '';
-					var uniqueQualifierForm = lth.getUniqueQualifier('F');
-					var uniqueQualifierResult = lth.getUniqueQualifier('R');
-					cbod.showBuilderTools = true;
-					cbo.postDOMCallback = '#fn{postDOMFunctions}';
-					cbod.postDOMCallback = '#fn{postDOMFunctions}';
+					// var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
+					// var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
+					// var unReplaceRegEx = /#un{[^\}]+}/g;
+					// var formStyles = '';
+					// var uniqueQualifierForm = lth.getUniqueQualifier('F');
+					// var uniqueQualifierResult = lth.getUniqueQualifier('R');
+					// cbod.showBuilderTools = true;
+					// cbo.postDOMCallback = '#fn{postDOMFunctions}';
+					// cbod.postDOMCallback = '#fn{postDOMFunctions}';
 
-					cbo.uniqueQualifier = uniqueQualifierForm;
-					cbod.uniqueQualifier = uniqueQualifierForm;
+					// cbo.uniqueQualifier = uniqueQualifierForm;
+					// cbod.uniqueQualifier = uniqueQualifierForm;
 
-					if (cro) {
-						cro.uniqueQualifier = uniqueQualifierResult;
-					}
-					if (crod) {
-						crod.showBuilderTools = true;
-						crod.uniqueQualifier = uniqueQualifierResult;
-					}
+					// if (cro) {
+					// 	cro.uniqueQualifier = uniqueQualifierResult;
+					// }
+					// if (crod) {
+					// 	crod.showBuilderTools = true;
+					// 	crod.uniqueQualifier = uniqueQualifierResult;
+					// }
 
 					// Add CSS files
 					for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
@@ -493,15 +493,25 @@ namespace LoanTekWidget {
 						wScriptDisplay += cssLink;
 					}
 
-					// Add scripts
+					// Add initial scripts
+					var initialScripts: string = '';
+					var initialScriptsDisplay: string = '';
+					var scriptHelpersCode = `
+						<script type="text/javascript">
+							var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);
+							var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);
+						</script>`;
 					for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
 						var scriptSrc = widgetScripts[iScript];
 						var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
-						wScript += scriptLink;
+						initialScripts += scriptLink;
 
-						// DO NOT ADD to wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
+						// DO NOT ADD to initialScriptsDisplay, it will cause a "Synchronous XMLHttpRequest..." error
 						// Instead, each of these scripts should be added already via the LoadScriptsInSequence function.
 					}
+					initialScripts += scriptHelpersCode;
+					initialScriptsDisplay += scriptHelpersCode;
+
 
 					////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -512,6 +522,16 @@ namespace LoanTekWidget {
 					}
 					wScript += widgetWrapper;
 					wScriptDisplay += widgetWrapper;
+
+					// Add scripts
+					for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
+						var scriptSrc = widgetScripts[iScript];
+						var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });
+						wScript += scriptLink;
+
+						// DO NOT ADD to wScriptDisplay, it will cause a "Synchronous XMLHttpRequest..." error
+						// Instead, each of these scripts should be added already via the LoadScriptsInSequence function.
+					}
 
 					// Build Main Script
 					var mainScript = '';
@@ -638,13 +658,18 @@ namespace LoanTekWidget {
 
 					////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-					var scriptBuildInfo = {
+					var scriptBuildInfo: LTWidget.IWidgetInfo = {
 						url: widgetData.modelUrls[0]
 						, ClientId: widgetData.modelWidget.ClientId
 						, UserId: widgetData.modelWidget.UserId
 						, formObject: currentFormObj
+						// , scripts: widgetScripts
+						// , wwwRoot: wwwRoot
+						, initialScript: initialScripts
 					};
 					var scriptBuild = lth.BuildWidgetScript(scriptBuildInfo);
+					// scriptBuildInfo.scripts = null;		// Not adding scripts to 'display' version since they should have been loaded earlier from LoadScriptsInSequence function.
+					scriptBuildInfo.initialScript = initialScriptsDisplay;
 					var scriptBuildDisplay = lth.BuildWidgetScript(scriptBuildInfo, true);
 
 					// Add Main Script to rest of code

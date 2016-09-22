@@ -59,7 +59,11 @@ declare namespace LTWidget {
 		url?: string;
 		ClientId?: number;
 		UserId?: number;
-		formObject?: IFormObject;
+		formObject: IFormObject;
+		// scripts?: string[];
+		// wwwRoot?: string;
+		initialScript?: string;
+		// uniqueQualifier?: string;
 	}
 }
 
@@ -116,6 +120,8 @@ interface IWidgetField {
 
 	fieldListOptions?: LTWidget.IFieldListOptions;
 	fieldData?: any[];
+
+	widgetInfo?: LTWidget.IWidgetInfo;
 }
 
 interface IState {
@@ -252,6 +258,16 @@ namespace LoanTekWidget {
 				}
 			}
 			return -1;
+		}
+
+		RemoveObjectFromArray(theArray: Object[], theKey: string, theValue: string): Object[] {
+			for (var i = theArray.length - 1; i >= 0; i--) {
+				var obj = theArray[i];
+				if (obj[theKey] === theValue) {
+					theArray.splice(i, 1);
+				}
+			}
+			return theArray;
 		}
 
 		SetRequiredFields(fields) {
@@ -458,7 +474,7 @@ namespace LoanTekWidget {
 		}
 
 		ScrollToAnchor(anchorName: string, scrollSpeed?: number, topOffset?: number) {
-			$ = this.$;
+			var $ = this.$;
 			scrollSpeed = scrollSpeed || 200;
 			topOffset = topOffset || 50;
 			$('html, body').animate({
@@ -528,19 +544,21 @@ namespace LoanTekWidget {
 
 		BuildWidgetScript(widgetInfo: LTWidget.IWidgetInfo, isBuilderVersion?: boolean): string {
 			isBuilderVersion = isBuilderVersion || false;
-			var scriptHelpersCode = `
-				var ltjq = ltjq || jQuery.noConflict(true);
-				var lthlpr = new LoanTekWidget.helpers(ltjq);`;
-			var cfo: LTWidget.IFormObject = angular.copy(widgetInfo.formObject);
-			var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-			var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+			var $ = this.$;
+			// var scriptHelpersCode = `
+			// 	var ltjq = ltjq || jQuery.noConflict(true);
+			// 	var lthlpr = new LoanTekWidget.helpers(ltjq);`;
+			var cfo: LTWidget.IFormObject = $.extend(true, {}, widgetInfo.formObject);
+			var cbo: IWidgetFormBuildObject = $.extend(true, {}, cfo.buildObject);
+			var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? $.extend(true, {}, cfo.resultObject) : null;
 			var wScript: string = '';
 			var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
 			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
 			var unReplaceRegEx = /#un{[^\}]+}/g;
-			var formStyles = '';
+			// var formStyles = '';
 			var uniqueQualifierForm = this.getUniqueQualifier('F');
 			var uniqueQualifierResult = this.getUniqueQualifier('R');
+
 			if (isBuilderVersion) {
 				cbo.showBuilderTools = isBuilderVersion;
 			}
@@ -562,13 +580,27 @@ namespace LoanTekWidget {
 			}
 			wScript += widgetWrapper;
 
+			// // Add scripts
+			// if (widgetInfo.scripts && widgetInfo.scripts.length) {
+			// 	for (var iScript = 0, lScript = widgetInfo.scripts.length; iScript < lScript; iScript++) {
+			// 		var scriptSrc = widgetInfo.scripts[iScript];
+			// 		var scriptLink = this.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: widgetInfo.wwwRoot + scriptSrc });
+			// 		wScript += scriptLink;
+			// 	}
+			// }
+
+			// Add initial scripts
+			if (widgetInfo.initialScript) {
+				wScript += this.Interpolate(widgetInfo.initialScript, { uniqueNew: uniqueQualifierForm });
+			}
+
 			// Build Main Script
 			var mainScript = '';
 
-			// Add jQuery and LoanTek Widget Helpers
-			if (!isBuilderVersion) {
-				mainScript += scriptHelpersCode;
-			}
+			// // Add jQuery and LoanTek Widget Helpers
+			// if (!isBuilderVersion) {
+			// 	mainScript += scriptHelpersCode;
+			// }
 
 			// Captcha vars
 			var captchaOptions: ICaptchaSettings = { uniqueQualifier: uniqueQualifierForm };
@@ -587,7 +619,7 @@ namespace LoanTekWidget {
 				};`;
 			if (hasCaptchaField) {
 				postDomCode += `
-					ltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});`;
+					ltCap#un{unique} = new LoanTekCaptcha(ltw_ltjq, ltCapOpts#un{unique});`;
 			}
 			mainScript += this.Interpolate(postDomFn, { code: postDomCode });
 
@@ -626,7 +658,7 @@ namespace LoanTekWidget {
 			};
 			var ltWidgetOptionsWrap = `
 				var ltwo#un{unique} = #{cwow};`;
-			var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
+			var ltWidgetOptionsWithResultsObject = $.extend(true, {}, ltWidgetOptions);
 			if (cro) {
 				ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
 			}
@@ -634,7 +666,7 @@ namespace LoanTekWidget {
 
 			// Add Execution of Widget
 			var widgetBuildForm = `
-				var ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo#un{unique}, ltwo#un{unique});`;
+				var ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltw_ltjq, ltw_lthlpr, ltwbo#un{unique}, ltwo#un{unique});`;
 			mainScript += widgetBuildForm;
 
 			// Replace function placeholders
@@ -821,7 +853,7 @@ namespace LoanTekWidget {
 		nodatamessage: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
 		customhidden: IWidgetFieldOptions;
-		emailwidget: IWidgetFieldOptions;
+		contactwidget: IWidgetFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
@@ -832,7 +864,7 @@ namespace LoanTekWidget {
 			this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
 			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text'/*, cssClass: 'lt-custom-input'*/ } };
 			this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden'/*, cssClass: 'lt-custom-input'*/ } };
-			this.emailwidget = { id: 'emailwidget', name: 'E-mail Widget', fieldTemplate: { element: 'widget', type: 'emailwidget' } };
+			this.contactwidget = { id: 'contactwidget', name: 'Contact Widget', fieldTemplate: { element: 'widget', type: 'contactwidget' } };
 		}
 	}
 
@@ -889,7 +921,7 @@ namespace LoanTekWidget {
 		hr: IWidgetFieldOptions;
 		custominput: IWidgetFieldOptions;
 		customhidden: IWidgetFieldOptions;
-		emailwidget: IWidgetFieldOptions;
+		contactwidget: IWidgetFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.depositterm = { id: 'depositterm', name: 'Term [textbox]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
@@ -904,7 +936,7 @@ namespace LoanTekWidget {
 			this.hr = sf.hr;
 			this.custominput = sf.custominput;
 			this.customhidden = sf.customhidden;
-			this.emailwidget = sf.emailwidget;
+			this.contactwidget = sf.contactwidget;
 
 			helpers.prototype.SetRequiredFields(this);
 		}

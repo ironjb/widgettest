@@ -102,6 +102,15 @@ var LoanTekWidget;
             }
             return -1;
         };
+        helpers.prototype.RemoveObjectFromArray = function (theArray, theKey, theValue) {
+            for (var i = theArray.length - 1; i >= 0; i--) {
+                var obj = theArray[i];
+                if (obj[theKey] === theValue) {
+                    theArray.splice(i, 1);
+                }
+            }
+            return theArray;
+        };
         helpers.prototype.SetRequiredFields = function (fields) {
             for (var fieldName in fields) {
                 var thisField = fields[fieldName];
@@ -294,7 +303,7 @@ var LoanTekWidget;
             return el;
         };
         helpers.prototype.ScrollToAnchor = function (anchorName, scrollSpeed, topOffset) {
-            $ = this.$;
+            var $ = this.$;
             scrollSpeed = scrollSpeed || 200;
             topOffset = topOffset || 50;
             $('html, body').animate({
@@ -362,15 +371,14 @@ var LoanTekWidget;
         };
         helpers.prototype.BuildWidgetScript = function (widgetInfo, isBuilderVersion) {
             isBuilderVersion = isBuilderVersion || false;
-            var scriptHelpersCode = "\n\t\t\t\tvar ltjq = ltjq || jQuery.noConflict(true);\n\t\t\t\tvar lthlpr = new LoanTekWidget.helpers(ltjq);";
-            var cfo = angular.copy(widgetInfo.formObject);
-            var cbo = angular.copy(cfo.buildObject);
-            var cro = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+            var $ = this.$;
+            var cfo = $.extend(true, {}, widgetInfo.formObject);
+            var cbo = $.extend(true, {}, cfo.buildObject);
+            var cro = (cfo.resultObject) ? $.extend(true, {}, cfo.resultObject) : null;
             var wScript = '';
             var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
             var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
             var unReplaceRegEx = /#un{[^\}]+}/g;
-            var formStyles = '';
             var uniqueQualifierForm = this.getUniqueQualifier('F');
             var uniqueQualifierResult = this.getUniqueQualifier('R');
             if (isBuilderVersion) {
@@ -389,10 +397,10 @@ var LoanTekWidget;
                 widgetWrapper += this.Interpolate('\n<div id="ltWidgetResultWrapper_#{uniqueR}"></div>', { uniqueR: uniqueQualifierResult });
             }
             wScript += widgetWrapper;
-            var mainScript = '';
-            if (!isBuilderVersion) {
-                mainScript += scriptHelpersCode;
+            if (widgetInfo.initialScript) {
+                wScript += this.Interpolate(widgetInfo.initialScript, { uniqueNew: uniqueQualifierForm });
             }
+            var mainScript = '';
             var captchaOptions = { uniqueQualifier: uniqueQualifierForm };
             var captchaVar = "\n\t\t\t\tvar ltCap#un{unique};\n\t\t\t\tvar ltCapOpts#un{unique} = #{capOp};";
             captchaVar = this.Interpolate(captchaVar, { capOp: JSON.stringify(captchaOptions, null, 2) });
@@ -401,7 +409,7 @@ var LoanTekWidget;
             }
             var postDomCode = '/*code ran after DOM created*/', postDomFn = "\n\t\t\t\tvar pdfun = function () {\n\t\t\t\t\t#{code}\n\t\t\t\t};";
             if (hasCaptchaField) {
-                postDomCode += "\n\t\t\t\t\tltCap#un{unique} = new LoanTekCaptcha(ltjq, ltCapOpts#un{unique});";
+                postDomCode += "\n\t\t\t\t\tltCap#un{unique} = new LoanTekCaptcha(ltw_ltjq, ltCapOpts#un{unique});";
             }
             mainScript += this.Interpolate(postDomFn, { code: postDomCode });
             var extValid_Code;
@@ -430,12 +438,12 @@ var LoanTekWidget;
                 uniqueQualifier: uniqueQualifierForm
             };
             var ltWidgetOptionsWrap = "\n\t\t\t\tvar ltwo#un{unique} = #{cwow};";
-            var ltWidgetOptionsWithResultsObject = angular.copy(ltWidgetOptions);
+            var ltWidgetOptionsWithResultsObject = $.extend(true, {}, ltWidgetOptions);
             if (cro) {
                 ltWidgetOptionsWithResultsObject.resultDisplayOptions = cro;
             }
             mainScript += this.Interpolate(ltWidgetOptionsWrap, { cwow: JSON.stringify(ltWidgetOptionsWithResultsObject, null, 2) });
-            var widgetBuildForm = "\n\t\t\t\tvar ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltjq, lthlpr, ltwbo#un{unique}, ltwo#un{unique});";
+            var widgetBuildForm = "\n\t\t\t\tvar ltwfb#un{unique} = new LoanTekWidget.FormBuild(ltw_ltjq, ltw_lthlpr, ltwbo#un{unique}, ltwo#un{unique});";
             mainScript += widgetBuildForm;
             mainScript = this.Interpolate(mainScript, { postDOMFunctions: 'pdfun', externalValidators: 'ev' }, null, fnReplaceRegEx);
             var mainScriptWrap = "\n\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\t(function () {#{m}\n\t\t\t\t})();\n\t\t\t\t</script>";
@@ -557,7 +565,7 @@ var LoanTekWidget;
             this.nodatamessage = { id: 'nodatamessage', name: 'No Data Message', isLTRequired: true, fieldTemplate: { element: 'div', type: 'nodatamessage', id: 'ltwNoDataMessage', fontSize: 20, value: 'Sorry, no results.' } };
             this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text' } };
             this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden' } };
-            this.emailwidget = { id: 'emailwidget', name: 'E-mail Widget', fieldTemplate: { element: 'widget', type: 'emailwidget' } };
+            this.contactwidget = { id: 'contactwidget', name: 'Contact Widget', fieldTemplate: { element: 'widget', type: 'contactwidget' } };
         }
         return sharedFields;
     }());
@@ -599,7 +607,7 @@ var LoanTekWidget;
             this.hr = sf.hr;
             this.custominput = sf.custominput;
             this.customhidden = sf.customhidden;
-            this.emailwidget = sf.emailwidget;
+            this.contactwidget = sf.contactwidget;
             helpers.prototype.SetRequiredFields(this);
         }
         depositFields.prototype.asArray = function () {

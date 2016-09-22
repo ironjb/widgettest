@@ -401,7 +401,7 @@ var LoanTekWidget;
             var remainingColSpace = 0;
             var isNextHidden = false;
             var fieldTemplate;
-            var addedAssignAddInfoKey = false;
+            var isAlreadyInProcessOfAddingAdditionalInfoKey = false;
             var el = lth.CreateElement();
             settings.widgetChannel = settings.widgetChannel || 'form';
             $.each(settings.fields, function (i, elementItem) {
@@ -437,7 +437,8 @@ var LoanTekWidget;
                 if (elementItem.field === 'custominput' && settings.showBuilderTools) {
                     elementItem.attrs = elementItem.attrs || [];
                     var custAdditionalInfoIndex = lth.GetIndexOfFirstObjectInArray(elementItem.attrs, 'name', 'data-lt-additional-info-key');
-                    if (!elementItem.attrs[custAdditionalInfoIndex] && !addedAssignAddInfoKey) {
+                    if (!elementItem.attrs[custAdditionalInfoIndex] && !isAlreadyInProcessOfAddingAdditionalInfoKey) {
+                        isAlreadyInProcessOfAddingAdditionalInfoKey = true;
                         var editInfo;
                         if (settings.widgetChannel === 'result') {
                             editInfo = 'editResultInfo';
@@ -445,15 +446,11 @@ var LoanTekWidget;
                         else {
                             editInfo = 'editFormInfo';
                         }
-                        for (var iAttrs = elementItem.attrs.length - 1; iAttrs >= 0; iAttrs--) {
-                            var attr = elementItem.attrs[iAttrs];
-                            if (attr.name === 'data-lt-assign-additional-info-key') {
-                                elementItem.attrs.splice(iAttrs, 1);
-                            }
-                        }
+                        lth.RemoveObjectFromArray(elementItem.attrs, 'name', 'data-lt-assign-additional-info-key');
                         elementItem.attrs.push({ name: 'data-lt-assign-additional-info-key', value: lth.Interpolate("{ fieldIndex: #{fi}, editInfo: #{eInfo} }", { fi: fieldIndex + '', eInfo: editInfo }) });
-                        addedAssignAddInfoKey = true;
                     }
+                }
+                if (elementItem.element === 'widget' && settings.showBuilderTools) {
                 }
                 nextIndex = fieldIndex + 1;
                 do {
@@ -766,7 +763,14 @@ var LoanTekWidget;
                     }
                     break;
                 case 'widget':
-                    window.console && console.log('case is widget for element and type is: ', elementObj.type);
+                    returnElement = el.div();
+                    if (elementObj.widgetInfo) {
+                        var widgetCode = lth.BuildWidgetScript(elementObj.widgetInfo);
+                        returnElement.html(widgetCode);
+                    }
+                    else {
+                        returnElement.html('<br />[please edit to choose widget]<br />');
+                    }
                     break;
                 default:
                     elementObj.value = elementObj.value || ' ';
