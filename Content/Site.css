@@ -1,5 +1,5 @@
 body {
-  padding-top: 75px;
+  padding-top: 0;
   padding-bottom: 20px;
 }
 /* Set padding to keep content from hitting the edges */
@@ -19,8 +19,13 @@ select,
 textarea {
 	max-width: 280px;
 }*/
+.navbar .UserName {
+  font-size: 140%;
+  font-family: 'Courgette', cursive;
+}
 .navbar {
   min-height: 75px;
+  border-radius: 0 !important;
 }
 /*.panel-heading {
 	cursor:pointer;

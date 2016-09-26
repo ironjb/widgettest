@@ -1004,7 +1004,7 @@ namespace LoanTekWidget {
 						returnElement.html(widgetCode);
 					} else {
 						// returnElement.addClass('lt-assign-widget-info').html('<br /><br />');
-						returnElement.html('<br />[please edit to choose widget]<br />');
+						returnElement.html('[please edit to choose widget]');
 					}
 					break;
 				default:

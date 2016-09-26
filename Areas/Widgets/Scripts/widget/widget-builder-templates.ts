@@ -237,13 +237,17 @@
 						<div class="col-sm-8">
 							<div class="form-group form-group-sm">
 								<label for="ltewFieldCols" class="col-sm-4 control-label">Grid Width</label>
-								<div class="col-sm-4"><select name="ltewFieldCols" id="ltewFieldCols" class="form-control" data-ng-model="modField.cols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::gridColumnsArray | orderBy: '-id'"></select></div>
+								<div class="col-sm-4">
+									<select name="ltewFieldCols" id="ltewFieldCols" class="form-control" data-ng-model="modField.cols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::gridColumnsArray | orderBy: '-id'"></select>
+								</div>
 							</div>
 							<div class="form-group form-group-sm">
 								<label for="ltewFieldOffsetCols" class="col-sm-4 control-label">Offset Width</label>
-								<div class="col-sm-4"><select name="ltewFieldOffsetCols" id="ltewFieldOffsetCols" class="form-control" data-ng-model="modField.offsetCols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::offsetColumnsArray | orderBy: 'id'"></select></div>
+								<div class="col-sm-4">
+									<select name="ltewFieldOffsetCols" id="ltewFieldOffsetCols" class="form-control" data-ng-model="modField.offsetCols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::offsetColumnsArray | orderBy: 'id'"></select>
+								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['p','div','hr','title'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['p','div','hr','title','widget'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1)">
 								<label for="ltewFieldSize" class="col-sm-4 control-label">Field Size</label>
 								<div class="col-sm-8">
 									<div class="btn-group btn-group-sm">
@@ -253,15 +257,17 @@
 							</div>
 							<div class="form-group form-group-sm" data-ng-show="::ft.element === 'title'">
 								<label for="ltewFieldHeaderSize" class="col-sm-4 control-label">Heading Size</label>
-								<div class="col-sm-4"><select name="ltewFieldHeaderSize" id="ltewFieldHeaderSize" class="form-control" data-ng-model="modField.nsize" data-ng-options="hd.id as hd.name for hd in ::headingArray"></select></div>
+								<div class="col-sm-4">
+									<select name="ltewFieldHeaderSize" id="ltewFieldHeaderSize" class="form-control" data-ng-model="modField.nsize" data-ng-options="hd.id as hd.name for hd in ::headingArray"></select>
+								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['captcha','hr'].indexOf(ft.element) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['captcha','hr','widget'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldFontSize" class="col-sm-4 control-label">Font Size</label>
 								<div class="col-sm-4">
 									<input type="number" min="8" max="32" class="form-control" id="ltewFieldFontSize" name="ltewFieldFontSize" data-ng-model="modField.fontSize" data-ng-model-options="modelOptions" />
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['captcha','hr'].indexOf(ft.element) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['captcha','hr','widget'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldFontColor" class="col-sm-4 control-label">Font Color</label>
 								<div class="col-sm-4">
 									<div class="input-group input-group-sm">
@@ -273,7 +279,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr'].indexOf(ft.element) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr','widget'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBgColor" class="col-sm-4 control-label">Background Color</label>
 								<div class="col-sm-4">
 									<div class="input-group input-group-sm">
@@ -285,7 +291,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title'].indexOf(ft.element) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','widget'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBorderColor" class="col-sm-4 control-label">Border Color</label>
 								<div class="col-sm-4">
 									<div class="input-group input-group-sm">
@@ -297,7 +303,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr'].indexOf(ft.element) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr','widget'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBorderRadius" class="col-sm-4 control-label">Border Radius</label>
 								<div class="col-sm-4">
 									<input type="number" min="0" class="form-control" id="ltewFieldBorderRadius" name="ltewFieldBorderRadius" data-ng-model="modField.borderRadius" data-ng-model-options="modelOptions" />
@@ -362,6 +368,12 @@
 									<input type="text" class="form-control" id="ltewCustomInput" name="ltewCustomInput" data-ng-model="customFieldKeyValue" data-ng-model-options="modelOptions" data-ng-required="::showCustomField" />
 								</div>
 							</div>
+							<div class="form-group form-group-sm" data-ng-show="::(['widget'].indexOf(ft.element) !== -1)">
+								<label for="ltewWidgetSelect" class="col-sm-4 control-label">Widget</label>
+								<div class="col-sm-4">
+									<select name="ltewWidgetSelect" id="ltewWidgetSelect" class="form-control" data-ng-model="modField.widgetInfo" data-ng-options="widget.formObject.name for widget in widgetList"></select>
+								</div>
+							</div>
 						</div>
 						<div class="col-sm-4">
 							<h4>Preview:</h4>
@@ -404,6 +416,11 @@
 									<div class="form-group" data-ng-show="::ft.element === 'div'">
 										<div class="col-sm-12">
 											<div data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+										</div>
+									</div>
+									<div class="form-group" data-ng-show="::ft.element === 'widget'">
+										<div class="col-sm-12">
+											<div data-ng-style="fieldStyle">NOTE: The widget you are importing has some of its own styling. However, most of the default styling will be overridden by the parent widgets styles.</div>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'hr'">

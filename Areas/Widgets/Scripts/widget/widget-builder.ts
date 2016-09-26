@@ -13,7 +13,7 @@ interface IWidgetModelData {
 	scriptsDomain?: string;
 	modelUrls?: string[];
 	modelWidget?: IWidgetModelDataModelWidget;
-	widgetTemplates?: IWidgetModelDataTemplate[];
+	widgetTemplates?: IWidgetModelDataModelWidget[];
 }
 
 interface IWidgetModelDataModelWidget {
@@ -27,20 +27,21 @@ interface IWidgetModelDataModelWidget {
 	LastModifiedByUserID?: number;
 	LastModifiedDate?: string;
 	Active?: boolean;
+	WidgetTypeType?: number | string;
 }
 
-interface IWidgetModelDataTemplate {
-	WidgetTypeType?: number;
-	Id?: number;
-	//ID?: number;
-	OwnerId?: number;
-	WidgetType?: string;
-	ScriptText?: string;
-	LastModifiedDate?: any;
-	LastModifiedByUserID?: number;
-	Name?: string;
-	Active?: boolean;
-}
+// interface IWidgetModelDataTemplate {
+// 	WidgetTypeType?: number;
+// 	Id?: number;
+// 	//ID?: number;
+// 	OwnerId?: number;
+// 	WidgetType?: string;
+// 	ScriptText?: string;
+// 	LastModifiedDate?: any;
+// 	LastModifiedByUserID?: number;
+// 	Name?: string;
+// 	Active?: boolean;
+// }
 
 interface IWidget {
 	widgetType?: string;
@@ -168,7 +169,7 @@ namespace LoanTekWidget {
 
 			widgetObj.prebuiltForms = [];
 			for (var iwt = 0, wtl = widgetData.widgetTemplates.length; iwt < wtl; iwt++) {
-				var wTemplate: IWidgetModelDataTemplate = widgetData.widgetTemplates[iwt];
+				var wTemplate: IWidgetModelDataModelWidget = widgetData.widgetTemplates[iwt];
 				if (wTemplate.Active) {
 					widgetObj.prebuiltForms.push(JSON.parse(wTemplate.ScriptText));
 				}

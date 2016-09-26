@@ -769,7 +769,7 @@ var LoanTekWidget;
                         returnElement.html(widgetCode);
                     }
                     else {
-                        returnElement.html('<br />[please edit to choose widget]<br />');
+                        returnElement.html('[please edit to choose widget]');
                     }
                     break;
                 default:

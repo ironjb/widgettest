@@ -1,6 +1,22 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
 /// <reference path="../common/widget-helpers.ts" />
 
+declare namespace IWidgetServices {
+	interface IGetWidgetsResults {
+		data: {
+			success: boolean;
+			url: string;
+			widgetList: IWidgetModelDataModelWidget[];
+			message: {
+				StatusCode: number;
+				StatusDescription: string;
+			}
+		}
+		status: number;
+		statusText: string;
+	}
+}
+
 interface IWidgetNgServices {
 	removeFieldItem?(field: IWidgetField, itemName: string): void;
 	editForm?(options: IFormEditOptions): void;
@@ -76,6 +92,7 @@ interface IWidgetEditFieldNgScope extends ng.IScope {
 	showButtonPreview: boolean;
 	showLabelPreview: boolean;
 	showTitlePreview: boolean;
+	widgetList: LTWidget.IWidgetInfo[];
 }
 
 interface IWidgetEditRepeatFieldNgScope extends ng.IScope {
@@ -288,7 +305,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			var settings: IFieldEditOptions = { modalSize: 'lg' };
 			angular.extend(settings, options);
 
-			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFieldNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFieldEditModalInstanceOptions) {
+			modalCtrl = ['$scope', '$http', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFieldNgScope, $http: ng.IHttpService, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFieldEditModalInstanceOptions) {
 				$scope.modelOptions = ngModelOptions;
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
@@ -342,6 +359,39 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						$scope.modField.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
 						customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs,'name', 'data-lt-additional-info-key');
 					}
+				}
+
+				if (el = 'widget') {
+					var widgetType: string;
+					if (ty === 'depositwidget') {
+						widgetType = 'DepositWidget';
+					} else {
+						widgetType = 'ContactWidget';
+					}
+
+					var widgetListInfo: ng.IRequestConfig = {
+						method: 'GET'
+						, url: '/Widgets/Home/GetWidgetsAndTemplates/' + widgetType + '?v=' + new Date().getTime()
+					};
+					$http(widgetListInfo).then(function (result: IWidgetServices.IGetWidgetsResults) {
+						if (result.data.success) {
+							$scope.widgetList = [];
+							for (var i = 0; i < result.data.widgetList.length; i++) {
+								var widgetItem: IWidgetModelDataModelWidget = result.data.widgetList[i];
+								var newWidgetListItem: LTWidget.IWidgetInfo = {
+									url: result.data.url
+									, ClientId: widgetItem.ClientId
+									, UserId: widgetItem.UserId
+									, formObject: JSON.parse(widgetItem.ScriptText)
+								};
+								$scope.widgetList.push(newWidgetListItem);
+							}
+						} else {
+							window.console && console.error('Error: ', result.data.message.StatusDescription);
+						}
+					}, function (error) {
+						window.console && console.error('Server Error: ', error);
+					});
 				}
 
 				$scope.fieldSizeChange = function () {
@@ -453,7 +503,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						delete $scope.modField.borderRadius;
 					}
 					if (lth.isNumber(customFieldNameIndex) && customFieldNameIndex !== -1) {
-						window.console && console.log('apply customFieldKeyValue:', $scope.customFieldKeyValue, ' index: ', customFieldNameIndex);
 						$scope.modField.attrs[customFieldNameIndex].value = $scope.customFieldKeyValue;
 					}
 					if ($scope.modField.attrs.length === 0) {

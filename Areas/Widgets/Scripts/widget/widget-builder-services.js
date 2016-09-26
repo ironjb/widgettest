@@ -155,7 +155,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                 var modalCtrl;
                 var settings = { modalSize: 'lg' };
                 angular.extend(settings, options);
-                modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope, $uibModalInstance, instanceOptions) {
+                modalCtrl = ['$scope', '$http', '$uibModalInstance', 'instanceOptions', function ($scope, $http, $uibModalInstance, instanceOptions) {
                         $scope.modelOptions = ngModelOptions;
                         $scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
                         $scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
@@ -202,6 +202,39 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 $scope.modField.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
                                 customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs, 'name', 'data-lt-additional-info-key');
                             }
+                        }
+                        if (el = 'widget') {
+                            var widgetType;
+                            if (ty === 'depositwidget') {
+                                widgetType = 'DepositWidget';
+                            }
+                            else {
+                                widgetType = 'ContactWidget';
+                            }
+                            var widgetListInfo = {
+                                method: 'GET',
+                                url: '/Widgets/Home/GetWidgetsAndTemplates/' + widgetType + '?v=' + new Date().getTime()
+                            };
+                            $http(widgetListInfo).then(function (result) {
+                                if (result.data.success) {
+                                    $scope.widgetList = [];
+                                    for (var i = 0; i < result.data.widgetList.length; i++) {
+                                        var widgetItem = result.data.widgetList[i];
+                                        var newWidgetListItem = {
+                                            url: result.data.url,
+                                            ClientId: widgetItem.ClientId,
+                                            UserId: widgetItem.UserId,
+                                            formObject: JSON.parse(widgetItem.ScriptText)
+                                        };
+                                        $scope.widgetList.push(newWidgetListItem);
+                                    }
+                                }
+                                else {
+                                    window.console && console.error('Error: ', result.data.message.StatusDescription);
+                                }
+                            }, function (error) {
+                                window.console && console.error('Server Error: ', error);
+                            });
                         }
                         $scope.fieldSizeChange = function () {
                             if ($scope.modField.size === lth.bootstrap.inputSizing.sm.id) {
@@ -310,7 +343,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 delete $scope.modField.borderRadius;
                             }
                             if (lth.isNumber(customFieldNameIndex) && customFieldNameIndex !== -1) {
-                                window.console && console.log('apply customFieldKeyValue:', $scope.customFieldKeyValue, ' index: ', customFieldNameIndex);
                                 $scope.modField.attrs[customFieldNameIndex].value = $scope.customFieldKeyValue;
                             }
                             if ($scope.modField.attrs.length === 0) {
