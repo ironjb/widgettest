@@ -450,6 +450,7 @@ var LoanTekWidget;
             mainScript = this.Interpolate(mainScriptWrap, { m: mainScript });
             mainScript = this.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
             wScript += mainScript;
+            wScript = wScript.replace(/\s+/gm, ' ');
             return wScript;
         };
         return helpers;

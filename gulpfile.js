@@ -72,6 +72,16 @@
 			])
 		.pipe(gulp.dest('js/lib/papaparse'));
 
+		// Copy simple-line-icons
+		gulp.src([
+			'bower_components/simple-line-icons/fonts/**'
+			])
+		.pipe(gulp.dest('fonts'));
+		gulp.src([
+			'bower_components/simple-line-icons/css/**'
+			])
+		.pipe(gulp.dest('Content'));
+
 		// // Metronic Bootstrap SASS
 		// gulp.src([
 		// 	'metronic_assets/theme/sass/**'

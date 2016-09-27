@@ -1,180 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Testing 2 CD Widgets on Same Page</title>
+</head>
+<body>
+Test of 2 CD Widgets on same page
 <style type="text/css">.ltw {display:none;}</style>
-<link rel="stylesheet" href="//localhost:8080/Areas/Widgets/Content/widget.css">
-<link rel="stylesheet" href="//localhost:8080/Areas/Widgets/Content/lt-captcha.css">
-<div id="ltWidgetWrapper_F32374"></div>
-<div id="ltWidgetResultWrapper_R32641"></div>
-<script type="text/javascript" src="//localhost:8080/Scripts/lib/jquery-1/jquery.min.js"></script>
-<script type="text/javascript" src="//localhost:8080/Scripts/lib/jquery/jquery.placeholder.min.js"></script>
-<script type="text/javascript" src="//localhost:8080/Areas/Widgets/Scripts/post-object/contact.js"></script>
-<script type="text/javascript" src="//localhost:8080/Areas/Widgets/Scripts/post-object/deposit.js"></script>
-<script type="text/javascript" src="//localhost:8080/Areas/Widgets/Scripts/common/lt-captcha.js"></script>
-<script type="text/javascript" src="//localhost:8080/Areas/Widgets/Scripts/common/widget-helpers.js"></script>
-<script type="text/javascript" src="//localhost:8080/Areas/Widgets/Scripts/widget/widget.js"></script>
-<script type="text/javascript">
-		var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);
-		var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);
-</script>
-						<script type="text/javascript">
-						(function () {
-						var pdfun = function () {
-							/*code ran after DOM created*/
-						};
-						var ev = function () {
-							return true;
-						};
-						var ltwboF32374 = {
-  "panelTitle": "Deposit Rates",
+<link rel="stylesheet" href="//Client.LoanTek.com/Content/widget/css">
+<div id="ltWidgetWrapper_F69736"></div>
+<div id="ltWidgetResultWrapper_R69445"></div>
+<script type="text/javascript" src="//Client.LoanTek.com/bundles/widget/widget"></script>
+            <script type="text/javascript">
+              var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);
+              var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);
+            </script>
+        <script type="text/javascript">
+        (function () {
+        var pdfun = function () {
+          /*code ran after DOM created*/
+        };
+        var ev = function () {
+          return true;
+        };
+        var ltwboF69736 = {
+  "panelTitle": "CD Rates",
   "fields": [
     {
       "field": "depositterm",
-      "cols": 6
+      "cols": 6,
+      "placeholder": "Term"
     },
     {
       "field": "depositamount",
-      "cols": 6
-    },
-    {
-      "field": "custominput",
-      "attrs": [
-        {
-          "name": "data-lt-additional-info-key",
-          "value": "MyCustomInput"
-        }
-      ],
-      "placeholder": "Custom Input"
-    },
-    {
-    	"field": "emailwidget",
-    	// "cols": 6,
-    	"widgetInfo": {
-    		"url": "urlForEmailWidget",
-    		"ClientId": 5,
-    		"UserId": 1940,
-    		// "scripts": ["/Scripts/lib/jquery-1/jquery.min.js", "/Scripts/lib/jquery/jquery.placeholder.min.js"],
-    		// "wwwRoot": "http://localhost:8080",
-    		// "initialScript": "<script type=\"text/javascript\">var ltjq#{uniqueNew} = ltw_ltjq;var lthlpr#{uniqueNew} = new LoanTekWidget.helpers(ltjq#{uniqueNew});<\/script>",
-			"formObject": {"name":"Well Well","buildObject":{"panelTitle":"Find Out More","fields":[{"field":"label","cols":4,"value":"First Name"},{"field":"firstname","cols":8},{"field":"label","value":"Last Name","cols":4},{"field":"lastname","cols":8},{"field":"label","cols":4,"value":"Email"},{"field":"email","cols":8},{"field":"label","value":"Phone Number","cols":4},{"field":"phone","cols":8},{"field":"label","cols":4,"value":"Company"},{"field":"company","cols":8},{"field":"label","cols":4,"value":"State"},{"field":"state","cols":8},{"field":"label","cols":4,"value":"Comments"},{"field":"comments","cols":8},{"field":"label","cols":4,"value":"Custom Field"},{"field":"custominput","attrs":[{"name":"data-lt-additional-info-key","value":"MyCustomInput"}],"cols":8,"placeholder":"Custom Input"},{"field":"label","cols":4,"value":"Security Check"},{"field":"captcha","cols":8},{"field":"successmessage","cols":8,"offsetCols":4},{"field":"submit","cols":8,"offsetCols":4},{"field":"customhidden","attrs":[{"name":"data-lt-additional-info-key","value":"MySpecialValue"}],"value":"test"}],"widgetType":"contact","formBorderType":"well"}}
-    	}
+      "cols": 6,
+      "placeholder": "Amount $"
     },
     {
       "field": "submit"
-    },
-    {
-      "field": "customhidden",
-      "attrs": [
-        {
-          "name": "data-lt-additional-info-key",
-          "value": "MyCustomHidden"
-        }
-      ],
-      "value": "hiddenValue"
     }
   ],
   "widgetType": "deposit",
-  "formBorderType": "panel",
-  "formBg": "#def",
-  "formBorderColor": "#08f",
-  "formBorderRadius": 0,
-  "formTitleColor": "#ddf",
-  "formTitleBgColor": "#06d",
-  "formGroupSpacing": 4,
-  "formFieldBorderRadius": 0,
-  "fieldSize": "sm",
-  "formButtonBorderRadius": 0,
+  "formWidthUnit": "px",
+  "formWidth": 400,
+  "formBorderType": "well",
+  "formBg": "#1e355e",
+  "formTitleColor": "#ffffff",
   "postDOMCallback": pdfun,
-  "uniqueQualifier": "F32374"
+  "uniqueQualifier": "F69736"
 };
-						var ltwoF32374 = {
+        var ltwoF69736 = {
   "postUrl": "https://clients-pricing-api.LoanTek.com/v1.0/Deposit/N05KN3YraUFwZ0Y5bWhKYjZEVGhIa0ZvWjlpWmljcXNMNjBrN05rUTg4SEZpL1BjUUNHNktzeDY5c3Rjb0E0c0FBPT01/ApyRequest",
   "externalValidatorFunction": ev,
   "clientId": 5,
-  "userId": 1940,
-  "uniqueQualifier": "F32374",
+  "userId": 1678,
+  "uniqueQualifier": "F69736",
   "resultDisplayOptions": {
     "fieldSize": "sm",
     "fields": [
+      {
+        "field": "label",
+        "cols": 4,
+        "align": "left",
+        "value": "APY",
+        "color": "#ffffff"
+      },
+      {
+        "field": "label",
+        "cols": 4,
+        "align": "left",
+        "value": "Total Interest Earned",
+        "color": "#ffffff"
+      },
+      {
+        "field": "label",
+        "cols": 4,
+        "align": "left",
+        "value": "Amount Plus Interest",
+        "color": "#ffffff"
+      },
+      {
+        "field": "hr",
+        "marginTopBottom": 4
+      },
       {
         "field": "depositdatalist",
         "fieldListOptions": {
           "fields": [
             {
-              "field": "label",
-              "cols": 3,
-              "value": "APY",
-              "fontSize": 16
-            },
-            {
               "field": "api",
-              "cols": 3,
+              "cols": 4,
               "value": "#{APY}%",
-              "color": "#5384bf",
-              "fontSize": 16
-            },
-            {
-              "field": "label",
-              "value": "Total Interest Earned",
-              "cols": 3
+              "color": "#04428c",
+              "fontSize": 24,
+              "padding": 2
             },
             {
               "field": "totalinterestearned",
-              "cols": 3,
+              "cols": 4,
               "value": "$#{TotalInterestEarned}",
-              "fontSize": 16,
-              "color": "#50be67"
-            },
-            {
-              "field": "label",
-              "cols": 3,
-              "value": "Base Rate",
-              "fontSize": 16
-            },
-            {
-              "field": "baserate",
-              "cols": 3,
-              "fontSize": 16,
-              "color": "#5384bf"
-            },
-            {
-              "field": "label",
-              "cols": 3,
-              "value": "Amount Plus Interest"
+              "fontSize": 20,
+              "color": "#006916",
+              "padding": 2
             },
             {
               "field": "amountplusinterest",
-              "cols": 3,
+              "cols": 4,
               "value": "$#{AmountPlusInterest}",
-              "color": "#50be67",
-              "fontSize": 16
+              "color": "#006916",
+              "fontSize": 20,
+              "padding": 2,
+              "align": "left"
             },
             {
-              "field": "label",
-              "cols": 3,
-              "fontSize": 16,
-              "value": "Final Rate"
-            },
-            {
-              "field": "finalrate",
-              "cols": 3,
-              "fontSize": 16,
-              "color": "#5384bf"
+              "field": "hr",
+              "marginTopBottom": 0
             }
-          ],
-          "fieldSize": "sm",
-          "formBorderType": "panel",
-          "formBg": "#def",
-          "formBorderColor": "#08f",
-          "formGroupSpacing": 2,
-          "formBorderRadius": 0
+          ]
         }
       },
       {
-        "field": "nodatamessage"
+        "field": "nodatamessage",
+        "fontSize": 12
       }
     ],
     "widgetType": "deposit",
-    "uniqueQualifier": "R32641"
+    "formWidthUnit": "px",
+    "formWidth": 400,
+    "formBorderType": "well",
+    "formBg": "#a1ca46",
+    "uniqueQualifier": "R69445"
   }
 };
-						var ltwfbF32374 = new LoanTekWidget.FormBuild(ltw_ltjq, ltw_lthlpr, ltwboF32374, ltwoF32374);
-						})();
-						</script>
+        var ltwfbF69736 = new LoanTekWidget.FormBuild(ltw_ltjq, ltw_lthlpr, ltwboF69736, ltwoF69736);
+        })();
+        </script>
+        <style type="text/css">.ltw {display:none;}</style>
+<link rel="stylesheet" href="//Client.LoanTek.com/Content/widget/css">
+<div id="ltWidgetWrapper_F84280"></div>
+<div id="ltWidgetResultWrapper_R84767"></div>
+<script type="text/javascript" src="//Client.LoanTek.com/bundles/widget/widget"></script>
+            <script type="text/javascript">
+              var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);
+              var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);
+            </script>
+        <script type="text/javascript">
+        (function () {
+        var pdfun = function () {
+          /*code ran after DOM created*/
+        };
+        var ev = function () {
+          return true;
+        };
+        var ltwboF84280 = {
+  "panelTitle": "CD Rates",
+  "fields": [
+    {
+      "field": "depositamountdd"
+    },
+    {
+      "field": "deposittermdd"
+    },
+    {
+      "field": "submit"
+    }
+  ],
+  "widgetType": "deposit",
+  "formWidthUnit": "px",
+  "formWidth": 400,
+  "formBorderType": "well",
+  "formBg": "#1e355e",
+  "formTitleColor": "#ffffff",
+  "postDOMCallback": pdfun,
+  "uniqueQualifier": "F84280"
+};
+        var ltwoF84280 = {
+  "postUrl": "https://clients-pricing-api.LoanTek.com/v1.0/Deposit/N05KN3YraUFwZ0Y5bWhKYjZEVGhIa0ZvWjlpWmljcXNMNjBrN05rUTg4SEZpL1BjUUNHNktzeDY5c3Rjb0E0c0FBPT01/ApyRequest",
+  "externalValidatorFunction": ev,
+  "clientId": 5,
+  "userId": 1678,
+  "uniqueQualifier": "F84280",
+  "resultDisplayOptions": {
+    "fieldSize": "sm",
+    "fields": [
+      {
+        "field": "label",
+        "cols": 4,
+        "align": "left",
+        "value": "APY",
+        "color": "#ffffff"
+      },
+      {
+        "field": "label",
+        "cols": 4,
+        "align": "left",
+        "value": "Total Interest Earned",
+        "color": "#ffffff"
+      },
+      {
+        "field": "label",
+        "cols": 4,
+        "align": "left",
+        "value": "Amount Plus Interest",
+        "color": "#ffffff"
+      },
+      {
+        "field": "hr",
+        "marginTopBottom": 4
+      },
+      {
+        "field": "depositdatalist",
+        "fieldListOptions": {
+          "fields": [
+            {
+              "field": "api",
+              "cols": 4,
+              "value": "#{APY}%",
+              "color": "#04428c",
+              "fontSize": 24,
+              "padding": 2
+            },
+            {
+              "field": "totalinterestearned",
+              "cols": 4,
+              "value": "$#{TotalInterestEarned}",
+              "fontSize": 20,
+              "color": "#006916",
+              "padding": 2
+            },
+            {
+              "field": "amountplusinterest",
+              "cols": 4,
+              "value": "$#{AmountPlusInterest}",
+              "color": "#006916",
+              "fontSize": 20,
+              "padding": 2,
+              "align": "left"
+            },
+            {
+              "field": "hr",
+              "marginTopBottom": 0
+            }
+          ]
+        }
+      },
+      {
+        "field": "nodatamessage",
+        "fontSize": 12
+      }
+    ],
+    "widgetType": "deposit",
+    "formWidthUnit": "px",
+    "formWidth": 400,
+    "formBorderType": "well",
+    "formBg": "#a1ca46",
+    "uniqueQualifier": "R84767"
+  }
+};
+        var ltwfbF84280 = new LoanTekWidget.FormBuild(ltw_ltjq, ltw_lthlpr, ltwboF84280, ltwoF84280);
+        })();
+        </script>
+</body>
+</html>

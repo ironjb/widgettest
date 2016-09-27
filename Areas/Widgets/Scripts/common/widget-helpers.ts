@@ -685,6 +685,7 @@ namespace LoanTekWidget {
 
 			// Add Main Script to rest of code
 			wScript += mainScript;
+			wScript = wScript.replace(/\s+/gm, ' ');
 
 			return wScript;
 		}
