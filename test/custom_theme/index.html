@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="html-footer-sticky">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="/Content/simple-line-icons.css" />
 
 	<link rel="stylesheet" href="/Content/lt-bootstrap.css" />
+	<link rel="stylesheet" href="/Content/lt-site.css" />
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -89,6 +90,7 @@
 								</ul>
 							</li>
 						</ul>
+						<p class="navbar-text navbar-right">text</p>
 					</div>
 				</nav>
 			</div>
@@ -96,11 +98,27 @@
 	</div>
 
 	<div class="container">
-		content
+		<ol class="breadcrumb">
+			<li><a href="#">Home</a></li>
+			<li><a href="#">Library</a></li>
+			<li class="active">Data</li>
+		</ol>
+							 <style type="text/css">.ltw {display:none;}</style> <link rel="stylesheet" href="//Client.LoanTek.com/Content/widget/css"> <div id="ltWidgetWrapper_F64918"></div> <div id="ltWidgetResultWrapper_R6477"></div> <script type="text/javascript" src="//Client.LoanTek.com/bundles/widget/widget"></script> <script type="text/javascript"> var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true); var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq); </script> <script type="text/javascript"> (function () { var pdfun = function () { /*code ran after DOM created*/ }; var ev = function () { return true; }; var ltwboF64918 = { "panelTitle": "CD Rates", "fields": [ { "field": "depositterm", "cols": 6, "placeholder": "Term" }, { "field": "depositamount", "cols": 6, "placeholder": "Amount $" }, { "field": "submit", "borderRadius": 20 } ], "widgetType": "deposit", "formWidthUnit": "px", "formWidth": 400, "formBorderType": "well", "formBg": "#1e355e", "formTitleColor": "#ffffff", "postDOMCallback": pdfun, "uniqueQualifier": "F64918" }; var ltwoF64918 = { "postUrl": "https://clients-pricing-api.LoanTek.com/v1.0/Deposit/N05KN3YraUFwZ0Y5bWhKYjZEVGhIa0ZvWjlpWmljcXNMNjBrN05rUTg4SEZpL1BjUUNHNktzeDY5c3Rjb0E0c0FBPT01/ApyRequest", "externalValidatorFunction": ev, "clientId": 5, "userId": 1678, "uniqueQualifier": "F64918", "resultDisplayOptions": { "fieldSize": "sm", "fields": [ { "field": "label", "cols": 4, "align": "left", "value": "APY", "color": "#ffffff" }, { "field": "label", "cols": 4, "align": "left", "value": "Total Interest Earned", "color": "#ffffff" }, { "field": "label", "cols": 4, "align": "left", "value": "Amount Plus Interest", "color": "#ffffff" }, { "field": "hr", "marginTopBottom": 4 }, { "field": "depositdatalist", "fieldListOptions": { "fields": [ { "field": "api", "cols": 4, "value": "#{APY}%", "color": "#04428c", "fontSize": 24, "padding": 2 }, { "field": "totalinterestearned", "cols": 4, "value": "$#{TotalInterestEarned}", "fontSize": 20, "color": "#006916", "padding": 2 }, { "field": "amountplusinterest", "cols": 4, "value": "$#{AmountPlusInterest}", "color": "#006916", "fontSize": 20, "padding": 2, "align": "left" }, { "field": "hr", "marginTopBottom": 0 } ] } }, { "field": "nodatamessage", "fontSize": 12 } ], "widgetType": "deposit", "formWidthUnit": "px", "formWidth": 400, "formBorderType": "well", "formBg": "#a1ca46", "uniqueQualifier": "R6477" } }; var ltwfbF64918 = new LoanTekWidget.FormBuild(ltw_ltjq, ltw_lthlpr, ltwboF64918, ltwoF64918); })(); </script>
+		<style type="text/css">.c-test{height: 100px; width: 200px; color: #eee; background-color: #333; transition: all 0.4s linear;} .c-test:hover { height: 900px; color: #411; background-color: #adf; }</style>
+		<div class="c-test">content</div>
+
 	</div>
 
-	<div class="navbar navbar-inverse navbar-fixed-bottom">
-		<div class="container">footer stuff</div>
+	<div class="footer footer-inverse footer-sticky">
+		<!-- <div class="navbar navbar-inverse m-b-0">
+			<div class="container">
+				<div class="navbar-text text-center">footer stuff</div>
+			</div>
+		</div> -->
+		<div class="container">
+			<p class="text-center">&copy; 2016 - LoanTek | 1020 West Main Street, Suite 270, Boise, Idaho 83702</p>
+			<p class="text-center">Support: <a href="mailto:support@loantek.com">support@loantek.com</a> | Call Us: <a href="tel:1-888-562-6835">1-888-562-6835</a></p>
+		</div>
 	</div>
 
 
