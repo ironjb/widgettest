@@ -4,9 +4,7 @@
 	<title>Widget Test</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/css/site-bootstrap.css" />
-	<link rel="stylesheet" href="/css/lib/angular-bootstrap-colorpicker/css/colorpicker.min.css" />
 	<link rel="stylesheet" href="/css/site.css" />
-	<!-- <style type="text/css">.ltw .form-horizontal > .form-group:last-child {margin-bottom: 0;}</style> -->
 </head>
 <body data-ng-app="WidgetBuilderApp" data-ng-controller="WidgetBuilderController">
 	<nav>
@@ -23,187 +21,24 @@
 				</div>
 				<div id="navbar" class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-						<!-- <li><a href="contactWidget.html">contactWidget</a></li>
-						<li><a href="contactWidgetBuild.html">contactWidgetBuild</a></li>
-						<li><a href="widgetTest.html">widgetTest</a></li> -->
 						<li><a href="test/papaparse">Papa Parse</a></li>
 						<li><a href="test/metronic">Metronic</a></li>
 						<li><a href="test/deposit_widget">Deposit Widget</a></li>
+						<li><a href="test/custom_theme">Custom Theme</a></li>
 						<li><a href="">link</a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 	</nav>
-	<!-- <style>
-		.lt-spinner {
-			width: 100px;
-			height: 100px;
-			animation: spinner 1s linear infinite;
-		}
-		.lt-spinner img {
-			width: 100%;
-		}
-		.my-spinner {
-			border: 4px solid #DDDDDD;
-			width: 100%;
-			height: 100%;
-			border-radius: 50%;
-			position: relative;
-		}
-		.my-spinner::before {
-			content: ' ';
-			position: absolute;
-			top: 5%;
-			left: 47%;
-			background-color: #DDDDDD;
-			width: 6%;
-			height: 20%;
-			border-radius: 1em;
-		}
-		@keyframes spinner {
-			from { transform: rotate(0deg); }
-			to { transform: rotate(360deg); }
-		}
-	</style> -->
 	<div class="container">
-		<a name="widgetTop"></a>
-		<h1>Widget Builder</h1>
-		<!-- <div class="lt-spinner">
-			<div class="my-spinner"></div>
-			<img src="/images/spinner.png" alt="" />
-		</div> -->
-		<div class="row">
-			<div class="col-sm-4">
-				<form action="" class="form-horizontal">
-					<div class="row">
-						<div class="col-sm-12">
-							<!-- <div class="btn btn-primary" data-drag="true" jqyoui-draggable="{animate:true,placeholder:true}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list1" ng-hidse="!list1.title">{{list1.title}}</div>
-
-
-							<div class="thumbnail" data-drop="true" data-jqyoui-options ng-model="list2" jqyoui-droppable style='height:50px;'>
-							<div class="btn btn-success" data-jqyoui-options ng-hide="!list2.title">{{list2.title}}</div>
-							</div>
-							{{list1}}
-							{{list2}} -->
-
-							<!-- <div class="panel panel-default">
-								<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
-									<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-								</div>
-								<div data-uib-collapse="isCollapsedScriptCopy">
-									<div class="panel-body">
-										<div class="row">
-											<div class="col-sm-12">
-												<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div> -->
-							<!-- <pre style="white-space: pre-wrap;">{{currentForm}}</pre> -->
-							<div class="panel panel-default">
-								<div class="panel-heading" data-ng-click="isCollapsedSaved = !isCollapsedSaved">
-									<h3 class="panel-title">Saved Widgets<span class="glyphicon pull-right" data-ng-class="isCollapsedSaved &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-								</div>
-								<div data-uib-collapse="isCollapsedSaved">
-									<div class="panel-body">
-										<div class="form-group form-group-sm">
-											<div class="col-sm-12">
-												<select name="SavedWidgetSelect" id="SavedWidgetSelect" class="form-control" data-ng-model="savedwidget">
-													<option value=""></option>
-													<option value="-2">Load Saved Widget</option>
-													<option value="-1">Save as a New Widget</option>
-												</select>
-											</div>
-										</div>
-										<div class="form-group form-group-sm">
-											<div class="col-sm-12">
-												<button class="btn btn-xs btn-primary" data-ng-click="SaveWidget();" type="button">save</button>
-												<button class="btn btn-xs btn-success" type="button">save as new</button>
-												<button class="btn btn-xs btn-danger" type="button">delete</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading" data-ng-click="isCollapsedTemplates = !isCollapsedTemplates">
-									<h3 class="panel-title">Use a Prebuilt Form<span class="glyphicon pull-right" data-ng-class="isCollapsedTemplates &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-								</div>
-								<div data-uib-collapse="isCollapsedTemplates">
-									<div class="panel-body">
-										<div class="form-group form-group-sm">
-											<div class="col-sm-12">
-												<select name="ltprebuiltTemplate" id="ltprebuiltTemplate" class="form-control" data-ng-change="UsePrebuiltForm();" data-ng-model="selectedForm" data-ng-options="pform.name for pform in widgetObject.prebuiltForms"></select>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading" data-ng-click="isCollapsedAvailableFields = !isCollapsedAvailableFields">
-									<h3 class="panel-title">Available Fields<span class="glyphicon pull-right" data-ng-class="isCollapsedAvailableFields &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-								</div>
-								<!-- data-ng-show="!aField.hideFromList &amp;&amp; !(!!aField.isIncluded &amp;&amp; !aField.allowMultiples)" -->
-								<div data-uib-collapse="isCollapsedAvailableFields">
-									<div class="panel-body">
-										<div class="form-group form-group-sm">
-											<div class="col-sm-12">
-												<div class="list-group">
-													<div class="list-group-item" data-ng-repeat="aField in allFieldsOptionsArray | filter: FilterAvailableFields | orderBy: ['allowMultiples']">
-														<div class="pull-right">
-															<span class="small text-danger" data-ng-show="!!aField.isLTRequired &amp;&amp; !aField.isIncluded">Required! &nbsp; </span>
-															<span class="small" data-ng-show="!aField.allowMultiples &amp;&amp; !!aField.isIncluded">Can only add once</span>
-															<!-- <a class="btn btn-default btn-xs" data-ui-draggable="true" data-drag="aField.id" data-drag-channel="fieldschannel" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a> -->
-															<a class="btn btn-default btn-xs btn-tool field-channel" data-jqyoui-draggable="{onStart:'onDragStart({field:\'{{aField.id}}\'})'}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-drag="true" data-ng-show="showAddBtns = aField.allowMultiples || !aField.isIncluded"><span class="glyphicon glyphicon-move"></span></a>
-															<button class="btn btn-default btn-xs" type="button" data-ng-click="addField(aField.id);" data-ng-show="showAddBtns"><span class="glyphicon glyphicon-plus"></span></button>
-														</div>
-														<span data-ng-bind="aField.name"></span>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- .row>.col-sm-12>.panel.panel-default>.panel-heading[data-ng-click="isCollapsed$ = !isCollapsed$"]>h3.panel-title{pt}>span.glyphicon.pull-right[data-ng-class="isCollapsed$ &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"]^^div[data-uib-collapse=isCollapsed$]>.panel-body{pb} -->
-				</form>
-			</div>
-			<div class="col-sm-8">
-				<div class="panel panel-default">
-					<div class="panel-heading" data-ng-click="isCollapsedScriptCopy = !isCollapsedScriptCopy">
-						<h3 class="panel-title">Contact Widget Script<span class="glyphicon pull-right" data-ng-class="isCollapsedScriptCopy &amp;&amp; 'glyphicon-chevron-right' || 'glyphicon-chevron-down'"></span></h3>
-					</div>
-					<div data-uib-collapse="isCollapsedScriptCopy">
-						<div class="panel-body">
-							<form action="" class="form-horizontal">
-								<div class="form-group">
-									<div class="col-sm-12">
-										<textarea data-ng-model="widgetScript" data-ng-class="scriptChangedClass" class="form-control input-sm code-mono code-sm code-change resize-vertical" rows="4" readonly="readonly"></textarea>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm-12"><button class="btn btn-default btn-sm" type="button">Demo</button></div>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div data-lt-compile-code="widgetScriptDisplay"></div>
-				</div>
-				<!-- <div class="row">
-					<div id="demoHtml"></div>
-				</div> -->
-			</div>
+		<div class="jumbotron">
+			<h1>Test</h1>
+			<p>This is a testing environment to try things out and play around before moving them to a dev environment.</p>
 		</div>
 	</div>
 
 	<script type="text/javascript" src="/js/lib/jquery/jquery.min.js"></script>
-	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script> -->
 	<script type="text/javascript" src="/js/lib/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/js/lib/jquery/jquery.placeholder.min.js"></script>
 	<script type="text/javascript" src="/js/lib/bootstrap/bootstrap.min.js"></script>
@@ -211,34 +46,6 @@
 	<script type="text/javascript" src="/js/lib/angular/angular-animate.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular/angular-sanitize.min.js"></script>
 	<script type="text/javascript" src="/js/lib/angular/ui-bootstrap-tpls.min.js"></script>
-	<script type="text/javascript" src="/js/lib/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.min.js"></script>
-	<!-- <script type="text/javascript" src="/js/lib/angular-native-dragdrop/draganddrop.min.js"></script> -->
-	<!-- <script type="text/javascript" src="/bower_components/angular-dragdrop/src/angular-dragdrop.js"></script> -->
-	<script type="text/javascript" src="/js/lib/angular/angular-dragdrop.min.js"></script>
 
-	<!-- <script type="text/javascript">window.console && console.log('before', $.fn.jquery, 'ltjQuery', ltjQuery);</script> -->
-
-	<!-- <script type="text/javascript" src="/js/lib/jquery-1/jquery.min.js"></script>
-	<script type="text/javascript" src="/js/lib/jquery/jquery.placeholder.min.js"></script>
-	<script type="text/javascript" src="/js/common/lt-captcha.js"></script>
-	<script type="text/javascript" src="/js/common/widget-helpers.js"></script>
-	<script type="text/javascript" src="/js/widget/widget.js"></script>
-	<script id="LoanTekWidgetBuilderHelpers" type="text/javascript">
-		var ltjq = ltjq || jQuery.noConflict(true);
-		var lth = new LoanTekWidget.helpers(ltjq);
-	</script> -->
-
-	<!-- <script type="text/javascript">window.console && console.log('after', $.fn.jquery, 'ltjQuery', ltjQuery.fn.jquery);</script> -->
-
-	<script type="text/javascript" src="/js/common/widget-helpers.js"></script>
-	<script type="text/javascript" src="/js/widget/widget-builder-helpers.js"></script>
-	<script type="text/javascript" src="/js/widget/widget-builder-templates.js"></script>
-	<script type="text/javascript" src="/js/widget/widget-builder-services.js"></script>
-	<script type="text/javascript" src="/js/widget/widget-builder-directives.js"></script>
-	<script type="text/javascript" src="/js/widget/widget-builder.js"></script>
-	<script type="text/javascript">
-		var widgetModelData = { modelWidget: { WidgetType: 'ContactWidget' }, widgetTemplates: [] };
-		var wbuilder = new LoanTekWidgetTest.WidgetBuilder(jQuery, widgetModelData);
-	</script>
 </body>
 </html>
