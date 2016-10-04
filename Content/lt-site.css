@@ -22,7 +22,8 @@ html.html-footer-sticky body .footer-sticky {
 .footer {
   height: 100px;
   border-top: 1px solid #eee;
-  padding-top: 1em;
+  padding-top: 0.8em;
+  font-size: 0.8em;
 }
 .footer-inverse {
   color: #eeeeee;
@@ -229,5 +230,9 @@ html.html-footer-sticky body .footer-sticky {
     visibility: visible;
     opacity: 1;
     filter: alpha(opacity=100);
+  }
+  .footer {
+    padding-top: 1em;
+    font-size: 1em;
   }
 }

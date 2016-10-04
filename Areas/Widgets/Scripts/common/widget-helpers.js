@@ -22,6 +22,8 @@ var LoanTekWidget;
             this.depositFields = new depositFields();
             this.depositResultFields = new depositResultFields();
             this.depositResultDataFields = new depositResultDataFields();
+            this.mortgageQuoteFields = new mortgageQuoteFields();
+            this.mortgageRateFields = new mortgageRateFields();
             this.postObjects = new postObjects();
         }
         helpers.prototype.isNumber = function (numCheck) {
@@ -29,6 +31,13 @@ var LoanTekWidget;
         };
         helpers.prototype.isStringNullOrEmpty = function (stringCheck) {
             return stringCheck === '' || typeof stringCheck !== 'string';
+        };
+        helpers.prototype.padZeros = function (num, size) {
+            var s = num + '';
+            while (s.length < size) {
+                s = '0' + s;
+            }
+            return s;
         };
         helpers.prototype.getDefaultBorderRadius = function (fieldSize) {
             if (fieldSize === void 0) { fieldSize = ''; }
@@ -291,6 +300,12 @@ var LoanTekWidget;
                     if (rowType === void 0) { rowType = 'row'; }
                     return el.div().addClass(rowType);
                 },
+                table: function () { return $('<table/>'); },
+                thead: function () { return $('<thead/>'); },
+                tbody: function () { return $('<tbody/>'); },
+                tr: function () { return $('<tr/>'); },
+                th: function () { return $('<th/>'); },
+                td: function () { return $('<td/>'); },
                 formGroup: function (formGroupSize) {
                     if (formGroupSize) {
                         return el.row('form-group').addClass('form-group-' + formGroupSize);
@@ -549,8 +564,8 @@ var LoanTekWidget;
     var widgetType = (function () {
         function widgetType() {
             this.contact = { id: 'contact', name: 'Contact' };
-            this.quote = { id: 'quote', name: 'Quote' };
-            this.rate = { id: 'rate', name: 'Rate' };
+            this.mortgagequote = { id: 'mortgagequote', name: 'Mortgage Quote' };
+            this.mortgagerate = { id: 'mortgagerate', name: 'Mortgage Rate' };
             this.deposit = { id: 'deposit', name: 'Deposit' };
         }
         return widgetType;
@@ -567,6 +582,7 @@ var LoanTekWidget;
             this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text' } };
             this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden' } };
             this.contactwidget = { id: 'contactwidget', name: 'Contact Widget', fieldTemplate: { element: 'widget', type: 'contactwidget' } };
+            this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
         }
         return sharedFields;
     }());
@@ -575,20 +591,20 @@ var LoanTekWidget;
             var sf = new sharedFields;
             this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
             this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwLastName', placeholder: 'Last Name', required: true } };
-            this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
             this.phone = { id: 'phone', name: 'Phone', fieldTemplate: { element: 'input', type: 'tel', id: 'ltwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' } };
             this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltwCompany', placeholder: 'Company' } };
             this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
             this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
+            this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
             this.captcha = sf.captcha;
             this.submit = sf.submit;
-            this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
             this.label = sf.label;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
             this.hr = sf.hr;
             this.custominput = sf.custominput;
             this.customhidden = sf.customhidden;
+            this.email = sf.email;
             helpers.prototype.SetRequiredFields(this);
         }
         return contactFields;
@@ -650,6 +666,62 @@ var LoanTekWidget;
             return helpers.prototype.ConvertObjectToArray(this);
         };
         return depositResultDataFields;
+    }());
+    var mortgageQuoteFields = (function () {
+        function mortgageQuoteFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
+            this.submit = sf.submit;
+            this.loanpurpose = { id: 'loanpurpose', name: 'loanpurpose', fieldTemplate: { element: 'select', type: 'loanpurpose', id: 'ltwLoanPurpose', placeholder: 'Loan Purpose' } };
+            this.zipcode = { id: 'zipcode', name: 'zipcode', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwZipCode', placeholder: 'Zip Code', required: true } };
+            this.purchaseprice = { id: 'purchaseprice', name: 'purchaseprice', fieldTemplate: { element: 'input', type: 'number', id: 'ltwPurchasePrice', placeholder: 'Purchase Price' } };
+            this.downpayment = { id: 'downpayment', name: 'downpayment', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDownPayment', placeholder: 'Down Payment' } };
+            this.propertyvalue = { id: 'propertyvalue', name: 'propertyvalue', fieldTemplate: { element: 'input', type: 'number', id: 'ltwPropertyValue', placeholder: 'Property Value' } };
+            this.balance = { id: 'balance', name: 'balance', fieldTemplate: { element: 'input', type: 'number', id: 'ltwBalance', placeholder: 'Mortgage Balance' } };
+            this.cashout = { id: 'cashout', name: 'cashout', fieldTemplate: { element: 'input', type: 'number', id: 'ltwCashout', placeholder: 'Cash Out Amount' } };
+            this.creditscore = { id: 'creditscore', name: 'creditscore', fieldTemplate: { element: 'select', type: 'creditscore', id: 'ltwCreditScore', placeholder: 'Credit Score' } };
+            this.loanprogram = { id: 'loanprogram', name: 'loanprogram', fieldTemplate: { element: 'dropdown', type: 'loanprogram', id: 'ltwLoanProgram' } };
+            this.monthlyincome = { id: 'monthlyincome', name: 'monthlyincome', fieldTemplate: { element: 'input', type: 'number', id: 'ltwMonthlyIncome', placeholder: 'Monthly Income (optional)' } };
+            this.monthlydebt = { id: 'monthlydebt', name: 'monthlydebt', fieldTemplate: { element: 'input', type: 'number', id: 'ltwMonthlyDebt', placeholder: 'Monthly Income (optional)' } };
+            this.propertytype = { id: 'propertytype', name: 'propertytype', fieldTemplate: { element: 'select', type: 'propertytype', id: 'ltwPropertyType', placeholder: 'Property Type' } };
+            this.propertyusage = { id: 'propertyusage', name: 'propertyusage', fieldTemplate: { element: 'select', type: 'propertyusage', id: 'ltwPropertyUsage', placeholder: 'Property Use' } };
+            this.vaeligible = { id: 'vaeligible', name: 'vaeligible', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVAEligible', placeholder: 'VA Eligible?' } };
+            this.vafirsttimeuse = { id: 'vafirsttimeuse', name: 'vafirsttimeuse', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVAFirstTimeUse', placeholder: 'VA First Time Use?' } };
+            this.vadisabled = { id: 'vadisabled', name: 'vadisabled', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVADisabled', placeholder: 'VA Disabled?' } };
+            this.vatype = { id: 'vatype', name: 'vatype', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVAType', placeholder: 'VA Type?' } };
+            this.firsttimebuyer = { id: 'firsttimebuyer', name: 'firsttimebuyer', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwFirstTimeBuyer', placeholder: 'First Time Buyer?' } };
+            this.foreclosed = { id: 'foreclosed', name: 'foreclosed', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwForeclosed', placeholder: 'Foreclosed?' } };
+            this.bankruptcy = { id: 'bankruptcy', name: 'bankruptcy', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwBankruptcy', placeholder: 'Bankruptcy?' } };
+            this.loanownedby = { id: 'loanownedby', name: 'loanownedby', fieldTemplate: { element: 'select', type: 'loanownedby', id: 'ltwLoanOwnedBy', placeholder: 'Loan Owned By?' } };
+            helpers.prototype.SetRequiredFields(this);
+        }
+        mortgageQuoteFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return mortgageQuoteFields;
+    }());
+    var mortgageRateFields = (function () {
+        function mortgageRateFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
+            this.email = sf.email;
+            this.submit = sf.submit;
+            this.loantype = { id: 'loantype', name: 'loantype', fieldTemplate: { element: 'select', type: 'loantype', id: 'ltwLoanType', placeholder: 'Loan Type' } };
+            this.ratetable = { id: 'ratetable', name: 'ratetable', fieldTemplate: { element: 'ratetable', type: 'ratetable', id: 'ltwRateTable' } };
+            this.desiredloanprogram = { id: 'desiredloanprogram', name: 'desiredloanprogram', fieldTemplate: { element: 'select', type: 'desiredloanprogram', id: 'ltwDesiredLoanProgram', placeholder: 'Desired Loan Type' } };
+            this.desiredinterestrate = { id: 'desiredinterestrate', name: 'desiredinterestrate', fieldTemplate: { element: 'select', type: 'desiredinterestrate', id: 'ltwDesiredInterestRate', placeholder: 'Desired Interest Rate' } };
+            helpers.prototype.SetRequiredFields(this);
+        }
+        mortgageRateFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return mortgageRateFields;
     }());
     var postObjects = (function () {
         function postObjects() {

@@ -151,6 +151,8 @@ namespace LoanTekWidget {
 		public depositResultFields: depositResultFields;
 		public depositResultDataFields: depositResultDataFields;
 		public contactFieldsArray: IWidgetFieldOptions[];
+		public mortgageQuoteFields: mortgageQuoteFields;
+		public mortgageRateFields: mortgageRateFields;
 		public postObjects: postObjects;
 
 		constructor(jq: JQueryStatic) {
@@ -170,6 +172,8 @@ namespace LoanTekWidget {
 			this.depositFields = new depositFields();
 			this.depositResultFields = new depositResultFields();
 			this.depositResultDataFields = new depositResultDataFields();
+			this.mortgageQuoteFields = new mortgageQuoteFields();
+			this.mortgageRateFields = new mortgageRateFields();
 			this.postObjects = new postObjects();
 		}
 
@@ -179,6 +183,14 @@ namespace LoanTekWidget {
 
 		isStringNullOrEmpty(stringCheck: string): boolean {
 			return stringCheck === '' || typeof stringCheck !== 'string';
+		}
+
+		padZeros(num: number, size: number): string {
+			var s = num + '';
+			while (s.length < size) {
+				s = '0' + s;
+			}
+			return s;
 		}
 
 		getDefaultBorderRadius(fieldSize: string = ''): number {
@@ -453,16 +465,22 @@ namespace LoanTekWidget {
 				, a: () => { return $('<a/>'); }
 				, span: () => { return $('<span/>'); }
 				, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
-				, form: () => { return $('<form/>').addClass('form-horizontal'); },
-				label: () => { return $('<label/>').addClass('control-label col-sm-12'); },
-				button: (type: string = 'button') => { return $('<button/>').prop('type', type); },
-				select: () => { return $('<select/>').addClass('form-control'); },
-				option: () => { return $('<option/>'); },
-				input: (type: string = 'text') => { return $('<input/>').prop('type', type); },
-				textarea: () => { return $('<textarea/>').addClass('form-control'); },
-				col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); },
-				row: (rowType: string = 'row') => { return el.div().addClass(rowType); },
-				formGroup: (formGroupSize?: string) => {
+				, form: () => { return $('<form/>').addClass('form-horizontal'); }
+				, label: () => { return $('<label/>').addClass('control-label col-sm-12'); }
+				, button: (type: string = 'button') => { return $('<button/>').prop('type', type); }
+				, select: () => { return $('<select/>').addClass('form-control'); }
+				, option: () => { return $('<option/>'); }
+				, input: (type: string = 'text') => { return $('<input/>').prop('type', type); }
+				, textarea: () => { return $('<textarea/>').addClass('form-control'); }
+				, col: (colNumber: number = 12, colSize: string = 'sm') => { return el.div().addClass('col-' + colSize + '-' + colNumber.toString()); }
+				, row: (rowType: string = 'row') => { return el.div().addClass(rowType); }
+				, table: () => { return $('<table/>'); }
+				, thead: () => { return $('<thead/>'); }
+				, tbody: () => { return $('<tbody/>'); }
+				, tr: () => { return $('<tr/>'); }
+				, th: () => { return $('<th/>'); }
+				, td: () => { return $('<td/>'); }
+				, formGroup: (formGroupSize?: string) => {
 					if (formGroupSize) {
 						return el.row('form-group').addClass('form-group-' + formGroupSize);
 					} else {
@@ -833,13 +851,13 @@ namespace LoanTekWidget {
 
 	class widgetType {
 		public contact: IHelperNameId;
-		public quote: IHelperNameId;
-		public rate: IHelperNameId;
+		public mortgagequote: IHelperNameId;
+		public mortgagerate: IHelperNameId;
 		public deposit: IHelperNameId;
 		constructor() {
 			this.contact = { id: 'contact', name: 'Contact' };
-			this.quote = { id: 'quote', name: 'Quote' };
-			this.rate = { id: 'rate', name: 'Rate' };
+			this.mortgagequote = { id: 'mortgagequote', name: 'Mortgage Quote' };
+			this.mortgagerate = { id: 'mortgagerate', name: 'Mortgage Rate' };
 			this.deposit = { id: 'deposit', name: 'Deposit' };
 		}
 	}
@@ -855,6 +873,7 @@ namespace LoanTekWidget {
 		custominput: IWidgetFieldOptions;
 		customhidden: IWidgetFieldOptions;
 		contactwidget: IWidgetFieldOptions;
+		email: IWidgetFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
@@ -866,6 +885,7 @@ namespace LoanTekWidget {
 			this.custominput = { id: 'custominput', name: 'Custom Input', allowMultiples: true, fieldTemplate: { element: 'input', type: 'text'/*, cssClass: 'lt-custom-input'*/ } };
 			this.customhidden = { id: 'customhidden', name: 'Custom Hidden', allowMultiples: true, fieldTemplate: { element: 'input', type: 'hidden'/*, cssClass: 'lt-custom-input'*/ } };
 			this.contactwidget = { id: 'contactwidget', name: 'Contact Widget', fieldTemplate: { element: 'widget', type: 'contactwidget' } };
+			this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
 		}
 	}
 
@@ -890,20 +910,21 @@ namespace LoanTekWidget {
 			var sf = new sharedFields;
 			this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
 			this.lastname = { id: 'lastname', name: 'Last Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwLastName', placeholder: 'Last Name', required: true } };
-			this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
+			// this.email = { id: 'email', name: 'Email', isLTRequired: true, fieldTemplate: { element: 'input', type: 'email', id: 'ltwEmail', placeholder: 'Email', required: true } };
 			this.phone = { id: 'phone', name: 'Phone', fieldTemplate: { element: 'input', type: 'tel', id: 'ltwPhone', placeholder: 'Phone Number', pattern: '[\\d\\s()-]{7,14}' } };
 			this.company = { id: 'company', name: 'Company', fieldTemplate: { element: 'input', type: 'text', id: 'ltwCompany', placeholder: 'Company' } };
 			this.state = { id: 'state', name: 'State', fieldTemplate: { element: 'select', type: 'state', id: 'ltwState', placeholder: 'Select a State' } };
 			this.comments = { id: 'comments', name: 'Comments', fieldTemplate: { element: 'textarea', id: 'ltwComments', placeholder: 'Comments', rows: 4 } };
+			this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
 			this.captcha = sf.captcha;
 			this.submit = sf.submit;
-			this.successmessage = { id: 'successmessage', name: 'Success Message Upon Submit', fieldTemplate: { element: 'div', type: 'successmessage', id: 'ltwSuccessMessage', fontSize: 20, value: 'Thank you. You will be contacted shortly.' } };
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
 			this.custominput = sf.custominput;
 			this.customhidden = sf.customhidden;
+			this.email = sf.email;
 
 			helpers.prototype.SetRequiredFields(this);
 		}
@@ -994,6 +1015,107 @@ namespace LoanTekWidget {
 			this.compoundinteresttype = { id: 'compoundinteresttype', name: 'Compound Interest Type', fieldTemplate: { element: 'div', value: '#{CompoundInterestType}', cssClass: 'form-control-static' } };
 			this.baserate = { id: 'baserate', name: 'Base Rate', fieldTemplate: { element: 'div', value: '#{BaseRate}', cssClass: 'form-control-static' } };
 			this.finalrate = { id: 'finalrate', name: 'Final Rate', fieldTemplate: { element: 'div', value: '#{FinalRate}', cssClass: 'form-control-static' } };
+		}
+
+		asArray() {
+			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+		}
+	}
+
+	class mortgageQuoteFields {
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
+		submit: IWidgetFieldOptions;
+
+		loanpurpose: IWidgetFieldOptions;
+		zipcode: IWidgetFieldOptions;
+		purchaseprice: IWidgetFieldOptions;
+		downpayment: IWidgetFieldOptions;
+		propertyvalue: IWidgetFieldOptions;
+		balance: IWidgetFieldOptions;
+		cashout: IWidgetFieldOptions;
+		creditscore: IWidgetFieldOptions;
+		loanprogram: IWidgetFieldOptions;
+		monthlyincome: IWidgetFieldOptions;
+		monthlydebt: IWidgetFieldOptions;
+		propertytype: IWidgetFieldOptions;
+		propertyusage: IWidgetFieldOptions;
+		vaeligible: IWidgetFieldOptions;
+		vafirsttimeuse: IWidgetFieldOptions;
+		vadisabled: IWidgetFieldOptions;
+		vatype: IWidgetFieldOptions;
+		firsttimebuyer: IWidgetFieldOptions;
+		foreclosed: IWidgetFieldOptions;
+		bankruptcy: IWidgetFieldOptions;
+		loanownedby: IWidgetFieldOptions;
+		constructor() {
+			var sf = new sharedFields;
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
+			this.hr = sf.hr;
+			this.submit = sf.submit;
+
+			this.loanpurpose = { id: 'loanpurpose', name: 'loanpurpose', fieldTemplate: { element: 'select', type: 'loanpurpose', id: 'ltwLoanPurpose', placeholder: 'Loan Purpose' } };
+			this.zipcode = { id: 'zipcode', name: 'zipcode', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwZipCode', placeholder: 'Zip Code', required: true } };
+			this.purchaseprice = { id: 'purchaseprice', name: 'purchaseprice', fieldTemplate: { element: 'input', type: 'number', id: 'ltwPurchasePrice', placeholder: 'Purchase Price' } };
+			this.downpayment = { id: 'downpayment', name: 'downpayment', fieldTemplate: { element: 'input', type: 'number', id: 'ltwDownPayment', placeholder: 'Down Payment' } };
+			this.propertyvalue = { id: 'propertyvalue', name: 'propertyvalue', fieldTemplate: { element: 'input', type: 'number', id: 'ltwPropertyValue', placeholder: 'Property Value' } };
+			this.balance = { id: 'balance', name: 'balance', fieldTemplate: { element: 'input', type: 'number', id: 'ltwBalance', placeholder: 'Mortgage Balance' } };
+			this.cashout = { id: 'cashout', name: 'cashout', fieldTemplate: { element: 'input', type: 'number', id: 'ltwCashout', placeholder: 'Cash Out Amount' } };
+			this.creditscore = { id: 'creditscore', name: 'creditscore', fieldTemplate: { element: 'select', type: 'creditscore', id: 'ltwCreditScore', placeholder: 'Credit Score' } };
+			this.loanprogram = { id: 'loanprogram', name: 'loanprogram', fieldTemplate: { element: 'dropdown', type: 'loanprogram', id: 'ltwLoanProgram' } };
+			this.monthlyincome = { id: 'monthlyincome', name: 'monthlyincome', fieldTemplate: { element: 'input', type: 'number', id: 'ltwMonthlyIncome', placeholder: 'Monthly Income (optional)' } };
+			this.monthlydebt = { id: 'monthlydebt', name: 'monthlydebt', fieldTemplate: { element: 'input', type: 'number', id: 'ltwMonthlyDebt', placeholder: 'Monthly Income (optional)' } };
+			this.propertytype = { id: 'propertytype', name: 'propertytype', fieldTemplate: { element: 'select', type: 'propertytype', id: 'ltwPropertyType', placeholder: 'Property Type' } };
+			this.propertyusage = { id: 'propertyusage', name: 'propertyusage', fieldTemplate: { element: 'select', type: 'propertyusage', id: 'ltwPropertyUsage', placeholder: 'Property Use' } };
+			this.vaeligible = { id: 'vaeligible', name: 'vaeligible', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVAEligible', placeholder: 'VA Eligible?' } };
+			this.vafirsttimeuse = { id: 'vafirsttimeuse', name: 'vafirsttimeuse', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVAFirstTimeUse', placeholder: 'VA First Time Use?' } };
+			this.vadisabled = { id: 'vadisabled', name: 'vadisabled', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVADisabled', placeholder: 'VA Disabled?' } };
+			this.vatype = { id: 'vatype', name: 'vatype', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwVAType', placeholder: 'VA Type?' } };
+			this.firsttimebuyer = { id: 'firsttimebuyer', name: 'firsttimebuyer', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwFirstTimeBuyer', placeholder: 'First Time Buyer?' } };
+			this.foreclosed = { id: 'foreclosed', name: 'foreclosed', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwForeclosed', placeholder: 'Foreclosed?' } };
+			this.bankruptcy = { id: 'bankruptcy', name: 'bankruptcy', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwBankruptcy', placeholder: 'Bankruptcy?' } };
+			this.loanownedby = { id: 'loanownedby', name: 'loanownedby', fieldTemplate: { element: 'select', type: 'loanownedby', id: 'ltwLoanOwnedBy', placeholder: 'Loan Owned By?' } };
+
+			helpers.prototype.SetRequiredFields(this);
+		}
+
+		asArray() {
+			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+		}
+	}
+
+	class mortgageRateFields {
+		label: IWidgetFieldOptions;
+		title: IWidgetFieldOptions;
+		paragraph: IWidgetFieldOptions;
+		hr: IWidgetFieldOptions;
+		email: IWidgetFieldOptions;
+		submit: IWidgetFieldOptions;
+
+		loantype: IWidgetFieldOptions;
+		ratetable: IWidgetFieldOptions;
+		desiredloanprogram: IWidgetFieldOptions;
+		desiredinterestrate: IWidgetFieldOptions;
+
+		constructor() {
+			var sf = new sharedFields;
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
+			this.hr = sf.hr;
+			this.email = sf.email;
+			this.submit = sf.submit;
+
+			this.loantype = { id: 'loantype', name: 'loantype', fieldTemplate: { element: 'select', type: 'loantype', id: 'ltwLoanType', placeholder: 'Loan Type' } };
+			this.ratetable = { id: 'ratetable', name: 'ratetable', fieldTemplate: { element: 'ratetable', type: 'ratetable', id: 'ltwRateTable' } };
+			this.desiredloanprogram = { id: 'desiredloanprogram', name: 'desiredloanprogram', fieldTemplate: { element: 'select', type: 'desiredloanprogram', id: 'ltwDesiredLoanProgram', placeholder: 'Desired Loan Type' } };
+			this.desiredinterestrate = { id: 'desiredinterestrate', name: 'desiredinterestrate', fieldTemplate: { element: 'select', type: 'desiredinterestrate', id: 'ltwDesiredInterestRate', placeholder: 'Desired Interest Rate' } };
+
+			helpers.prototype.SetRequiredFields(this);
 		}
 
 		asArray() {

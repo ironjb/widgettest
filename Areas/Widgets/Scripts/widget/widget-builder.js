@@ -10,11 +10,13 @@ var LoanTekWidget;
             var ngModelOptions = { updateOn: 'default blur', debounce: { default: 1000, blur: 0 } };
             $('input textarea').placeholder();
             var widgetObj = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
-            if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
-                widgetObj.widgetType = lth.widgetType.quote.id;
+            if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgagequotewidget') {
+                widgetObj.fieldHelperType = 'mortgageQuoteFields';
+                widgetObj.widgetType = lth.widgetType.mortgagequote.id;
             }
-            else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'ratewidget') {
-                widgetObj.widgetType = lth.widgetType.rate.id;
+            else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgageratewidget') {
+                widgetObj.fieldHelperType = 'mortgageRateFields';
+                widgetObj.widgetType = lth.widgetType.mortgagerate.id;
             }
             else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
                 widgetObj.fieldHelperType = 'depositFields';

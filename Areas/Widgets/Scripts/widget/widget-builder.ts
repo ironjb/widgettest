@@ -147,11 +147,13 @@ namespace LoanTekWidget {
 
 			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
 
-			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'quotewidget') {
-				widgetObj.widgetType = lth.widgetType.quote.id;
+			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgagequotewidget') {
+				widgetObj.fieldHelperType = 'mortgageQuoteFields';
+				widgetObj.widgetType = lth.widgetType.mortgagequote.id;
 				// TODO: code for quote widget
-			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'ratewidget') {
-				widgetObj.widgetType = lth.widgetType.rate.id;
+			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgageratewidget') {
+				widgetObj.fieldHelperType = 'mortgageRateFields';
+				widgetObj.widgetType = lth.widgetType.mortgagerate.id;
 				// TODO: code for rate widget
 			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
 				widgetObj.fieldHelperType = 'depositFields';
