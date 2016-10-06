@@ -24,6 +24,8 @@
     "angular-bootstrap-colorpicker": "^3.0.25",
     "angular-dragdrop": "^1.0.13",
     "papaparse": "^4.1.2",
-    "simple-line-icons": "^2.4.1"
+    "simple-line-icons": "^2.4.1",
+    "datatables.net": "^1.10.12",
+    "datatables.net-bs": "^1.10.12"
   }
 }

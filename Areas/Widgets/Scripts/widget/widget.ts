@@ -14,6 +14,7 @@ declare namespace LTWidget {
 		form_errorMsgWrapper?: string;
 		form_errorMsg?: string;
 		uniqueQualifier?: string;
+		form_email?: string;
 
 		resultDisplayOptions?: IResultBuildOptions;
 	}
@@ -57,6 +58,13 @@ declare namespace LTWidget {
 		form_monthlyDebt?: string;	//number;
 		// AdditionalPostData?: LoanTekWidget.PostObject_MortgageQuote;
 	}
+
+	interface IMortgageRateFunctionalityOptions extends IFunctionalityOptions {
+		form_loanType?: string;
+		form_rateTable?: string;
+		form_desiredLoanProgram?: string;
+		form_desiredInterestRate?: string;
+	}
 }
 
 interface IWidgetFormBuildObject extends LTWidget.IBuildOptions {
@@ -75,7 +83,7 @@ interface IWidgetContactFunctionalityOptions extends LTWidget.IFunctionalityOpti
 
 	form_firstName?: string;
 	form_lastName?: string;
-	form_email?: string;
+	// form_email?: string;
 	form_phone?: string;
 	form_company?: string;
 	form_state?: string;
@@ -173,7 +181,7 @@ namespace LoanTekWidget {
 			if (settings.widgetType === lth.widgetType.mortgagequote.id) {
 				widgetFunctionality = new MortgageQuoteFunctionality(lth, readyOptions);
 			} else if (settings.widgetType === lth.widgetType.mortgagerate.id) {
-				//
+				widgetFunctionality = new MortgageRateFunctionality(lth, readyOptions);
 			} else if (settings.widgetType === lth.widgetType.deposit.id) {
 				widgetFunctionality = new DepositFunctionality(lth, readyOptions)
 			} else {
@@ -560,6 +568,100 @@ namespace LoanTekWidget {
 				settings.form_monthlyDebt += '_' + settings.uniqueQualifier;
 				customInputClass += '_' + settings.uniqueQualifier;
 			}
+		}
+	}
+
+	export class MortgageRateFunctionality {
+
+		constructor(lth: LoanTekWidget.helpers, options?: LTWidget.IMortgageRateFunctionalityOptions) {
+			var $ = lth.$;
+			var el = lth.CreateElement();
+			var settings: LTWidget.IMortgageRateFunctionalityOptions = {
+				// IFunctionalityOptions
+				postUrl: null
+				, externalValidatorFunction: null
+				, userId: null
+				, clientId: null
+				, form_id: '#ltWidgetForm'
+				, form_submit: '#ltwSubmit'
+				, form_errorAnchor: 'ltwErrorAnchor'
+				, form_errorMsgWrapper: '#ltwErrorMessageWrapper'
+				, form_errorMsg: '#ltwErrorMessage'
+				, form_email: '#ltwEmail'
+
+				// IMortgageRateFunctionalityOptions
+				, form_loanType: '#ltwLoanType'
+				, form_rateTable: '#ltwRateTable'
+				, form_desiredLoanProgram: '#ltwDesiredLoanProgram'
+				, form_desiredInterestRate: '#ltwDesiredInterestRate'
+			};
+			$.extend(true, settings, options);
+			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
+			var customInputClass = '.lt-custom-input';
+
+			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
+				settings.form_id += '_' + settings.uniqueQualifier;
+				settings.form_submit += '_' + settings.uniqueQualifier;
+				settings.form_errorAnchor += '_' + settings.uniqueQualifier;
+				settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
+				settings.form_errorMsg += '_' + settings.uniqueQualifier;
+				settings.form_email += '_' + settings.uniqueQualifier;
+				settings.form_loanType += '_' + settings.uniqueQualifier;
+				settings.form_rateTable += '_' + settings.uniqueQualifier;
+				settings.form_desiredLoanProgram += '_' + settings.uniqueQualifier;
+				settings.form_desiredInterestRate += '_' + settings.uniqueQualifier;
+				customInputClass += '_' + settings.uniqueQualifier;
+			}
+
+			$(function () {
+				var getRateData = function() {
+					var rateRequest = $.ajax({
+						method: 'GET'
+						// , url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
+						, url: '/test/rate_widget/response.json'
+					});
+
+					rateRequest.done(function(result) {
+						window.console && console.log('Rates data results: ', result);
+					});
+
+					rateRequest.fail(function(error) {
+						window.console && console.error('Error getting rates data', error);
+					});
+				};
+
+				// Populate Dropdowns
+				var ddRequest = $.ajax({
+					method: 'GET'
+					, url: '/test/rate_widget/response.json'
+				});
+
+				ddRequest.done(function (result) {
+					// window.console && console.log('result of dropdown data', result);
+					var fakeResultForLoanTypeDropdown = [
+						{ value: '30yearFixed', name: '30 year Fixed' }
+						, { value: '15yearFixed', name: '15 year Fixed' }
+						, { value: '5yearARM', name: '5/1 ARM' }
+					];
+					// if (fakeResultForLoanTypeDropdown.length > 0) {
+					// 	$(settings.form_loanType).html('');
+					// }
+					$.each(fakeResultForLoanTypeDropdown, function (i, type) {
+						// returnElement.append(el.option().val(type.value).html(type.name));
+						$(settings.form_loanType).append(el.option().val(type.value).html(type.name));
+					});
+				});
+
+				ddRequest.fail(function (error) {
+					window.console && console.error('Error getting dropdown data', error);
+				});
+
+				// On change of Loan Type
+				$(settings.form_loanType).change(function(event) {
+					window.console && console.log('LoanType changed');
+					getRateData();
+				});
+			});
 		}
 	}
 
@@ -1019,16 +1121,16 @@ namespace LoanTekWidget {
 								returnElement.append(el.option().val(amnt.value).html(amnt.name));
 							});
 							break;
-						case 'loantype':
-							var loanTypeList = [
-								{ value: '30yearFixed', name: '30 year Fixed' }
-								, { value: '15yearFixed', name: '15 year Fixed' }
-								, { value: '5yearARM', name: '5/1 ARM' }
-							];
-							$.each(loanTypeList, function (i, type) {
-								returnElement.append(el.option().val(type.value).html(type.name));
-							});
-							break;
+						// case 'loantype':
+						// 	var loanTypeList = [
+						// 		{ value: '30yearFixed', name: '30 year Fixed' }
+						// 		, { value: '15yearFixed', name: '15 year Fixed' }
+						// 		, { value: '5yearARM', name: '5/1 ARM' }
+						// 	];
+						// 	$.each(loanTypeList, function (i, type) {
+						// 		returnElement.append(el.option().val(type.value).html(type.name));
+						// 	});
+						// 	break;
 						case 'desiredloanprogram':
 							var desiredLoanProgramList = [
 								{ value: '30yearFixed', name: '30 year Fixed' }
@@ -1170,7 +1272,7 @@ namespace LoanTekWidget {
 						returnElement.html('[please edit to choose widget]');
 					}
 					break;
-				case 'ratetable':
+				case 'datatable':
 					returnElement = el.div();
 					break;
 				default:

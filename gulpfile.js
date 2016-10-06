@@ -82,6 +82,15 @@
 			])
 		.pipe(gulp.dest('Content'));
 
+		// Copy DataTables
+		gulp.src(['bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css'])
+		.pipe(gulp.dest('Content/lib/datatables'));
+		gulp.src([
+			'bower_components/datatables.net/js/jquery.dataTables.min.js',
+			'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js'
+			])
+		.pipe(gulp.dest('Scripts/lib/datatables'));
+
 		// // Metronic Bootstrap SASS
 		// gulp.src([
 		// 	'metronic_assets/theme/sass/**'

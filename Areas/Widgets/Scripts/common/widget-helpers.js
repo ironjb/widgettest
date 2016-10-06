@@ -150,6 +150,11 @@ var LoanTekWidget;
         };
         helpers.prototype.FormatNumber = function (n, decimalPlaces) {
             var newNumber;
+            var isNeg = false;
+            if (n < 0) {
+                isNeg = true;
+                n = -n;
+            }
             if (this.isNumber(decimalPlaces)) {
                 var decimalPower = Math.pow(10, decimalPlaces);
                 n = Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
@@ -183,6 +188,9 @@ var LoanTekWidget;
                 integerPart = integerPartArray.join(',');
             }
             decimalPart = (decimalPart === '.') ? '' : decimalPart;
+            if (isNeg) {
+                integerPart = '-' + integerPart;
+            }
             return integerPart + decimalPart;
         };
         helpers.prototype.ExtendWidgetFieldTemplate = function (eItem, templateName) {
@@ -713,7 +721,7 @@ var LoanTekWidget;
             this.email = sf.email;
             this.submit = sf.submit;
             this.loantype = { id: 'loantype', name: 'loantype', fieldTemplate: { element: 'select', type: 'loantype', id: 'ltwLoanType', placeholder: 'Loan Type' } };
-            this.ratetable = { id: 'ratetable', name: 'ratetable', fieldTemplate: { element: 'ratetable', type: 'ratetable', id: 'ltwRateTable' } };
+            this.ratetable = { id: 'ratetable', name: 'ratetable', fieldTemplate: { element: 'datatable', type: 'ratetable', id: 'ltwRateTable' } };
             this.desiredloanprogram = { id: 'desiredloanprogram', name: 'desiredloanprogram', fieldTemplate: { element: 'select', type: 'desiredloanprogram', id: 'ltwDesiredLoanProgram', placeholder: 'Desired Loan Type' } };
             this.desiredinterestrate = { id: 'desiredinterestrate', name: 'desiredinterestrate', fieldTemplate: { element: 'select', type: 'desiredinterestrate', id: 'ltwDesiredInterestRate', placeholder: 'Desired Interest Rate' } };
             helpers.prototype.SetRequiredFields(this);
