@@ -2,11 +2,110 @@
 /// <reference path="../common/widget-helpers.ts" />
 
 declare namespace IWidgetServices {
+	interface INgServices {
+		removeFieldItem?(field: IWidgetHelpers.IField, itemName: string): void;
+		editForm?(options: IFormEdit.IOptions): void;
+		editField?(options: IWidgetDirectives.IFieldEdit.IOptions): void;
+		editRepeatField?(options: IWidgetDirectives.IFieldEdit.IOptions): void;
+	}
+
+	namespace IFormEdit {
+		interface IOptions {
+			instanceOptions?: IModalInstanceOptions;
+			saveForm?(updateForm: IWidgetHelpers.IFormObject): void;
+		}
+
+		interface IModalInstanceOptions {
+			currentBuildObject: IWidgetHelpers.IBuildOptions;
+		}
+
+		interface INgScope extends ng.IScope {
+			modBuildOptions: IWidgetHelpers.IBuildOptions;
+			isBorderTypeNone: boolean;
+			isBorderTypePanel: boolean;
+			previewStyles: string;
+			fieldSizeClass: string;
+			buttonSizeClass: string;
+			modelOptions: Object;
+			borderType: Object;
+			formWidthUnits: Object;
+			fieldSizeUnits: Object;
+			changeFormWidthUnit($event: any, unit: any): void;
+			borderTypeChange(): void;
+			fieldSizeChange(): void;
+			saveClick(): void;
+			cancelClick(): void;
+			removeBuildObjectItem(itemName: string): void;
+		}
+	}
+
+	interface IFieldStyle {
+		fontSize?: string;
+		color?: string;
+		backgroundColor?: string;
+		borderColor?: string;
+		borderRadius?: string;
+		borderWidth?: string;
+		borderStyle?: string;
+		padding?: string
+		marginTop?: string;
+		marginBottom?: string;
+		textAlign?: string;
+	}
+
+	interface IWidgetEditFieldNgScope extends ng.IScope {
+		fieldSizeClass: string;
+		buttonSizeClass: string;
+		previewStyles: string;
+		valuePlaceholder: string;
+		customFieldKeyValue: string;
+		fieldStyle: IFieldStyle;
+		modBuildObject: IWidgetHelpers.IBuildOptions
+		modField: IWidgetHelpers.IField;
+		fieldOptions: IWidgetHelpers.IFieldOptions;
+		modelOptions: Object;
+		fieldSizeUnits: Object;
+		gridColumnsArray: IWidgetHelpers.IHelper.INameNumId[];
+		offsetColumnsArray: IWidgetHelpers.IHelper.INameNumId[];
+		headingArray: IWidgetHelpers.IHelper.INameNumId[];
+		fieldSizeChange(): void;
+		removeFieldItem(itemName: string): void;
+		saveClick(): void;
+		cancelClick(): void;
+		showTextFieldPreview: boolean;
+		showTextareaPreview: boolean;
+		showSelectPreview: boolean;
+		showParagraphPreview: boolean;
+		showButtonPreview: boolean;
+		showLabelPreview: boolean;
+		showTitlePreview: boolean;
+		widgetList: IWidgetHelpers.IWidgetInfo[];
+	}
+
+	interface IEditRepeatFieldNgScope extends ng.IScope {
+		modBuildObject: IWidget.IFormBuildObject;
+		modelOptions: Object;
+		modField: IWidgetHelpers.IField;
+		allRepeatDataFieldsObject: Object;
+		allRepeatDataFieldsOptionsArray: IWidgetHelpers.IFieldOptions[];
+		repeatFormDisplay: string;
+		previewDataFieldStyles: string;
+		saveWidget?(): void;
+		cancelClick?(): void;
+		editDataForm?(): void;
+		buildDisplay?(): void;
+		editFieldData: IWidgetBuilder.IEditFieldData;
+		addField?(fieldId: string, channel: string): void;
+		onDragStart: IWidgetBuilder.IOnDragStart;
+		dragData?: IWidgetBuilder.IOnDragStartData;
+		onDrop?: IWidgetBuilder.IOnDrop;
+	}
+
 	interface IGetWidgetsResults {
 		data: {
 			success: boolean;
 			url: string;
-			widgetList: IWidgetModelDataModelWidget[];
+			widgetList: IWidgetBuilder.IModal.IDataModelWidget[];
 			message: {
 				StatusCode: number;
 				StatusDescription: string;
@@ -17,102 +116,102 @@ declare namespace IWidgetServices {
 	}
 }
 
-interface IWidgetNgServices {
-	removeFieldItem?(field: IWidgetField, itemName: string): void;
-	editForm?(options: IFormEditOptions): void;
-	editField?(options: IFieldEditOptions): void;
-	editRepeatField?(options: IFieldEditOptions): void;
-}
+// interface IWidgetNgServices {
+// 	removeFieldItem?(field: IWidget.IField, itemName: string): void;
+// 	editForm?(options: IFormEditOptions): void;
+// 	editField?(options: IWidgetDirectives.IFieldEdit.IOptions): void;
+// 	editRepeatField?(options: IWidgetDirectives.IFieldEdit.IOptions): void;
+// }
 
-interface IFormEditOptions {
-	instanceOptions?: IFormEditModalInstanceOptions;
-	saveForm?(updateForm: LTWidget.IFormObject): void;
-}
+// interface IFormEditOptions {
+// 	instanceOptions?: IFormEditModalInstanceOptions;
+// 	saveForm?(updateForm: IWidget.IFormObject): void;
+// }
 
-interface IFormEditModalInstanceOptions {
-	currentBuildObject: LTWidget.IBuildOptions;
-}
+// interface IFormEditModalInstanceOptions {
+// 	currentBuildObject: IWidget.IBuildOptions;
+// }
 
-interface IWidgetEditFormNgScope extends ng.IScope {
-	modBuildOptions: LTWidget.IBuildOptions;
-	isBorderTypeNone: boolean;
-	isBorderTypePanel: boolean;
-	previewStyles: string;
-	fieldSizeClass: string;
-	buttonSizeClass: string;
-	modelOptions: Object;
-	borderType: Object;
-	formWidthUnits: Object;
-	fieldSizeUnits: Object;
-	changeFormWidthUnit($event: any, unit: any): void;
-	borderTypeChange(): void;
-	fieldSizeChange(): void;
-	saveClick(): void;
-	cancelClick(): void;
-	removeBuildObjectItem(itemName: string): void;
-}
+// interface IWidgetEditFormNgScope extends ng.IScope {
+// 	modBuildOptions: IWidget.IBuildOptions;
+// 	isBorderTypeNone: boolean;
+// 	isBorderTypePanel: boolean;
+// 	previewStyles: string;
+// 	fieldSizeClass: string;
+// 	buttonSizeClass: string;
+// 	modelOptions: Object;
+// 	borderType: Object;
+// 	formWidthUnits: Object;
+// 	fieldSizeUnits: Object;
+// 	changeFormWidthUnit($event: any, unit: any): void;
+// 	borderTypeChange(): void;
+// 	fieldSizeChange(): void;
+// 	saveClick(): void;
+// 	cancelClick(): void;
+// 	removeBuildObjectItem(itemName: string): void;
+// }
 
-interface IWidgetFieldStyle {
-	fontSize?: string;
-	color?: string;
-	backgroundColor?: string;
-	borderColor?: string;
-	borderRadius?: string;
-	borderWidth?: string;
-	borderStyle?: string;
-	padding?: string
-	marginTop?: string;
-	marginBottom?: string;
-	textAlign?: string;
-}
+// interface IWidgetFieldStyle {
+// 	fontSize?: string;
+// 	color?: string;
+// 	backgroundColor?: string;
+// 	borderColor?: string;
+// 	borderRadius?: string;
+// 	borderWidth?: string;
+// 	borderStyle?: string;
+// 	padding?: string
+// 	marginTop?: string;
+// 	marginBottom?: string;
+// 	textAlign?: string;
+// }
 
-interface IWidgetEditFieldNgScope extends ng.IScope {
-	fieldSizeClass: string;
-	buttonSizeClass: string;
-	previewStyles: string;
-	valuePlaceholder: string;
-	customFieldKeyValue: string;
-	fieldStyle: IWidgetFieldStyle;
-	modBuildObject: LTWidget.IBuildOptions
-	modField: IWidgetField;
-	fieldOptions: IWidgetFieldOptions;
-	modelOptions: Object;
-	fieldSizeUnits: Object;
-	gridColumnsArray: IHelperNameNumId[];
-	offsetColumnsArray: IHelperNameNumId[];
-	headingArray: IHelperNameNumId[];
-	fieldSizeChange(): void;
-	removeFieldItem(itemName: string): void;
-	saveClick(): void;
-	cancelClick(): void;
-	showTextFieldPreview: boolean;
-	showTextareaPreview: boolean;
-	showSelectPreview: boolean;
-	showParagraphPreview: boolean;
-	showButtonPreview: boolean;
-	showLabelPreview: boolean;
-	showTitlePreview: boolean;
-	widgetList: LTWidget.IWidgetInfo[];
-}
+// interface IWidgetEditFieldNgScope extends ng.IScope {
+// 	fieldSizeClass: string;
+// 	buttonSizeClass: string;
+// 	previewStyles: string;
+// 	valuePlaceholder: string;
+// 	customFieldKeyValue: string;
+// 	fieldStyle: IWidgetFieldStyle;
+// 	modBuildObject: IWidget.IBuildOptions
+// 	modField: IWidget.IField;
+// 	fieldOptions: IWidget.IFieldOptions;
+// 	modelOptions: Object;
+// 	fieldSizeUnits: Object;
+// 	gridColumnsArray: IWidget.IHelper.INameNumId[];
+// 	offsetColumnsArray: IWidget.IHelper.INameNumId[];
+// 	headingArray: IWidget.IHelper.INameNumId[];
+// 	fieldSizeChange(): void;
+// 	removeFieldItem(itemName: string): void;
+// 	saveClick(): void;
+// 	cancelClick(): void;
+// 	showTextFieldPreview: boolean;
+// 	showTextareaPreview: boolean;
+// 	showSelectPreview: boolean;
+// 	showParagraphPreview: boolean;
+// 	showButtonPreview: boolean;
+// 	showLabelPreview: boolean;
+// 	showTitlePreview: boolean;
+// 	widgetList: IWidget.IWidgetInfo[];
+// }
 
-interface IWidgetEditRepeatFieldNgScope extends ng.IScope {
-	modBuildObject: IWidgetFormBuildObject;
-	modelOptions: Object;
-	modField: IWidgetField;
-	allRepeatDataFieldsObject: Object;
-	allRepeatDataFieldsOptionsArray: IWidgetFieldOptions[];
-	repeatFormDisplay: string;
-	previewDataFieldStyles: string;
-	saveWidget?(): void;
-	cancelClick?(): void;
-	editDataForm?(): void;
-	buildDisplay?(): void;
-	editFieldData: IWidgetEditFieldData;
-	addField?(fieldId: string, channel: string): void;
-	onDragStart: IWidgetOnDragStart;
-	dragData?: IWidgetOnDragStartData;
-	onDrop?: IWidgetOnDrop;
-}
+// interface IWidgetEditRepeatFieldNgScope extends ng.IScope {
+// 	modBuildObject: IWidgetFormBuildObject;
+// 	modelOptions: Object;
+// 	modField: IWidget.IField;
+// 	allRepeatDataFieldsObject: Object;
+// 	allRepeatDataFieldsOptionsArray: IWidget.IFieldOptions[];
+// 	repeatFormDisplay: string;
+// 	previewDataFieldStyles: string;
+// 	saveWidget?(): void;
+// 	cancelClick?(): void;
+// 	editDataForm?(): void;
+// 	buildDisplay?(): void;
+// 	editFieldData: IWidgetEditFieldData;
+// 	addField?(fieldId: string, channel: string): void;
+// 	onDragStart: IWidgetOnDragStart;
+// 	dragData?: IWidgetOnDragStartData;
+// 	onDrop?: IWidgetOnDrop;
+// }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function () {
@@ -121,9 +220,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 	var ltWidgetServices = angular.module('ltw.services', ['ngSanitize']);
 	var ngModelOptions = { updateOn: 'default blur', debounce: { default: 500, blur: 0 } };
 	ltWidgetServices.factory('widgetServices', ['$uibModal', function ($uibModal: ng.ui.bootstrap.IModalService) {
-		var widgetMethods: IWidgetNgServices = {};
+		var widgetMethods: IWidgetServices.INgServices = {};
 
-		widgetMethods.removeFieldItem = function (field: IWidgetField, itemName: string) {
+		widgetMethods.removeFieldItem = function (field: IWidgetHelpers.IField, itemName: string) {
 			switch (itemName) {
 				case "value":
 					// code...
@@ -135,11 +234,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			}
 		};
 
-		widgetMethods.editForm = function (options: IFormEditOptions) {
+		widgetMethods.editForm = function (options: IWidgetServices.IFormEdit.IOptions) {
 			var settings = { modalSize: 'lg', instanceOptions: null, saveForm: null };
 			angular.extend(settings, options);
 
-			var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFormNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFormEditModalInstanceOptions) {
+			var modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetServices.IFormEdit.INgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IWidgetServices.IFormEdit.IModalInstanceOptions) {
 
 				$scope.modBuildOptions = angular.copy(instanceOptions.currentBuildObject);
 				$scope.borderType = angular.copy(lth.formBorderType);
@@ -228,7 +327,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				$scope.saveClick = () => {
-					var newBuildOptions: LTWidget.IBuildOptions = angular.copy($scope.modBuildOptions);
+					var newBuildOptions: IWidgetHelpers.IBuildOptions = angular.copy($scope.modBuildOptions);
 
 					if (!lth.isNumber(newBuildOptions.formBorderRadius) || newBuildOptions.formBorderRadius === lth.getDefaultBorderRadius(newBuildOptions.fieldSize)) {
 						delete newBuildOptions.formBorderRadius;
@@ -300,12 +399,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			});
 		};
 
-		widgetMethods.editField = function (options: IFieldEditOptions) {
+		widgetMethods.editField = function (options: IWidgetDirectives.IFieldEdit.IOptions) {
 			var modalCtrl: [string | Function];
-			var settings: IFieldEditOptions = { modalSize: 'lg' };
+			var settings: IWidgetDirectives.IFieldEdit.IOptions = { modalSize: 'lg' };
 			angular.extend(settings, options);
 
-			modalCtrl = ['$scope', '$http', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetEditFieldNgScope, $http: ng.IHttpService, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFieldEditModalInstanceOptions) {
+			modalCtrl = ['$scope', '$http', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetServices.IWidgetEditFieldNgScope, $http: ng.IHttpService, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IWidgetDirectives.IFieldEdit.IModalInstanceOptions) {
 				$scope.modelOptions = ngModelOptions;
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
@@ -377,8 +476,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						if (result.data.success) {
 							$scope.widgetList = [];
 							for (var i = 0; i < result.data.widgetList.length; i++) {
-								var widgetItem: IWidgetModelDataModelWidget = result.data.widgetList[i];
-								var newWidgetListItem: LTWidget.IWidgetInfo = {
+								var widgetItem: IWidgetBuilder.IModal.IDataModelWidget = result.data.widgetList[i];
+								var newWidgetListItem: IWidgetHelpers.IWidgetInfo = {
 									url: result.data.url
 									, ClientId: widgetItem.ClientId
 									, UserId: widgetItem.UserId
@@ -421,7 +520,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					, 'modField.align'
 				];
 				$scope.$watchGroup(watchList, function (newValue) {
-					var newStyle: IWidgetFieldStyle = {};
+					var newStyle: IWidgetServices.IFieldStyle = {};
 
 					if ($scope.modField.fontSize) {
 						newStyle.fontSize = $scope.modField.fontSize + 'px';
@@ -508,7 +607,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if ($scope.modField.attrs.length === 0) {
 						delete $scope.modField.attrs;
 					}
-					var newBuildObject: LTWidget.IFormObject = angular.copy($scope.modBuildObject);
+					var newBuildObject: IWidgetHelpers.IFormObject = angular.copy($scope.modBuildObject);
 					$uibModalInstance.close(newBuildObject);
 				};
 
@@ -535,12 +634,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			});
 		};
 
-		widgetMethods.editRepeatField = function (options: IFieldEditOptions) {
+		widgetMethods.editRepeatField = function (options: IWidgetDirectives.IFieldEdit.IOptions) {
 			var modalCtrl: [string | Function];
-			var settings: IFieldEditOptions = { modalSize: 'lg' };
+			var settings: IWidgetDirectives.IFieldEdit.IOptions = { modalSize: 'lg' };
 			angular.extend(settings, options);
 
-			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function($scope: IWidgetEditRepeatFieldNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IFieldEditModalInstanceOptions) {
+			modalCtrl = ['$scope', '$uibModalInstance', 'instanceOptions', function($scope: IWidgetServices.IEditRepeatFieldNgScope, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IWidgetDirectives.IFieldEdit.IModalInstanceOptions) {
 				$scope.modelOptions = ngModelOptions;
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
@@ -562,7 +661,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.buildDisplay();
 
 				$scope.saveWidget = function () {
-					var newBuildObject: LTWidget.IFormObject = angular.copy($scope.modBuildObject);
+					var newBuildObject: IWidgetHelpers.IFormObject = angular.copy($scope.modBuildObject);
 					$uibModalInstance.close(newBuildObject);
 				};
 
@@ -571,11 +670,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				$scope.editDataForm = function () {
-					var dataFormEditOptions: IFormEditOptions = {
+					var dataFormEditOptions: IWidgetServices.IFormEdit.IOptions = {
 						instanceOptions: {
 							currentBuildObject: $scope.modField.fieldListOptions
 						}
-						, saveForm: function (updatedBuildObject: IWidgetFormBuildObject) {
+						, saveForm: function (updatedBuildObject: IWidget.IFormBuildObject) {
 							$scope.modField.fieldListOptions = updatedBuildObject;
 							buildDisplay();
 						}
@@ -589,13 +688,13 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					$scope.buildDisplay();
 				};
 
-				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData) {
+				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetBuilder.IOnDragStartData) {
 					$scope.dragData = data;
 				}
 
 				function onDrop(event: Event, ui: JQueryUI.DroppableEventUIParam, dropIndex: number, channel?: string, columns?: number, isPlaceholder?: boolean) {
 					if ($scope.dragData.field) {
-						var newField: IWidgetField = { field: $scope.dragData.field };
+						var newField: IWidgetHelpers.IField = { field: $scope.dragData.field };
 						if (columns) {
 							newField.cols = columns;
 						}

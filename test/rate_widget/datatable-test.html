@@ -7,17 +7,18 @@
 	<link rel="stylesheet" href="/Content/lt-bootstrap.css" />
 	<link rel="stylesheet" href="/Content/lt-site.css" />
 
+<link rel="stylesheet" href="//localhost:8080/Content/lib/datatables/dataTables.bootstrap.min.css">
+
 <link rel="stylesheet" href="//localhost:8080/Areas/Widgets/Content/widget.css">
 <link rel="stylesheet" href="//localhost:8080/Areas/Widgets/Content/lt-captcha.css">
 <!-- <link rel="stylesheet" href="//localhost:8080/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
-<link rel="stylesheet" href="//localhost:8080/Content/lib/datatables/dataTables.bootstrap.min.css">
 
 <div>Example of Data Table</div>
 
 <div class="container">
 	<div class="table-responsive">
 		<table id="example" class="display table table-condensed table-striped" width="100%" cellspacing="0">
-			<thead>
+			<!-- <thead>
 				<tr>
 					<th>Rate</th>
 					<th>APR</th>
@@ -26,7 +27,7 @@
 					<th>Points</th>
 					<th>Months</th>
 				</tr>
-			</thead>
+			</thead> -->
 			<!-- <tfoot>
 				<tr>
 					<th>Name</th>
@@ -63,61 +64,64 @@ var fakeData = { "ClientDefinedIdentifier": "LTPdb4d7dc1fd73fbce", "PassThroughI
 var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);
 var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);
 
-var nTest = ltw_lthlpr.FormatNumber(-456.4565, null);
+// var nTest = ltw_lthlpr.FormatNumber(-45678910.4565, null, false, '$', null);
 // window.console && console.log('ntest', nTest);
 
 var formatPercent = function (data, type, row) {
-	return ltw_lthlpr.FormatNumber(data, 3) + '%';
+	// return ltw_lthlpr.FormatNumber(data, 3) + '%';
+	return ltw_lthlpr.FormatNumber(data, 3, true, null, '%');
 };
 
 var formatCurrency = function (data, type, row) {
-	var rData = '';
-	var isNeg = false;
+	// var rData = '';
+	// var isNeg = false;
 
-	if (data < 0) {
-		isNeg = true;
-		data = -data;
-	}
+	// if (data < 0) {
+	// 	isNeg = true;
+	// 	data = -data;
+	// }
 
-	rData = '$' + ltw_lthlpr.FormatNumber(data, 2);
+	// rData = '$' + ltw_lthlpr.FormatNumber(data, 2);
 
-	if (isNeg) {
-		rData = '(' + rData + ')';
-	}
+	// if (isNeg) {
+	// 	rData = '(' + rData + ')';
+	// }
 
-	return rData;
+	// return rData;
+	return ltw_lthlpr.FormatNumber(data, 2, true, '$');
 };
 
 var formatPoints = function (data, type, row) {
-	var rData = '';
-	var isNeg = false;
+	// var rData = '';
+	// var isNeg = false;
 
-	if (data > 0) {
-		isNeg = true;
-		data = -data;
-	}
+	// if (data < 0) {
+	// 	isNeg = true;
+	// 	data = -data;
+	// }
 
-	rData = ltw_lthlpr.FormatNumber(data, 3);
+	// rData = ltw_lthlpr.FormatNumber(data, 3);
 
-	if (isNeg) {
-		rData = '(' + rData + ')';
-	}
+	// if (isNeg) {
+	// 	rData = '(' + rData + ')';
+	// }
 
-	return rData;
+	// return rData;
+	return ltw_lthlpr.FormatNumber(data, 3, true);
 };
 
 var testDataTable = ltw_ltjq('#example').DataTable({
-	data: fakeData.Submissions[0].Quotes,
-	paging: false,
-	info: false,
-	searching: false,
-	columns: [
-		{ "data": "InterestRate", render: formatPercent },
-		{ "data": "APR", render: formatPercent },
-		{ "data": "QuoteFees", render: formatCurrency/*function(data, type, row) { return ltw_lthlpr.FormatNumber(data, 2);}*/ },
-		{ "data": "FeeSet.APRFees", render: formatCurrency },
-		{ "data": "Price", render: formatPoints },
-		{ "data": "NoteDueInMonths" }
+	data: fakeData.Submissions[0].Quotes
+	, paging: false
+	, info: false
+	, searching: false
+	, columns: [
+		{ "data": "InterestRate", render: formatPercent, visible: true, title: 'Rate' }
+		, { "data": "APR", render: formatPercent, title: 'APR' }
+		, { "data": "FinalFees"/*"QuoteFees"*/, render: formatCurrency/*function(data, type, row) { return ltw_lthlpr.FormatNumber(data, 2);}*/, title: 'Loan Fees' }
+		, { "data": "PIP"/*"FeeSet.APRFees"*/, render: formatCurrency, title: 'Payment' }
+		, { "data": "CalcPrice"/*"Price"*/, render: formatPoints, title: 'Points' }
+		// , { "data": "TermInMonths"/*"NoteDueInMonths"*/, title: 'Months' }
 	]
 });
 

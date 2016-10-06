@@ -1,6 +1,6 @@
 /// <reference path="../../../../Scripts/typings/jquery/jquery.d.ts" />
 
-declare namespace LTWidget {
+declare namespace IWidgetHelpers {
 	interface IResultBuildOptions extends IBuildOptions {
 		resultWrapperId?: string;
 	}
@@ -16,7 +16,7 @@ declare namespace LTWidget {
 		panelTitle?: string;
 		showBuilderTools?: boolean;
 		showNoDataMessage?: boolean;
-		fields?: IWidgetField[];
+		fields?: IField[];
 		fieldSize?: string;
 		fieldHelperType?: string;
 		successMessageWrapperId?: string;
@@ -38,12 +38,12 @@ declare namespace LTWidget {
 
 	interface IFormObject {
 		name?: string;
-		buildObject?: IWidgetFormBuildObject;
-		resultObject?: LTWidget.IResultBuildOptions;
+		buildObject?: IWidget.IFormBuildObject;
+		resultObject?: IResultBuildOptions;
 
 		// Part of Repeating form object
 		field?: string;
-		fieldListOptions?: LTWidget.IFieldListOptions;
+		fieldListOptions?: IFieldListOptions;
 	}
 
 	interface IWidgetOptions {
@@ -65,74 +65,217 @@ declare namespace LTWidget {
 		initialScript?: string;
 		// uniqueQualifier?: string;
 	}
+
+	namespace IHelper {
+		interface IFormBorderType { panel: INameId; well: INameId; none: INameId }
+		interface INameId { id: string; name: string; }
+		interface INameNumId { id: number; name: string; }
+		interface INameValue { name: string; value: string; }
+
+		interface IBootstrap { inputSizing: IBsInputSizing; gridSizing: IBsGridSizing; }
+		interface IBsInputSizing { sm: string; lg: string; }
+		interface IBsGridSizing { xs: string; sm: string; md: string; lg: string; }
+	}
+
+	interface IFieldOptions {
+		id?: string;
+		name: string;
+		groupName?: string;
+		isLTRequired?: boolean;
+		isIncluded?: boolean;
+		allowMultiples?: boolean;
+		hideFromList?: boolean;
+		fieldTemplate?: IField;
+	}
+
+	namespace IFieldOptionsExt {
+		interface IRateTable extends IFieldOptions {
+			fieldTemplate?: IFieldExt.IRateTable;
+		}
+	}
+
+	interface IField {
+		field?: string;
+		element?: string;
+		id?: string;
+		type?: string;
+		style?: string;
+		placeholder?: string;
+		required?: boolean;
+		cols?: number;
+		offsetCols?: number;
+		rows?: number;
+		cssClass?: string;
+		value?: string|number;
+		size?: string;
+		pattern?: string;
+		alttext?: string;
+		tabindex?: number;
+		nsize?: number;
+		attrs?: IHelper.INameValue[];
+		uniqueQualifier?: string;
+
+		color?: string;
+		fontSize?: number;
+		backgroundColor?: string;
+		borderRadius?: number;
+		borderColor?: string;
+		padding?: number;
+		marginTopBottom?: number;
+		align?: string;
+
+		fieldListOptions?: IFieldListOptions;
+		fieldData?: any[];
+
+		widgetInfo?: IWidgetInfo;
+	}
+
+	namespace IFieldExt {
+		interface IRateTable extends IField {
+			ratetableConfig?: IRateTable.IConfig;
+		}
+	}
+
+	namespace IDataTable {
+		namespace IColumn {
+			interface IConfig {
+				data: number | string;
+				render: number | string | Object | IRenderFunction;
+				visible: boolean;
+				title: string;
+			}
+
+			interface IRenderFunction {
+				(data: any, type?: string, row?: any, meta?: Object): string;
+			}
+		}
+	}
+
+	namespace IRateTable {
+		interface IConfig {
+			rateColumn: IDataTable.IColumn.IConfig;
+			// aprColumn:
+		}
+
+		interface IMortgageLoanQuote {
+			InterestRate?: number;
+			APR?: number;
+			FinalFees?: number;
+			PIP?: number;
+			CalcPrice?: number;
+			ProductTermType?: string;
+		}
+	}
+
+	// interface IWidgetRateTableConfig {
+	// 	colRate: IWidgetRateTableColumnConfig;
+	// }
+
+	// interface IWidgetRateTableColumnConfig {
+	// 	data: string | number;
+	// 	render: number | string | Object | Function;
+	// }
+
+	interface IProductTermType {
+		name: string;
+		value: number;
+		description: string;
+	}
+
+	interface IState {
+		abbreviation: string;
+		name: string;
+	}
+
+	interface IStates {
+		country: string;
+		states: IState[];
+	}
 }
 
-interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
-interface IHelperNameId { id: string; name: string; }
-interface IHelperNameNumId { id: number; name: string; }
-interface IHelperNameValue { name: string; value: string; }
+// interface IHelperFormBorderType { panel: IHelperNameId; well: IHelperNameId; none: IHelperNameId }
+// interface IHelperNameId { id: string; name: string; }
+// interface IHelperNameNumId { id: number; name: string; }
+// interface IHelperNameValue { name: string; value: string; }
 
-interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHelperBsGridSizing; }
-interface IHelperBsInputSizing { sm: string; lg: string; }
-interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
+// interface IHelperBootstrap { inputSizing: IHelperBsInputSizing; gridSizing: IHelperBsGridSizing; }
+// interface IHelperBsInputSizing { sm: string; lg: string; }
+// interface IHelperBsGridSizing { xs: string; sm: string; md: string; lg: string; }
 
 
-interface IWidgetFieldOptions {
-	id?: string;
-	name: string;
-	groupName?: string;
-	isLTRequired?: boolean;
-	isIncluded?: boolean;
-	allowMultiples?: boolean;
-	hideFromList?: boolean;
-	fieldTemplate?: IWidgetField;
-}
+// interface IWidgetFieldOptions {
+// 	id?: string;
+// 	name: string;
+// 	groupName?: string;
+// 	isLTRequired?: boolean;
+// 	isIncluded?: boolean;
+// 	allowMultiples?: boolean;
+// 	hideFromList?: boolean;
+// 	fieldTemplate?: IWidgetField;
+// }
 
-interface IWidgetField {
-	field?: string;
-	element?: string;
-	id?: string;
-	type?: string;
-	style?: string;
-	placeholder?: string;
-	required?: boolean;
-	cols?: number;
-	offsetCols?: number;
-	rows?: number;
-	cssClass?: string;
-	value?: string|number;
-	size?: string;
-	pattern?: string;
-	alttext?: string;
-	tabindex?: number;
-	nsize?: number;
-	attrs?: IHelperNameValue[];
-	uniqueQualifier?: string;
+// interface IWidgetFieldOptions_RateTable extends IWidgetFieldOptions {
+// 	fieldTemplate?: IWidgetField_RateTable;
+// }
 
-	color?: string;
-	fontSize?: number;
-	backgroundColor?: string;
-	borderRadius?: number;
-	borderColor?: string;
-	padding?: number;
-	marginTopBottom?: number;
-	align?: string;
+// interface IWidgetField {
+// 	field?: string;
+// 	element?: string;
+// 	id?: string;
+// 	type?: string;
+// 	style?: string;
+// 	placeholder?: string;
+// 	required?: boolean;
+// 	cols?: number;
+// 	offsetCols?: number;
+// 	rows?: number;
+// 	cssClass?: string;
+// 	value?: string|number;
+// 	size?: string;
+// 	pattern?: string;
+// 	alttext?: string;
+// 	tabindex?: number;
+// 	nsize?: number;
+// 	attrs?: IHelperNameValue[];
+// 	uniqueQualifier?: string;
 
-	fieldListOptions?: LTWidget.IFieldListOptions;
-	fieldData?: any[];
+// 	color?: string;
+// 	fontSize?: number;
+// 	backgroundColor?: string;
+// 	borderRadius?: number;
+// 	borderColor?: string;
+// 	padding?: number;
+// 	marginTopBottom?: number;
+// 	align?: string;
 
-	widgetInfo?: LTWidget.IWidgetInfo;
-}
+// 	fieldListOptions?: IWidget.IFieldListOptions;
+// 	fieldData?: any[];
 
-interface IState {
-	abbreviation: string;
-	name: string;
-}
+// 	widgetInfo?: IWidget.IWidgetInfo;
+// }
 
-interface IStates {
-	country: string;
-	states: IState[];
-}
+// interface IWidgetField_RateTable extends IWidgetField {
+// 	ratetableConfig?: IWidgetRateTableConfig;
+// }
+
+// interface IWidgetRateTableConfig {
+// 	colRate: IWidgetRateTableColumnConfig;
+// }
+
+// interface IWidgetRateTableColumnConfig {
+// 	data: string | number;
+// 	render: number | string | Object | Function;
+// }
+
+// interface IState {
+// 	abbreviation: string;
+// 	name: string;
+// }
+
+// interface IStates {
+// 	country: string;
+// 	states: IState[];
+// }
 
 namespace LoanTekWidget {
 	export class helpers {
@@ -140,7 +283,7 @@ namespace LoanTekWidget {
 		public bootstrap: bootstrap;
 		public hsize: hSizing;
 		public formBorderType: formBorderType;
-		public formBorderTypeArray: IHelperNameId[];
+		public formBorderTypeArray: IWidgetHelpers.IHelper.INameId[];
 		public widthUnit: widthUnit;
 		public widgetType: widgetType;
 		public defaultVerticalSpacing: number;
@@ -150,10 +293,11 @@ namespace LoanTekWidget {
 		public depositFields: depositFields;
 		public depositResultFields: depositResultFields;
 		public depositResultDataFields: depositResultDataFields;
-		public contactFieldsArray: IWidgetFieldOptions[];
+		public contactFieldsArray: IWidgetHelpers.IFieldOptions[];
 		public mortgageQuoteFields: mortgageQuoteFields;
 		public mortgageRateFields: mortgageRateFields;
 		public postObjects: postObjects;
+		public ProductTermType: ProductTermType;
 
 		constructor(jq: JQueryStatic) {
 			this.$ = jq;
@@ -161,20 +305,21 @@ namespace LoanTekWidget {
 			this.hsize = new hSizing();
 			this.bootstrap = new bootstrap();
 			this.formBorderType = new formBorderType();
-			this.formBorderTypeArray = this.ConvertObjectToArray<IHelperNameId>(this.formBorderType);
+			this.formBorderTypeArray = this.ConvertObjectToArray<IWidgetHelpers.IHelper.INameId>(this.formBorderType);
 			this.widthUnit = new widthUnit();
 			this.widgetType = new widgetType();
 			this.defaultVerticalSpacing = 15;
 			this.defaultFormSpecifierClass = 'ltwF';
 			this.defaultResultSpecifierClass = 'ltwR';
 			this.contactFields = new contactFields();
-			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetFieldOptions>(this.contactFields);
+			this.contactFieldsArray = this.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this.contactFields);
 			this.depositFields = new depositFields();
 			this.depositResultFields = new depositResultFields();
 			this.depositResultDataFields = new depositResultDataFields();
 			this.mortgageQuoteFields = new mortgageQuoteFields();
 			this.mortgageRateFields = new mortgageRateFields();
 			this.postObjects = new postObjects();
+			this.ProductTermType = new ProductTermType();
 		}
 
 		isNumber(numCheck: any): boolean {
@@ -239,6 +384,43 @@ namespace LoanTekWidget {
 			return prefix + ticks.substring(ticks.length - 2, ticks.length) + this.getRandomInt(999, 1);
 		}
 
+		getUniqueValuesFromArray(arr: any[], objPath?: string): any[] {
+			var uniqueArray: any[] = [];
+			var object: any;
+			for (var i = 0; i < arr.length; i++) {
+				if (objPath) {
+					object = this.getValueOfObjectInPath(arr[i], objPath);
+				} else {
+					object = arr[i];
+				}
+
+				if (uniqueArray.indexOf(object) === -1) {
+					// window.console && console.log('push to arr');
+					uniqueArray.push(object);
+				}
+			}
+
+			window.console && console.log('uniqArr', uniqueArray);
+			return uniqueArray;
+		}
+
+		getValueOfObjectInPath(obj: Object, objPath: string): any {
+			var objectValue: any;
+			var periodIndex = objPath.indexOf('.');
+
+			window.console && console.log('path', objPath);
+			if (periodIndex !== -1) {
+				window.console && console.log('newObj', objPath.substring(0, periodIndex));
+				window.console && console.log('newPath', objPath.substring(periodIndex + 1));
+				window.console && console.log('obj', obj);
+				return this.getValueOfObjectInPath(obj[objPath.substring(0, periodIndex)], objPath.substring(periodIndex + 1));
+			} else {
+				objectValue = obj[objPath];
+			}
+
+			return objectValue;
+		}
+
 		ConvertObjectToArray<T>(theObj: Object): T[] {
 			var objArray = [];
 			for (var key in theObj) {
@@ -284,7 +466,7 @@ namespace LoanTekWidget {
 
 		SetRequiredFields(fields) {
 			for (var fieldName in fields) {
-				var thisField: IWidgetFieldOptions = fields[fieldName];
+				var thisField: IWidgetHelpers.IFieldOptions = fields[fieldName];
 				if (thisField.isLTRequired) {
 					thisField.fieldTemplate.required = thisField.isLTRequired;
 				}
@@ -319,8 +501,12 @@ namespace LoanTekWidget {
 			});
 		}
 
-		FormatNumber(n: number, decimalPlaces?: number): string {
+		FormatNumber(n: number, decimalPlaces?: number, useParentheseForNegative?: boolean, prefix?: string, suffix?: string): string {
+			useParentheseForNegative = useParentheseForNegative || false;
+			prefix = prefix || '';
+			suffix = suffix || '';
 			var newNumber: string;
+			var decimalPower: number;
 			var isNeg: boolean = false;
 
 			if (n < 0) {
@@ -329,8 +515,8 @@ namespace LoanTekWidget {
 			}
 
 			if (this.isNumber(decimalPlaces)) {
-				var decimalPower = Math.pow(10, decimalPlaces);
-				n = Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+				decimalPower = Math.pow(10, decimalPlaces);
+				n = Math.round(n * decimalPower) / decimalPower;
 			}
 
 			newNumber = n + '';
@@ -372,17 +558,23 @@ namespace LoanTekWidget {
 
 			decimalPart = (decimalPart === '.') ? '' : decimalPart;
 
+			newNumber = prefix + integerPart + decimalPart + suffix;
+
 			if (isNeg) {
-				integerPart = '-' + integerPart;
+				if (useParentheseForNegative) {
+					newNumber = '(' + newNumber + ')';
+				} else {
+					newNumber = '-' + newNumber;
+				}
 			}
 
-			return integerPart + decimalPart;
+			return newNumber;
 		}
 
-		ExtendWidgetFieldTemplate(eItem: IWidgetField, templateName: string): IWidgetField {
+		ExtendWidgetFieldTemplate(eItem: IWidgetHelpers.IField, templateName: string): IWidgetHelpers.IField {
 			var _this = this;
-			var fOption: IWidgetFieldOptions;
-			var returnWidgetField: IWidgetField;
+			var fOption: IWidgetHelpers.IFieldOptions;
+			var returnWidgetField: IWidgetHelpers.IField;
 			if (_this[templateName] && _this[templateName][eItem.field]) {
 				fOption = _this[templateName][eItem.field];
 				returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
@@ -401,9 +593,9 @@ namespace LoanTekWidget {
 			return fieldHelperName;
 		}
 
-		GetFieldOptionsForWidgetType(widgetType: string, fieldName: string, objectType?: string): IWidgetFieldOptions {
+		GetFieldOptionsForWidgetType(widgetType: string, fieldName: string, objectType?: string): IWidgetHelpers.IFieldOptions {
 			var _this = this;
-			var returnFieldOptions: IWidgetFieldOptions = null;
+			var returnFieldOptions: IWidgetHelpers.IFieldOptions = null;
 			if (widgetType.toLowerCase().indexOf('depositdatalist') !== -1) {
 				returnFieldOptions = _this.depositResultDataFields[fieldName];
 			} else if (widgetType.toLowerCase().indexOf('quote') !== -1) {
@@ -510,8 +702,8 @@ namespace LoanTekWidget {
 			}, scrollSpeed);
 		}
 
-		US_States(): IStates {
-			var s: IStates = {
+		US_States(): IWidgetHelpers.IStates {
+			var s: IWidgetHelpers.IStates = {
 				country: 'USA',
 				states: [
 					{ abbreviation: 'AL', name: 'Alabama' },
@@ -570,15 +762,15 @@ namespace LoanTekWidget {
 			return s;
 		}
 
-		BuildWidgetScript(widgetInfo: LTWidget.IWidgetInfo, isBuilderVersion?: boolean): string {
+		BuildWidgetScript(widgetInfo: IWidgetHelpers.IWidgetInfo, isBuilderVersion?: boolean): string {
 			isBuilderVersion = isBuilderVersion || false;
 			var $ = this.$;
 			// var scriptHelpersCode = `
 			// 	var ltjq = ltjq || jQuery.noConflict(true);
 			// 	var lthlpr = new LoanTekWidget.helpers(ltjq);`;
-			var cfo: LTWidget.IFormObject = $.extend(true, {}, widgetInfo.formObject);
-			var cbo: IWidgetFormBuildObject = $.extend(true, {}, cfo.buildObject);
-			var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? $.extend(true, {}, cfo.resultObject) : null;
+			var cfo: IWidgetHelpers.IFormObject = $.extend(true, {}, widgetInfo.formObject);
+			var cbo: IWidget.IFormBuildObject = $.extend(true, {}, cfo.buildObject);
+			var cro: IWidgetHelpers.IResultBuildOptions = (cfo.resultObject) ? $.extend(true, {}, cfo.resultObject) : null;
 			var wScript: string = '';
 			var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
 			var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
@@ -675,7 +867,7 @@ namespace LoanTekWidget {
 			mainScript += this.Interpolate(buildObjectWrap, { bow: cboString });
 
 			// Widget Options Object setup
-			var ltWidgetOptions: LTWidget.IWidgetOptions = {
+			var ltWidgetOptions: IWidgetHelpers.IWidgetOptions = {
 				// postUrl: 'http://node-cors-server.herokuapp.com/no-cors',
 				// postUrl: 'http://node-cors-server.herokuapp.com/simple-cors',
 				postUrl: widgetInfo.url
@@ -720,12 +912,12 @@ namespace LoanTekWidget {
 	}
 
 	class hSizing {
-		public h1: IHelperNameNumId;
-		public h2: IHelperNameNumId;
-		public h3: IHelperNameNumId;
-		public h4: IHelperNameNumId;
-		public h5: IHelperNameNumId;
-		public h6: IHelperNameNumId;
+		public h1: IWidgetHelpers.IHelper.INameNumId;
+		public h2: IWidgetHelpers.IHelper.INameNumId;
+		public h3: IWidgetHelpers.IHelper.INameNumId;
+		public h4: IWidgetHelpers.IHelper.INameNumId;
+		public h5: IWidgetHelpers.IHelper.INameNumId;
+		public h6: IWidgetHelpers.IHelper.INameNumId;
 		constructor() {
 			this.h1 = { id: 1, name: 'Heading 1' };
 			this.h2 = { id: 2, name: 'Heading 2' };
@@ -735,35 +927,35 @@ namespace LoanTekWidget {
 			this.h6 = { id: 6, name: 'Heading 6' };
 		}
 
-		getDefault(): IHelperNameNumId {
+		getDefault(): IWidgetHelpers.IHelper.INameNumId {
 			return this.h4;
 		}
 
-		asArray(): IHelperNameNumId[] {
-			return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
+		asArray(): IWidgetHelpers.IHelper.INameNumId[] {
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IHelper.INameNumId>(this);
 		}
 	}
 
 	class inputSizing {
-		public sm: IHelperNameId;
-		public md: IHelperNameId;
-		public lg: IHelperNameId;
+		public sm: IWidgetHelpers.IHelper.INameId;
+		public md: IWidgetHelpers.IHelper.INameId;
+		public lg: IWidgetHelpers.IHelper.INameId;
 		constructor() {
 			this.sm = { id: 'sm', name: 'Small' };
 			this.md = { id: 'md', name: 'Medium' }
 			this.lg = { id: 'lg', name: 'Large' };
 		}
 
-		getDefault(): IHelperNameId {
+		getDefault(): IWidgetHelpers.IHelper.INameId {
 			return this.md;
 		}
 	}
 
 	class gridSizing {
-		public xs: IHelperNameId;
-		public sm: IHelperNameId;
-		public md: IHelperNameId;
-		public lg: IHelperNameId;
+		public xs: IWidgetHelpers.IHelper.INameId;
+		public sm: IWidgetHelpers.IHelper.INameId;
+		public md: IWidgetHelpers.IHelper.INameId;
+		public lg: IWidgetHelpers.IHelper.INameId;
 		constructor() {
 			this.xs = { id: 'xs', name: 'xs' };
 			this.sm = { id: 'sm', name: 'sm' };
@@ -771,24 +963,24 @@ namespace LoanTekWidget {
 			this.lg = { id: 'lg', name: 'lg' };
 		}
 
-		// getDefault(): IHelperNameId {
+		// getDefault(): IWidgetHelpers.IHelper.INameId {
 		// 	return this.md;
 		// }
 	}
 
 	class gridColumns {
-		public n1: IHelperNameNumId;
-		public n2: IHelperNameNumId;
-		public n3: IHelperNameNumId;
-		public n4: IHelperNameNumId;
-		public n5: IHelperNameNumId;
-		public n6: IHelperNameNumId;
-		public n7: IHelperNameNumId;
-		public n8: IHelperNameNumId;
-		public n9: IHelperNameNumId;
-		public n10: IHelperNameNumId;
-		public n11: IHelperNameNumId;
-		public n12: IHelperNameNumId;
+		public n1: IWidgetHelpers.IHelper.INameNumId;
+		public n2: IWidgetHelpers.IHelper.INameNumId;
+		public n3: IWidgetHelpers.IHelper.INameNumId;
+		public n4: IWidgetHelpers.IHelper.INameNumId;
+		public n5: IWidgetHelpers.IHelper.INameNumId;
+		public n6: IWidgetHelpers.IHelper.INameNumId;
+		public n7: IWidgetHelpers.IHelper.INameNumId;
+		public n8: IWidgetHelpers.IHelper.INameNumId;
+		public n9: IWidgetHelpers.IHelper.INameNumId;
+		public n10: IWidgetHelpers.IHelper.INameNumId;
+		public n11: IWidgetHelpers.IHelper.INameNumId;
+		public n12: IWidgetHelpers.IHelper.INameNumId;
 		constructor() {
 			// this.n1 = { id: 1, name: '1/12th' };
 			// this.n2 = { id: 2, name: '1/6th' };
@@ -804,12 +996,12 @@ namespace LoanTekWidget {
 			this.n12 = { id: 12, name: 'Full Width' };
 		}
 
-		getDefault(): IHelperNameNumId {
+		getDefault(): IWidgetHelpers.IHelper.INameNumId {
 			return this.n12;
 		}
 
-		asArray(): IHelperNameNumId[] {
-			return helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this);
+		asArray(): IWidgetHelpers.IHelper.INameNumId[] {
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IHelper.INameNumId>(this);
 		}
 	}
 
@@ -825,20 +1017,20 @@ namespace LoanTekWidget {
 		public gridSizing: gridSizing;
 		public gridColumns: gridColumns;
 		public offsetColumns: offsetColumns;
-		public gridColumnsArray: IHelperNameNumId[];
+		public gridColumnsArray: IWidgetHelpers.IHelper.INameNumId[];
 		constructor() {
 			this.inputSizing = new inputSizing;
 			this.gridSizing = new gridSizing;
 			this.gridColumns = new gridColumns;
 			this.offsetColumns = new offsetColumns;
-			this.gridColumnsArray = helpers.prototype.ConvertObjectToArray<IHelperNameNumId>(this.gridColumns);
+			this.gridColumnsArray = helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IHelper.INameNumId>(this.gridColumns);
 		}
 	}
 
 	class formBorderType {
-		public panel: IHelperNameId;
-		public well: IHelperNameId;
-		public none: IHelperNameId;
+		public panel: IWidgetHelpers.IHelper.INameId;
+		public well: IWidgetHelpers.IHelper.INameId;
+		public none: IWidgetHelpers.IHelper.INameId;
 		constructor() {
 			this.panel = { id: 'panel', name: 'Panel' };
 			this.well = { id: 'well', name: 'Well' };
@@ -847,23 +1039,23 @@ namespace LoanTekWidget {
 	}
 
 	class widthUnit {
-		px: IHelperNameId;
-		per: IHelperNameId;
+		px: IWidgetHelpers.IHelper.INameId;
+		per: IWidgetHelpers.IHelper.INameId;
 		constructor() {
 			this.px = { id: 'px', name: 'Pixels' };
 			this.per = { id: '%', name: 'Percent' };
 		}
 
-		getDefault(): IHelperNameId {
+		getDefault(): IWidgetHelpers.IHelper.INameId {
 			return this.per;
 		}
 	}
 
 	class widgetType {
-		public contact: IHelperNameId;
-		public mortgagequote: IHelperNameId;
-		public mortgagerate: IHelperNameId;
-		public deposit: IHelperNameId;
+		public contact: IWidgetHelpers.IHelper.INameId;
+		public mortgagequote: IWidgetHelpers.IHelper.INameId;
+		public mortgagerate: IWidgetHelpers.IHelper.INameId;
+		public deposit: IWidgetHelpers.IHelper.INameId;
 		constructor() {
 			this.contact = { id: 'contact', name: 'Contact' };
 			this.mortgagequote = { id: 'mortgagequote', name: 'Mortgage Quote' };
@@ -872,18 +1064,53 @@ namespace LoanTekWidget {
 		}
 	}
 
+	class ProductTermType {
+		NotSet: IWidgetHelpers.IProductTermType;
+		A1_1: IWidgetHelpers.IProductTermType;
+		F15: IWidgetHelpers.IProductTermType;
+		A5_1: IWidgetHelpers.IProductTermType;
+		A3_1: IWidgetHelpers.IProductTermType;
+		F10: IWidgetHelpers.IProductTermType;
+		A2_1: IWidgetHelpers.IProductTermType;
+		F40: IWidgetHelpers.IProductTermType;
+		F20: IWidgetHelpers.IProductTermType;
+		A7_1: IWidgetHelpers.IProductTermType;
+		F30: IWidgetHelpers.IProductTermType;
+		A10_1: IWidgetHelpers.IProductTermType;
+		F25: IWidgetHelpers.IProductTermType;
+		constructor() {
+			this.NotSet = { name: 'NotSet', value: -1, description: 'Not Set'};
+			this.A1_1 = { name: 'A1_1', value: 0, description: '1/1 ARM'};
+			this.F15 = { name: 'F15', value: 1, description: '15 year Fixed'};
+			this.A5_1 = { name: 'A5_1', value: 2, description: '5/1 ARM'};
+			this.A3_1 = { name: 'A3_1', value: 3, description: '3/1 ARM'};
+			this.F10 = { name: 'F10', value: 4, description: '10 year Fixed'};
+			this.A2_1 = { name: 'A2_1', value: 5, description: '2/1 ARM'};
+			this.F40 = { name: 'F40', value: 6, description: '40 year Fixed'};
+			this.F20 = { name: 'F20', value: 7, description: '20 year Fixed'};
+			this.A7_1 = { name: 'A7_1', value: 8, description: '7/1 ARM'};
+			this.F30 = { name: 'F30', value: 9, description: '30 year Fixed'};
+			this.A10_1 = { name: 'A10_1', value: 10, description: '10/1 ARM'};
+			this.F25 = { name: 'F25', value: 11, description: '25 year Fixed'};
+		}
+
+		asArray(): IWidgetHelpers.IProductTermType[] {
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IProductTermType>(this);
+		}
+	}
+
 	class sharedFields {
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		captcha: IWidgetFieldOptions;
-		submit: IWidgetFieldOptions;
-		nodatamessage: IWidgetFieldOptions;
-		custominput: IWidgetFieldOptions;
-		customhidden: IWidgetFieldOptions;
-		contactwidget: IWidgetFieldOptions;
-		email: IWidgetFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		captcha: IWidgetHelpers.IFieldOptions;
+		submit: IWidgetHelpers.IFieldOptions;
+		nodatamessage: IWidgetHelpers.IFieldOptions;
+		custominput: IWidgetHelpers.IFieldOptions;
+		customhidden: IWidgetHelpers.IFieldOptions;
+		contactwidget: IWidgetHelpers.IFieldOptions;
+		email: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			this.label = { id: 'label', name: 'Label', allowMultiples: true, fieldTemplate: { element: 'label', value: 'label' } };
 			this.title = { id: 'title', name: 'Title', allowMultiples: true, fieldTemplate: { element: 'title', value: 'title' } };
@@ -900,22 +1127,22 @@ namespace LoanTekWidget {
 	}
 
 	class contactFields {
-		firstname: IWidgetFieldOptions;
-		lastname: IWidgetFieldOptions;
-		email: IWidgetFieldOptions;
-		phone: IWidgetFieldOptions;
-		company: IWidgetFieldOptions;
-		state: IWidgetFieldOptions;
-		comments: IWidgetFieldOptions;
-		captcha: IWidgetFieldOptions;
-		submit: IWidgetFieldOptions;
-		successmessage: IWidgetFieldOptions;
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		custominput: IWidgetFieldOptions;
-		customhidden: IWidgetFieldOptions;
+		firstname: IWidgetHelpers.IFieldOptions;
+		lastname: IWidgetHelpers.IFieldOptions;
+		email: IWidgetHelpers.IFieldOptions;
+		phone: IWidgetHelpers.IFieldOptions;
+		company: IWidgetHelpers.IFieldOptions;
+		state: IWidgetHelpers.IFieldOptions;
+		comments: IWidgetHelpers.IFieldOptions;
+		captcha: IWidgetHelpers.IFieldOptions;
+		submit: IWidgetHelpers.IFieldOptions;
+		successmessage: IWidgetHelpers.IFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		custominput: IWidgetHelpers.IFieldOptions;
+		customhidden: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.firstname = { id: 'firstname', name: 'First Name', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwFirstName', placeholder: 'First Name', required: true } };
@@ -941,19 +1168,19 @@ namespace LoanTekWidget {
 	}
 
 	class depositFields {
-		depositterm: IWidgetFieldOptions;
-		depositamount: IWidgetFieldOptions;
-		deposittermdd: IWidgetFieldOptions;
-		depositamountdd: IWidgetFieldOptions;
-		submit: IWidgetFieldOptions;
-		captcha: IWidgetFieldOptions;
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		custominput: IWidgetFieldOptions;
-		customhidden: IWidgetFieldOptions;
-		contactwidget: IWidgetFieldOptions;
+		depositterm: IWidgetHelpers.IFieldOptions;
+		depositamount: IWidgetHelpers.IFieldOptions;
+		deposittermdd: IWidgetHelpers.IFieldOptions;
+		depositamountdd: IWidgetHelpers.IFieldOptions;
+		submit: IWidgetHelpers.IFieldOptions;
+		captcha: IWidgetHelpers.IFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		custominput: IWidgetHelpers.IFieldOptions;
+		customhidden: IWidgetHelpers.IFieldOptions;
+		contactwidget: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.depositterm = { id: 'depositterm', name: 'Term [textbox]', groupName: 'depositterm', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDepositTerm', placeholder: 'Enter # of Months'} };
@@ -974,17 +1201,17 @@ namespace LoanTekWidget {
 		}
 
 		asArray() {
-			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
 		}
 	}
 
 	class depositResultFields {
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		nodatamessage: IWidgetFieldOptions;
-		depositdatalist: IWidgetFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		nodatamessage: IWidgetHelpers.IFieldOptions;
+		depositdatalist: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
@@ -998,21 +1225,21 @@ namespace LoanTekWidget {
 		}
 
 		asArray() {
-			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
 		}
 	}
 
 	class depositResultDataFields {
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		api: IWidgetFieldOptions;
-		totalinterestearned: IWidgetFieldOptions;
-		amountplusinterest: IWidgetFieldOptions;
-		compoundinteresttype: IWidgetFieldOptions;
-		baserate: IWidgetFieldOptions;
-		finalrate: IWidgetFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		api: IWidgetHelpers.IFieldOptions;
+		totalinterestearned: IWidgetHelpers.IFieldOptions;
+		amountplusinterest: IWidgetHelpers.IFieldOptions;
+		compoundinteresttype: IWidgetHelpers.IFieldOptions;
+		baserate: IWidgetHelpers.IFieldOptions;
+		finalrate: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
@@ -1028,38 +1255,38 @@ namespace LoanTekWidget {
 		}
 
 		asArray() {
-			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
 		}
 	}
 
 	class mortgageQuoteFields {
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		submit: IWidgetFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		submit: IWidgetHelpers.IFieldOptions;
 
-		loanpurpose: IWidgetFieldOptions;
-		zipcode: IWidgetFieldOptions;
-		purchaseprice: IWidgetFieldOptions;
-		downpayment: IWidgetFieldOptions;
-		propertyvalue: IWidgetFieldOptions;
-		balance: IWidgetFieldOptions;
-		cashout: IWidgetFieldOptions;
-		creditscore: IWidgetFieldOptions;
-		loanprogram: IWidgetFieldOptions;
-		monthlyincome: IWidgetFieldOptions;
-		monthlydebt: IWidgetFieldOptions;
-		propertytype: IWidgetFieldOptions;
-		propertyusage: IWidgetFieldOptions;
-		vaeligible: IWidgetFieldOptions;
-		vafirsttimeuse: IWidgetFieldOptions;
-		vadisabled: IWidgetFieldOptions;
-		vatype: IWidgetFieldOptions;
-		firsttimebuyer: IWidgetFieldOptions;
-		foreclosed: IWidgetFieldOptions;
-		bankruptcy: IWidgetFieldOptions;
-		loanownedby: IWidgetFieldOptions;
+		loanpurpose: IWidgetHelpers.IFieldOptions;
+		zipcode: IWidgetHelpers.IFieldOptions;
+		purchaseprice: IWidgetHelpers.IFieldOptions;
+		downpayment: IWidgetHelpers.IFieldOptions;
+		propertyvalue: IWidgetHelpers.IFieldOptions;
+		balance: IWidgetHelpers.IFieldOptions;
+		cashout: IWidgetHelpers.IFieldOptions;
+		creditscore: IWidgetHelpers.IFieldOptions;
+		loanprogram: IWidgetHelpers.IFieldOptions;
+		monthlyincome: IWidgetHelpers.IFieldOptions;
+		monthlydebt: IWidgetHelpers.IFieldOptions;
+		propertytype: IWidgetHelpers.IFieldOptions;
+		propertyusage: IWidgetHelpers.IFieldOptions;
+		vaeligible: IWidgetHelpers.IFieldOptions;
+		vafirsttimeuse: IWidgetHelpers.IFieldOptions;
+		vadisabled: IWidgetHelpers.IFieldOptions;
+		vatype: IWidgetHelpers.IFieldOptions;
+		firsttimebuyer: IWidgetHelpers.IFieldOptions;
+		foreclosed: IWidgetHelpers.IFieldOptions;
+		bankruptcy: IWidgetHelpers.IFieldOptions;
+		loanownedby: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
@@ -1094,22 +1321,22 @@ namespace LoanTekWidget {
 		}
 
 		asArray() {
-			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
 		}
 	}
 
 	class mortgageRateFields {
-		label: IWidgetFieldOptions;
-		title: IWidgetFieldOptions;
-		paragraph: IWidgetFieldOptions;
-		hr: IWidgetFieldOptions;
-		email: IWidgetFieldOptions;
-		submit: IWidgetFieldOptions;
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+		email: IWidgetHelpers.IFieldOptions;
+		submit: IWidgetHelpers.IFieldOptions;
 
-		loantype: IWidgetFieldOptions;
-		ratetable: IWidgetFieldOptions;
-		desiredloanprogram: IWidgetFieldOptions;
-		desiredinterestrate: IWidgetFieldOptions;
+		loantype: IWidgetHelpers.IFieldOptions;
+		ratetable: IWidgetHelpers.IFieldOptions;
+		desiredloanprogram: IWidgetHelpers.IFieldOptions;
+		desiredinterestrate: IWidgetHelpers.IFieldOptions;
 
 		constructor() {
 			var sf = new sharedFields;
@@ -1129,7 +1356,7 @@ namespace LoanTekWidget {
 		}
 
 		asArray() {
-			return helpers.prototype.ConvertObjectToArray<IWidgetFieldOptions>(this);
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
 		}
 	}
 
@@ -1153,7 +1380,7 @@ namespace LoanTekWidget {
 		private _borderType: string;
 		private _lth: LoanTekWidget.helpers;
 
-		constructor(lth: LoanTekWidget.helpers, currentBuildObject: LTWidget.IBuildOptions, excludeCaptchaField?: boolean, specifier?: string) {
+		constructor(lth: LoanTekWidget.helpers, currentBuildObject: IWidgetHelpers.IBuildOptions, excludeCaptchaField?: boolean, specifier?: string) {
 			var _thisC = this;
 			specifier = specifier || '.' + lth.defaultFormSpecifierClass;
 			_thisC._specifier = specifier;

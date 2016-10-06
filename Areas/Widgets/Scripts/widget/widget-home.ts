@@ -1,10 +1,11 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
 
-
-interface IWidgetHomeNgScope extends ng.IScope {
-	AddWidget?(id: string): void;
-	EditWidget?(id: number): void;
-	DeleteWidget?(id: number): void;
+declare namespace IWidgetHome {
+	interface INgScope extends ng.IScope {
+		AddWidget?(id: string): void;
+		EditWidget?(id: number): void;
+		DeleteWidget?(id: number): void;
+	}
 }
 
 (function () {
@@ -12,7 +13,7 @@ interface IWidgetHomeNgScope extends ng.IScope {
 	var widgetHomeApp = angular.module('WidgetHomeApp', ['ui.bootstrap', 'ngAnimate', 'lt.services', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 	// Angular Home Controller
-	widgetHomeApp.controller('WidgetHomeController', ['$scope', 'commonServices', 'widgetServices', function ($scope: IWidgetHomeNgScope, commonServices: ICommonNgServices, widgetServices: IWidgetNgServices) {
+	widgetHomeApp.controller('WidgetHomeController', ['$scope', 'commonServices', 'widgetServices', function ($scope: IWidgetHome.INgScope, commonServices: ICommonNgServices, widgetServices: IWidgetServices.INgServices) {
 		$scope.AddWidget = AddWidget;
 		$scope.EditWidget = EditWidget;
 		$scope.DeleteWidget = DeleteWidget;

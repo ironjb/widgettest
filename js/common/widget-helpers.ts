@@ -407,8 +407,8 @@ namespace LoanTekWidgetTest {
 			}, scrollSpeed);
 		}
 
-		US_States(): IStates {
-			var s: IStates = {
+		US_States(): IW.IStates {
+			var s: IW.IStates = {
 				country: 'USA',
 				states: [
 					{ abbreviation: 'AL', name: 'Alabama' },

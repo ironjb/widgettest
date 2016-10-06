@@ -1,6 +1,6 @@
 /// <reference path="../common/widget-helpers.ts" />
 
-declare namespace LTWidget {
+declare namespace IWidget {
 
 	interface IFunctionalityOptions {
 		postUrl?: string;
@@ -16,7 +16,7 @@ declare namespace LTWidget {
 		uniqueQualifier?: string;
 		form_email?: string;
 
-		resultDisplayOptions?: IResultBuildOptions;
+		resultDisplayOptions?: IWidgetHelpers.IResultBuildOptions;
 	}
 
 	interface IDepositFunctionalityOptions extends IFunctionalityOptions {
@@ -65,41 +65,65 @@ declare namespace LTWidget {
 		form_desiredLoanProgram?: string;
 		form_desiredInterestRate?: string;
 	}
+
+	interface IFormBuildObject extends IWidgetHelpers.IBuildOptions {
+		wrapperId?: string;
+		formId?: string;
+		errorAnchor?: string;
+		errorMessageWrapperId?: string;
+		errrorMessageId?: string;
+		postDOMCallback?: any;
+	}
+
+	interface IContactFunctionalityOptions extends IWidget.IFunctionalityOptions {
+		redirectUrl?: string;
+		successMessage?: string;
+		AdditionalPostData?: LoanTekWidget.PostObject_Contact;
+
+		form_firstName?: string;
+		form_lastName?: string;
+		// form_email?: string;
+		form_phone?: string;
+		form_company?: string;
+		form_state?: string;
+		form_comments?: string;
+		form_successMessageWrapper?: string;
+	}
 }
 
-interface IWidgetFormBuildObject extends LTWidget.IBuildOptions {
-	wrapperId?: string;
-	formId?: string;
-	errorAnchor?: string;
-	errorMessageWrapperId?: string;
-	errrorMessageId?: string;
-	postDOMCallback?: any;
-}
+// interface IWidgetFormBuildObject extends IWidget.IBuildOptions {
+// 	wrapperId?: string;
+// 	formId?: string;
+// 	errorAnchor?: string;
+// 	errorMessageWrapperId?: string;
+// 	errrorMessageId?: string;
+// 	postDOMCallback?: any;
+// }
 
-interface IWidgetContactFunctionalityOptions extends LTWidget.IFunctionalityOptions {
-	redirectUrl?: string;
-	successMessage?: string;
-	AdditionalPostData?: LoanTekWidget.PostObject_Contact;
+// interface IWidgetContactFunctionalityOptions extends IWidget.IFunctionalityOptions {
+// 	redirectUrl?: string;
+// 	successMessage?: string;
+// 	AdditionalPostData?: LoanTekWidget.PostObject_Contact;
 
-	form_firstName?: string;
-	form_lastName?: string;
-	// form_email?: string;
-	form_phone?: string;
-	form_company?: string;
-	form_state?: string;
-	form_comments?: string;
-	form_successMessageWrapper?: string;
-}
+// 	form_firstName?: string;
+// 	form_lastName?: string;
+// 	// form_email?: string;
+// 	form_phone?: string;
+// 	form_company?: string;
+// 	form_state?: string;
+// 	form_comments?: string;
+// 	form_successMessageWrapper?: string;
+// }
 
 namespace LoanTekWidget {
 	export class FormBuild {
 		private _lth: LoanTekWidget.helpers;
 		private _$: JQueryStatic;
-		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options: IWidgetFormBuildObject, readyOptions?: any) {
+		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options: IWidget.IFormBuildObject, readyOptions?: any) {
 			var _thisC = this;
 			_thisC._lth = lth;
 			_thisC._$ = $;
-			var settings: IWidgetFormBuildObject = {
+			var settings: IWidget.IFormBuildObject = {
 				wrapperId: 'ltWidgetWrapper'
 				, formId: 'ltWidgetForm'
 				, widgetType: lth.widgetType.contact.id
@@ -192,8 +216,8 @@ namespace LoanTekWidget {
 
 	export class ContactFunctionality {
 
-		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: IWidgetContactFunctionalityOptions) {
-			var settings: IWidgetContactFunctionalityOptions = {
+		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: IWidget.IContactFunctionalityOptions) {
+			var settings: IWidget.IContactFunctionalityOptions = {
 				redirectUrl: null
 				, postUrl: null
 				// postUrl: 'https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/[authToken]',
@@ -326,9 +350,9 @@ namespace LoanTekWidget {
 
 	export class DepositFunctionality {
 
-		constructor(lth: LoanTekWidget.helpers, options?: LTWidget.IDepositFunctionalityOptions) {
+		constructor(lth: LoanTekWidget.helpers, options?: IWidget.IDepositFunctionalityOptions) {
 			var $ = lth.$;
-			var settings: LTWidget.IDepositFunctionalityOptions = {
+			var settings: IWidget.IDepositFunctionalityOptions = {
 				// IFunctionalityOptions options
 				postUrl: null
 				, externalValidatorFunction: null
@@ -371,7 +395,7 @@ namespace LoanTekWidget {
 
 				$(settings.form_submit).prop('disabled', false);
 
-				var appendDataToDataList = function (fieldList: IWidgetField[], data: any) {
+				var appendDataToDataList = function (fieldList: IWidgetHelpers.IField[], data: any) {
 					for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
 						var fieldItem = fieldList[flIndex];
 						if (fieldItem.field === 'depositdatalist') {
@@ -481,9 +505,9 @@ namespace LoanTekWidget {
 
 	export class MortgageQuoteFunctionality {
 
-		constructor(lth: LoanTekWidget.helpers, options?: LTWidget.IMortgageQuoteFunctionalityOptions) {
+		constructor(lth: LoanTekWidget.helpers, options?: IWidget.IMortgageQuoteFunctionalityOptions) {
 			var $ = lth.$;
-			var settings: LTWidget.IMortgageQuoteFunctionalityOptions = {
+			var settings: IWidget.IMortgageQuoteFunctionalityOptions = {
 				// IFunctionalityOptions
 				postUrl: null
 				, externalValidatorFunction: null
@@ -573,10 +597,10 @@ namespace LoanTekWidget {
 
 	export class MortgageRateFunctionality {
 
-		constructor(lth: LoanTekWidget.helpers, options?: LTWidget.IMortgageRateFunctionalityOptions) {
+		constructor(lth: LoanTekWidget.helpers, options?: IWidget.IMortgageRateFunctionalityOptions) {
 			var $ = lth.$;
 			var el = lth.CreateElement();
-			var settings: LTWidget.IMortgageRateFunctionalityOptions = {
+			var settings: IWidget.IMortgageRateFunctionalityOptions = {
 				// IFunctionalityOptions
 				postUrl: null
 				, externalValidatorFunction: null
@@ -614,62 +638,90 @@ namespace LoanTekWidget {
 			}
 
 			$(function () {
-				var getRateData = function() {
-					var rateRequest = $.ajax({
-						method: 'GET'
-						// , url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
-						, url: '/test/rate_widget/response.json'
-					});
+				// var getRateData = function() {
+				// 	var rateRequest = $.ajax({
+				// 		method: 'GET'
+				// 		// , url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
+				// 		, url: '/test/rate_widget/response.json'
+				// 	});
 
-					rateRequest.done(function(result) {
-						window.console && console.log('Rates data results: ', result);
-					});
+				// 	rateRequest.done(function(result) {
+				// 		window.console && console.log('Rates data results: ', result);
+				// 	});
 
-					rateRequest.fail(function(error) {
-						window.console && console.error('Error getting rates data', error);
-					});
-				};
+				// 	rateRequest.fail(function(error) {
+				// 		window.console && console.error('Error getting rates data', error);
+				// 	});
+				// };
 
 				// Populate Dropdowns
-				var ddRequest = $.ajax({
+				var rateRequest = $.ajax({
 					method: 'GET'
+					// , url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
 					, url: '/test/rate_widget/response.json'
+				}).then(function (result) {
+					// window.console && console.log('then success result', result);
+					var rateList = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];
+
+					// Get unique values from ProductTermType
+					// var loanTypes = lth.getUniqueValuesFromArray(['2', '3', '4', '2', '4']);
+					// var loanTypes = lth.getUniqueValuesFromArray([
+					// 	{ name: 'foo' }
+					// 	, { name: 'bar' }
+					// 	, { name: 'foo' }
+					// 	, { name: 'bar' }
+					// ],'name');
+					// var loanTypes = lth.getUniqueValuesFromArray([
+					// 	{ level1: { level2: { level3: { name: 'foo' } } } }
+					// 	, { level1: { level2: { level3: { name: 'bar' } } } }
+					// 	, { level1: { level2: { level3: { name: 'foo' } } } }
+					// 	, { level1: { level2: { level3: { name: 'bar' } } } }
+					// 	, { level1: { level2: { level3: { name: 'foo' } } } }
+					// 	, { level1: { level2: { level3: { name: 'bar2' } } } }
+					// 	, { level1: { level2: { level3: { name: 'foo' } } } }
+					// 	, { level1: { level2: { level3: { name: 'bar2' } } } }
+					// 	, { level1: { level2: { level3: { name: 'bar2' } } } }
+					// 	, { level1: { level2: { level3: { name: 'bar3' } } } }
+					// ],'level1.level2.level3.name');
+					var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
+					// window.console && console.log('loanTypes', loanTypes);
+				}, function (error) {
+					window.console && console.error('Error getting rates', error);
 				});
 
-				ddRequest.done(function (result) {
-					// window.console && console.log('result of dropdown data', result);
-					var fakeResultForLoanTypeDropdown = [
-						{ value: '30yearFixed', name: '30 year Fixed' }
-						, { value: '15yearFixed', name: '15 year Fixed' }
-						, { value: '5yearARM', name: '5/1 ARM' }
-					];
-					// if (fakeResultForLoanTypeDropdown.length > 0) {
-					// 	$(settings.form_loanType).html('');
-					// }
-					$.each(fakeResultForLoanTypeDropdown, function (i, type) {
-						// returnElement.append(el.option().val(type.value).html(type.name));
-						$(settings.form_loanType).append(el.option().val(type.value).html(type.name));
-					});
-				});
+				// ddRequest.done(function (result) {
+				// 	window.console && console.log('result of dropdown data', result);
+				// 	// var fakeResultForLoanTypeDropdown = [
+				// 	// 	{ value: '30yearFixed', name: '30 year Fixed' }
+				// 	// 	, { value: '15yearFixed', name: '15 year Fixed' }
+				// 	// 	, { value: '5yearARM', name: '5/1 ARM' }
+				// 	// ];
+				// 	// if (fakeResultForLoanTypeDropdown.length > 0) {
+				// 	// 	$(settings.form_loanType).html('');
+				// 	// }
+				// 	// $.each(fakeResultForLoanTypeDropdown, function (i, type) {
+				// 	// 	$(settings.form_loanType).append(el.option().val(type.value).html(type.name));
+				// 	// });
+				// });
 
-				ddRequest.fail(function (error) {
-					window.console && console.error('Error getting dropdown data', error);
-				});
+				// ddRequest.fail(function (error) {
+				// 	window.console && console.error('Error getting dropdown data', error);
+				// });
 
 				// On change of Loan Type
 				$(settings.form_loanType).change(function(event) {
 					window.console && console.log('LoanType changed');
-					getRateData();
+					// getRateData();
 				});
 			});
 		}
 	}
 
 	export class ResultsBuilder {
-		private settings: LTWidget.IResultBuildOptions;
+		private settings: IWidgetHelpers.IResultBuildOptions;
 		private lth: LoanTekWidget.helpers;
-		constructor(lth: LoanTekWidget.helpers, options: LTWidget.IResultBuildOptions) {
-			var _settings: LTWidget.IResultBuildOptions = {
+		constructor(lth: LoanTekWidget.helpers, options: IWidgetHelpers.IResultBuildOptions) {
+			var _settings: IWidgetHelpers.IResultBuildOptions = {
 				resultWrapperId: 'ltWidgetResultWrapper'
 				, noDataMessageWrapperId: 'ltwNoDataMessageWrapper'
 				, widgetChannel: 'result'
@@ -729,11 +781,11 @@ namespace LoanTekWidget {
 			this.lth = lth;
 		}
 
-		BuildFields(mainWrapper: JQuery, options: LTWidget.IBuildOptions, data?: any): JQuery {
+		BuildFields(mainWrapper: JQuery, options: IWidgetHelpers.IBuildOptions, data?: any): JQuery {
 			var _thisM = this;
 			var lth = this.lth;
 			var $ = lth.$;
-			var settings: LTWidget.IBuildOptions = {
+			var settings: IWidgetHelpers.IBuildOptions = {
 				fieldHelperType: null
 				, fieldSize: null
 				, showBuilderTools: false
@@ -1043,7 +1095,7 @@ namespace LoanTekWidget {
 			return mainWrapper;
 		}
 
-		CreateFormElement(elementObj: IWidgetField) {
+		CreateFormElement(elementObj: IWidgetHelpers.IField) {
 			var _thisM = this;
 			var lth = this.lth;
 			var $ = lth.$;
@@ -1204,8 +1256,8 @@ namespace LoanTekWidget {
 						settings.capErMsg += '_' + elementObj.uniqueQualifier;
 					}
 
-					var captchaInputObj: IWidgetField = { element: 'input', id: settings.capInput, placeholder: 'Enter the characters', required: true };
-					var captchaResetBtnObj: IWidgetField = { element: 'button', id: settings.capReset, cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
+					var captchaInputObj: IWidgetHelpers.IField = { element: 'input', id: settings.capInput, placeholder: 'Enter the characters', required: true };
+					var captchaResetBtnObj: IWidgetHelpers.IField = { element: 'button', id: settings.capReset, cssClass: 'btn-info', alttext: 'Reset', tabindex: -1, value: ' ' };
 					if (elementObj.size) {
 						captchaInputObj.size = elementObj.size;
 						captchaResetBtnObj.size = elementObj.size;

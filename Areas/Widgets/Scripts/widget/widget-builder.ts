@@ -2,33 +2,112 @@
 /// <reference path="../common/widget-helpers.ts" />
 
 declare namespace IWidgetBuilder {
+	interface IWidget {
+		widgetType?: string;
+		allFieldsObject?: Object;
+		allFieldsOptionsArray?: IWidgetHelpers.IFieldOptions[];
+		allResultFieldsObject?: Object;
+		allResultFieldsOptionsArray?: IWidgetHelpers.IFieldOptions[];
+		prebuiltForms?: IWidgetHelpers.IFormObject[];
+		fieldHelperType?: string;
+	}
+
 	interface IFieldExtended {
 		index: number;
-		fieldOptions: IWidgetFieldOptions;
+		fieldOptions: IWidgetHelpers.IFieldOptions;
 		additionalInfoIndex: number;
+	}
+
+	namespace IModal {
+		interface IData {
+			scriptsDomain?: string;
+			modelUrls?: string[];
+			modelWidget?: IDataModelWidget;
+			widgetTemplates?: IDataModelWidget[];
+		}
+
+		interface IDataModelWidget {
+			Id?: number;
+			Name?: string;
+			WidgetType?: string;
+			ClientId?: number;
+			UserId?: number;
+			OwnerId?: number;
+			ScriptText?: string;
+			LastModifiedByUserID?: number;
+			LastModifiedDate?: string;
+			Active?: boolean;
+			WidgetTypeType?: number | string;
+		}
+	}
+	interface IOnDragStart {
+		(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IOnDragStartData): void;
+	}
+
+	interface IOnDragStartData {
+		index?: number;
+		field?: string;
+	}
+
+	interface IOnDrop {
+		(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, channel: string, columns?: number, isPlaceholder?: boolean): void;
+	}
+
+	interface IEditFormInfo {
+		formObjectType?: string;
+		currentForm?: IWidgetHelpers.IFormObject;
+		clearSelectedForm?(): void;
+		setCurrentForm?(currentForm: IWidgetHelpers.IFormObject): void;
+		buildScript?: IScriptBuildFunction;
+	}
+
+	interface IEditFieldData {
+		widgetTypeLower?: string;
+		currentForm?: IWidgetHelpers.IFormObject;
+		clearSelectedForm?(): void;
+		onDragStart: IOnDragStart;
+		setCurrentForm?(currentForm: IWidgetHelpers.IFormObject): void;
+		buildScript?: IScriptBuildFunction;
+	}
+
+	interface INgScope extends ng.IScope, IWidgetBuilder.IWidget {
+		ngModelOptions?: Object;
+		currentForm?: IWidgetHelpers.IFormObject;
+		currentFormStr?: string;
+		SaveWidget?(saveAsNew?: boolean): void;
+		RevertWidget?(): void;
+		UsePrebuiltForm?(): void;
+		UpdateWidgetDisplay?(): void;
+		WidgetScriptBuild?: IScriptBuildFunction;
+		UpdateWidget?(): void;
+		ClearSelectedForm?(): void;
+		SetCurrentForm?(currentForm: IWidgetHelpers.IFormObject): void;
+		FilterAvailableFields?(value, index, array): boolean;
+		RemoveField?(index: number, formObjectType: string): void;
+		addField?(fieldId: string, channel: string): void;
+		onDragStart?: IOnDragStart;
+		onDrop?: IOnDrop;
+		FilterHiddenFormFields?(value, index, array): boolean;
+		FieldExtended?(field: IWidgetHelpers.IField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended;
+		selectedForm?: IWidgetHelpers.IFormObject;
+		passedModelForm?: IWidgetBuilder.IModal.IDataModelWidget;
+		widgetObject?: IWidgetBuilder.IWidget;
+		widgetScript?: string;
+		widgetScriptDisplay?: string;
+		widgetScriptParse?: string;
+		scriptChangedClass?: string;
+		editFormInfo?: IEditFormInfo;
+		editResultInfo?: IEditFormInfo;
+		editFieldData?: IEditFieldData;
+		dragData?: IOnDragStartData;
+		isExistingModel?: boolean;
+	}
+
+	interface IScriptBuildFunction {
+		(widgetFormObject?: IWidgetHelpers.IFormObject): void;
 	}
 }
 
-interface IWidgetModelData {
-	scriptsDomain?: string;
-	modelUrls?: string[];
-	modelWidget?: IWidgetModelDataModelWidget;
-	widgetTemplates?: IWidgetModelDataModelWidget[];
-}
-
-interface IWidgetModelDataModelWidget {
-	Id?: number;
-	Name?: string;
-	WidgetType?: string;
-	ClientId?: number;
-	UserId?: number;
-	OwnerId?: number;
-	ScriptText?: string;
-	LastModifiedByUserID?: number;
-	LastModifiedDate?: string;
-	Active?: boolean;
-	WidgetTypeType?: number | string;
-}
 
 // interface IWidgetModelDataTemplate {
 // 	WidgetTypeType?: number;
@@ -43,99 +122,99 @@ interface IWidgetModelDataModelWidget {
 // 	Active?: boolean;
 // }
 
-interface IWidget {
-	widgetType?: string;
-	allFieldsObject?: Object;
-	allFieldsOptionsArray?: IWidgetFieldOptions[];
-	allResultFieldsObject?: Object;
-	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
-	prebuiltForms?: LTWidget.IFormObject[];
-	fieldHelperType?: string;
-}
+// interface IWidget {
+// 	widgetType?: string;
+// 	allFieldsObject?: Object;
+// 	allFieldsOptionsArray?: IWidgetFieldOptions[];
+// 	allResultFieldsObject?: Object;
+// 	allResultFieldsOptionsArray?: IWidgetFieldOptions[];
+// 	prebuiltForms?: IWidget.IFormObject[];
+// 	fieldHelperType?: string;
+// }
 
 // interface IWidgetFormObject {
 // 	name?: string;
 // 	buildObject?: IWidgetFormBuildObject;
-// 	resultObject?: LTWidget.IResultBuildOptions;
+// 	resultObject?: IWidget.IResultBuildOptions;
 
 // 	// Part of Repeating form object
 // 	field?: string;
-// 	fieldListOptions?: LTWidget.IFieldListOptions;
+// 	fieldListOptions?: IWidget.IFieldListOptions;
 // }
 
-interface IWidgetOnDragStart {
-	(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
-}
+// interface IWidgetOnDragStart {
+// 	(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData): void;
+// }
 
-interface IWidgetOnDragStartData {
-	index?: number;
-	field?: string;
-}
+// interface IWidgetOnDragStartData {
+// 	index?: number;
+// 	field?: string;
+// }
 
-interface IWidgetOnDrop {
-	(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, channel: string, columns?: number, isPlaceholder?: boolean): void;
-}
+// interface IWidgetOnDrop {
+// 	(event: Event, ui: JQueryUI.DroppableEventUIParam, index: number, channel: string, columns?: number, isPlaceholder?: boolean): void;
+// }
 
-interface IWidgetEditFormInfo {
-	formObjectType?: string;
-	currentForm?: LTWidget.IFormObject;
-	clearSelectedForm?(): void;
-	setCurrentForm?(currentForm: LTWidget.IFormObject): void;
-	buildScript?: IWidgetScriptBuildFunction;
-}
+// interface IWidgetEditFormInfo {
+// 	formObjectType?: string;
+// 	currentForm?: IWidget.IFormObject;
+// 	clearSelectedForm?(): void;
+// 	setCurrentForm?(currentForm: IWidget.IFormObject): void;
+// 	buildScript?: IWidgetScriptBuildFunction;
+// }
 
-interface IWidgetEditFieldData {
-	widgetTypeLower?: string;
-	currentForm?: LTWidget.IFormObject;
-	clearSelectedForm?(): void;
-	onDragStart: IWidgetOnDragStart;
-	setCurrentForm?(currentForm: LTWidget.IFormObject): void;
-	buildScript?: IWidgetScriptBuildFunction;
-}
+// interface IWidgetEditFieldData {
+// 	widgetTypeLower?: string;
+// 	currentForm?: IWidget.IFormObject;
+// 	clearSelectedForm?(): void;
+// 	onDragStart: IWidgetOnDragStart;
+// 	setCurrentForm?(currentForm: IWidget.IFormObject): void;
+// 	buildScript?: IWidgetScriptBuildFunction;
+// }
 
-interface IWidgetBuilderNgScope extends ng.IScope, IWidget {
-	ngModelOptions?: Object;
-	currentForm?: LTWidget.IFormObject;
-	currentFormStr?: string;
-	SaveWidget?(saveAsNew?: boolean): void;
-	RevertWidget?(): void;
-	UsePrebuiltForm?(): void;
-	UpdateWidgetDisplay?(): void;
-	WidgetScriptBuild?: IWidgetScriptBuildFunction;
-	UpdateWidget?(): void;
-	ClearSelectedForm?(): void;
-	SetCurrentForm?(currentForm: LTWidget.IFormObject): void;
-	FilterAvailableFields?(value, index, array): boolean;
-	RemoveField?(index: number, formObjectType: string): void;
-	addField?(fieldId: string, channel: string): void;
-	onDragStart?: IWidgetOnDragStart;
-	onDrop?: IWidgetOnDrop;
-	FilterHiddenFormFields?(value, index, array): boolean;
-	FieldExtended?(field: IWidgetField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended;
-	selectedForm?: LTWidget.IFormObject;
-	passedModelForm?: IWidgetModelDataModelWidget;
-	widgetObject?: IWidget;
-	widgetScript?: string;
-	widgetScriptDisplay?: string;
-	widgetScriptParse?: string;
-	scriptChangedClass?: string;
-	editFormInfo?: IWidgetEditFormInfo;
-	editResultInfo?: IWidgetEditFormInfo;
-	editFieldData?: IWidgetEditFieldData;
-	dragData?: IWidgetOnDragStartData;
-	isExistingModel?: boolean;
-}
+// interface IWidgetBuilderNgScope extends ng.IScope, IWidgetBuilder.IWidget {
+// 	ngModelOptions?: Object;
+// 	currentForm?: IWidget.IFormObject;
+// 	currentFormStr?: string;
+// 	SaveWidget?(saveAsNew?: boolean): void;
+// 	RevertWidget?(): void;
+// 	UsePrebuiltForm?(): void;
+// 	UpdateWidgetDisplay?(): void;
+// 	WidgetScriptBuild?: IWidgetScriptBuildFunction;
+// 	UpdateWidget?(): void;
+// 	ClearSelectedForm?(): void;
+// 	SetCurrentForm?(currentForm: IWidget.IFormObject): void;
+// 	FilterAvailableFields?(value, index, array): boolean;
+// 	RemoveField?(index: number, formObjectType: string): void;
+// 	addField?(fieldId: string, channel: string): void;
+// 	onDragStart?: IWidgetOnDragStart;
+// 	onDrop?: IWidgetOnDrop;
+// 	FilterHiddenFormFields?(value, index, array): boolean;
+// 	FieldExtended?(field: IWidget.IField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended;
+// 	selectedForm?: IWidget.IFormObject;
+// 	passedModelForm?: IWidgetBuilder.IModal.IDataModelWidget;
+// 	widgetObject?: IWidgetBuilder.IWidget;
+// 	widgetScript?: string;
+// 	widgetScriptDisplay?: string;
+// 	widgetScriptParse?: string;
+// 	scriptChangedClass?: string;
+// 	editFormInfo?: IWidgetEditFormInfo;
+// 	editResultInfo?: IWidgetEditFormInfo;
+// 	editFieldData?: IWidgetEditFieldData;
+// 	dragData?: IWidgetOnDragStartData;
+// 	isExistingModel?: boolean;
+// }
 
-interface IWidgetScriptBuildFunction {
-	(widgetFormObject?: LTWidget.IFormObject): void;
-}
+// interface IWidgetScriptBuildFunction {
+// 	(widgetFormObject?: IWidget.IFormObject): void;
+// }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 
 namespace LoanTekWidget {
 	export class WidgetBuilder {
 
-		constructor($: JQueryStatic, widgetData: IWidgetModelData) {
+		constructor($: JQueryStatic, widgetData: IWidgetBuilder.IModal.IData) {
 			var _thisC = this;
 			var lth: LoanTekWidget.helpers = LoanTekWidgetHelper;
 			var ltbh: LoanTekWidget.BuilderHelpers = new LoanTekWidget.BuilderHelpers();
@@ -145,7 +224,7 @@ namespace LoanTekWidget {
 
 			$('input textarea').placeholder();
 
-			var widgetObj: IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
+			var widgetObj: IWidgetBuilder.IWidget = { allFieldsObject: null, allFieldsOptionsArray: null, allResultFieldsObject: null, allResultFieldsOptionsArray: null, prebuiltForms: null };
 
 			if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgagequotewidget') {
 				widgetObj.fieldHelperType = 'mortgageQuoteFields';
@@ -171,7 +250,7 @@ namespace LoanTekWidget {
 
 			widgetObj.prebuiltForms = [];
 			for (var iwt = 0, wtl = widgetData.widgetTemplates.length; iwt < wtl; iwt++) {
-				var wTemplate: IWidgetModelDataModelWidget = widgetData.widgetTemplates[iwt];
+				var wTemplate: IWidgetBuilder.IModal.IDataModelWidget = widgetData.widgetTemplates[iwt];
 				if (wTemplate.Active) {
 					widgetObj.prebuiltForms.push(JSON.parse(wTemplate.ScriptText));
 				}
@@ -181,7 +260,7 @@ namespace LoanTekWidget {
 			var widgetBuilderApp: ng.IModule = angular.module('WidgetBuilderApp', ['ui.bootstrap', 'colorpicker.module', 'ngDragDrop', 'ngAnimate', 'lt.services', 'ltw.services', 'ltw.directives', 'ltw.templates']);
 
 			// Angular Widget Controller
-			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'commonServices', 'widgetServices', function ($scope: IWidgetBuilderNgScope, $timeout, commonServices: ICommonNgServices, widgetServices: IWidgetNgServices) {
+			widgetBuilderApp.controller('WidgetBuilderController', ['$scope', '$timeout', 'commonServices', 'widgetServices', function ($scope: IWidgetBuilder.INgScope, $timeout, commonServices: ICommonNgServices, widgetServices: IWidgetServices.INgServices) {
 				var wwwRoot = (widgetData.scriptsDomain) ? widgetData.scriptsDomain.replace(/http:\/\/|https:\/\//, '//') : '//client.loantek.com';
 				var ltWidgetCSS: string[] = ['/Content/widget/css'];
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
@@ -264,7 +343,7 @@ namespace LoanTekWidget {
 				});
 
 				function SaveWidget(saveAsNew: boolean) {
-					var saveData: IWidgetModelDataModelWidget = angular.copy(widgetData.modelWidget);
+					var saveData: IWidgetBuilder.IModal.IDataModelWidget = angular.copy(widgetData.modelWidget);
 					if ($scope.passedModelForm && $scope.passedModelForm.Name && !saveAsNew) {
 						$scope.currentForm.name = $scope.passedModelForm.Name;
 					}
@@ -302,7 +381,7 @@ namespace LoanTekWidget {
 					$scope.ClearSelectedForm();
 				}
 
-				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetOnDragStartData) {
+				function onDragStart(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IWidgetBuilder.IOnDragStartData) {
 					$scope.dragData = data;
 				}
 
@@ -310,7 +389,7 @@ namespace LoanTekWidget {
 					channel = channel || 'form';
 					var currentObject = (channel === 'result') ? 'resultObject' : 'buildObject';
 					if ($scope.dragData.field) {
-						var newField: IWidgetField = { field: $scope.dragData.field };
+						var newField: IWidgetHelpers.IField = { field: $scope.dragData.field };
 						if (columns) {
 							newField.cols = columns;
 						}
@@ -351,11 +430,11 @@ namespace LoanTekWidget {
 					$scope.WidgetScriptBuild($scope.currentForm);
 				}
 
-				function FilterAvailableFields(field: IWidgetFieldOptions, index: number, fieldArray: IWidgetFieldOptions[]): boolean {
+				function FilterAvailableFields(field: IWidgetHelpers.IFieldOptions, index: number, fieldArray: IWidgetHelpers.IFieldOptions[]): boolean {
 					var isInList = true;
 					if (field.groupName) {
 						for (var i = fieldArray.length - 1; i >= 0; i--) {
-							var iField: IWidgetFieldOptions = fieldArray[i];
+							var iField: IWidgetHelpers.IFieldOptions = fieldArray[i];
 							if (field.groupName === iField.groupName && iField.isIncluded) {
 								isInList = false;
 							}
@@ -366,18 +445,18 @@ namespace LoanTekWidget {
 					return isInList;
 				}
 
-				function FilterHiddenFormFields(fieldObj: IWidgetField, index: number, fieldArray: IWidgetField[]): boolean {
+				function FilterHiddenFormFields(fieldObj: IWidgetHelpers.IField, index: number, fieldArray: IWidgetHelpers.IField[]): boolean {
 					var isHiddenField: boolean = false;
-					var fOption: IWidgetFieldOptions = widgetObj.allFieldsObject[fieldObj.field];
+					var fOption: IWidgetHelpers.IFieldOptions = widgetObj.allFieldsObject[fieldObj.field];
 					if (fOption.fieldTemplate.element === 'input' && fOption.fieldTemplate.type === 'hidden') {
 						isHiddenField = true;
 					}
 					return isHiddenField;
 				}
 
-				function FieldExtended(fieldObj: IWidgetField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended {
+				function FieldExtended(fieldObj: IWidgetHelpers.IField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended {
 					var fIndex = $scope.currentForm[formObjectType].fields.indexOf(fieldObj);
-					var fieldOpts: IWidgetFieldOptions = lth[fieldObjectType][fieldObj.field];
+					var fieldOpts: IWidgetHelpers.IFieldOptions = lth[fieldObjectType][fieldObj.field];
 					var customFieldNameIndex: number = null;
 
 					if (fieldOpts.id === 'customhidden') {
@@ -430,11 +509,11 @@ namespace LoanTekWidget {
 					$scope.selectedForm = { name: 'modified' };
 				}
 
-				function SetCurrentForm(currentForm: LTWidget.IFormObject) {
+				function SetCurrentForm(currentForm: IWidgetHelpers.IFormObject) {
 					$scope.currentForm = currentForm;
 				}
 
-				function WidgetScriptBuild(currentFormObj: LTWidget.IFormObject) {
+				function WidgetScriptBuild(currentFormObj: IWidgetHelpers.IFormObject) {
 					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
 					if (currentFormObj.resultObject) {
 						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
@@ -460,11 +539,11 @@ namespace LoanTekWidget {
 					$scope.editResultInfo = angular.copy($scope.editFormInfo);
 					$scope.editResultInfo.formObjectType = 'resultObject';
 
-					// var cfo: LTWidget.IFormObject = angular.copy(currentFormObj);
+					// var cfo: IWidget.IFormObject = angular.copy(currentFormObj);
 					// var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
 					// var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-					// var cro: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
-					// var crod: LTWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject): null;
+					// var cro: IWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
+					// var crod: IWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject): null;
 					var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 					var wScriptDisplay: string = wScript;
 					// var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
@@ -661,7 +740,7 @@ namespace LoanTekWidget {
 
 					////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-					var scriptBuildInfo: LTWidget.IWidgetInfo = {
+					var scriptBuildInfo: IWidgetHelpers.IWidgetInfo = {
 						url: widgetData.modelUrls[0]
 						, ClientId: widgetData.modelWidget.ClientId
 						, UserId: widgetData.modelWidget.UserId

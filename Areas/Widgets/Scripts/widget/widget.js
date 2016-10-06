@@ -445,38 +445,17 @@ var LoanTekWidget;
                 customInputClass += '_' + settings.uniqueQualifier;
             }
             $(function () {
-                var getRateData = function () {
-                    var rateRequest = $.ajax({
-                        method: 'GET',
-                        url: '/test/rate_widget/response.json'
-                    });
-                    rateRequest.done(function (result) {
-                        window.console && console.log('Rates data results: ', result);
-                    });
-                    rateRequest.fail(function (error) {
-                        window.console && console.error('Error getting rates data', error);
-                    });
-                };
-                var ddRequest = $.ajax({
+                var rateRequest = $.ajax({
                     method: 'GET',
                     url: '/test/rate_widget/response.json'
-                });
-                ddRequest.done(function (result) {
-                    var fakeResultForLoanTypeDropdown = [
-                        { value: '30yearFixed', name: '30 year Fixed' },
-                        { value: '15yearFixed', name: '15 year Fixed' },
-                        { value: '5yearARM', name: '5/1 ARM' }
-                    ];
-                    $.each(fakeResultForLoanTypeDropdown, function (i, type) {
-                        $(settings.form_loanType).append(el.option().val(type.value).html(type.name));
-                    });
-                });
-                ddRequest.fail(function (error) {
-                    window.console && console.error('Error getting dropdown data', error);
+                }).then(function (result) {
+                    var rateList = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];
+                    var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
+                }, function (error) {
+                    window.console && console.error('Error getting rates', error);
                 });
                 $(settings.form_loanType).change(function (event) {
                     window.console && console.log('LoanType changed');
-                    getRateData();
                 });
             });
         }
