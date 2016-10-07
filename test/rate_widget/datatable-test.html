@@ -110,22 +110,38 @@ var formatPoints = function (data, type, row) {
 	return ltw_lthlpr.FormatNumber(data, 3, true);
 };
 
-var testDataTable = ltw_ltjq('#example').DataTable({
-	data: fakeData.Submissions[0].Quotes
-	, paging: false
-	, info: false
-	, searching: false
-	, columns: [
-		{ "data": "InterestRate", render: formatPercent, visible: true, title: 'Rate' }
-		, { "data": "APR", render: formatPercent, title: 'APR' }
-		, { "data": "FinalFees"/*"QuoteFees"*/, render: formatCurrency/*function(data, type, row) { return ltw_lthlpr.FormatNumber(data, 2);}*/, title: 'Loan Fees' }
-		, { "data": "PIP"/*"FeeSet.APRFees"*/, render: formatCurrency, title: 'Payment' }
-		, { "data": "CalcPrice"/*"Price"*/, render: formatPoints, title: 'Points' }
-		// , { "data": "TermInMonths"/*"NoteDueInMonths"*/, title: 'Months' }
-	]
-});
+function buildTable() {
+	var testDataTable = ltw_ltjq('#example').DataTable({
+		data: fakeData.Submissions[0].Quotes
+		// , language: {
+		// 	emptyTable: 'Processing'
+		// }
+		, paging: false
+		, info: false
+		, searching: false
+		, columns: [
+			{ "data": "InterestRate", render: formatPercent, visible: true, title: 'Rate' }
+			, { "data": "APR", render: formatPercent, title: 'APR' }
+			, { "data": "FinalFees"/*"QuoteFees"*/, render: formatCurrency/*function(data, type, row) { return ltw_lthlpr.FormatNumber(data, 2);}*/, title: 'Loan Fees' }
+			, { "data": "PIP"/*"FeeSet.APRFees"*/, render: formatCurrency, title: 'Payment' }
+			, { "data": "CalcPrice"/*"Price"*/, render: formatPoints, title: 'Points' }
+			// , { "data": "TermInMonths"/*"NoteDueInMonths"*/, title: 'Months' }
+		]
+	});
+	testDataTable.order([0, 'asc']).draw();
+	setTimeout(function () {
+		testDataTable.clear().rows.add([]).draw();
+		setTimeout(function () {
+			// testDataTable.clear().draw();
+			testDataTable.clear().rows.add(fakeData.Submissions[0].Quotes).draw();
+		}, 2000);
+	}, 2000);
 
-testDataTable.order([0, 'asc']).draw();
+	// testDataTable.data(fakeData.Submissions[0].Quotes).order([0, 'asc']).draw();
+}
+
+buildTable();
+
 </script>
 </body>
 </html>

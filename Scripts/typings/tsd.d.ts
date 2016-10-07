@@ -8,3 +8,4 @@
 /// <reference path="jqueryui/jqueryui.d.ts" />
 /// <reference path="papaparse/papaparse.d.ts" />
 /// <reference path="angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="jquery.dataTables/jquery.dataTables.d.ts" />

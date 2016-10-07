@@ -49,6 +49,8 @@ var LoanTekWidget;
                         widgetScripts = [
                             '/Scripts/lib/jquery-1/jquery.min.js',
                             '/Scripts/lib/jquery/jquery.placeholder.min.js',
+                            '/Scripts/lib/datatables/jquery.dataTables.min.js',
+                            '/Scripts/lib/datatables/dataTables.bootstrap.min.js',
                             '/Areas/Widgets/Scripts/post-object/contact.js',
                             '/Areas/Widgets/Scripts/post-object/deposit.js',
                             '/Areas/Widgets/Scripts/common/lt-captcha.js',

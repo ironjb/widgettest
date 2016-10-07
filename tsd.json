@@ -6,7 +6,7 @@
   "bundle": "Scripts/typings/tsd.d.ts",
   "installed": {
     "jquery/jquery.d.ts": {
-      "commit": "0355db1bda0da69733a7e9f0d405260a9a3f5298"
+      "commit": "754ac82a16d9a22d6c28bba2dcd8b227693650b8"
     },
     "bootstrap/bootstrap.d.ts": {
       "commit": "473232e5dbd179e9ee682fab12f796720f37b118"
@@ -31,6 +31,9 @@
     },
     "angular-ui-bootstrap/angular-ui-bootstrap.d.ts": {
       "commit": "0355db1bda0da69733a7e9f0d405260a9a3f5298"
+    },
+    "jquery.dataTables/jquery.dataTables.d.ts": {
+      "commit": "754ac82a16d9a22d6c28bba2dcd8b227693650b8"
     }
   }
 }

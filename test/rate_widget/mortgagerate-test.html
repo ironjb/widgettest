@@ -5,10 +5,13 @@
 </head>
 <body>
 <style type="text/css">.ltw {display:none;}</style>
-<link rel="stylesheet" href="//localhost:8080/Content/lib/datatables/dataTables.bootstrap.min.css">
 
 <link rel="stylesheet" href="//localhost:8080/Areas/Widgets/Content/widget.css">
 <link rel="stylesheet" href="//localhost:8080/Areas/Widgets/Content/lt-captcha.css">
+<!-- <link rel="stylesheet" href="//localhost:8080/Content/lib/datatables/dataTables.bootstrap.min.css"> -->
+<!-- .ltw>table.table.table-bordered.table-condensed.table-border>thead>tr>th{test}*3^^tbody>tr*3>td{test}*3 -->
+<style type="text/css">.ltw .ratetable-rate {color: green;} .ltw table.table tr.ratetable-strip1 {background-color: lightgreen;} .ltw table.table tr.ratetable-strip2 {background-color: orange;}</style>
+
 <div id="ltWidgetWrapper_F69736"></div>
 <!-- <div id="ltWidgetResultWrapper_R69445"></div> -->
 <script type="text/javascript" src="//localhost:8080/Scripts/lib/jquery-1/jquery.min.js"></script>
@@ -39,7 +42,7 @@
 	"fields": [
 		{ "field": "paragraph", "value": "Last updated [where does this date come from?]", "color": "#999", "fontSize": 12, "marginTopBottom": 0 },
 		{ "field": "loantype" },
-		{ "field": "ratetable" },
+		{ "field": "ratetable", dataTableOptions: { isBordered: true, isCondensed: true, isStriped: true, isHover: true }, backgroundColor: '#def', borderColor: '#09f', color: '#026' },
 		{ "field": "paragraph", "value": "* Payment will vary depending on loan amount and down payment", "color": "#999", "fontSize": 10, "align": "center", "marginTopBottom": 0},
 		{ "field": "paragraph", "value": "<a href=\"http://loantek.com\" target=\"_blank\">Contact</a> LoanTek @ 1-888-562-6835 to lock-in these great rates right now!<br />OR<br />Let us send you an email if rates drop even lower!", "color": "#999", "fontSize": 12, "align": "center", "marginTopBottom": 0},
 		// { "field": "paragraph", "value": "OR", "color": "#999", "fontSize": 12, "align": "center"},

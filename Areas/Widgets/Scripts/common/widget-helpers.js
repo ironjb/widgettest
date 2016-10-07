@@ -96,23 +96,35 @@ var LoanTekWidget;
                     uniqueArray.push(object);
                 }
             }
-            window.console && console.log('uniqArr', uniqueArray);
             return uniqueArray;
         };
         helpers.prototype.getValueOfObjectInPath = function (obj, objPath) {
             var objectValue;
             var periodIndex = objPath.indexOf('.');
-            window.console && console.log('path', objPath);
             if (periodIndex !== -1) {
-                window.console && console.log('newObj', objPath.substring(0, periodIndex));
-                window.console && console.log('newPath', objPath.substring(periodIndex + 1));
-                window.console && console.log('obj', obj);
                 return this.getValueOfObjectInPath(obj[objPath.substring(0, periodIndex)], objPath.substring(periodIndex + 1));
             }
             else {
                 objectValue = obj[objPath];
             }
             return objectValue;
+        };
+        helpers.prototype.getFilteredArray = function (arr, value, invert, objArrayPath, filterFunction) {
+            var _this = this;
+            invert = invert || false;
+            filterFunction = filterFunction || function (n, i) {
+                var isMatch = false;
+                if (objArrayPath) {
+                    isMatch = (value === _this.getValueOfObjectInPath(n, objArrayPath));
+                }
+                else {
+                    isMatch = (value === n);
+                }
+                return isMatch;
+            };
+            var filteredArray = [];
+            filteredArray = this.$.grep(arr, filterFunction, invert);
+            return filteredArray;
         };
         helpers.prototype.ConvertObjectToArray = function (theObj) {
             var objArray = [];
@@ -624,18 +636,18 @@ var LoanTekWidget;
     var ProductTermType = (function () {
         function ProductTermType() {
             this.NotSet = { name: 'NotSet', value: -1, description: 'Not Set' };
-            this.A1_1 = { name: 'A1_1', value: 0, description: '1/1 ARM' };
+            this.F40 = { name: 'F40', value: 6, description: '40 year Fixed' };
+            this.F30 = { name: 'F30', value: 9, description: '30 year Fixed' };
+            this.F25 = { name: 'F25', value: 11, description: '25 year Fixed' };
+            this.F20 = { name: 'F20', value: 7, description: '20 year Fixed' };
             this.F15 = { name: 'F15', value: 1, description: '15 year Fixed' };
+            this.F10 = { name: 'F10', value: 4, description: '10 year Fixed' };
+            this.A10_1 = { name: 'A10_1', value: 10, description: '10/1 ARM' };
+            this.A7_1 = { name: 'A7_1', value: 8, description: '7/1 ARM' };
             this.A5_1 = { name: 'A5_1', value: 2, description: '5/1 ARM' };
             this.A3_1 = { name: 'A3_1', value: 3, description: '3/1 ARM' };
-            this.F10 = { name: 'F10', value: 4, description: '10 year Fixed' };
             this.A2_1 = { name: 'A2_1', value: 5, description: '2/1 ARM' };
-            this.F40 = { name: 'F40', value: 6, description: '40 year Fixed' };
-            this.F20 = { name: 'F20', value: 7, description: '20 year Fixed' };
-            this.A7_1 = { name: 'A7_1', value: 8, description: '7/1 ARM' };
-            this.F30 = { name: 'F30', value: 9, description: '30 year Fixed' };
-            this.A10_1 = { name: 'A10_1', value: 10, description: '10/1 ARM' };
-            this.F25 = { name: 'F25', value: 11, description: '25 year Fixed' };
+            this.A1_1 = { name: 'A1_1', value: 0, description: '1/1 ARM' };
         }
         ProductTermType.prototype.asArray = function () {
             return helpers.prototype.ConvertObjectToArray(this);

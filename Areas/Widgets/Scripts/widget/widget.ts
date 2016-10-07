@@ -623,6 +623,8 @@ namespace LoanTekWidget {
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 			var customInputClass = '.lt-custom-input';
 
+			window.console && console.log('IMortgageRateFunctionalityOptions settings', options);
+
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
 				settings.form_id += '_' + settings.uniqueQualifier;
 				settings.form_submit += '_' + settings.uniqueQualifier;
@@ -653,6 +655,9 @@ namespace LoanTekWidget {
 				// 		window.console && console.error('Error getting rates data', error);
 				// 	});
 				// };
+				// var getFilteredData = function(loanType: string) {
+				// 	$.grep
+				// };
 
 				// Populate Dropdowns
 				var rateRequest = $.ajax({
@@ -661,8 +666,8 @@ namespace LoanTekWidget {
 					, url: '/test/rate_widget/response.json'
 				}).then(function (result) {
 					// window.console && console.log('then success result', result);
-					var rateList = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];
-
+					var rateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];
+					var filteredRateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = [];
 					// Get unique values from ProductTermType
 					// var loanTypes = lth.getUniqueValuesFromArray(['2', '3', '4', '2', '4']);
 					// var loanTypes = lth.getUniqueValuesFromArray([
@@ -684,7 +689,88 @@ namespace LoanTekWidget {
 					// 	, { level1: { level2: { level3: { name: 'bar3' } } } }
 					// ],'level1.level2.level3.name');
 					var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
+					// loanTypes.sort();
+					// loanTypes.reverse();
 					// window.console && console.log('loanTypes', loanTypes);
+
+					// var sortTest = ['NotSet', 'A1_1', 'F15', 'A5_1', 'A3_1', 'F10', 'A2_1', 'F40', 'F20', 'A7_1', 'F30', 'A10_1', 'F25'];
+					// sortTest.sort();
+					// sortTest.reverse();
+					// window.console && console.log('sortTest', sortTest);
+
+					// Sets dropdown for Loan Type
+					$(settings.form_loanType).html('');
+
+					// for (var iLt = loanTypes.length - 1; iLt >= 0; iLt--) {
+					// 	var ltype: string = loanTypes[iLt];
+					// 	var termType: IWidgetHelpers.IProductTermType = lth.ProductTermType[ltype];
+					// 	$(settings.form_loanType).prepend(el.option().val(termType.name).html(termType.description));
+					// }
+
+					// for (var iLt = 0; iLt < loanTypes.length; iLt++) {
+					// 	var ltype: string = loanTypes[iLt];
+					// 	var termType: IWidgetHelpers.IProductTermType = lth.ProductTermType[ltype];
+					// 	$(settings.form_loanType).append(el.option().val(termType.name).html(termType.description));
+					// }
+
+					for (var iLt = 0, pttl = lth.ProductTermType.asArray().length; iLt < pttl; iLt++) {
+						var ptt = lth.ProductTermType.asArray()[iLt];
+						if (loanTypes.indexOf(ptt.name) !== -1) {
+							// window.console && console.log('ptt index', ptt.name);
+							$(settings.form_loanType).append(el.option().val(ptt.name).html(ptt.description));
+						}
+					}
+
+					// // Get LoanType dropdown value
+					// window.console && console.log('loantype val', $(settings.form_loanType).val());
+
+					var datatableFormatPercent = function (data, type, row) {
+						return lth.FormatNumber(data, 3, true, null, '%');
+					};
+					var datatableFormatCurrency = function (data, type, row) {
+						return lth.FormatNumber(data, 2, true, '$');
+					};
+
+					var datatableFormatPoints = function (data, type, row) {
+						return lth.FormatNumber(data, 3, true);
+					};
+
+					var getFilteredRateTableData = function () {
+						var loanTypeValue = $(settings.form_loanType).val();
+						var returnFilteredRates: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
+						return returnFilteredRates;
+					}
+
+					// Initializes table for first time
+					// $(settings.form_rateTable).empty().append(el.table().addClass('table').attr('width', '100%').attr('cellpadding','0').attr('cellspacing', '0'));
+					var rateTable = $(settings.form_rateTable + ' > table').DataTable({
+						data: getFilteredRateTableData()
+						, stripeClasses: ['ratetable-strip1', 'ratetable-strip2']
+						, paging: false
+						, info: false
+						, searching: false
+						, columns: [
+							{ "data": "InterestRate", render: datatableFormatPercent, title: 'Rate', className: 'ratetable-rate' }
+							, { "data": "APR", render: datatableFormatPercent, title: 'APR', className: 'ratetable-apr' }
+							, { "data": "FinalFees", render: datatableFormatCurrency, title: 'Loan Fees', className: 'ratetable-loanfees' }
+							, { "data": "PIP", render: datatableFormatCurrency, title: 'Payment', className: 'ratetable-payment' }
+							, { "data": "CalcPrice", render: datatableFormatPoints, title: 'Points', className: 'ratetable-points' }
+							// , { "data": "TermInMonths", title: 'Months', className: 'ratetable-months' }
+						]
+					});
+					rateTable.order([0, 'asc']).draw();
+
+					// Updates rate table on change of LoanType
+					$(settings.form_loanType).change(function() {
+						// window.console && console.log('change loantype', $(settings.form_loanType).val());
+						// var loanTypeValue = $(settings.form_loanType).val();
+						// var filteredRateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
+						var updatedRateList = getFilteredRateTableData();
+						rateTable.clear().rows.add(updatedRateList).draw();
+						// window.console && console.log('array lengths', rateList.length, filteredRateList.length);
+					});
+
+					// $(settings.form_loanType).trigger('change');
 				}, function (error) {
 					window.console && console.error('Error getting rates', error);
 				});
@@ -708,11 +794,11 @@ namespace LoanTekWidget {
 				// 	window.console && console.error('Error getting dropdown data', error);
 				// });
 
-				// On change of Loan Type
-				$(settings.form_loanType).change(function(event) {
-					window.console && console.log('LoanType changed');
-					// getRateData();
-				});
+				// // On change of Loan Type
+				// $(settings.form_loanType).change(function(event) {
+				// 	window.console && console.log('LoanType changed');
+				// 	// getRateData();
+				// });
 			});
 		}
 	}
@@ -876,9 +962,14 @@ namespace LoanTekWidget {
 					}
 				}
 
-				if (elementItem.element === 'widget' && settings.showBuilderTools) {
-					//
-				}
+				// if (elementItem.element === 'widget' && settings.showBuilderTools) {
+				// 	//
+				// }
+
+				// if (elementItem.element === 'datatable') {
+				// 	window.console && console.log('datatable item', elementItem);
+				// 	var tableEl: JQuery = el.table().addClass('table').attr('width', '100%').attr('cellpadding','0').attr('cellspacing', '0');
+				// }
 
 				// if (elementItem.field === 'emailwidget') {
 				// 	elementItem.id = elementItem.id || 'ltwEmailWidget_' + fieldIndex;
@@ -1184,19 +1275,24 @@ namespace LoanTekWidget {
 						// 	});
 						// 	break;
 						case 'desiredloanprogram':
-							var desiredLoanProgramList = [
-								{ value: '30yearFixed', name: '30 year Fixed' }
-								, { value: '25yearFixed', name: '25 year Fixed' }
-								, { value: '20yearFixed', name: '20 year Fixed' }
-								, { value: '15yearFixed', name: '15 year Fixed' }
-								, { value: '10yearFixed', name: '10 year Fixed' }
-								, { value: '10yearARM', name: '10 year ARM' }
-								, { value: '7yearARM', name: '7 year ARM' }
-								, { value: '5yearARM', name: '5 year ARM' }
-								, { value: '3yearARM', name: '3 year ARM' }
-							];
+							// var desiredLoanProgramList = [
+							// 	{ value: '30yearFixed', name: '30 year Fixed' }
+							// 	, { value: '25yearFixed', name: '25 year Fixed' }
+							// 	, { value: '20yearFixed', name: '20 year Fixed' }
+							// 	, { value: '15yearFixed', name: '15 year Fixed' }
+							// 	, { value: '10yearFixed', name: '10 year Fixed' }
+							// 	, { value: '10yearARM', name: '10 year ARM' }
+							// 	, { value: '7yearARM', name: '7 year ARM' }
+							// 	, { value: '5yearARM', name: '5 year ARM' }
+							// 	, { value: '3yearARM', name: '3 year ARM' }
+							// ];
+							// $.each(desiredLoanProgramList, function (i, program) {
+							// 	returnElement.append(el.option().val(program.value).html(program.name));
+							// });
+							var desiredLoanProgramList = lth.ProductTermType.asArray();
+							desiredLoanProgramList.splice(0,1);
 							$.each(desiredLoanProgramList, function (i, program) {
-								returnElement.append(el.option().val(program.value).html(program.name));
+								returnElement.append(el.option().val(program.name).html(program.description));
 							});
 							break;
 						case 'desiredinterestrate':
@@ -1325,7 +1421,22 @@ namespace LoanTekWidget {
 					}
 					break;
 				case 'datatable':
-					returnElement = el.div();
+					var tableEl: JQuery = el.table().addClass('table').attr('width', '100%').attr('cellpadding','0').attr('cellspacing', '0');
+					if (elementObj.dataTableOptions) {
+						if (elementObj.dataTableOptions.isBordered) {
+							tableEl.addClass('table-bordered');
+						}
+						if (elementObj.dataTableOptions.isCondensed) {
+							tableEl.addClass('table-condensed');
+						}
+						if (elementObj.dataTableOptions.isHover) {
+							tableEl.addClass('table-hover');
+						}
+						if (elementObj.dataTableOptions.isStriped) {
+							tableEl.addClass('table-striped');
+						}
+					}
+					returnElement = el.div().addClass('table-responsive').append(tableEl);
 					break;
 				default:
 					elementObj.value = elementObj.value || ' ';
@@ -1352,7 +1463,14 @@ namespace LoanTekWidget {
 				}
 
 				if (elementObj.backgroundColor) {
-					returnElement.css({ backgroundColor: elementObj.backgroundColor });
+					switch (elementObj.element) {
+						case 'datatable':
+							returnElement.children('table.table').css({ backgroundColor: elementObj.backgroundColor });
+							break;
+						default:
+							returnElement.css({ backgroundColor: elementObj.backgroundColor });
+							break;
+					}
 				}
 
 				if (lth.isNumber(elementObj.borderRadius)) {
@@ -1361,14 +1479,18 @@ namespace LoanTekWidget {
 
 				if (elementObj.borderColor) {
 					switch (elementObj.element) {
+						case 'datatable':
+							returnElement.children('table.table').css({ borderColor: elementObj.borderColor });
+							break;
 						case 'p':
 						case 'div':
 							returnElement.css({ borderWidth: '1px', borderStyle: 'solid' });
-							break;
+							// break;
 						default:
+							returnElement.css({ borderColor: elementObj.borderColor });
 							break;
 					}
-					returnElement.css({ borderColor: elementObj.borderColor });
+					// returnElement.css({ borderColor: elementObj.borderColor });
 				}
 
 				if (lth.isNumber(elementObj.padding)) {
