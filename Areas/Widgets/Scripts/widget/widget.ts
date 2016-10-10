@@ -622,8 +622,7 @@ namespace LoanTekWidget {
 			$.extend(true, settings, options);
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 			var customInputClass = '.lt-custom-input';
-
-			window.console && console.log('IMortgageRateFunctionalityOptions settings', options);
+			// window.console && console.log('IMortgageRateFunctionalityOptions settings', options);
 
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
 				settings.form_id += '_' + settings.uniqueQualifier;
@@ -662,8 +661,8 @@ namespace LoanTekWidget {
 				// Populate Dropdowns
 				var rateRequest = $.ajax({
 					method: 'GET'
-					// , url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
-					, url: '/test/rate_widget/response.json'
+					, url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
+					// , url: '/test/rate_widget/response.json'
 				}).then(function (result) {
 					// window.console && console.log('then success result', result);
 					var rateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];

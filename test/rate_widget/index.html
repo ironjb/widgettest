@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>Quote Widget</title>
+	<title>Rate Widget</title>
 
 	<link rel="stylesheet" type="text/css" href="/Content/font-awesome.min.css" />
 	<link rel="stylesheet" href="/Content/simple-line-icons.css" />
@@ -286,7 +286,7 @@
 		"widgetType": "deposit"
 	}
 };
-		var widgetModelData = {scriptsDomain: 'https://Client.LoanTek.com',  modelUrls: ["TODO"], modelWidget: {"WidgetTypeType":"MortgageQuoteWidget","OwnerId":1940,"CreatedByUserName":"Joe Bell","LastUpdatedByUserName":"","ClientId":5,"UserId":1940,"WidgetType":"MortgageQuoteWidget","ScriptText":"ADD SCRIPT HERE"}, widgetTemplates: [JSON.stringify(qwTest)] };
+		var widgetModelData = {scriptsDomain: 'http://localhost:58477', modelWidget: {"WidgetTypeType":"MortgageRateWidget","OwnerId":861,"PostingUrl":"https://clients-pricing-api.LoanTek.com/Mortgage/v1.0/MortgageLoan/Mjh4UnJxNmFDeXFlc2pXRlArNU52NzlZUDNLSmg3ZmhBQT090/FullMortgageRequest","CreatedByUserName":"Adam Stein","LastUpdatedByUserName":"","ClientId":399,"UserId":861,"WidgetType":"MortgageRateWidget","ScriptText":"ADD SCRIPT HERE"}, widgetTemplates: [{"WidgetTypeType":11,"OwnerId":0,"PostingUrl":"https://clients-pricing-api.LoanTek.com/Mortgage/v1.0/MortgageLoan/Wm94YXZUSmdTZ0VpRXc1cldJRC9hZ0E90/FullMortgageRequest","CreatedByUserName":"","LastUpdatedByUserName":"","Id":0,"ClientId":0,"UserId":0,"WidgetType":"MortgageRateWidget","Name":"template1.json","ScriptText":"{\"name\": \"Default Mortgage Rate Widget\",\"buildObject\": {\"panelTitle\": \"Today\u0027s Rate\",\"fields\": [{ \"field\": \"loantype\" },{\"field\": \"ratetable\",\"dataTableOptions\": {\"isBordered\": true,\"isCondensed\": true,\"isStriped\": true,\"isHover\": true},\"backgroundColor\": \"#def\",\"borderColor\": \"#09f\",\"color\": \"#026\"},{\"field\": \"paragraph\",\"value\": \"* Payment will vary depending on loan amount and down payment\",\"color\": \"#999\",\"fontSize\": 10,\"align\": \"center\",\"marginTopBottom\": 0},{\"field\": \"paragraph\",\"value\": \"\u003ca href=\\\"http://loantek.com\\\" target=\\\"_blank\\\"\u003eContact\u003c/a\u003e LoanTek @ 1-888-562-6835 to lock-in these great rates right now!\",\"color\": \"#999\",\"fontSize\": 12,\"align\": \"center\",\"marginTopBottom\": 0}]}}","LastModifiedDate":"\/Date(1476134341990)\/","LastModifiedByUserID":null,"Active":true}] };
 		var wbuilder = new LoanTekWidget.WidgetBuilder(jQuery, widgetModelData);
 	</script>
 </body>

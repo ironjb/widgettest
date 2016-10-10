@@ -17,6 +17,8 @@ var LoanTekWidget;
             else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgageratewidget') {
                 widgetObj.fieldHelperType = 'mortgageRateFields';
                 widgetObj.widgetType = lth.widgetType.mortgagerate.id;
+                widgetObj.allFieldsObject = lth.mortgageRateFields;
+                widgetObj.allFieldsOptionsArray = lth.mortgageRateFields.asArray();
             }
             else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
                 widgetObj.fieldHelperType = 'depositFields';
@@ -304,7 +306,7 @@ var LoanTekWidget;
                         initialScripts += scriptHelpersCode;
                         initialScriptsDisplay += scriptHelpersCode;
                         var scriptBuildInfo = {
-                            url: widgetData.modelUrls[0],
+                            url: widgetData.modelWidget.PostingUrl,
                             ClientId: widgetData.modelWidget.ClientId,
                             UserId: widgetData.modelWidget.UserId,
                             formObject: currentFormObj,

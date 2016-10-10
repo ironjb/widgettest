@@ -276,8 +276,10 @@ var LoanTekWidget;
                 returnFieldOptions = _this.depositResultDataFields[fieldName];
             }
             else if (widgetType.toLowerCase().indexOf('quote') !== -1) {
+                returnFieldOptions = _this.mortgageQuoteFields[fieldName];
             }
-            else if (widgetType.toLowerCase().indexOf('rate') !== -1) {
+            else if (widgetType.toLowerCase().indexOf('mortgagerate') !== -1) {
+                returnFieldOptions = _this.mortgageRateFields[fieldName];
             }
             else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
                 if (objectType.toLowerCase().indexOf('result') !== -1) {
@@ -794,12 +796,8 @@ var LoanTekWidget;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
             this.hr = sf.hr;
-            this.email = sf.email;
-            this.submit = sf.submit;
             this.loantype = { id: 'loantype', name: 'loantype', fieldTemplate: { element: 'select', type: 'loantype', id: 'ltwLoanType', placeholder: 'Loan Type' } };
             this.ratetable = { id: 'ratetable', name: 'ratetable', fieldTemplate: { element: 'datatable', type: 'ratetable', id: 'ltwRateTable' } };
-            this.desiredloanprogram = { id: 'desiredloanprogram', name: 'desiredloanprogram', fieldTemplate: { element: 'select', type: 'desiredloanprogram', id: 'ltwDesiredLoanProgram', placeholder: 'Desired Loan Type' } };
-            this.desiredinterestrate = { id: 'desiredinterestrate', name: 'desiredinterestrate', fieldTemplate: { element: 'select', type: 'desiredinterestrate', id: 'ltwDesiredInterestRate', placeholder: 'Desired Interest Rate' } };
             helpers.prototype.SetRequiredFields(this);
         }
         mortgageRateFields.prototype.asArray = function () {

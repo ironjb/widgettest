@@ -21,7 +21,7 @@ declare namespace IWidgetBuilder {
 	namespace IModal {
 		interface IData {
 			scriptsDomain?: string;
-			modelUrls?: string[];
+			// modelUrls?: string[];
 			modelWidget?: IDataModelWidget;
 			widgetTemplates?: IDataModelWidget[];
 		}
@@ -38,6 +38,7 @@ declare namespace IWidgetBuilder {
 			LastModifiedDate?: string;
 			Active?: boolean;
 			WidgetTypeType?: number | string;
+			PostingUrl?: string;
 		}
 	}
 	interface IOnDragStart {
@@ -233,7 +234,8 @@ namespace LoanTekWidget {
 			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'mortgageratewidget') {
 				widgetObj.fieldHelperType = 'mortgageRateFields';
 				widgetObj.widgetType = lth.widgetType.mortgagerate.id;
-				// TODO: code for rate widget
+				widgetObj.allFieldsObject = lth.mortgageRateFields;
+				widgetObj.allFieldsOptionsArray = lth.mortgageRateFields.asArray();
 			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
 				widgetObj.fieldHelperType = 'depositFields';
 				widgetObj.widgetType = lth.widgetType.deposit.id;
@@ -743,7 +745,7 @@ namespace LoanTekWidget {
 					////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 					var scriptBuildInfo: IWidgetHelpers.IWidgetInfo = {
-						url: widgetData.modelUrls[0]
+						url: widgetData.modelWidget.PostingUrl // widgetData.modelUrls[0]
 						, ClientId: widgetData.modelWidget.ClientId
 						, UserId: widgetData.modelWidget.UserId
 						, formObject: currentFormObj
