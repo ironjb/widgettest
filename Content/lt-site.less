@@ -238,6 +238,20 @@ html.html-footer-sticky {
 		border-bottom: none;
 	}
 
+	.page-head-top-fixed {
+		margin-top: @page-head-sm-top-height;
+		> .page-head-top {
+			border-bottom: 1px solid @lt-color-darker;
+			position: fixed;
+			width: 100%;
+			margin-top: -@page-head-sm-top-height;
+			z-index: 2;
+		}
+		> .page-head-menu {
+			z-index: 1;
+		}
+	}
+
 	.page-head-top {
 		min-height: @page-head-sm-top-height;
 

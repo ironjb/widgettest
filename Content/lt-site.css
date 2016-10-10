@@ -175,6 +175,19 @@ html.html-footer-sticky body .footer-sticky {
   .page-head {
     border-bottom: none;
   }
+  .page-head-top-fixed {
+    margin-top: 75px;
+  }
+  .page-head-top-fixed > .page-head-top {
+    border-bottom: 1px solid #132345;
+    position: fixed;
+    width: 100%;
+    margin-top: -75px;
+    z-index: 2;
+  }
+  .page-head-top-fixed > .page-head-menu {
+    z-index: 1;
+  }
   .page-head-top {
     min-height: 75px;
   }
