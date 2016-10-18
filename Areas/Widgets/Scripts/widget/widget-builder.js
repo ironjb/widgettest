@@ -28,6 +28,14 @@ var LoanTekWidget;
                 widgetObj.allResultFieldsObject = lth.depositResultFields;
                 widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
             }
+            else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'autoquotewidget') {
+                widgetObj.fieldHelperType = 'autoQuoteFields';
+                widgetObj.widgetType = lth.widgetType.autoquote.id;
+                widgetObj.allFieldsObject = lth.autoQuoteFields;
+                widgetObj.allFieldsOptionsArray = lth.autoQuoteFields.asArray();
+                widgetObj.allResultFieldsObject = lth.autoQuoteResultFields;
+                widgetObj.allResultFieldsOptionsArray = lth.autoQuoteResultFields.asArray();
+            }
             else {
                 widgetObj.fieldHelperType = 'contactFields';
                 widgetObj.widgetType = lth.widgetType.contact.id;
@@ -47,7 +55,7 @@ var LoanTekWidget;
                     var ltWidgetCSS = ['/Content/widget/css'];
                     var widgetScripts = ['/bundles/widget/widget'];
                     if (window.location.port === '58477' || window.location.port === '8080') {
-                        ltWidgetCSS = ['/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
+                        ltWidgetCSS = ['/Content/font-awesome.min.css', '/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
                         widgetScripts = [
                             '/Scripts/lib/jquery-1/jquery.min.js',
                             '/Scripts/lib/jquery/jquery.placeholder.min.js',
@@ -55,6 +63,8 @@ var LoanTekWidget;
                             '/Scripts/lib/datatables/dataTables.bootstrap.min.js',
                             '/Areas/Widgets/Scripts/post-object/contact.js',
                             '/Areas/Widgets/Scripts/post-object/deposit.js',
+                            '/Areas/Widgets/Scripts/post-object/autoquote.js',
+                            '/Areas/Widgets/Scripts/post-object/mortgagerate.js',
                             '/Areas/Widgets/Scripts/common/lt-captcha.js',
                             '/Areas/Widgets/Scripts/common/widget-helpers.js',
                             '/Areas/Widgets/Scripts/widget/widget.js'
@@ -215,9 +225,28 @@ var LoanTekWidget;
                         return isHiddenField;
                     }
                     function FieldExtended(fieldObj, formObjectType, fieldObjectType) {
+                        var uiFieldIndex;
                         var fIndex = $scope.currentForm[formObjectType].fields.indexOf(fieldObj);
                         var fieldOpts = lth[fieldObjectType][fieldObj.field];
                         var customFieldNameIndex = null;
+                        var returnFieldExt = { index: fIndex, fieldOptions: fieldOpts, UiFieldType: 'text' };
+                        if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
+                            uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOpts.id, true);
+                            if (uiFieldIndex !== -1) {
+                                returnFieldExt.UiField = widgetData.modelUiFields[uiFieldIndex];
+                                if (returnFieldExt.UiField.FieldType.toLowerCase() === 'select') {
+                                    returnFieldExt.UiFieldType = 'select';
+                                }
+                                else if (returnFieldExt.UiField.FieldType.toLowerCase() === 'checkbox') {
+                                    returnFieldExt.UiFieldType = 'checkbox';
+                                }
+                                else {
+                                    if (returnFieldExt.UiField.InputType) {
+                                        returnFieldExt.UiFieldType = returnFieldExt.UiField.InputType.toLowerCase();
+                                    }
+                                }
+                            }
+                        }
                         if (fieldOpts.id === 'customhidden') {
                             fieldObj.attrs = fieldObj.attrs || [];
                             customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs, 'name', 'data-lt-additional-info-key');
@@ -225,8 +254,12 @@ var LoanTekWidget;
                                 fieldObj.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
                                 customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs, 'name', 'data-lt-additional-info-key');
                             }
+                            returnFieldExt.additionalInfoIndex = customFieldNameIndex;
                         }
-                        return { index: fIndex, fieldOptions: fieldOpts, additionalInfoIndex: customFieldNameIndex };
+                        if (['quotingchannel'].indexOf(fieldOpts.id) !== -1) {
+                            returnFieldExt.UiFieldDisabled = true;
+                        }
+                        return returnFieldExt;
                     }
                     function RemoveField(index, formObjectType) {
                         var confirmRemove = {
@@ -265,8 +298,38 @@ var LoanTekWidget;
                     function SetCurrentForm(currentForm) {
                         $scope.currentForm = currentForm;
                     }
+                    function SetDefaultValues(fields, fieldHelperType) {
+                        for (var i = fields.length - 1; i >= 0; i--) {
+                            var field = fields[i];
+                            var fieldExt = lth.ExtendWidgetFieldTemplate(field, fieldHelperType);
+                            if (!field.value && typeof field.value !== 'boolean' && !lth.isNumber(field.value)) {
+                                if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
+                                    var uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExt.field, true);
+                                    if (uiFieldIndex !== -1) {
+                                        var currentUiField = widgetData.modelUiFields[uiFieldIndex];
+                                        var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
+                                        var currentInputType = currentUiField.InputType ? currentUiField.InputType.toLowerCase() : 'text';
+                                        if (currentInputType === 'number' && currentUiField.Value) {
+                                            var UiFieldVal = currentUiField.Value;
+                                            var UiFieldValNum = +UiFieldVal.replace(/[^\d/.]/g, '');
+                                            if (lth.isNumber(UiFieldValNum)) {
+                                                currentUiField.Value = UiFieldValNum;
+                                            }
+                                        }
+                                        if ((currentUiField.Value || lth.isNumber(currentUiField.Value) || typeof currentUiField.Value === 'boolean') && currentFieldType !== 'select') {
+                                            field.value = currentUiField.Value;
+                                        }
+                                        if (currentUiField.DefaultValue || lth.isNumber(currentUiField.DefaultValue) || typeof currentUiField.DefaultValue === 'boolean') {
+                                            field.value = currentUiField.DefaultValue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     function WidgetScriptBuild(currentFormObj) {
                         currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+                        SetDefaultValues($scope.currentForm.buildObject.fields, widgetObj.fieldHelperType);
                         if (currentFormObj.resultObject) {
                             currentFormObj.resultObject.widgetType = widgetObj.widgetType;
                         }

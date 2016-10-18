@@ -22,8 +22,12 @@ var LoanTekWidget;
             this.depositFields = new depositFields();
             this.depositResultFields = new depositResultFields();
             this.depositResultDataFields = new depositResultDataFields();
+            this.autoQuoteFields = new autoQuoteFields();
+            this.autoQuoteResultFields = new autoQuoteResultFields();
+            this.autoQuoteResultDataFields = new autoQuoteResultDataFields();
             this.mortgageQuoteFields = new mortgageQuoteFields();
             this.mortgageRateFields = new mortgageRateFields();
+            this.mortgageRateDataTable = new mortgageRateDataTable();
             this.postObjects = new postObjects();
             this.ProductTermType = new ProductTermType();
         }
@@ -73,14 +77,37 @@ var LoanTekWidget;
             returnNumber = Math.floor(Math.random() * (intMax + 1)) + intMin;
             return returnNumber;
         };
+        helpers.prototype.getRandomString = function (length, chars) {
+            length = length || 16;
+            chars = chars || '#A';
+            var mask = '';
+            if (chars.indexOf('a') > -1)
+                mask += 'abcdefghijklmnopqrstuvwxyz';
+            if (chars.indexOf('A') > -1)
+                mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (chars.indexOf('#') > -1)
+                mask += '0123456789';
+            if (chars.indexOf('!') > -1)
+                mask += '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\';
+            var result = '';
+            for (var i = length; i > 0; --i) {
+                result += mask[Math.floor(Math.random() * mask.length)];
+            }
+            return result;
+        };
         helpers.prototype.getDateTimeTicks = function (dateTime) {
             dateTime = dateTime || new Date();
             return dateTime.getTime();
         };
-        helpers.prototype.getUniqueQualifier = function (prefix) {
-            prefix = prefix || 'LT';
+        helpers.prototype.getUniqueQualifier = function (prefix, lengthOfTicks, lengthOfRandom) {
             var ticks = this.getDateTimeTicks() + '';
-            return prefix + ticks.substring(ticks.length - 2, ticks.length) + this.getRandomInt(999, 1);
+            prefix = prefix || 'LT';
+            lengthOfTicks = lengthOfTicks || 2;
+            lengthOfTicks = lengthOfTicks === -1 ? ticks.length : lengthOfTicks;
+            lengthOfTicks = lengthOfTicks < 1 ? 1 : lengthOfTicks > ticks.length ? ticks.length : lengthOfTicks;
+            lengthOfRandom = lengthOfRandom || 4;
+            lengthOfRandom = lengthOfRandom < 1 ? 1 : lengthOfRandom;
+            return prefix + ticks.substring(ticks.length - lengthOfTicks, ticks.length) + this.getRandomString(lengthOfRandom);
         };
         helpers.prototype.getUniqueValuesFromArray = function (arr, objPath) {
             var uniqueArray = [];
@@ -148,13 +175,24 @@ var LoanTekWidget;
             }
             return returnObj;
         };
-        helpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue) {
-            for (var i = 0, l = theArray.length; i < l; i++) {
-                if (theArray[i][theKey] === theValue) {
-                    return i;
+        helpers.prototype.GetIndexOfFirstObjectInArray = function (theArray, theKey, theValue, isCaseInsensitive) {
+            try {
+                for (var i = 0, l = theArray.length; i < l; i++) {
+                    var keyValue = theArray[i][theKey];
+                    if (isCaseInsensitive) {
+                        keyValue = keyValue.toLowerCase();
+                        theValue = theValue.toLowerCase();
+                    }
+                    if (keyValue === theValue) {
+                        return i;
+                    }
                 }
+                return -1;
             }
-            return -1;
+            catch (er) {
+                window.console && console.error('Error in widget-helper method GetIndexOfFirstObjectInArray:\n', er);
+                return -1;
+            }
         };
         helpers.prototype.RemoveObjectFromArray = function (theArray, theKey, theValue) {
             for (var i = theArray.length - 1; i >= 0; i--) {
@@ -248,6 +286,15 @@ var LoanTekWidget;
             }
             return newNumber;
         };
+        helpers.prototype.datatableFormatPercent = function (data, type, row) {
+            return helpers.prototype.FormatNumber(data, 3, true, null, '%');
+        };
+        helpers.prototype.datatableFormatCurrency = function (data, type, row) {
+            return helpers.prototype.FormatNumber(data, 2, true, '$');
+        };
+        helpers.prototype.datatableFormatPoints = function (data, type, row) {
+            return helpers.prototype.FormatNumber(data, 3, true);
+        };
         helpers.prototype.ExtendWidgetFieldTemplate = function (eItem, templateName) {
             var _this = this;
             var fOption;
@@ -272,27 +319,43 @@ var LoanTekWidget;
         helpers.prototype.GetFieldOptionsForWidgetType = function (widgetType, fieldName, objectType) {
             var _this = this;
             var returnFieldOptions = null;
-            if (widgetType.toLowerCase().indexOf('depositdatalist') !== -1) {
-                returnFieldOptions = _this.depositResultDataFields[fieldName];
-            }
-            else if (widgetType.toLowerCase().indexOf('quote') !== -1) {
-                returnFieldOptions = _this.mortgageQuoteFields[fieldName];
-            }
-            else if (widgetType.toLowerCase().indexOf('mortgagerate') !== -1) {
-                returnFieldOptions = _this.mortgageRateFields[fieldName];
-            }
-            else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
-                if (objectType.toLowerCase().indexOf('result') !== -1) {
-                    returnFieldOptions = _this.depositResultFields[fieldName];
+            try {
+                if (widgetType.toLowerCase().indexOf('depositdatalist') !== -1) {
+                    returnFieldOptions = _this.depositResultDataFields[fieldName];
+                }
+                else if (widgetType.toLowerCase().indexOf('mortgagequote') !== -1) {
+                    returnFieldOptions = _this.mortgageQuoteFields[fieldName];
+                }
+                else if (widgetType.toLowerCase().indexOf('mortgagerate') !== -1) {
+                    returnFieldOptions = _this.mortgageRateFields[fieldName];
+                }
+                else if (widgetType.toLowerCase().indexOf('deposit') !== -1) {
+                    if (objectType.toLowerCase().indexOf('result') !== -1) {
+                        returnFieldOptions = _this.depositResultFields[fieldName];
+                    }
+                    else {
+                        returnFieldOptions = _this.depositFields[fieldName];
+                    }
+                }
+                else if (widgetType.toLowerCase().indexOf('autoquote') !== -1) {
+                    if (objectType.toLowerCase().indexOf('result') !== -1) {
+                        returnFieldOptions = _this.autoQuoteResultFields[fieldName];
+                    }
+                    else {
+                        returnFieldOptions = _this.autoQuoteFields[fieldName];
+                    }
                 }
                 else {
-                    returnFieldOptions = _this.depositFields[fieldName];
+                    returnFieldOptions = _this.contactFields[fieldName];
                 }
+                if (!returnFieldOptions) {
+                    throw 'Can not find anything to return.';
+                }
+                return returnFieldOptions;
             }
-            else {
-                returnFieldOptions = _this.contactFields[fieldName];
+            catch (er) {
+                window.console && console.error('Error in GetFieldOptionsForWidgetType: ', er, '\n\twidgetType:', widgetType, '\n\tfieldName:', fieldName, '\n\tobjectType:', objectType, '\n\treturnFieldOptions:', returnFieldOptions);
             }
-            return returnFieldOptions;
         };
         helpers.prototype.ModifyTextElementsInDOM = function (node, callback) {
             var _this = this;
@@ -311,7 +374,30 @@ var LoanTekWidget;
         };
         helpers.prototype.FakeData = function () {
             return {
-                deposit: { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100, CompoundInterestType: 'Quarterly', BaseRate: 1.7500, FinalRate: 1.7400 }
+                deposit: { APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100, CompoundInterestType: 'Quarterly', BaseRate: 1.7500, FinalRate: 1.7400 },
+                mortgagerate: [
+                    { InterestRate: 2.375, APR: 2.559, FinalFees: 2100.00, PIP: 1850.58, CalcPrice: 0.750, TermInMonths: 180, ProductTermType: 'F15' },
+                    { InterestRate: 2.750, APR: 3.065, FinalFees: 1234.56, PIP: 1143.08, CalcPrice: 1.820, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 2.750, APR: 3.585, FinalFees: 744.80, PIP: 1143.08, CalcPrice: 0.266, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 3.000, APR: 3.633, FinalFees: -30.80, PIP: 1180.49, CalcPrice: -0.011, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 2.750, APR: 2.750, FinalFees: -2800.00, PIP: 1900.14, CalcPrice: -1.000, TermInMonths: 180, ProductTermType: 'F15' },
+                    { InterestRate: 2.625, APR: 2.669, FinalFees: -700.00, PIP: 1883.53, CalcPrice: -0.250, TermInMonths: 180, ProductTermType: 'F15' },
+                    { InterestRate: 3.375, APR: 3.375, FinalFees: -2076.0, PIP: 1237.87, CalcPrice: -0.750, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 2.750, APR: 3.803, FinalFees: 4880.40, PIP: 1143.08, CalcPrice: 1.743, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 2.500, APR: 3.636, FinalFees: 700.00, PIP: 1106.34, CalcPrice: 0.250, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 2.875, APR: 3.640, FinalFees: -2100.00, PIP: 1161.70, CalcPrice: -0.750, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 2.750, APR: 3.633, FinalFees: -1050.00, PIP: 1143.08, CalcPrice: -0.375, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 2.750, APR: 3.137, FinalFees: 1198.40, PIP: 1900.14, CalcPrice: 0.428, TermInMonths: 180, ProductTermType: 'F15' },
+                    { InterestRate: 3.250, APR: 3.250, FinalFees: -8190.00, PIP: 1967.47, CalcPrice: -2.925, TermInMonths: 180, ProductTermType: 'F15' },
+                    { InterestRate: 2.750, APR: 2.859, FinalFees: -4323.20, PIP: 1900.14, CalcPrice: -1.544, TermInMonths: 180, ProductTermType: 'F15' },
+                    { InterestRate: 3.000, APR: 3.180, FinalFees: 4900.00, PIP: 1180.49, CalcPrice: 1.750, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 3.250, APR: 3.304, FinalFees: 350.00, PIP: 1218.58, CalcPrice: 0.125, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 3.250, APR: 3.935, FinalFees: 4995.20, PIP: 1218.58, CalcPrice: 1.784, TermInMonths: 360, ProductTermType: 'A5_1' },
+                    { InterestRate: 3.000, APR: 3.254, FinalFees: 2702.00, PIP: 1180.49, CalcPrice: 0.965, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 3.375, APR: 3.375, FinalFees: -7008.40, PIP: 1237.87, CalcPrice: -2.503, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 3.375, APR: 3.375, FinalFees: -2100.00, PIP: 1237.87, CalcPrice: -0.750, TermInMonths: 360, ProductTermType: 'F30' },
+                    { InterestRate: 3.250, APR: 3.275, FinalFees: -5600.00, PIP: 1218.58, CalcPrice: -2.000, TermInMonths: 360, ProductTermType: 'F30' }
+                ]
             };
         };
         helpers.prototype.CreateElement = function () {
@@ -456,11 +542,15 @@ var LoanTekWidget;
             var cbo = $.extend(true, {}, cfo.buildObject);
             var cro = (cfo.resultObject) ? $.extend(true, {}, cfo.resultObject) : null;
             var wScript = '';
-            var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
+            var hasCaptchaField = this.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') !== -1;
             var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
             var unReplaceRegEx = /#un{[^\}]+}/g;
             var uniqueQualifierForm = this.getUniqueQualifier('F');
             var uniqueQualifierResult = this.getUniqueQualifier('R');
+            for (var iFld = cbo.fields.length - 1; iFld >= 0; iFld--) {
+                var cboField = cbo.fields[iFld];
+                delete cboField['$$hashKey'];
+            }
             if (isBuilderVersion) {
                 cbo.showBuilderTools = isBuilderVersion;
             }
@@ -517,6 +607,9 @@ var LoanTekWidget;
                 userId: widgetInfo.UserId,
                 uniqueQualifier: uniqueQualifierForm
             };
+            if (cbo.showBuilderTools) {
+                ltWidgetOptions.showBuilderTools = cbo.showBuilderTools;
+            }
             var ltWidgetOptionsWrap = "\n\t\t\t\tvar ltwo#un{unique} = #{cwow};";
             var ltWidgetOptionsWithResultsObject = $.extend(true, {}, ltWidgetOptions);
             if (cro) {
@@ -632,6 +725,7 @@ var LoanTekWidget;
             this.mortgagequote = { id: 'mortgagequote', name: 'Mortgage Quote' };
             this.mortgagerate = { id: 'mortgagerate', name: 'Mortgage Rate' };
             this.deposit = { id: 'deposit', name: 'Deposit' };
+            this.autoquote = { id: 'autoquote', name: 'Auto Quote' };
         }
         return widgetType;
     }());
@@ -753,6 +847,50 @@ var LoanTekWidget;
         };
         return depositResultDataFields;
     }());
+    var autoQuoteFields = (function () {
+        function autoQuoteFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
+            this.submit = sf.submit;
+            this.autoamount = { id: 'autoamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwAutoAmount', placeholder: 'Enter Amount' } };
+            this.autoterm = { id: 'autoterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwAutoTerm', placeholder: 'Enter # of Months' } };
+        }
+        autoQuoteFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return autoQuoteFields;
+    }());
+    var autoQuoteResultFields = (function () {
+        function autoQuoteResultFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
+            this.nodatamessage = sf.nodatamessage;
+            this.autoquotedatalist = { id: 'autoquotedatalist', name: 'Auto Quote Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'autoquotedatalist' } };
+        }
+        autoQuoteResultFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return autoQuoteResultFields;
+    }());
+    var autoQuoteResultDataFields = (function () {
+        function autoQuoteResultDataFields() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
+        }
+        autoQuoteResultDataFields.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return autoQuoteResultDataFields;
+    }());
     var mortgageQuoteFields = (function () {
         function mortgageQuoteFields() {
             var sf = new sharedFields;
@@ -796,14 +934,37 @@ var LoanTekWidget;
             this.title = sf.title;
             this.paragraph = sf.paragraph;
             this.hr = sf.hr;
-            this.loantype = { id: 'loantype', name: 'loantype', fieldTemplate: { element: 'select', type: 'loantype', id: 'ltwLoanType', placeholder: 'Loan Type' } };
-            this.ratetable = { id: 'ratetable', name: 'ratetable', fieldTemplate: { element: 'datatable', type: 'ratetable', id: 'ltwRateTable' } };
+            this.contactwidget = sf.contactwidget;
+            this.loantype = { id: 'loantype', name: 'Loan Type', fieldTemplate: { element: 'select', type: 'loantype', id: 'ltwLoanType', placeholder: 'Loan Type' } };
+            this.ratetable = { id: 'ratetable', name: 'Rate Table', fieldTemplate: { element: 'datatable', type: 'ratetable', id: 'ltwRateTable' } };
+            this.creditscore = { id: 'creditscore', name: 'Credit Score', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwCreditScore' } };
+            this.loanamount = { id: 'loanamount', name: 'Loan Amount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwLoanAmount' } };
+            this.loanpurpose = { id: 'loanpurpose', name: 'Loan Purpose', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwLoanPurpose' } };
+            this.loantovalue = { id: 'loantovalue', name: 'Loan To Value', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwLoanToValue' } };
+            this.propertytype = { id: 'propertytype', name: 'Property Type', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwPropertyType' } };
+            this.propertyusage = { id: 'propertyusage', name: 'Property Usage', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwPropertyUsage' } };
+            this.quotingchannel = { id: 'quotingchannel', name: 'Quoting Channel', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwQuotingChannel' } };
+            this.zipcode = { id: 'zipcode', name: 'Zip Code', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwZipCode' } };
+            this.vatype = { id: 'vatype', name: 'VA Type', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwVAType' } };
             helpers.prototype.SetRequiredFields(this);
         }
         mortgageRateFields.prototype.asArray = function () {
             return helpers.prototype.ConvertObjectToArray(this);
         };
         return mortgageRateFields;
+    }());
+    var mortgageRateDataTable = (function () {
+        function mortgageRateDataTable() {
+            this.rate = { id: 'rate', column: { "data": "InterestRate", render: helpers.prototype.datatableFormatPercent, title: 'Rate', className: 'ratetable-rate' } };
+            this.apr = { id: 'apr', column: { "data": "APR", render: helpers.prototype.datatableFormatPercent, title: 'APR', className: 'ratetable-apr' } };
+            this.loanfees = { id: 'loanfees', column: { "data": "FinalFees", render: helpers.prototype.datatableFormatCurrency, title: 'Loan Fees', className: 'ratetable-loanfees' } };
+            this.payment = { id: 'payment', column: { "data": "PIP", render: helpers.prototype.datatableFormatCurrency, title: 'Payment', className: 'ratetable-payment' } };
+            this.points = { id: 'points', column: { "data": "CalcPrice", render: helpers.prototype.datatableFormatPoints, title: 'Points', className: 'ratetable-points' } };
+        }
+        mortgageRateDataTable.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
+        return mortgageRateDataTable;
     }());
     var postObjects = (function () {
         function postObjects() {
@@ -813,6 +974,12 @@ var LoanTekWidget;
         };
         postObjects.prototype.deposit = function () {
             return new LoanTekWidget.PostObject_Deposit;
+        };
+        postObjects.prototype.autoquote = function () {
+            return new LoanTekWidget.PostObject_AutoQuote;
+        };
+        postObjects.prototype.mortgagerate = function () {
+            return new LoanTekWidget.PostObject_MortgageRate;
         };
         return postObjects;
     }());

@@ -31,4 +31,29 @@
 			.opacity(1);
 		}
 	}
+
+	// Using FontAwesome sorting icons instead of bootstraps
+	table {
+		&.dataTable {
+			thead {
+				.sorting, .sorting_asc, .sorting_desc {
+					&::after {
+						font-family: 'FontAwesome';
+					}
+				}
+
+				.sorting::after {
+					content: '\f0dc';
+				}
+
+				.sorting_asc::after {
+					content: '\f0de';
+				}
+
+				.sorting_desc::after {
+					content: '\f0dd';
+				}
+			}
+		}
+	}
 }

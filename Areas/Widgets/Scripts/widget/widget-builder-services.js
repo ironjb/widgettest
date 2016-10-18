@@ -203,7 +203,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 customFieldNameIndex = lth.GetIndexOfFirstObjectInArray($scope.modField.attrs, 'name', 'data-lt-additional-info-key');
                             }
                         }
-                        if (el = 'widget') {
+                        if (el === 'widget') {
                             var widgetType;
                             if (ty === 'depositwidget') {
                                 widgetType = 'DepositWidget';
@@ -347,6 +347,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                             }
                             if ($scope.modField.attrs.length === 0) {
                                 delete $scope.modField.attrs;
+                            }
+                            if (el === 'datatable' && !$scope.modField.dataTableOptions.isBordered) {
+                                delete $scope.modField.borderColor;
+                                delete $scope.modField.dataTableOptions.isBordered;
+                            }
+                            if (el === 'datatable' && !$scope.modField.dataTableOptions.isCondensed) {
+                                delete $scope.modField.dataTableOptions.isCondensed;
+                            }
+                            if (el === 'datatable' && !$scope.modField.dataTableOptions.isStriped) {
+                                delete $scope.modField.dataTableOptions.isStriped;
+                            }
+                            if (el === 'datatable' && !$scope.modField.dataTableOptions.isHover) {
+                                delete $scope.modField.dataTableOptions.isHover;
                             }
                             var newBuildObject = angular.copy($scope.modBuildObject);
                             $uibModalInstance.close(newBuildObject);

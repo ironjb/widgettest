@@ -509,7 +509,7 @@ declare namespace CommonNgServices {
 			</div>
 		`);
 		$templateCache.put('template/modal/confirm.html', `
-			<div class="modal-header" data-ng-class="mdlSettings.headerStyle">
+			<div class="modal-header modal-header-alert" data-ng-class="mdlSettings.headerStyle">
 				<h4 class="modal-title">{{mdlSettings.title}}</h4>
 			</div>
 			<div class="modal-body">
@@ -522,7 +522,7 @@ declare namespace CommonNgServices {
 		`);
 		$templateCache.put('template/modal/prompt.html', `
 			<form name="promptModalForm" id="promptModalForm" class="form-horizontal" data-ng-submit="okClick(promptModalForm);" novalidate="novalidate">
-				<div class="modal-header" data-ng-class="mdlSettings.headerStyle">
+				<div class="modal-header modal-header-alert" data-ng-class="mdlSettings.headerStyle">
 					<h4 class="modal-title">{{mdlSettings.title}}</h4>
 				</div>
 				<div class="modal-body">
@@ -541,7 +541,7 @@ declare namespace CommonNgServices {
 			</form>
 		`);
 		$templateCache.put('template/modal/ok.html', `
-			<div class="modal-header" data-ng-class="settings.okStyle">
+			<div class="modal-header modal-header-alert" data-ng-class="settings.okStyle">
 				<h4 class="modal-title">{{settings.okTitle}}</h4>
 			</div>
 			<div class="modal-body">

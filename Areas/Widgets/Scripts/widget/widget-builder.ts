@@ -15,7 +15,10 @@ declare namespace IWidgetBuilder {
 	interface IFieldExtended {
 		index: number;
 		fieldOptions: IWidgetHelpers.IFieldOptions;
-		additionalInfoIndex: number;
+		additionalInfoIndex?: number;
+		UiField?: IModal.IUiField;
+		UiFieldType?: string;
+		UiFieldDisabled?: boolean;
 	}
 
 	namespace IModal {
@@ -23,6 +26,7 @@ declare namespace IWidgetBuilder {
 			scriptsDomain?: string;
 			// modelUrls?: string[];
 			modelWidget?: IDataModelWidget;
+			modelUiFields?: IUiField[];
 			widgetTemplates?: IDataModelWidget[];
 		}
 
@@ -39,6 +43,19 @@ declare namespace IWidgetBuilder {
 			Active?: boolean;
 			WidgetTypeType?: number | string;
 			PostingUrl?: string;
+		}
+
+		interface IUiField {
+			FieldType?: string;
+			InputType?: string;
+			Value?: string | number | IUiField_ValueOption[];
+			Name?: string;
+			DefaultValue?: string | number;
+		}
+
+		interface IUiField_ValueOption {
+			Text: string;
+			Value: string;
 		}
 	}
 	interface IOnDragStart {
@@ -243,6 +260,13 @@ namespace LoanTekWidget {
 				widgetObj.allFieldsOptionsArray = lth.depositFields.asArray();
 				widgetObj.allResultFieldsObject = lth.depositResultFields;
 				widgetObj.allResultFieldsOptionsArray = lth.depositResultFields.asArray();
+			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'autoquotewidget') {
+				widgetObj.fieldHelperType = 'autoQuoteFields';
+				widgetObj.widgetType = lth.widgetType.autoquote.id;
+				widgetObj.allFieldsObject = lth.autoQuoteFields;
+				widgetObj.allFieldsOptionsArray = lth.autoQuoteFields.asArray();
+				widgetObj.allResultFieldsObject = lth.autoQuoteResultFields;
+				widgetObj.allResultFieldsOptionsArray = lth.autoQuoteResultFields.asArray();
 			} else {
 				widgetObj.fieldHelperType = 'contactFields';
 				widgetObj.widgetType = lth.widgetType.contact.id;
@@ -268,7 +292,7 @@ namespace LoanTekWidget {
 				var widgetScripts: string[] = ['/bundles/widget/widget'];
 
 				if (window.location.port === '58477' || window.location.port === '8080') {
-					ltWidgetCSS = ['/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
+					ltWidgetCSS = ['/Content/font-awesome.min.css', '/Areas/Widgets/Content/widget.css', '/Areas/Widgets/Content/lt-captcha.css'];
 					widgetScripts = [
 						'/Scripts/lib/jquery-1/jquery.min.js'
 						, '/Scripts/lib/jquery/jquery.placeholder.min.js'
@@ -276,6 +300,8 @@ namespace LoanTekWidget {
 						, '/Scripts/lib/datatables/dataTables.bootstrap.min.js'
 						, '/Areas/Widgets/Scripts/post-object/contact.js'
 						, '/Areas/Widgets/Scripts/post-object/deposit.js'
+						, '/Areas/Widgets/Scripts/post-object/autoquote.js'
+						, '/Areas/Widgets/Scripts/post-object/mortgagerate.js'
 						, '/Areas/Widgets/Scripts/common/lt-captcha.js'
 						, '/Areas/Widgets/Scripts/common/widget-helpers.js'
 						, '/Areas/Widgets/Scripts/widget/widget.js'
@@ -459,9 +485,62 @@ namespace LoanTekWidget {
 				}
 
 				function FieldExtended(fieldObj: IWidgetHelpers.IField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended {
+					var uiFieldIndex: number;
+					// var fieldObjectUpdated: boolean = false;
 					var fIndex = $scope.currentForm[formObjectType].fields.indexOf(fieldObj);
 					var fieldOpts: IWidgetHelpers.IFieldOptions = lth[fieldObjectType][fieldObj.field];
 					var customFieldNameIndex: number = null;
+					var returnFieldExt: IWidgetBuilder.IFieldExtended = { index: fIndex, fieldOptions: fieldOpts, UiFieldType: 'text' };
+					// var fieldObjValAlreadySet = function(): boolean { return !!(fieldObj.value || typeof fieldObj.value === 'boolean' || lth.isNumber(fieldObj.value)) };
+
+					if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
+						uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOpts.id, true);
+						if (uiFieldIndex !== -1) {
+							returnFieldExt.UiField = widgetData.modelUiFields[uiFieldIndex];
+
+							if (returnFieldExt.UiField.FieldType.toLowerCase() === 'select') {
+								returnFieldExt.UiFieldType = 'select';
+							} else if (returnFieldExt.UiField.FieldType.toLowerCase() === 'checkbox') {
+								// window.console && console.log('checkbox', returnFieldExt);
+								// $timeout(function() {
+								// 	fieldObj.value = 'true';
+								// });
+								// fieldObjectUpdated = true;
+								returnFieldExt.UiFieldType = 'checkbox';
+							} else {
+								// Sets type
+								if (returnFieldExt.UiField.InputType) {
+									returnFieldExt.UiFieldType = returnFieldExt.UiField.InputType.toLowerCase();
+								}
+
+								// // Changes value from string to number if type is number
+								// if (returnFieldExt.UiFieldType === 'number' && returnFieldExt.UiField.Value) {
+								// 	var UiFieldVal: string = <string>returnFieldExt.UiField.Value;
+								// 	var UiFieldValNum: number = +UiFieldVal.replace(/[^\d/.]/g,'');
+								// 	if (lth.isNumber(UiFieldValNum)) {
+								// 		returnFieldExt.UiField.Value = UiFieldValNum;
+								// 	}
+								// }
+
+								// // Sets to default 'Value' unless a value is already set
+								// // window.console && console.log('fieldObj.value', fieldObj.value, fieldObj);
+								// if ((returnFieldExt.UiField.Value || lth.isNumber(returnFieldExt.UiField.Value)) && !fieldObjValAlreadySet()) {
+								// 	$timeout(function() {
+								// 		fieldObj.value = <string|number>returnFieldExt.UiField.Value;
+								// 	});
+								// 	fieldObjectUpdated = true;
+								// }
+							}
+
+							// // Sets to 'DefaultValue' unless a value is already set
+							// if (returnFieldExt.UiField.DefaultValue && !fieldObjValAlreadySet()) {
+							// 	$timeout(function() {
+							// 		fieldObj.value = <string|number>returnFieldExt.UiField.DefaultValue;
+							// 	});
+							// 	fieldObjectUpdated = true;
+							// }
+						}
+					}
 
 					if (fieldOpts.id === 'customhidden') {
 						fieldObj.attrs = fieldObj.attrs || [];
@@ -469,9 +548,25 @@ namespace LoanTekWidget {
 						if (customFieldNameIndex === -1) {
 							fieldObj.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
 							customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs,'name', 'data-lt-additional-info-key');
+							// fieldObjectUpdated = true;
 						}
+
+						returnFieldExt.additionalInfoIndex = customFieldNameIndex;
 					}
-					return { index: fIndex, fieldOptions: fieldOpts, additionalInfoIndex: customFieldNameIndex };
+
+					if (['quotingchannel'].indexOf(fieldOpts.id) !== -1) {
+						returnFieldExt.UiFieldDisabled = true;
+					}
+
+					// if (fieldObjectUpdated) {
+					// 	// UpdateWidget();
+					// 	// $timeout(function() {
+					// 	// 	window.console && console.log('timeout to update values');
+					// 	// 	// $scope.UpdateWidget();
+					// 	// });
+					// }
+					// return { index: fIndex, fieldOptions: fieldOpts, additionalInfoIndex: customFieldNameIndex };
+					return returnFieldExt;
 				}
 
 				function RemoveField(index: number, formObjectType: string) {
@@ -517,8 +612,50 @@ namespace LoanTekWidget {
 					$scope.currentForm = currentForm;
 				}
 
+				function SetDefaultValues(fields: IWidgetHelpers.IField[], fieldHelperType: string) {
+					// window.console && console.log('fields', fields);
+					for (var i = fields.length - 1; i >= 0; i--) {
+						var field: IWidgetHelpers.IField = fields[i];
+						var fieldExt = lth.ExtendWidgetFieldTemplate(field,fieldHelperType);
+						// window.console && console.log('field', field);
+
+						// If value is not set already, then see if there is a default value
+						if (!field.value && typeof field.value !== 'boolean' && !lth.isNumber(field.value)) {
+							if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
+								// window.console && console.log('widgetData.modelUiFields', field, fieldHelperType, fieldExt, widgetData.modelUiFields);
+								var uiFieldIndex: number = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExt.field, true);
+								// window.console && console.log('uiFieldIndex', uiFieldIndex);
+								if (uiFieldIndex !== -1) {
+									var currentUiField = widgetData.modelUiFields[uiFieldIndex];
+									var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
+									var currentInputType = currentUiField.InputType ? currentUiField.InputType.toLowerCase() : 'text';
+
+									// Changes value from string to number if type is number
+									if (currentInputType === 'number' && currentUiField.Value) {
+										// window.console && console.log('number', currentUiField.Value);
+										var UiFieldVal: string = <string>currentUiField.Value;
+										var UiFieldValNum: number = +UiFieldVal.replace(/[^\d/.]/g,'');
+										if (lth.isNumber(UiFieldValNum)) {
+											currentUiField.Value = UiFieldValNum;
+										}
+									}
+
+									if ((currentUiField.Value || lth.isNumber(currentUiField.Value) || typeof currentUiField.Value === 'boolean') && currentFieldType !== 'select') {
+										field.value = <string|number>currentUiField.Value;
+									}
+
+									if (currentUiField.DefaultValue || lth.isNumber(currentUiField.DefaultValue) || typeof currentUiField.DefaultValue === 'boolean') {
+										field.value = currentUiField.DefaultValue;
+									}
+								}
+							}
+						}
+					}
+				}
+
 				function WidgetScriptBuild(currentFormObj: IWidgetHelpers.IFormObject) {
 					currentFormObj.buildObject.widgetType = widgetObj.widgetType;
+					SetDefaultValues($scope.currentForm.buildObject.fields, widgetObj.fieldHelperType);
 					if (currentFormObj.resultObject) {
 						currentFormObj.resultObject.widgetType = widgetObj.widgetType;
 					}

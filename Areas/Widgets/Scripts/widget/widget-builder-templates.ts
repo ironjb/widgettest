@@ -20,7 +20,7 @@
 
 		$templateCache.put('template/modal/editForm.html', `
 			<form class="form-horizontal" data-ng-submit="saveClick();">
-				<div class="modal-header alert alert-info">
+				<div class="modal-header modal-header-alert alert alert-info">
 					<h3 class="modal-title">Edit Widget Form</h3>
 				</div>
 				<div class="modal-body">
@@ -229,7 +229,7 @@
 
 		$templateCache.put('template/modal/editField.html', `
 			<form class="form-horizontal" data-ng-submit="saveClick();" data-ng-init="ft = fieldOptions.fieldTemplate">
-				<div class="modal-header alert alert-info">
+				<div class="modal-header modal-header-alert alert alert-info">
 					<h3 class="modal-title">Edit Widget Field: {{::fieldOptions.name}}</h3>
 				</div>
 				<div class="modal-body">
@@ -247,7 +247,7 @@
 									<select name="ltewFieldOffsetCols" id="ltewFieldOffsetCols" class="form-control" data-ng-model="modField.offsetCols" data-ng-options="gridCol.id as gridCol.name for gridCol in ::offsetColumnsArray | orderBy: 'id'"></select>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['p','div','hr','title','widget'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['p','div','hr','title','widget','datatable'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1)">
 								<label for="ltewFieldSize" class="col-sm-4 control-label">Field Size</label>
 								<div class="col-sm-8">
 									<div class="btn-group btn-group-sm">
@@ -303,7 +303,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr','widget'].indexOf(ft.element) !== -1)">
+							<div class="form-group form-group-sm" data-ng-show="::!(['label','captcha','title','hr','widget','datatable'].indexOf(ft.element) !== -1)">
 								<label for="ltewFieldBorderRadius" class="col-sm-4 control-label">Border Radius</label>
 								<div class="col-sm-4">
 									<input type="number" min="0" class="form-control" id="ltewFieldBorderRadius" name="ltewFieldBorderRadius" data-ng-model="modField.borderRadius" data-ng-model-options="modelOptions" />
@@ -358,7 +358,7 @@
 								<label for="ltewFieldRequired" class="col-sm-4 control-label">Require Field</label>
 								<div class="col-sm-4">
 									<div class="checkbox">
-										<label for=""><input type="checkbox" id="ltewFieldRequired" name="ltewFieldRequired" data-ng-model="modField.required" /></label>
+										<label for="ltewFieldRequired"><input type="checkbox" id="ltewFieldRequired" name="ltewFieldRequired" data-ng-model="modField.required" /></label>
 									</div>
 								</div>
 							</div>
@@ -372,6 +372,30 @@
 								<label for="ltewWidgetSelect" class="col-sm-4 control-label">Widget</label>
 								<div class="col-sm-4">
 									<select name="ltewWidgetSelect" id="ltewWidgetSelect" class="form-control" data-ng-model="modField.widgetInfo" data-ng-options="widget.formObject.name for widget in widgetList"></select>
+								</div>
+							</div>
+							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
+								<label for="ltewDataTableBordered" class="col-sm-4 control-label">Include Table Border</label>
+								<div class="col-sm-4">
+									<div class="checkbox"><label for="ltewDataTableBordered"><input type="checkbox" id="ltewDataTableBordered" name="ltewDataTableBordered" data-ng-model="modField.dataTableOptions.isBordered" /></label></div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
+								<label for="ltewDataTableCondensed" class="col-sm-4 control-label">Condense Table</label>
+								<div class="col-sm-4">
+									<div class="checkbox"><label for="ltewDataTableCondensed"><input type="checkbox" id="ltewDataTableCondensed" name="ltewDataTableCondensed" data-ng-model="modField.dataTableOptions.isCondensed" /></label></div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
+								<label for="ltewDataTableStriped" class="col-sm-4 control-label">Striped Table</label>
+								<div class="col-sm-4">
+									<div class="checkbox"><label for="ltewDataTableStriped"><input type="checkbox" id="ltewDataTableStriped" name="ltewDataTableStriped" data-ng-model="modField.dataTableOptions.isStriped" /></label></div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
+								<label for="ltewDataTableHover" class="col-sm-4 control-label">Table Hover</label>
+								<div class="col-sm-4">
+									<div class="checkbox"><label for="ltewDataTableHover"><input type="checkbox" id="ltewDataTableHover" name="ltewDataTableHover" data-ng-model="modField.dataTableOptions.isHover" /></label></div>
 								</div>
 							</div>
 						</div>
@@ -393,7 +417,7 @@
 									<div class="form-group" data-ng-show="::ft.element === 'select'">
 										<div class="col-sm-12">
 											<select class="form-control" data-ng-style="fieldStyle", data-ng-class="fieldSizeClass">
-												<option value="">{{modField.placeholder}}</option>
+												<option value="">{{modField.placeholder || '- Select -'}}</option>
 											</select>
 										</div>
 									</div>
@@ -410,7 +434,9 @@
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'p'">
 										<div class="col-sm-12">
-											<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+											<div style="margin: 8px;">
+												<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+											</div>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'div'">
@@ -447,6 +473,34 @@
 											<h6 data-ng-show="modField.nsize === 6" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h6>
 										</div>
 									</div>
+									<div class="form-group" data-ng-show="::ft.element === 'datatable'">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table dataTable" data-ng-class="{'table-bordered': modField.dataTableOptions.isBordered, 'table-condensed': modField.dataTableOptions.isCondensed, 'table-striped': modField.dataTableOptions.isStriped, 'table-hover': modField.dataTableOptions.isHover}" data-ng-style="fieldStyle">
+													<thead>
+														<tr>
+															<th>Header</th>
+															<th>Header</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td>data</td>
+															<td>data</td>
+														</tr>
+														<tr>
+															<td>data</td>
+															<td>data</td>
+														</tr>
+														<tr>
+															<td>data</td>
+															<td>data</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -461,7 +515,7 @@
 
 		$templateCache.put('template/modal/editRepeatField.html', `
 			<form class="form-horizontal" data-ng-submit="saveWidget();" data-ng-init="ft = fieldOptions.fieldTemplate">
-				<div class="modal-header alert alert-info">
+				<div class="modal-header modal-header-alert alert alert-info">
 					<h3 class="modal-title">Edit Widget Data Field</h3>
 				</div>
 				<div class="modal-body">
@@ -480,7 +534,7 @@
 								</div>
 								<div data-uib-collapse="isCollapsedAvailableRepeatDataFields">
 									<div class="panel-body">
-										<div class="list-group lt-no-bottom-margin">
+										<div class="list-group m-b-0">
 											<div class="list-group-item" data-ng-repeat="rdField in allRepeatDataFieldsOptionsArray | filter: FilterAvailableDataFields | orderBy: ['allowMultiples']">
 												<div class="pull-right">
 													<span class="small text-danger" data-ng-show="!!rdField.isLTRequired &amp;&amp; !rdField.isIncluded">Required &nbsp; </span>

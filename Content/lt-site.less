@@ -1,9 +1,52 @@
-@import "less/bootstrap/variables.less";
 @import "lt-variables.less";
 @import "less/bootstrap/mixins.less";
 @import "lt-mixins.less";
 
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Courgette');
+
+// Bootstrap override (use sparingly and try to use custom classes)
+.form-horizontal {
+	.form-group-sm {
+		.checkbox {
+			padding-top: 3px;
+		}
+	}
+	.control-label {
+		&.text-left {
+			text-align: left;
+		}
+	}
+}
+
+.table-no-heading {
+	tbody {
+		> tr {
+			&:first-child {
+				> td {
+					border-top: none;
+				}
+			}
+		}
+	}
+}
+
+.lt-breadcrumb {
+	color: @breadcrumb-color;
+	> li {
+		margin-right: @breadcrumb-li-margin-right;
+		+ li:before {
+			content: '\f105';
+			font-family: FontAwesome;
+			margin-right: @breadcrumb-li-margin-right + 4;
+		}
+		> i.fa {
+			margin-right: 6px;
+		}
+	}
+	a {
+		color: @breadcrumb-color;
+	}
+}
 
 // Sticky Footer
 html.html-footer-sticky {
@@ -32,26 +75,6 @@ html.html-footer-sticky {
 	}
 }
 
-// Footer
-.footer {
-	height: @footer-height;
-	border-top: 1px solid #eee;
-	padding-top: 0.8em;
-	font-size: 0.8em;
-}
-
-.footer-inverse {
-	color: @gray-lighter;
-	border-top: none;
-	background-color: @lt-color-darker;
-	a {
-		color: @lt-link-color-inverse;
-		&:hover {
-			color: @lt-link-hover-color-inverse;
-		}
-	}
-}
-
 .page-head-inverse {
 	border-bottom: 4px solid @lt-color-darker;
 }
@@ -71,6 +94,9 @@ html.html-footer-sticky {
 
 	.top-menu {
 		float: left;
+		.UserName {
+			font-family: 'Courgette', cursive;
+		}
 
 		.nav {
 			> li {
@@ -82,25 +108,6 @@ html.html-footer-sticky {
 					}
 				}
 			}
-		}
-
-		.navbar-nav {
-			// .dropdown-menu {
-			// 	position: absolute;
-			// 	float: left;
-			// 	//width:
-			// 	margin-top: 2px;
-			// 	background-color: @dropdown-bg;
-			// 	border: 1px solid @dropdown-fallback-border; // IE8 fallback
-			// 	border: 1px solid @dropdown-border;
-			// 	.box-shadow(0 6px 12px rgba(0,0,0,.175));
-
-			// 	> li {
-			// 		> a {
-			// 			padding: 3px 20px;
-			// 		}
-			// 	}
-			// }
 		}
 	}
 }
@@ -114,6 +121,26 @@ html.html-footer-sticky {
 .logo-lt {
 	margin-top:4px;
 	max-height: 46px;
+}
+
+// Footer
+.footer {
+	height: @footer-height;
+	border-top: 1px solid #eee;
+	padding-top: 0.8em;
+	font-size: 0.8em;
+}
+
+.footer-inverse {
+	color: @gray-lighter;
+	border-top: none;
+	background-color: @lt-color-darker;
+	a {
+		color: @lt-link-color-inverse;
+		&:hover {
+			color: @lt-link-hover-color-inverse;
+		}
+	}
 }
 
 // Dropdown Menu
@@ -210,15 +237,6 @@ html.html-footer-sticky {
 .dropdown-fade {
 	.dropdown-fade();
 }
-// .dropdown-menu {
-// 	> li {
-// 		> a {
-// 			> [class*=" icon-"], > [class^="icon-"] {
-// 				.simple-icon-pad();
-// 			}
-// 		}
-// 	}
-// }
 
 // Simple Icon
 .si-pad {
@@ -232,23 +250,106 @@ html.html-footer-sticky {
 	margin-bottom: 0;
 }
 
+// Other
+.pre-code {
+	white-space: pre-wrap;
+}
+
+.navbar .UserName {
+	font-size:140%;
+	font-family: 'Courgette', cursive;
+}
+
+// limits resizing of <textarea>
+.resize {
+	&-none {
+		resize: none;
+	}
+	&-vertical {
+		resize: vertical;
+	}
+	&-horizontal {
+		resize: horizontal;
+	}
+}
+
+.under-construction {
+	pointer-events:none;
+	cursor:not-allowed;
+	opacity: .5;
+}
+
+//Modal
+
+// Simple spinner
+.spinner-color {
+	color: @spinner-color;
+}
+
+
+.modal-header-alert {
+	&.alert {
+		margin-bottom:0;
+		.border-bottom-radius(0);
+	}
+}
+
+// Angular
+.ng-hide {
+	.opacity(0);
+}
+
+.animate-ng-hide {
+	.opacity(1);
+	&.ng-hide {
+		.opacity(0);
+	}
+	.transition(all ease-in-out 0.2s);
+}
+
+
+// Modal Processing spinner
+.modal-processing {
+	padding: 20px 10px;
+	margin-bottom:100px;
+	background-color: #FFFFFF;
+	border: 2px solid #000000;
+	h3 {
+		margin: 5px 0;
+		font-size: @font-size-h4
+	}
+	img {
+		width: 64px;
+		padding-right:20px;
+	}
+}
+
 // LARGER THAN MOBILE
 @media (min-width: @grid-float-breakpoint) {
+	// Page Head
 	.page-head {
 		border-bottom: none;
 	}
 
-	.page-head-top-fixed {
-		margin-top: @page-head-sm-top-height;
-		> .page-head-top {
-			border-bottom: 1px solid @lt-color-darker;
+	body.page-head-top-fixed {
+		.LoanTekAdminBar {
 			position: fixed;
-			width: 100%;
-			margin-top: -@page-head-sm-top-height;
-			z-index: 2;
+			top: 0;
+			.opacity(0.9);
 		}
-		> .page-head-menu {
-			z-index: 1;
+		.page-head {
+			margin-top: @page-head-sm-top-height;
+			> .page-head-top {
+				border-bottom: 1px solid @lt-color-darker;
+				position: fixed;
+				width: 100%;
+				top: 0;
+				left: 0;
+				z-index: 2;
+			}
+			> .page-head-menu {
+				z-index: 1;
+			}
 		}
 	}
 
@@ -261,14 +362,31 @@ html.html-footer-sticky {
 
 		.top-menu {
 			margin-top: 13px;
+			.UserName {
+				font-size: 140%;
+			}
 		}
 
 		.logo-lt {
-			margin-top:4px;
+			margin-top: 4px;
 			max-height: 66px;
 		}
 	}
 
+	.page-head-menu-fixed {
+		.page-head {
+			height: 126px;
+			> .menu-fixed {
+				width: 100%;
+				top: 0;
+				left: 0;
+				position: fixed;
+				z-index: @zindex-navbar;
+			}
+		}
+	}
+
+	// Dropdown
 	.dropdown-sm-fade {
 		.dropdown-fade();
 	}
@@ -295,5 +413,13 @@ html.html-footer-sticky {
 	.footer {
 		padding-top: 1em;
 		font-size: 1em;
+	}
+
+	// Modal Processing spinner
+	.modal-processing {
+		padding: 40px;
+		h3 {
+			font-size: @font-size-h3;
+		}
 	}
 }

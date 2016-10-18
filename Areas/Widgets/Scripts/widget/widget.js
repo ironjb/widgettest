@@ -43,6 +43,9 @@ var LoanTekWidget;
             else if (settings.widgetType === lth.widgetType.deposit.id) {
                 fieldHelperType = 'depositFields';
             }
+            else if (settings.widgetType === lth.widgetType.autoquote.id) {
+                fieldHelperType = 'autoQuoteFields';
+            }
             else {
                 fieldHelperType = 'contactFields';
             }
@@ -76,6 +79,9 @@ var LoanTekWidget;
             }
             else if (settings.widgetType === lth.widgetType.deposit.id) {
                 widgetFunctionality = new DepositFunctionality(lth, readyOptions);
+            }
+            else if (settings.widgetType === lth.widgetType.autoquote.id) {
+                widgetFunctionality = new AutoQuoteFunctionality(lth, readyOptions);
             }
             else {
                 widgetFunctionality = new ContactFunctionality($, lth, readyOptions);
@@ -112,19 +118,11 @@ var LoanTekWidget;
             $.extend(settings, options);
             var customInputClass = '.lt-custom-input';
             if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-                settings.form_id += '_' + settings.uniqueQualifier;
-                settings.form_firstName += '_' + settings.uniqueQualifier;
-                settings.form_lastName += '_' + settings.uniqueQualifier;
-                settings.form_email += '_' + settings.uniqueQualifier;
-                settings.form_phone += '_' + settings.uniqueQualifier;
-                settings.form_company += '_' + settings.uniqueQualifier;
-                settings.form_state += '_' + settings.uniqueQualifier;
-                settings.form_comments += '_' + settings.uniqueQualifier;
-                settings.form_submit += '_' + settings.uniqueQualifier;
-                settings.form_successMessageWrapper += '_' + settings.uniqueQualifier;
-                settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-                settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-                settings.form_errorMsg += '_' + settings.uniqueQualifier;
+                for (var paramName in settings) {
+                    if (paramName.indexOf('form_') !== -1) {
+                        settings[paramName] += '_' + settings.uniqueQualifier;
+                    }
+                }
                 customInputClass += '_' + settings.uniqueQualifier;
             }
             $('input, textarea').placeholder({ customClass: 'placeholder-text' });
@@ -218,14 +216,11 @@ var LoanTekWidget;
             $.extend(true, settings, options);
             var customInputClass = '.lt-custom-input';
             if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-                settings.form_id += '_' + settings.uniqueQualifier;
-                settings.form_submit += '_' + settings.uniqueQualifier;
-                settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-                settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-                settings.form_errorMsg += '_' + settings.uniqueQualifier;
-                settings.form_term += '_' + settings.uniqueQualifier;
-                settings.form_amount += '_' + settings.uniqueQualifier;
-                settings.form_noDataMessage += '_' + settings.uniqueQualifier;
+                for (var paramName in settings) {
+                    if (paramName.indexOf('form_') !== -1) {
+                        settings[paramName] += '_' + settings.uniqueQualifier;
+                    }
+                }
                 customInputClass += '_' + settings.uniqueQualifier;
             }
             $('input, textarea').placeholder({ customClass: 'placeholder-text' });
@@ -321,6 +316,67 @@ var LoanTekWidget;
         return DepositFunctionality;
     }());
     LoanTekWidget.DepositFunctionality = DepositFunctionality;
+    var AutoQuoteFunctionality = (function () {
+        function AutoQuoteFunctionality(lth, options) {
+            var $ = lth.$;
+            var formEl = lth.autoQuoteFields;
+            var resultEl = lth.autoQuoteResultFields;
+            var settings = {
+                postUrl: null,
+                externalValidatorFunction: null,
+                userId: null,
+                clientId: null,
+                form_id: '#ltWidgetForm',
+                form_errorAnchor: 'ltwErrorAnchor',
+                form_errorMsgWrapper: '#ltwErrorMessageWrapper',
+                form_errorMsg: '#ltwErrorMessage',
+                AdditionalPostData: null,
+                form_submit: '#' + formEl.submit.fieldTemplate.id,
+                form_term: '#' + formEl.autoterm.fieldTemplate.id,
+                form_amount: '#' + formEl.autoamount.fieldTemplate.id,
+                form_noDataMessage: '#' + resultEl.nodatamessage.fieldTemplate.id,
+                resultDisplayOptions: {
+                    fieldHelperType: 'autoQuoteResultFields'
+                }
+            };
+            $.extend(true, settings, options);
+            var customInputClass = '.lt-custom-input';
+            if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
+                for (var paramName in settings) {
+                    if (paramName.indexOf('form_') !== -1) {
+                        settings[paramName] += '_' + settings.uniqueQualifier;
+                    }
+                }
+                customInputClass += '_' + settings.uniqueQualifier;
+            }
+            $('input, textarea').placeholder({ customClass: 'placeholder-text' });
+            $(function () {
+                var autoQuotePostData = lth.postObjects.autoquote();
+                $(settings.form_submit).prop('disabled', false);
+                var appendDataToDataList = function (fieldList, data) {
+                    for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
+                        var fieldItem = fieldList[flIndex];
+                        if (fieldItem.field === 'autoquotedatalist') {
+                            fieldItem.fieldData = data;
+                        }
+                    }
+                };
+                if (settings.resultDisplayOptions.showBuilderTools) {
+                }
+                $(settings.form_id).submit(function (event) {
+                    event.preventDefault();
+                    $(settings.form_errorMsgWrapper).hide(100);
+                    $(settings.form_submit).prop('disabled', true);
+                    if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
+                        $(settings.form_submit).prop('disabled', false);
+                        return false;
+                    }
+                });
+            });
+        }
+        return AutoQuoteFunctionality;
+    }());
+    LoanTekWidget.AutoQuoteFunctionality = AutoQuoteFunctionality;
     var MortgageQuoteFunctionality = (function () {
         function MortgageQuoteFunctionality(lth, options) {
             var $ = lth.$;
@@ -368,40 +424,11 @@ var LoanTekWidget;
             $('input, textarea').placeholder({ customClass: 'placeholder-text' });
             var customInputClass = '.lt-custom-input';
             if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-                settings.form_id += '_' + settings.uniqueQualifier;
-                settings.form_submit += '_' + settings.uniqueQualifier;
-                settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-                settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-                settings.form_errorMsg += '_' + settings.uniqueQualifier;
-                settings.form_loanPurpose += '_' + settings.uniqueQualifier;
-                settings.form_zipCode += '_' + settings.uniqueQualifier;
-                settings.form_purchasePrice += '_' + settings.uniqueQualifier;
-                settings.form_downPayment += '_' + settings.uniqueQualifier;
-                settings.form_propertyValue += '_' + settings.uniqueQualifier;
-                settings.form_balance += '_' + settings.uniqueQualifier;
-                settings.form_cashOut += '_' + settings.uniqueQualifier;
-                settings.form_creditScore += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_30yearfixed += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_25yearfixed += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_20yearfixed += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_15yearfixed += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_10yearfixed += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_10yeararm += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_7yeararm += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_5yeararm += '_' + settings.uniqueQualifier;
-                settings.form_loanProgram_3yeararm += '_' + settings.uniqueQualifier;
-                settings.form_monthlyIncome += '_' + settings.uniqueQualifier;
-                settings.form_propertyType += '_' + settings.uniqueQualifier;
-                settings.form_propertyUsage += '_' + settings.uniqueQualifier;
-                settings.form_VAEligible += '_' + settings.uniqueQualifier;
-                settings.form_vAFirstTimeUse += '_' + settings.uniqueQualifier;
-                settings.form_vADisabled += '_' + settings.uniqueQualifier;
-                settings.form_vAType += '_' + settings.uniqueQualifier;
-                settings.form_firstTimeBuyer += '_' + settings.uniqueQualifier;
-                settings.form_foreclosed += '_' + settings.uniqueQualifier;
-                settings.form_bankruptcy += '_' + settings.uniqueQualifier;
-                settings.form_loanOwnedBy += '_' + settings.uniqueQualifier;
-                settings.form_monthlyDebt += '_' + settings.uniqueQualifier;
+                for (var paramName in settings) {
+                    if (paramName.indexOf('form_') !== -1) {
+                        settings[paramName] += '_' + settings.uniqueQualifier;
+                    }
+                }
                 customInputClass += '_' + settings.uniqueQualifier;
             }
         }
@@ -412,6 +439,7 @@ var LoanTekWidget;
         function MortgageRateFunctionality(lth, options) {
             var $ = lth.$;
             var el = lth.CreateElement();
+            var formEl = lth.mortgageRateFields;
             var settings = {
                 postUrl: null,
                 externalValidatorFunction: null,
@@ -423,34 +451,47 @@ var LoanTekWidget;
                 form_errorMsgWrapper: '#ltwErrorMessageWrapper',
                 form_errorMsg: '#ltwErrorMessage',
                 form_email: '#ltwEmail',
-                form_loanType: '#ltwLoanType',
-                form_rateTable: '#ltwRateTable',
+                form_loanType: '#' + formEl.loantype.fieldTemplate.id,
+                form_rateTable: '#' + formEl.ratetable.fieldTemplate.id,
                 form_desiredLoanProgram: '#ltwDesiredLoanProgram',
-                form_desiredInterestRate: '#ltwDesiredInterestRate'
+                form_desiredInterestRate: '#ltwDesiredInterestRate',
+                form_creditScore: '#' + formEl.creditscore.fieldTemplate.id,
+                form_loanAmount: '#' + formEl.loanamount.fieldTemplate.id,
+                form_loanPurpose: '#' + formEl.loanpurpose.fieldTemplate.id,
+                form_loanToValue: '#' + formEl.loantovalue.fieldTemplate.id,
+                form_propertyType: '#' + formEl.propertytype.fieldTemplate.id,
+                form_propertyUsage: '#' + formEl.propertyusage.fieldTemplate.id,
+                form_quotingChannel: '#' + formEl.quotingchannel.fieldTemplate.id,
+                form_vaType: '#' + formEl.vatype.fieldTemplate.id,
+                form_zipCode: '#' + formEl.zipcode.fieldTemplate.id
             };
             $.extend(true, settings, options);
             $('input, textarea').placeholder({ customClass: 'placeholder-text' });
             var customInputClass = '.lt-custom-input';
             if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-                settings.form_id += '_' + settings.uniqueQualifier;
-                settings.form_submit += '_' + settings.uniqueQualifier;
-                settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-                settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-                settings.form_errorMsg += '_' + settings.uniqueQualifier;
-                settings.form_email += '_' + settings.uniqueQualifier;
-                settings.form_loanType += '_' + settings.uniqueQualifier;
-                settings.form_rateTable += '_' + settings.uniqueQualifier;
-                settings.form_desiredLoanProgram += '_' + settings.uniqueQualifier;
-                settings.form_desiredInterestRate += '_' + settings.uniqueQualifier;
+                for (var paramName in settings) {
+                    if (paramName.indexOf('form_') !== -1) {
+                        settings[paramName] += '_' + settings.uniqueQualifier;
+                    }
+                }
                 customInputClass += '_' + settings.uniqueQualifier;
             }
             $(function () {
-                var rateRequest = $.ajax({
-                    method: 'GET',
-                    url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
-                }).then(function (result) {
-                    var rateList = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];
-                    var filteredRateList = [];
+                var mortgageRatePostData = lth.postObjects.mortgagerate();
+                mortgageRatePostData.LoanRequest.CreditScore = $(settings.form_creditScore).val() * 1;
+                mortgageRatePostData.LoanRequest.LoanAmount = $(settings.form_loanAmount).val() * 1;
+                mortgageRatePostData.LoanRequest.LoanPurpose = $(settings.form_loanPurpose).val();
+                mortgageRatePostData.LoanRequest.LoanToValue = $(settings.form_loanToValue).val() * 1;
+                mortgageRatePostData.LoanRequest.PropertyType = $(settings.form_propertyType).val();
+                mortgageRatePostData.LoanRequest.PropertyUsage = $(settings.form_propertyUsage).val();
+                mortgageRatePostData.LoanRequest.QuotingChannel = $(settings.form_quotingChannel).val();
+                mortgageRatePostData.LoanRequest.ZipCode = $(settings.form_zipCode).val();
+                mortgageRatePostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
+                mortgageRatePostData.UserId = settings.userId;
+                if ($(settings.form_vaType).val()) {
+                    mortgageRatePostData.LoanRequest.VAType = $(settings.form_vaType).val();
+                }
+                var populateRateTable = function (rateList) {
                     var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
                     $(settings.form_loanType).html('');
                     for (var iLt = 0, pttl = lth.ProductTermType.asArray().length; iLt < pttl; iLt++) {
@@ -459,42 +500,61 @@ var LoanTekWidget;
                             $(settings.form_loanType).append(el.option().val(ptt.name).html(ptt.description));
                         }
                     }
-                    var datatableFormatPercent = function (data, type, row) {
-                        return lth.FormatNumber(data, 3, true, null, '%');
-                    };
-                    var datatableFormatCurrency = function (data, type, row) {
-                        return lth.FormatNumber(data, 2, true, '$');
-                    };
-                    var datatableFormatPoints = function (data, type, row) {
-                        return lth.FormatNumber(data, 3, true);
-                    };
                     var getFilteredRateTableData = function () {
                         var loanTypeValue = $(settings.form_loanType).val();
                         var returnFilteredRates = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
                         return returnFilteredRates;
                     };
-                    var rateTable = $(settings.form_rateTable + ' > table').DataTable({
+                    var rateTableInfo = {
                         data: getFilteredRateTableData(),
                         stripeClasses: ['ratetable-strip1', 'ratetable-strip2'],
                         paging: false,
                         info: false,
                         searching: false,
-                        columns: [
-                            { "data": "InterestRate", render: datatableFormatPercent, title: 'Rate', className: 'ratetable-rate' },
-                            { "data": "APR", render: datatableFormatPercent, title: 'APR', className: 'ratetable-apr' },
-                            { "data": "FinalFees", render: datatableFormatCurrency, title: 'Loan Fees', className: 'ratetable-loanfees' },
-                            { "data": "PIP", render: datatableFormatCurrency, title: 'Payment', className: 'ratetable-payment' },
-                            { "data": "CalcPrice", render: datatableFormatPoints, title: 'Points', className: 'ratetable-points' }
-                        ]
-                    });
+                        columns: []
+                    };
+                    for (var colName in lth.mortgageRateDataTable) {
+                        var col = lth.mortgageRateDataTable[colName];
+                        if (col.column) {
+                            rateTableInfo.columns.push(col.column);
+                        }
+                    }
+                    var rateTable = $(settings.form_rateTable + ' > table').DataTable(rateTableInfo);
                     rateTable.order([0, 'asc']).draw();
                     $(settings.form_loanType).change(function () {
                         var updatedRateList = getFilteredRateTableData();
                         rateTable.clear().rows.add(updatedRateList).draw();
                     });
-                }, function (error) {
-                    window.console && console.error('Error getting rates', error);
-                });
+                };
+                if (settings.showBuilderTools) {
+                    var fakeData = lth.FakeData().mortgagerate;
+                    populateRateTable(fakeData);
+                }
+                else {
+                    var rateRequest = $.ajax({
+                        method: 'POST',
+                        url: settings.postUrl,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify(mortgageRatePostData)
+                    }).then(function (result) {
+                        var rateList;
+                        try {
+                            rateList = result.Submissions[0].Quotes;
+                        }
+                        catch (er) {
+                            rateList = [];
+                        }
+                        populateRateTable(rateList);
+                    }, function (error) {
+                        try {
+                            window.console && console.error('Error: ', error.responseJSON.Message);
+                        }
+                        catch (er) {
+                            window.console && console.error('Error getting rates', error);
+                        }
+                    });
+                }
             });
         }
         return MortgageRateFunctionality;

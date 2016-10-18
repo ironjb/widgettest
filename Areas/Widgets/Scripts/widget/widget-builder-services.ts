@@ -80,6 +80,7 @@ declare namespace IWidgetServices {
 		showLabelPreview: boolean;
 		showTitlePreview: boolean;
 		widgetList: IWidgetHelpers.IWidgetInfo[];
+		// dataTableClasses: string;
 	}
 
 	interface IEditRepeatFieldNgScope extends ng.IScope {
@@ -460,7 +461,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					}
 				}
 
-				if (el = 'widget') {
+				if (el === 'widget') {
 					var widgetType: string;
 					if (ty === 'depositwidget') {
 						widgetType = 'DepositWidget';
@@ -518,9 +519,14 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					, 'modField.padding'
 					, 'modField.marginTopBottom'
 					, 'modField.align'
+					// , 'modField.dataTableOptions.isBordered'
+					// , 'modField.dataTableOptions.isCondensed'
+					// , 'modField.dataTableOptions.isStriped'
+					// , 'modField.dataTableOptions.isHover'
 				];
 				$scope.$watchGroup(watchList, function (newValue) {
 					var newStyle: IWidgetServices.IFieldStyle = {};
+					// $scope.dataTableClasses = '';
 
 					if ($scope.modField.fontSize) {
 						newStyle.fontSize = $scope.modField.fontSize + 'px';
@@ -553,6 +559,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if (!lth.isStringNullOrEmpty($scope.modField.align)) {
 						newStyle.textAlign = $scope.modField.align;
 					}
+					// if ($scope.modField.dataTableOptions) {
+					// 	if ($scope.modField.dataTableOptions.isBordered) {
+					// 		$scope.dataTableClasses += '';
+					// 	}
+					// }
 
 					$scope.fieldStyle = newStyle;
 				});
@@ -606,6 +617,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					}
 					if ($scope.modField.attrs.length === 0) {
 						delete $scope.modField.attrs;
+					}
+					if (el === 'datatable' && !$scope.modField.dataTableOptions.isBordered) {
+						delete $scope.modField.borderColor;
+						delete $scope.modField.dataTableOptions.isBordered;
+					}
+					if (el === 'datatable' && !$scope.modField.dataTableOptions.isCondensed) {
+						delete $scope.modField.dataTableOptions.isCondensed;
+					}
+					if (el === 'datatable' && !$scope.modField.dataTableOptions.isStriped) {
+						delete $scope.modField.dataTableOptions.isStriped;
+					}
+					if (el === 'datatable' && !$scope.modField.dataTableOptions.isHover) {
+						delete $scope.modField.dataTableOptions.isHover;
 					}
 					var newBuildObject: IWidgetHelpers.IFormObject = angular.copy($scope.modBuildObject);
 					$uibModalInstance.close(newBuildObject);
