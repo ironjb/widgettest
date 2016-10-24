@@ -1,34 +1,36 @@
 @import "lt-variables.less";
-@import "less/bootstrap/mixins.less";
 @import "lt-mixins.less";
 
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Courgette');
 
-// Bootstrap override (use sparingly and try to use custom classes)
-.form-horizontal {
-	.form-group-sm {
-		.checkbox {
-			padding-top: 3px;
-		}
-	}
-	.control-label {
-		&.text-left {
-			text-align: left;
-		}
-	}
-}
+@import 'less/lt/bootstrap-mods.less';
+@import 'less/lt/datatable-mods.less';
 
-.table-no-heading {
-	tbody {
-		> tr {
-			&:first-child {
-				> td {
-					border-top: none;
-				}
-			}
-		}
-	}
-}
+// // Bootstrap override (use sparingly and try to use custom classes)
+// .form-horizontal {
+// 	.form-group-sm {
+// 		.checkbox {
+// 			padding-top: 3px;
+// 		}
+// 	}
+// 	.control-label {
+// 		&.text-left {
+// 			text-align: left;
+// 		}
+// 	}
+// }
+
+// .table-no-heading {
+// 	tbody {
+// 		> tr {
+// 			&:first-child {
+// 				> td {
+// 					border-top: none;
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 .lt-breadcrumb {
 	color: @breadcrumb-color;
@@ -245,10 +247,10 @@ html.html-footer-sticky {
 	}
 }
 
-// Margins
-.m-b-0 {
-	margin-bottom: 0;
-}
+// // Margins
+// .m-b-0 {
+// 	margin-bottom: 0;
+// }
 
 // Other
 .pre-code {

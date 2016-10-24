@@ -48,15 +48,15 @@ declare namespace IWidgetBuilder {
 		interface IUiField {
 			FieldType?: string;
 			InputType?: string;
-			Value?: string | number | IUiField_ValueOption[];
+			Value?: string | number | IWidgetHelpers.ISelectOption[];
 			Name?: string;
 			DefaultValue?: string | number;
 		}
 
-		interface IUiField_ValueOption {
-			Text: string;
-			Value: string;
-		}
+		// interface IUiField_ValueOption {
+		// 	Text: string;
+		// 	Value: string;
+		// }
 	}
 	interface IOnDragStart {
 		(event: Event, ui: JQueryUI.DraggableEventUIParams, data: IOnDragStartData): void;
@@ -86,6 +86,7 @@ declare namespace IWidgetBuilder {
 		onDragStart: IOnDragStart;
 		setCurrentForm?(currentForm: IWidgetHelpers.IFormObject): void;
 		buildScript?: IScriptBuildFunction;
+		uiFields?: IModal.IUiField[];
 	}
 
 	interface INgScope extends ng.IScope, IWidgetBuilder.IWidget {
@@ -492,11 +493,15 @@ namespace LoanTekWidget {
 					var customFieldNameIndex: number = null;
 					var returnFieldExt: IWidgetBuilder.IFieldExtended = { index: fIndex, fieldOptions: fieldOpts, UiFieldType: 'text' };
 					// var fieldObjValAlreadySet = function(): boolean { return !!(fieldObj.value || typeof fieldObj.value === 'boolean' || lth.isNumber(fieldObj.value)) };
+					// window.console && console.log('FieldExtend', fieldObj, widgetData.modelUiFields);
 
 					if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
-						uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOpts.id, true);
+						var fieldOptId = fieldOpts.groupName ? fieldOpts.groupName : fieldOpts.id;
+						uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOptId, true);
+						// window.console && console.log('fieldExt uiFieldIndex', uiFieldIndex, fieldOpts.id, fieldOptId);
 						if (uiFieldIndex !== -1) {
-							returnFieldExt.UiField = widgetData.modelUiFields[uiFieldIndex];
+							returnFieldExt.UiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
+							// window.console && console.log(' - ', returnFieldExt);
 
 							if (returnFieldExt.UiField.FieldType.toLowerCase() === 'select') {
 								returnFieldExt.UiFieldType = 'select';
@@ -554,7 +559,7 @@ namespace LoanTekWidget {
 						returnFieldExt.additionalInfoIndex = customFieldNameIndex;
 					}
 
-					if (['quotingchannel'].indexOf(fieldOpts.id) !== -1) {
+					if (['quotingchannel', 'fortype'].indexOf(fieldOpts.id) !== -1) {
 						returnFieldExt.UiFieldDisabled = true;
 					}
 
@@ -620,25 +625,34 @@ namespace LoanTekWidget {
 						// window.console && console.log('field', field);
 
 						// If value is not set already, then see if there is a default value
-						if (!field.value && typeof field.value !== 'boolean' && !lth.isNumber(field.value)) {
+						// if (!field.value && typeof field.value !== 'boolean' && !lth.isNumber(field.value)) {
+						if (typeof field.value === 'undefined') {
 							if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
 								// window.console && console.log('widgetData.modelUiFields', field, fieldHelperType, fieldExt, widgetData.modelUiFields);
-								var uiFieldIndex: number = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExt.field, true);
-								// window.console && console.log('uiFieldIndex', uiFieldIndex);
+								var fieldExtId = fieldExt.field.replace(/hidden$/,'');
+								var uiFieldIndex: number = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExtId, true);
+								// window.console && console.log('uiFieldIndex', uiFieldIndex, fieldExt.field, fieldExtId, fieldExt);
 								if (uiFieldIndex !== -1) {
-									var currentUiField = widgetData.modelUiFields[uiFieldIndex];
+									var currentUiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
 									var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
 									var currentInputType = currentUiField.InputType ? currentUiField.InputType.toLowerCase() : 'text';
 
-									// Changes value from string to number if type is number
-									if (currentInputType === 'number' && currentUiField.Value) {
+									// Changes value from string to number if 'InputType' is 'Number'
+									if (currentInputType === 'number' && currentUiField.Value && typeof currentUiField.Value !== 'number') {
 										// window.console && console.log('number', currentUiField.Value);
 										var UiFieldVal: string = <string>currentUiField.Value;
-										var UiFieldValNum: number = +UiFieldVal.replace(/[^\d/.]/g,'');
+										// window.console && console.log('UiFieldVal', UiFieldVal);
+										var UiFieldValNum: any = +UiFieldVal.replace(/[^\d/.]/g,'');
+										// window.console && console.log('UiFieldValNum', UiFieldValNum);
 										if (lth.isNumber(UiFieldValNum)) {
 											currentUiField.Value = UiFieldValNum;
 										}
 									}
+
+									// if (currentFieldType === 'select' && Array.isArray(currentUiField.Value)) {
+									// 	// window.console && console.log('currentUiField', currentUiField);
+									// 	field.selectOptions = <IWidgetHelpers.ISelectOption[]>currentUiField.Value;
+									// }
 
 									if ((currentUiField.Value || lth.isNumber(currentUiField.Value) || typeof currentUiField.Value === 'boolean') && currentFieldType !== 'select') {
 										field.value = <string|number>currentUiField.Value;
@@ -647,6 +661,26 @@ namespace LoanTekWidget {
 									if (currentUiField.DefaultValue || lth.isNumber(currentUiField.DefaultValue) || typeof currentUiField.DefaultValue === 'boolean') {
 										field.value = currentUiField.DefaultValue;
 									}
+								}
+							}
+						}
+					}
+				}
+
+				function SetSelectOptions(fields: IWidgetHelpers.IField[], fieldHelperType: string) {
+					for (var i = fields.length - 1; i >= 0; i--) {
+						var field: IWidgetHelpers.IField = fields[i];
+						var fieldExt = lth.ExtendWidgetFieldTemplate(field,fieldHelperType);
+
+						if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
+							var uiFieldIndex: number = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExt.field, true);
+							if (uiFieldIndex !== -1) {
+								var currentUiField = widgetData.modelUiFields[uiFieldIndex];
+								var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
+
+								if (currentFieldType === 'select' && Array.isArray(currentUiField.Value)) {
+									// window.console && console.log('currentUiField', currentUiField);
+									field.selectOptions = <IWidgetHelpers.ISelectOption[]>currentUiField.Value;
 								}
 							}
 						}
@@ -667,6 +701,7 @@ namespace LoanTekWidget {
 						, onDragStart: $scope.onDragStart
 						, setCurrentForm: $scope.SetCurrentForm
 						, buildScript: $scope.WidgetScriptBuild
+						, uiFields: angular.copy(widgetData.modelUiFields)
 					};
 
 					$scope.editFormInfo = {
@@ -881,11 +916,14 @@ namespace LoanTekWidget {
 
 					////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+					var currentFormObjCopy = angular.copy(currentFormObj);
+					SetSelectOptions(currentFormObjCopy.buildObject.fields, widgetObj.fieldHelperType);
+
 					var scriptBuildInfo: IWidgetHelpers.IWidgetInfo = {
 						url: widgetData.modelWidget.PostingUrl // widgetData.modelUrls[0]
 						, ClientId: widgetData.modelWidget.ClientId
 						, UserId: widgetData.modelWidget.UserId
-						, formObject: currentFormObj
+						, formObject: currentFormObjCopy
 						// , scripts: widgetScripts
 						// , wwwRoot: wwwRoot
 						, initialScript: initialScripts

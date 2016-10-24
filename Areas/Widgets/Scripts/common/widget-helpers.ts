@@ -130,6 +130,12 @@ declare namespace IWidgetHelpers {
 
 		widgetInfo?: IWidgetInfo;
 		dataTableOptions?: IDataTable.IOptions;
+		selectOptions?: ISelectOption[];
+	}
+
+	interface ISelectOption {
+		Text: string;
+		Value: string;
 	}
 
 	// interface IDataTableOptions {
@@ -691,8 +697,27 @@ namespace LoanTekWidget {
 
 		GetSubFieldHelperType(fieldName: string): string {
 			var fieldHelperName: string = null;
-			if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
-				fieldHelperName = 'depositResultDataFields';
+			try {
+				// if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
+				// 	fieldHelperName = 'depositResultDataFields';
+				// }
+				switch (fieldName.toLowerCase()) {
+					case 'depositdatalist':
+						fieldHelperName = 'depositResultDataFields';
+						break;
+					case 'autoquotedatalist':
+						fieldHelperName = 'autoQuoteResultDataFields';
+						break;
+					default:
+						// code...
+						break;
+				}
+
+				if (!fieldHelperName) {
+					throw 'Helper Type Not Defined for: ' + fieldName;
+				}
+			} catch (er) {
+				window.console && console.error('Error in WidgetHelper method GetSubFieldHelperType:\n - ', er);
 			}
 			return fieldHelperName;
 		}
@@ -701,8 +726,10 @@ namespace LoanTekWidget {
 			var _this = this;
 			var returnFieldOptions: IWidgetHelpers.IFieldOptions = null;
 			try {
-				if (widgetType.toLowerCase().indexOf('depositdatalist') !== -1) {
+				if (widgetType.toLowerCase() === 'depositdatalist') {
 					returnFieldOptions = _this.depositResultDataFields[fieldName];
+				} else if(widgetType.toLowerCase() === 'autoquotedatalist') {
+					returnFieldOptions = _this.autoQuoteResultDataFields[fieldName];
 				} else if (widgetType.toLowerCase().indexOf('mortgagequote') !== -1) {
 					returnFieldOptions = _this.mortgageQuoteFields[fieldName];
 				} else if (widgetType.toLowerCase().indexOf('mortgagerate') !== -1) {
@@ -730,7 +757,7 @@ namespace LoanTekWidget {
 				}
 				return returnFieldOptions;
 			} catch(er) {
-				window.console && console.error('Error in GetFieldOptionsForWidgetType: ', er, '\n\twidgetType:', widgetType, '\n\tfieldName:', fieldName, '\n\tobjectType:', objectType, '\n\treturnFieldOptions:', returnFieldOptions);
+				window.console && console.error('Error in WidgetHelper method GetFieldOptionsForWidgetType: ', er, '\n\twidgetType:', widgetType, '\n\tfieldName:', fieldName, '\n\tobjectType:', objectType, '\n\treturnFieldOptions:', returnFieldOptions);
 			}
 		}
 
@@ -783,7 +810,20 @@ namespace LoanTekWidget {
 					, { InterestRate: 3.375, APR: 3.375, FinalFees: -7008.40, PIP: 1237.87, CalcPrice: -2.503, TermInMonths: 360, ProductTermType: 'F30' }
 					, { InterestRate: 3.375, APR: 3.375, FinalFees: -2100.00, PIP: 1237.87, CalcPrice: -0.750, TermInMonths: 360, ProductTermType: 'F30' }
 					, { InterestRate: 3.250, APR: 3.275, FinalFees: -5600.00, PIP: 1218.58, CalcPrice: -2.000, TermInMonths: 360, ProductTermType: 'F30' }
+				],
+				autoquote: [
+					{Id:5,QuoteId:'Test8bbc9414d14f14b51',APR:5.781,BaseRate:6.0000,AdjustedRate:7.0000,CappedRate:5.7500,FinalRate:5.7500,BasePrice:0.0,AdjustedPrice:0.0,CappedPrice:0.0,FinalPrice:0.0,ClientFeeDollarTotal:100.0000,ClientFeePercentTotal:0.0,Adjustments:[{AdjustmentType:'Rate',OwnerId:6,Rules:[],Id:1,ParentId:6,TierGroupId:1,Name:'Adjustment for middle man',Description:'add +1.0',Value:1.0000,MustMatchAllRules:true,Active:true}],Caps:[{CapType:'CapRate',OwnerId:6,Rules:[{RuleType:'RateRule',CompareType:'GreaterThan',Id:1,ParentId:1,ParentType:'Cap',TierGroupId:1,Name:'FinalRate',Description:'>5.75',Value:'5.75',Active:true}],Id:1,ParentId:6,TierGroupId:1,Name:'Cap 5.75',Description:'Cap Rate at 5.75',Value:5.7500,MustMatchAllRules:false,Active:true}],ClientFees:[{FeeType:'Dollar',FrequencyType:'OneTime',OwnerId:6,Rules:[],Id:1,ParentId:6,TierGroupId:1,ClientId:399,Name:'Processing Fee',Description:null,Value:100.0000,MustMatchAllRules:true,Active:true,IncludeInApr:true}],TierId:6,TierGroupId:1,FinalFee:100.00,MonthlyPayment:1547.28}
+					// , {Id:6,QuoteId:'Test8bbc9414d14f14b51',APR:5.781,BaseRate:6.0000,AdjustedRate:7.0000,CappedRate:5.7500,FinalRate:5.7500,BasePrice:0.0,AdjustedPrice:0.0,CappedPrice:0.0,FinalPrice:0.0,ClientFeeDollarTotal:100.0000,ClientFeePercentTotal:0.0,Adjustments:[{AdjustmentType:'Rate',OwnerId:6,Rules:[],Id:1,ParentId:6,TierGroupId:1,Name:'Adjustment for middle man',Description:'add +1.0',Value:1.0000,MustMatchAllRules:true,Active:true}],Caps:[{CapType:'CapRate',OwnerId:6,Rules:[{RuleType:'RateRule',CompareType:'GreaterThan',Id:1,ParentId:1,ParentType:'Cap',TierGroupId:1,Name:'FinalRate',Description:'>5.75',Value:'5.75',Active:true}],Id:1,ParentId:6,TierGroupId:1,Name:'Cap 5.75',Description:'Cap Rate at 5.75',Value:5.7500,MustMatchAllRules:false,Active:true}],ClientFees:[{FeeType:'Dollar',FrequencyType:'OneTime',OwnerId:6,Rules:[],Id:1,ParentId:6,TierGroupId:1,ClientId:399,Name:'Processing Fee',Description:null,Value:100.0000,MustMatchAllRules:true,Active:true,IncludeInApr:true}],TierId:6,TierGroupId:1,FinalFee:100.00,MonthlyPayment:1547.28}
 				]
+			}
+		}
+
+		AppendDataToDataList(fieldList: IWidgetHelpers.IField[], data: any, dataListType: string) {
+			for (var fieldIndex = fieldList.length - 1; fieldIndex >= 0; fieldIndex--) {
+				var fieldItem = fieldList[fieldIndex];
+				if (fieldItem.field === dataListType) {
+					fieldItem.fieldData = data;
+				}
 			}
 		}
 
@@ -808,10 +848,11 @@ namespace LoanTekWidget {
 				, p: () => { return $('<p/>'); }
 				, hr: () => { return $('<hr/>'); }
 				, a: () => { return $('<a/>'); }
+				, i: () => { return $('<i/>'); }
 				, span: () => { return $('<span/>'); }
 				, h: (headNumber: number = 3) => { return $('<h' + headNumber + '/>'); }
 				, form: () => { return $('<form/>').addClass('form-horizontal'); }
-				, label: () => { return $('<label/>').addClass('control-label col-sm-12'); }
+				, label: (cssClass: string = 'control-label col-sm-12') => { return $('<label/>').addClass(cssClass); }
 				, button: (type: string = 'button') => { return $('<button/>').prop('type', type); }
 				, select: () => { return $('<select/>').addClass('form-control'); }
 				, option: () => { return $('<option/>'); }
@@ -825,12 +866,17 @@ namespace LoanTekWidget {
 				, tr: () => { return $('<tr/>'); }
 				, th: () => { return $('<th/>'); }
 				, td: () => { return $('<td/>'); }
-				, formGroup: (formGroupSize?: string) => {
-					if (formGroupSize) {
-						return el.row('form-group').addClass('form-group-' + formGroupSize);
+				, formGroup: (formGroupSize?: string, useRow?: boolean) => {
+					var returnRow: JQuery;
+					if (useRow) {
+						returnRow = el.row();
 					} else {
-						return el.row('form-group');
+						returnRow = el.row('form-group');
 					}
+					if (formGroupSize) {
+						returnRow.addClass('form-group-' + formGroupSize);
+					}
+					return returnRow;
 				}
 			};
 			return el;
@@ -923,10 +969,17 @@ namespace LoanTekWidget {
 			var uniqueQualifierForm = this.getUniqueQualifier('F');
 			var uniqueQualifierResult = this.getUniqueQualifier('R');
 
-			// Remove $$hashKey
+			// Some field cleanup
 			for (var iFld = cbo.fields.length - 1; iFld >= 0; iFld--) {
 				var cboField = cbo.fields[iFld];
+
+				// Remove $$hashKey
 				delete cboField['$$hashKey'];
+
+				// Remove empty field values
+				if (cboField.value === null || cboField === '') {
+					delete cboField.value;
+				}
 			}
 
 			if (isBuilderVersion) {
@@ -1136,7 +1189,7 @@ namespace LoanTekWidget {
 		public n12: IWidgetHelpers.IHelper.INameNumId;
 		constructor() {
 			// this.n1 = { id: 1, name: '1/12th' };
-			// this.n2 = { id: 2, name: '1/6th' };
+			this.n2 = { id: 2, name: '1/6th' };
 			this.n3 = { id: 3, name: '1/4th' };
 			this.n4 = { id: 4, name: '1/3rd' };
 			// this.n5 = { id: 5, name: '5/12ths' };
@@ -1144,7 +1197,7 @@ namespace LoanTekWidget {
 			// this.n7 = { id: 7, name: '7/12ths' };
 			this.n8 = { id: 8, name: '2/3rds' };
 			this.n9 = { id: 9, name: '3/4ths' };
-			// this.n10 = { id: 10, name: '5/6ths' };
+			this.n10 = { id: 10, name: '5/6ths' };
 			// this.n11 = { id: 11, name: '11/12ths' };
 			this.n12 = { id: 12, name: 'Full Width' };
 		}
@@ -1389,6 +1442,7 @@ namespace LoanTekWidget {
 		title: IWidgetHelpers.IFieldOptions;
 		paragraph: IWidgetHelpers.IFieldOptions;
 		hr: IWidgetHelpers.IFieldOptions;
+
 		api: IWidgetHelpers.IFieldOptions;
 		totalinterestearned: IWidgetHelpers.IFieldOptions;
 		amountplusinterest: IWidgetHelpers.IFieldOptions;
@@ -1401,6 +1455,7 @@ namespace LoanTekWidget {
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
+
 			this.api = { id: 'api', name: 'API', fieldTemplate: { element: 'div', value: '#{APY}', cssClass: 'form-control-static' } };
 			this.totalinterestearned = { id: 'totalinterestearned', name: 'Total Interest Earned', fieldTemplate: { element: 'div', value: '#{TotalInterestEarned}', cssClass: 'form-control-static' } };
 			this.amountplusinterest = { id: 'amountplusinterest', name: 'Amount Plus Interest', fieldTemplate: { element: 'div', value: '#{AmountPlusInterest}', cssClass: 'form-control-static' } };
@@ -1420,8 +1475,34 @@ namespace LoanTekWidget {
 		paragraph: IWidgetHelpers.IFieldOptions;
 		hr: IWidgetHelpers.IFieldOptions;
 		submit: IWidgetHelpers.IFieldOptions;
-		autoamount: IWidgetHelpers.IFieldOptions;
-		autoterm: IWidgetHelpers.IFieldOptions;
+		fortype: IWidgetHelpers.IFieldOptions;
+		quotingchannel: IWidgetHelpers.IFieldOptions;
+		amount: IWidgetHelpers.IFieldOptions;
+		terminmonths: IWidgetHelpers.IFieldOptions;
+		// loantovalue: IWidgetHelpers.IFieldOptions;
+		downpayment: IWidgetHelpers.IFieldOptions;
+		zipcode: IWidgetHelpers.IFieldOptions;
+		creditscore: IWidgetHelpers.IFieldOptions;
+		modelyear: IWidgetHelpers.IFieldOptions;
+		mileage: IWidgetHelpers.IFieldOptions;
+		loanpurposetype: IWidgetHelpers.IFieldOptions;
+		sellertype: IWidgetHelpers.IFieldOptions;
+		neworusedtype: IWidgetHelpers.IFieldOptions;
+		isbusinessloan: IWidgetHelpers.IFieldOptions;
+		ismember: IWidgetHelpers.IFieldOptions;
+
+		terminmonthshidden: IWidgetHelpers.IFieldOptions;
+		downpaymenthidden: IWidgetHelpers.IFieldOptions;
+		zipcodehidden: IWidgetHelpers.IFieldOptions;
+		creditscorehidden: IWidgetHelpers.IFieldOptions;
+		modelyearhidden: IWidgetHelpers.IFieldOptions;
+		mileagehidden: IWidgetHelpers.IFieldOptions;
+		loanpurposetypehidden: IWidgetHelpers.IFieldOptions;
+		sellertypehidden: IWidgetHelpers.IFieldOptions;
+		neworusedtypehidden: IWidgetHelpers.IFieldOptions;
+		isbusinessloanhidden: IWidgetHelpers.IFieldOptions;
+		ismemberhidden: IWidgetHelpers.IFieldOptions;
+
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
@@ -1429,8 +1510,35 @@ namespace LoanTekWidget {
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
 			this.submit = sf.submit;
-			this.autoamount = { id: 'autoamount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwAutoAmount', placeholder: 'Enter Amount' } };
-			this.autoterm = { id: 'autoterm', name: 'Term', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwAutoTerm', placeholder: 'Enter # of Months' } };
+
+			this.fortype = { id: 'fortype', name: 'ForType', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwForType', placeholder: 'Enter ForType' } };
+			this.quotingchannel = { id: 'quotingchannel', name: 'Quoting Channel', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwQuotingChannel', placeholder: 'Enter QuotingChannel' } };
+			this.amount = { id: 'amount', name: 'Amount', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwAmount', required: true, placeholder: 'Enter Amount' } };
+			// LoanToValue should be Amount - DownPayment.  Downpayment may need to be added instead
+			// this.loantovalue = { id: 'loantovalue', name: 'Loan To Value', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwLoanToValue', placeholder: 'Enter LoanToValue' } };
+			this.terminmonths = { id: 'terminmonths', groupName: 'terminmonths', name: 'Term In Months', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwTermInMonths', required: true, placeholder: 'Enter # of Months' } };
+			this.downpayment = { id: 'downpayment', groupName: 'downpayment', name: 'Down Payment', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwDownPayment', required: true, placeholder: 'Down Payment' } };
+			this.zipcode = { id: 'zipcode', groupName: 'zipcode', name: 'Zip Code', isLTRequired: true, fieldTemplate: { element: 'input', type: 'text', id: 'ltwZipCode', required: true, placeholder: 'Enter Zip Code' } };
+			this.creditscore = { id: 'creditscore', groupName: 'creditscore', name: 'Credit Score', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwCreditScore', required: true, placeholder: 'Enter Credit Score' } };
+			this.modelyear = { id: 'modelyear', groupName: 'modelyear', name: 'Model Year', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwModelYear', required: true, placeholder: 'Enter Model Year (yyyy)' } };
+			this.mileage = { id: 'mileage', groupName: 'mileage', name: 'Mileage', isLTRequired: true, fieldTemplate: { element: 'input', type: 'number', id: 'ltwMileage', required: true, placeholder: 'Enter Mileage' } };
+			this.loanpurposetype = { id: 'loanpurposetype', groupName: 'loanpurposetype', name: 'Loan Purpose', isLTRequired: true, fieldTemplate: { element: 'select', type: 'selectobject', id: 'ltwLoanPurposeType', required: true, placeholder: 'Select Loan Purpose' } };
+			this.sellertype = { id: 'sellertype', groupName: 'sellertype', name: 'Seller', isLTRequired: true, fieldTemplate: { element: 'select', type: 'selectobject', id: 'ltwSellerType', required: true, placeholder: 'Seller' } };
+			this.neworusedtype = { id: 'neworusedtype', groupName: 'neworusedtype', name: 'New Or Used', isLTRequired: true, fieldTemplate: { element: 'select', type: 'selectobject', id: 'ltwNewOrUsedType', required: true, placeholder: 'New Or Used' } };
+			this.isbusinessloan = { id: 'isbusinessloan', groupName: 'isbusinessloan', name: 'Is Business Loan', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwIsBusinessLoan', placeholder: 'Is Business Loan?' } };
+			this.ismember = { id: 'ismember', groupName: 'ismember', name: 'Is Member', fieldTemplate: { element: 'input', type: 'checkbox', id: 'ltwIsMember', placeholder: 'Is Member?' } };
+
+			this.terminmonthshidden = { id: 'terminmonthshidden', groupName: 'terminmonths', name: 'Term In Months [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwTermInMonths', placeholder: 'Enter # of Months' } };
+			this.downpaymenthidden = { id: 'downpaymenthidden', groupName: 'downpayment', name: 'Down Payment [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwDownPayment', placeholder: 'Down Payment' } };
+			this.zipcodehidden = { id: 'zipcodehidden', groupName: 'zipcode', name: 'Zip Code [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwZipCode', placeholder: 'Enter Zip Code' } };
+			this.creditscorehidden = { id: 'creditscorehidden', groupName: 'creditscore', name: 'Credit Score [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwCreditScore', placeholder: 'Enter Credit Score' } };
+			this.modelyearhidden = { id: 'modelyearhidden', groupName: 'modelyear', name: 'Model Year [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwModelYear', placeholder: 'Enter Model Year (yyyy)' } };
+			this.mileagehidden = { id: 'mileagehidden', groupName: 'mileage', name: 'Mileage [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwMileage', placeholder: 'Enter Mileage' } };
+			this.loanpurposetypehidden = { id: 'loanpurposetypehidden', groupName: 'loanpurposetype', name: 'Loan Purpose [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwLoanPurposeType', placeholder: 'Select Loan Purpose' } };
+			this.sellertypehidden = { id: 'sellertypehidden', groupName: 'sellertype', name: 'Seller [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwSellerType', placeholder: 'Seller' } };
+			this.neworusedtypehidden = { id: 'neworusedtypehidden', groupName: 'neworusedtype', name: 'New Or Used [hidden]', isLTRequired: true, fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwNewOrUsedType', placeholder: 'New Or Used' } };
+			this.isbusinessloanhidden = { id: 'isbusinessloanhidden', groupName: 'isbusinessloan', name: 'Is Business Loan', fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwIsBusinessLoan', placeholder: 'Is Business Loan?' } };
+			this.ismemberhidden = { id: 'ismemberhidden', groupName: 'ismember', name: 'Is Member', fieldTemplate: { element: 'input', type: 'hidden', id: 'ltwIsMember', placeholder: 'Is Member?' } };
 		}
 
 		asArray() {
@@ -1465,12 +1573,34 @@ namespace LoanTekWidget {
 		title: IWidgetHelpers.IFieldOptions;
 		paragraph: IWidgetHelpers.IFieldOptions;
 		hr: IWidgetHelpers.IFieldOptions;
+
+		quoteid: IWidgetHelpers.IFieldOptions;
+		apr: IWidgetHelpers.IFieldOptions;
+		baserate: IWidgetHelpers.IFieldOptions;
+		finalrate: IWidgetHelpers.IFieldOptions;
+		baseprice: IWidgetHelpers.IFieldOptions;
+		finalprice: IWidgetHelpers.IFieldOptions;
+		clientfeedollartotal: IWidgetHelpers.IFieldOptions;
+		clientfeepercenttotal: IWidgetHelpers.IFieldOptions;
+		finalfee: IWidgetHelpers.IFieldOptions;
+		monthlypayment: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
 			this.title = sf.title;
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
+
+			this.quoteid = { id: 'quoteid', name: 'Quote Id', fieldTemplate: { element: 'div', value: '#{QuoteId}', cssClass: 'form-control-static' } };
+			this.apr = { id: 'apr', name: 'APR', fieldTemplate: { element: 'div', value: '#{APR}', cssClass: 'form-control-static' } };
+			// this.baserate = { id: 'baserate', name: 'BaseRate', fieldTemplate: { element: 'div', value: '#{BaseRate}', cssClass: 'form-control-static' } };
+			this.finalrate = { id: 'finalrate', name: 'FinalRate', fieldTemplate: { element: 'div', value: '#{FinalRate}', cssClass: 'form-control-static' } };
+			// this.baseprice = { id: 'baseprice', name: 'BasePrice', fieldTemplate: { element: 'div', value: '#{BasePrice}', cssClass: 'form-control-static' } };
+			// this.finalprice = { id: 'finalprice', name: 'FinalPrice', fieldTemplate: { element: 'div', value: '#{FinalPrice}', cssClass: 'form-control-static' } };
+			// this.clientfeedollartotal = { id: 'clientfeedollartotal', name: 'ClientFeeDollarTotal', fieldTemplate: { element: 'div', value: '#{ClientFeeDollarTotal}', cssClass: 'form-control-static' } };
+			// this.clientfeepercenttotal = { id: 'clientfeepercenttotal', name: 'ClientFeePercentTotal', fieldTemplate: { element: 'div', value: '#{ClientFeePercentTotal}', cssClass: 'form-control-static' } };
+			this.finalfee = { id: 'finalfee', name: 'Final Fee', fieldTemplate: { element: 'div', value: '#{FinalFee}', cssClass: 'form-control-static' } };
+			this.monthlypayment = { id: 'monthlypayment', name: 'Monthly Payment', fieldTemplate: { element: 'div', value: '#{MonthlyPayment}', cssClass: 'form-control-static' } };
 		}
 
 		asArray() {

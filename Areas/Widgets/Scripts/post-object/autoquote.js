@@ -5,8 +5,9 @@ var LoanTekWidget;
             this.UserId = null;
             this.ClientDefinedIdentifier = 'LTWS_UniqueIdentifier';
             this.PassThroughItems = null;
-            this.LoanRequest = {};
-            this.CustomQuoteResponseJson = null;
+            this.LoanRequest = {
+                Form: {}
+            };
         }
         return PostObject_AutoQuote;
     }());

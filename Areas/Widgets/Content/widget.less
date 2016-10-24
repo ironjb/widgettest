@@ -17,7 +17,8 @@
 	font-size: @font-size-base;
 	@import (less) url('widget-bootstrap.css');
 	@import (less) url('../../../Content/lib/datatables/dataTables.bootstrap.min.css');
-	/*@import 'captcha.less';*/
+	@import '../../../Content/less/lt/bootstrap-mods.less';
+	@import '../../../Content/less/lt/datatable-mods.less';
 
 	button[type=submit]:disabled {
 		background:url('/Content/images/input-spinner.gif') no-repeat center center;
@@ -32,28 +33,44 @@
 		}
 	}
 
-	// Using FontAwesome sorting icons instead of bootstraps
-	table {
-		&.dataTable {
-			thead {
-				.sorting, .sorting_asc, .sorting_desc {
-					&::after {
-						font-family: 'FontAwesome';
-					}
-				}
+	// // Using FontAwesome sorting icons instead of bootstraps
+	// table {
+	// 	&.table-fa-sort {
+	// 		thead {
+	// 			.sorting, .sorting_asc, .sorting_desc {
+	// 				&::after {
+	// 					font-family: 'FontAwesome';
+	// 				}
+	// 			}
 
-				.sorting::after {
-					content: '\f0dc';
-				}
+	// 			.sorting::after {
+	// 				content: '\f0dc';
+	// 			}
 
-				.sorting_asc::after {
-					content: '\f0de';
-				}
+	// 			.sorting_asc::after {
+	// 				content: '\f0de';
+	// 			}
 
-				.sorting_desc::after {
-					content: '\f0dd';
-				}
-			}
-		}
-	}
+	// 			.sorting_desc::after {
+	// 				content: '\f0dd';
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	// // Checkbox sizing
+	// .checkbox.checkbox-lg, .form-group-lg .checkbox {
+	// 	font-size: @font-size-large;
+	// 	padding-top: @padding-large-vertical + 1;
+	// 	input[type=checkbox] {
+	// 		margin-top: 7px;
+	// 	}
+	// }
+	// .checkbox.checkbox-sm, .form-group-sm .checkbox {
+	// 	font-size: @font-size-small;
+	// 	padding-top: @padding-small-vertical + 1;
+	// 	input[type=checkbox] {
+	// 		margin-top: 2px;
+	// 	}
+	// }
 }

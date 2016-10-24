@@ -33,6 +33,7 @@ declare namespace IWidgetDirectives {
 			currentBuildObject: IWidget.IFormBuildObject;
 			currentFieldIndex?: number;
 			formObjectType?: string;
+			uiField?: IWidgetBuilder.IModal.IUiField;
 		}
 	}
 
@@ -130,8 +131,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				, fieldData: '=ltFieldEditToolData'
 			}
 			, templateUrl: 'template/widgetFieldEditButtons.html'
-			, link: (scope: IWidgetDirectives.IFieldEdit.IToolNgScope, elem, attrs) => {
+			, link: function (scope: IWidgetDirectives.IFieldEdit.IToolNgScope, elem, attrs) {
 				scope.onDragStartDir = scope.fieldData.onDragStart;
+				// window.console && console.log('dir toolInfo:', scope.toolInfo, '\nfieldData:', scope.fieldData);
 
 				scope.toolInfo.channel = scope.toolInfo.channel || 'form';
 				var currentObject: string;
@@ -143,8 +145,19 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					currentObject = 'buildObject';
 				}
 
-				scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
+				var currentField: IWidgetHelpers.IField = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index];
+				scope.currentFieldName = currentField.field;
 				scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
+				// window.console && console.log('currentFieldName/OPtions', scope.currentFieldName, scope.currentFieldOptions);
+
+				var currentUiField: IWidgetBuilder.IModal.IUiField;
+				if (scope.fieldData.uiFields && Array.isArray(scope.fieldData.uiFields)) {
+					var uiFieldName = currentField.field;
+					var uiFieldIndex: number = lth.GetIndexOfFirstObjectInArray(scope.fieldData.uiFields, 'Name', uiFieldName, true);
+					if (uiFieldIndex !== -1) {
+						currentUiField = scope.fieldData.uiFields[uiFieldIndex];
+					}
+				}
 
 				scope.showRemove = false;
 				if (!scope.currentFieldOptions.isLTRequired || scope.currentFieldOptions.groupName) {
@@ -172,6 +185,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 							, currentFieldIndex: scope.toolInfo.index
 							, formObjectType: currentObject
 							, fieldOptions: scope.currentFieldOptions
+							, uiField: currentUiField
 						}
 						, saveForm: function (updatedBuildObject: IWidget.IFormBuildObject) {
 							scope.fieldData.currentForm[currentObject] = updatedBuildObject;

@@ -332,8 +332,20 @@ var LoanTekWidget;
                 form_errorMsg: '#ltwErrorMessage',
                 AdditionalPostData: null,
                 form_submit: '#' + formEl.submit.fieldTemplate.id,
-                form_term: '#' + formEl.autoterm.fieldTemplate.id,
-                form_amount: '#' + formEl.autoamount.fieldTemplate.id,
+                form_fortype: '#' + formEl.fortype.fieldTemplate.id,
+                form_quotingchannel: '#' + formEl.quotingchannel.fieldTemplate.id,
+                form_amount: '#' + formEl.amount.fieldTemplate.id,
+                form_terminmonths: '#' + formEl.terminmonths.fieldTemplate.id,
+                form_downpayment: '#' + formEl.downpayment.fieldTemplate.id,
+                form_zipcode: '#' + formEl.zipcode.fieldTemplate.id,
+                form_creditscore: '#' + formEl.creditscore.fieldTemplate.id,
+                form_modelyear: '#' + formEl.modelyear.fieldTemplate.id,
+                form_mileage: '#' + formEl.mileage.fieldTemplate.id,
+                form_loanpurposetype: '#' + formEl.loanpurposetype.fieldTemplate.id,
+                form_sellertype: '#' + formEl.sellertype.fieldTemplate.id,
+                form_neworusedtype: '#' + formEl.neworusedtype.fieldTemplate.id,
+                form_isbusinessloan: '#' + formEl.isbusinessloan.fieldTemplate.id,
+                form_ismember: '#' + formEl.ismember.fieldTemplate.id,
                 form_noDataMessage: '#' + resultEl.nodatamessage.fieldTemplate.id,
                 resultDisplayOptions: {
                     fieldHelperType: 'autoQuoteResultFields'
@@ -362,6 +374,10 @@ var LoanTekWidget;
                     }
                 };
                 if (settings.resultDisplayOptions.showBuilderTools) {
+                    var fakeData = lth.FakeData().autoquote;
+                    lth.AppendDataToDataList(settings.resultDisplayOptions.fields, fakeData, 'autoquotedatalist');
+                    var showAutoQuoteResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
+                    showAutoQuoteResultBuild.build();
                 }
                 $(settings.form_id).submit(function (event) {
                     event.preventDefault();
@@ -371,6 +387,74 @@ var LoanTekWidget;
                         $(settings.form_submit).prop('disabled', false);
                         return false;
                     }
+                    if (settings.AdditionalPostData) {
+                        $.extend(true, autoQuotePostData, settings.AdditionalPostData);
+                    }
+                    autoQuotePostData.UserId = settings.userId;
+                    autoQuotePostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
+                    autoQuotePostData.LoanRequest.Form.ForType = $(settings.form_fortype).val();
+                    autoQuotePostData.LoanRequest.Form.QuotingChannel = $(settings.form_quotingchannel).val();
+                    autoQuotePostData.LoanRequest.Form.Amount = +$(settings.form_amount).val();
+                    autoQuotePostData.LoanRequest.Form.TermInMonths = +$(settings.form_terminmonths).val();
+                    autoQuotePostData.LoanRequest.Form.LoanToValue = $(settings.form_amount).val() - $(settings.form_downpayment).val();
+                    autoQuotePostData.LoanRequest.Form.ZipCode = $(settings.form_zipcode).val();
+                    autoQuotePostData.LoanRequest.Form.CreditScore = +$(settings.form_creditscore).val();
+                    autoQuotePostData.LoanRequest.Form.ModelYear = +$(settings.form_modelyear).val();
+                    autoQuotePostData.LoanRequest.Form.Mileage = +$(settings.form_mileage).val();
+                    autoQuotePostData.LoanRequest.Form.LoanPurposeType = $(settings.form_loanpurposetype).val();
+                    autoQuotePostData.LoanRequest.Form.SellerType = $(settings.form_sellertype).val();
+                    autoQuotePostData.LoanRequest.Form.NewOrUsedType = $(settings.form_neworusedtype).val();
+                    autoQuotePostData.LoanRequest.Form.IsBusinessLoan = $(settings.form_isbusinessloan).val();
+                    autoQuotePostData.LoanRequest.Form.IsMember = $(settings.form_ismember).val();
+                    window.console && console.log('autoQuotePostData', autoQuotePostData);
+                    var request = $.ajax({
+                        url: settings.postUrl,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify(autoQuotePostData)
+                    });
+                    request.then(function (result) {
+                        $(settings.form_submit).prop('disabled', false);
+                        var resultsData = [];
+                        if (result.Submissions && result.Submissions.length > 0) {
+                            for (var iSubmission = 0, subLen = result.Submissions.length; iSubmission < subLen; iSubmission++) {
+                                var submission = result.Submissions[iSubmission];
+                                if (submission.Quotes && submission.Quotes.length > 0) {
+                                    for (var iQuote = 0, qLen = submission.Quotes.length; iQuote < qLen; iQuote++) {
+                                        var quote = submission.Quotes[iQuote];
+                                        quote.APR = lth.FormatNumber(quote.APR, 3);
+                                        quote.FinalRate = lth.FormatNumber(quote.FinalRate, 3);
+                                        quote.FinalFee = lth.FormatNumber(quote.FinalFee, 2);
+                                        quote.MonthlyPayment = lth.FormatNumber(quote.MonthlyPayment, 2);
+                                        resultsData.push(quote);
+                                    }
+                                }
+                            }
+                        }
+                        if (resultsData.length) {
+                            settings.resultDisplayOptions.showNoDataMessage = false;
+                        }
+                        else {
+                            settings.resultDisplayOptions.showNoDataMessage = true;
+                        }
+                        appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+                        var autoQuoteResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
+                        autoQuoteResultBuild.build();
+                    }, function (error) {
+                        $(settings.form_submit).prop('disabled', false);
+                        var msg = 'There was an unexpected error. Please try again.';
+                        try {
+                            var errorObj = (error.responseJSON != null) ? error.responseJSON : JSON.parse(error.responseText);
+                            msg = errorObj.Message;
+                        }
+                        catch (e) {
+                            window.console && console.error('Error @ request.fail.responseText:' + e);
+                        }
+                        $(settings.form_errorMsg).html(msg);
+                        $(settings.form_errorMsgWrapper).show(100);
+                        lth.ScrollToAnchor(settings.form_errorAnchor);
+                    });
                 });
             });
         }
@@ -593,6 +677,9 @@ var LoanTekWidget;
             else if (settings.widgetType === lth.widgetType.deposit.id) {
                 resultHelperType = 'depositResultFields';
             }
+            else if (settings.widgetType === lth.widgetType.autoquote.id) {
+                resultHelperType = 'autoQuoteResultFields';
+            }
             else {
                 resultHelperType = 'contactResultFields';
             }
@@ -651,6 +738,7 @@ var LoanTekWidget;
                 }
             });
             $.each(settings.fields, function (fieldIndex, elementItem) {
+                var useRowInsteadOfFormGroup = elementItem.field === 'label' ? true : false;
                 if (elementItem.id && !lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
                     elementItem.id += '_' + settings.uniqueQualifier;
                 }
@@ -705,7 +793,7 @@ var LoanTekWidget;
                     if (!row) {
                         columnCount = 0;
                         if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
-                            row = el.formGroup(elementItem.size);
+                            row = el.formGroup(elementItem.size, useRowInsteadOfFormGroup);
                             isSingleRow = true;
                         }
                         else {
@@ -743,7 +831,7 @@ var LoanTekWidget;
                             appendBuilderTools(innerCell);
                             appendMoveTools(innerCell);
                         }
-                        cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size).append(innerCell));
+                        cell = el.col(elementItem.cols).append(el.formGroup(elementItem.size, useRowInsteadOfFormGroup).append(innerCell));
                     }
                     if (elementItem.offsetCols > 0) {
                         cell.addClass('col-sm-offset-' + elementItem.offsetCols);
@@ -829,6 +917,11 @@ var LoanTekWidget;
                 mainWrapper.prepend(el.h(4).addClass('lt-widget-heading').html(settings.panelTitle));
             }
             if (data) {
+                for (var dataName in data) {
+                    if (typeof data[dataName] === 'number') {
+                        data[dataName] += '';
+                    }
+                }
                 mainWrapper.each(function (index, element) {
                     lth.ModifyTextElementsInDOM(element, function (nodeValue) {
                         return lth.Interpolate(nodeValue, data);
@@ -843,6 +936,10 @@ var LoanTekWidget;
             var $ = lth.$;
             var el = lth.CreateElement();
             var returnElement = null;
+            var checkboxWrapper = null;
+            var checkboxLabel = null;
+            var checkboxIcon = null;
+            var checkboxText = null;
             switch (elementObj.element) {
                 case 'title':
                     elementObj.nsize = elementObj.nsize || lth.hsize.getDefault().id;
@@ -878,6 +975,13 @@ var LoanTekWidget;
                         returnElement.addClass(elementObj.cssClass);
                     }
                     switch (elementObj.type) {
+                        case 'selectobject':
+                            if (elementObj.selectOptions && Array.isArray(elementObj.selectOptions)) {
+                                $.each(elementObj.selectOptions, function (i, selectOption) {
+                                    returnElement.append(el.option().val(selectOption.Value).html(selectOption.Text));
+                                });
+                            }
+                            break;
                         case 'state':
                             var usStates = lth.US_States();
                             $.each(usStates.states, function (i, state) {
@@ -967,9 +1071,15 @@ var LoanTekWidget;
                         case 'hidden':
                             returnElement.val(elementObj.value);
                             break;
+                        case 'checkbox':
+                            checkboxWrapper = el.div().addClass('checkbox checkbox-fa');
+                            checkboxLabel = el.label('');
+                            checkboxIcon = el.i().addClass('checkbox-i');
+                            checkboxText = el.span();
+                            break;
                         default:
                             returnElement.addClass('form-control');
-                            if (elementObj.value) {
+                            if (elementObj.value || lth.isNumber(elementObj.value)) {
                                 returnElement.val(elementObj.value);
                             }
                             break;
@@ -1005,6 +1115,9 @@ var LoanTekWidget;
                     if (elementObj.type === 'depositdatalist') {
                         elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
                     }
+                    if (elementObj.type === 'autoquotedatalist') {
+                        elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFields';
+                    }
                     var classQualifier = Math.ceil((Math.random() * 100000));
                     var repeatElementClass = 'ltw-repeat-data' + classQualifier;
                     returnElement = el.div().addClass(repeatElementClass);
@@ -1030,7 +1143,7 @@ var LoanTekWidget;
                     }
                     break;
                 case 'datatable':
-                    var tableEl = el.table().addClass('table').attr('width', '100%').attr('cellpadding', '0').attr('cellspacing', '0');
+                    var tableEl = el.table().addClass('table table-fa-sort').attr('width', '100%').attr('cellpadding', '0').attr('cellspacing', '0');
                     if (elementObj.dataTableOptions) {
                         if (elementObj.dataTableOptions.isBordered) {
                             tableEl.addClass('table-bordered');
@@ -1061,13 +1174,26 @@ var LoanTekWidget;
                     if (elementObj.uniqueQualifier && elementObj.uniqueQualifier.length > 0) {
                         elementObj.id += '_' + elementObj.uniqueQualifier;
                     }
+                    if (checkboxLabel) {
+                        checkboxLabel.attr('for', elementObj.id);
+                    }
                     returnElement.prop('id', elementObj.id).prop('name', elementObj.id);
                 }
                 if (elementObj.color) {
-                    returnElement.css({ color: elementObj.color });
+                    if (checkboxWrapper) {
+                        checkboxWrapper.css({ color: elementObj.color });
+                    }
+                    else {
+                        returnElement.css({ color: elementObj.color });
+                    }
                 }
                 if (elementObj.fontSize) {
-                    returnElement.css({ fontSize: elementObj.fontSize + 'px' });
+                    if (checkboxWrapper) {
+                        checkboxWrapper.css({ fontSize: elementObj.fontSize + 'px' });
+                    }
+                    else {
+                        returnElement.css({ fontSize: elementObj.fontSize + 'px' });
+                    }
                 }
                 if (elementObj.backgroundColor) {
                     switch (elementObj.element) {
@@ -1075,12 +1201,22 @@ var LoanTekWidget;
                             returnElement.children('table.table').css({ backgroundColor: elementObj.backgroundColor });
                             break;
                         default:
-                            returnElement.css({ backgroundColor: elementObj.backgroundColor });
+                            if (checkboxWrapper) {
+                                checkboxWrapper.css({ backgroundColor: elementObj.backgroundColor });
+                            }
+                            else {
+                                returnElement.css({ backgroundColor: elementObj.backgroundColor });
+                            }
                             break;
                     }
                 }
                 if (lth.isNumber(elementObj.borderRadius)) {
-                    returnElement.css({ borderRadius: elementObj.borderRadius + 'px' });
+                    if (checkboxWrapper) {
+                        checkboxWrapper.css({ borderRadius: elementObj.borderRadius + 'px' });
+                    }
+                    else {
+                        returnElement.css({ borderRadius: elementObj.borderRadius + 'px' });
+                    }
                 }
                 if (elementObj.borderColor) {
                     switch (elementObj.element) {
@@ -1091,18 +1227,38 @@ var LoanTekWidget;
                         case 'div':
                             returnElement.css({ borderWidth: '1px', borderStyle: 'solid' });
                         default:
-                            returnElement.css({ borderColor: elementObj.borderColor });
+                            if (checkboxWrapper) {
+                                checkboxWrapper.css({ borderColor: elementObj.borderColor });
+                            }
+                            else {
+                                returnElement.css({ borderColor: elementObj.borderColor });
+                            }
                             break;
                     }
                 }
                 if (lth.isNumber(elementObj.padding)) {
-                    returnElement.css({ padding: elementObj.padding + 'px' });
+                    if (checkboxWrapper) {
+                        checkboxWrapper.css({ padding: elementObj.padding + 'px' });
+                    }
+                    else {
+                        returnElement.css({ padding: elementObj.padding + 'px' });
+                    }
                 }
                 if (lth.isNumber(elementObj.marginTopBottom)) {
-                    returnElement.css({ marginTop: elementObj.marginTopBottom + 'px', marginBottom: elementObj.marginTopBottom + 'px' });
+                    if (checkboxWrapper) {
+                        checkboxWrapper.css({ marginTop: elementObj.marginTopBottom + 'px', marginBottom: elementObj.marginTopBottom + 'px' });
+                    }
+                    else {
+                        returnElement.css({ marginTop: elementObj.marginTopBottom + 'px', marginBottom: elementObj.marginTopBottom + 'px' });
+                    }
                 }
                 if (elementObj.align) {
-                    returnElement.css({ textAlign: elementObj.align });
+                    if (checkboxWrapper) {
+                        checkboxWrapper.css({ textAlign: elementObj.align });
+                    }
+                    else {
+                        returnElement.css({ textAlign: elementObj.align });
+                    }
                 }
                 if (elementObj.style) {
                     var styleSplit = elementObj.style.trim().split(';');
@@ -1112,7 +1268,12 @@ var LoanTekWidget;
                             var styleKey = style.substring(0, style.indexOf(':')).trim();
                             var styleValue = style.substring(style.indexOf(':') + 1, style.length).trim();
                             if (styleKey && styleValue) {
-                                returnElement.css(styleKey, styleValue);
+                                if (checkboxWrapper) {
+                                    checkboxWrapper.css(styleKey, styleValue);
+                                }
+                                else {
+                                    returnElement.css(styleKey, styleValue);
+                                }
                             }
                         }
                     }
@@ -1121,7 +1282,12 @@ var LoanTekWidget;
                     returnElement.prop('required', true);
                 }
                 if (elementObj.alttext) {
-                    returnElement.prop('alt', elementObj.alttext).prop('title', elementObj.alttext);
+                    if (checkboxWrapper) {
+                        checkboxWrapper.prop('alt', elementObj.alttext).prop('title', elementObj.alttext);
+                    }
+                    else {
+                        returnElement.prop('alt', elementObj.alttext).prop('title', elementObj.alttext);
+                    }
                 }
                 if (elementObj.tabindex) {
                     returnElement.prop('tabindex', elementObj.tabindex);
@@ -1136,7 +1302,14 @@ var LoanTekWidget;
                             }
                             break;
                         default:
-                            returnElement.attr('placeholder', elementObj.placeholder);
+                            switch (elementObj.type) {
+                                case 'checkbox':
+                                    checkboxText.html(' ' + elementObj.placeholder);
+                                    break;
+                                default:
+                                    returnElement.attr('placeholder', elementObj.placeholder);
+                                    break;
+                            }
                             break;
                     }
                 }
@@ -1157,6 +1330,9 @@ var LoanTekWidget;
                                 case 'button':
                                     returnElement.addClass('btn-' + elementObj.size);
                                     break;
+                                case 'checkbox':
+                                    checkboxWrapper.addClass('checkbox-' + elementObj.size);
+                                    break;
                                 case 'hidden':
                                     break;
                                 default:
@@ -1174,6 +1350,13 @@ var LoanTekWidget;
                         returnElement.attr(attr.name, attr.value);
                     }
                 }
+            }
+            if (checkboxWrapper) {
+                checkboxLabel.append(returnElement);
+                checkboxLabel.append(checkboxIcon);
+                checkboxLabel.append(checkboxText);
+                checkboxWrapper.append(checkboxLabel);
+                returnElement = checkboxWrapper;
             }
             return returnElement;
         };

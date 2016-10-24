@@ -19,7 +19,6 @@
 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
 */
   /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
-  /*@import 'captcha.less';*/
 }
 .ltw html {
   font-family: sans-serif;
@@ -4662,6 +4661,111 @@
 .ltw div.table-responsive > div.dataTables_wrapper > div.row > div[class^="col-"]:last-child {
   padding-right: 0;
 }
+.ltw .form-horizontal .checkbox.checkbox-lg,
+.ltw .form-horizontal .form-group-lg .checkbox {
+  font-size: 18px;
+  padding-top: 11px;
+}
+.ltw .form-horizontal .checkbox.checkbox-lg input[type=checkbox],
+.ltw .form-horizontal .form-group-lg .checkbox input[type=checkbox] {
+  margin-top: 7px;
+}
+.ltw .form-horizontal .checkbox.checkbox-sm,
+.ltw .form-horizontal .form-group-sm .checkbox {
+  font-size: 12px;
+  padding-top: 6px;
+}
+.ltw .form-horizontal .checkbox.checkbox-sm input[type=checkbox],
+.ltw .form-horizontal .form-group-sm .checkbox input[type=checkbox] {
+  margin-top: 2px;
+}
+.ltw .form-horizontal .control-label.text-left {
+  text-align: left;
+}
+.ltw .table-no-heading tbody > tr:first-child > td {
+  border-top: none;
+}
+.ltw .m-b-0 {
+  margin-bottom: 0;
+}
+.ltw .checkbox-fa label {
+  padding-left: 0;
+}
+.ltw .checkbox-fa label input[type=checkbox] {
+  display: none;
+}
+.ltw .checkbox-fa label input[type=checkbox] + .checkbox-i {
+  display: inline-block;
+  width: 14px;
+  font-family: 'FontAwesome';
+  font-style: normal;
+  font-size: 14px;
+}
+.ltw .checkbox-fa label input[type=checkbox] + .checkbox-i::before {
+  content: '\f096';
+  position: absolute;
+  top: 7px;
+}
+.checkbox-default.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #333333;
+}
+.checkbox-primary.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #337ab7;
+}
+.checkbox-success.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #5cb85c;
+}
+.checkbox-info.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #5bc0de;
+}
+.checkbox-warning.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #f0ad4e;
+}
+.checkbox-danger.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #d9534f;
+}
+.ltw .checkbox-fa label input[type=checkbox]:checked + .checkbox-i::before {
+  content: '\f046';
+}
+.ltw .checkbox-fa label input[type=checkbox]:disabled + .checkbox-i {
+  color: #eeeeee;
+  cursor: not-allowed;
+}
+.ltw .form-group-sm .checkbox-fa input[type=checkbox] + .checkbox-i::before,
+.ltw .checkbox-fa.checkbox-sm input[type=checkbox] + .checkbox-i::before {
+  top: 5px;
+}
+.ltw .form-group-lg .checkbox-fa input[type=checkbox] + .checkbox-i,
+.ltw .checkbox-fa.checkbox-lg input[type=checkbox] + .checkbox-i {
+  font-size: 18px;
+  width: 18px;
+}
+.ltw .form-group-lg .checkbox-fa input[type=checkbox] + .checkbox-i::before,
+.ltw .checkbox-fa.checkbox-lg input[type=checkbox] + .checkbox-i::before {
+  top: 12px;
+}
+.ltw .checkbox-default label input[type=checkbox]:checked + .checkbox-i::before,
+.ltw .checkbox-primary label input[type=checkbox]:checked + .checkbox-i::before,
+.ltw .checkbox-success label input[type=checkbox]:checked + .checkbox-i::before,
+.ltw .checkbox-info label input[type=checkbox]:checked + .checkbox-i::before,
+.ltw .checkbox-warning label input[type=checkbox]:checked + .checkbox-i::before,
+.ltw .checkbox-danger label input[type=checkbox]:checked + .checkbox-i::before {
+  content: '\f14a';
+}
+.ltw table.table-fa-sort thead .sorting::after,
+.ltw table.table-fa-sort thead .sorting_asc::after,
+.ltw table.table-fa-sort thead .sorting_desc::after {
+  font-family: 'FontAwesome';
+}
+.ltw table.table-fa-sort thead .sorting::after {
+  content: '\f0dc';
+}
+.ltw table.table-fa-sort thead .sorting_asc::after {
+  content: '\f0de';
+}
+.ltw table.table-fa-sort thead .sorting_desc::after {
+  content: '\f0dd';
+}
 .ltw button[type=submit]:disabled {
   background: url('/Content/images/input-spinner.gif') no-repeat center center;
 }
@@ -4675,18 +4779,4 @@
 .ltw .visible-on-hover:hover {
   opacity: 1;
   filter: alpha(opacity=100);
-}
-.ltw table.dataTable thead .sorting::after,
-.ltw table.dataTable thead .sorting_asc::after,
-.ltw table.dataTable thead .sorting_desc::after {
-  font-family: 'FontAwesome';
-}
-.ltw table.dataTable thead .sorting::after {
-  content: '\f0dc';
-}
-.ltw table.dataTable thead .sorting_asc::after {
-  content: '\f0de';
-}
-.ltw table.dataTable thead .sorting_desc::after {
-  content: '\f0dd';
 }

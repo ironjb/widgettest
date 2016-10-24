@@ -61,8 +61,17 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                     else {
                         currentObject = 'buildObject';
                     }
-                    scope.currentFieldName = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index].field;
+                    var currentField = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index];
+                    scope.currentFieldName = currentField.field;
                     scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
+                    var currentUiField;
+                    if (scope.fieldData.uiFields && Array.isArray(scope.fieldData.uiFields)) {
+                        var uiFieldName = currentField.field;
+                        var uiFieldIndex = lth.GetIndexOfFirstObjectInArray(scope.fieldData.uiFields, 'Name', uiFieldName, true);
+                        if (uiFieldIndex !== -1) {
+                            currentUiField = scope.fieldData.uiFields[uiFieldIndex];
+                        }
+                    }
                     scope.showRemove = false;
                     if (!scope.currentFieldOptions.isLTRequired || scope.currentFieldOptions.groupName) {
                         scope.showRemove = true;
@@ -84,7 +93,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                                 currentBuildObject: angular.copy(scope.fieldData.currentForm[currentObject]),
                                 currentFieldIndex: scope.toolInfo.index,
                                 formObjectType: currentObject,
-                                fieldOptions: scope.currentFieldOptions
+                                fieldOptions: scope.currentFieldOptions,
+                                uiField: currentUiField
                             },
                             saveForm: function (updatedBuildObject) {
                                 scope.fieldData.currentForm[currentObject] = updatedBuildObject;

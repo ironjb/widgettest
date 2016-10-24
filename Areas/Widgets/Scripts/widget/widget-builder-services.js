@@ -159,6 +159,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         $scope.modelOptions = ngModelOptions;
                         $scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
                         $scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
+                        $scope.uiField = instanceOptions.uiField;
                         $scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
                         var applyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modBuildObject, true, '.ltw-preview');
                         var previewStyles = applyFormStyles.getStyles();
@@ -399,7 +400,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
                         var repeatFieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
                         $scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
                         $scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
-                        fakeData = lth.FakeData().deposit;
+                        switch (instanceOptions.fieldOptions.id) {
+                            case 'depositdatalist':
+                                fakeData = lth.FakeData().deposit;
+                                break;
+                            case 'autoquotedatalist':
+                                fakeData = lth.FakeData().autoquote[0];
+                                break;
+                            default:
+                                break;
+                        }
                         $scope.buildDisplay();
                         $scope.saveWidget = function () {
                             var newBuildObject = angular.copy($scope.modBuildObject);

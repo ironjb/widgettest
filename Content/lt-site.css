@@ -1,12 +1,108 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Courgette');
+.form-horizontal .checkbox.checkbox-lg,
+.form-horizontal .form-group-lg .checkbox {
+  font-size: 18px;
+  padding-top: 11px;
+}
+.form-horizontal .checkbox.checkbox-lg input[type=checkbox],
+.form-horizontal .form-group-lg .checkbox input[type=checkbox] {
+  margin-top: 7px;
+}
+.form-horizontal .checkbox.checkbox-sm,
 .form-horizontal .form-group-sm .checkbox {
-  padding-top: 3px;
+  font-size: 12px;
+  padding-top: 6px;
+}
+.form-horizontal .checkbox.checkbox-sm input[type=checkbox],
+.form-horizontal .form-group-sm .checkbox input[type=checkbox] {
+  margin-top: 2px;
 }
 .form-horizontal .control-label.text-left {
   text-align: left;
 }
 .table-no-heading tbody > tr:first-child > td {
   border-top: none;
+}
+.m-b-0 {
+  margin-bottom: 0;
+}
+.checkbox-fa label {
+  padding-left: 0;
+}
+.checkbox-fa label input[type=checkbox] {
+  display: none;
+}
+.checkbox-fa label input[type=checkbox] + .checkbox-i {
+  display: inline-block;
+  width: 14px;
+  font-family: 'FontAwesome';
+  font-style: normal;
+  font-size: 14px;
+}
+.checkbox-fa label input[type=checkbox] + .checkbox-i::before {
+  content: '\f096';
+  position: absolute;
+  top: 7px;
+}
+.checkbox-default.checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #333333;
+}
+.checkbox-primary.checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #1E376D;
+}
+.checkbox-success.checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #449d44;
+}
+.checkbox-info.checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #31b0d5;
+}
+.checkbox-warning.checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #ec971f;
+}
+.checkbox-danger.checkbox-fa label input[type=checkbox]:checked + .checkbox-i {
+  color: #c9302c;
+}
+.checkbox-fa label input[type=checkbox]:checked + .checkbox-i::before {
+  content: '\f046';
+}
+.checkbox-fa label input[type=checkbox]:disabled + .checkbox-i {
+  color: #eeeeee;
+  cursor: not-allowed;
+}
+.form-group-sm .checkbox-fa input[type=checkbox] + .checkbox-i::before,
+.checkbox-fa.checkbox-sm input[type=checkbox] + .checkbox-i::before {
+  top: 5px;
+}
+.form-group-lg .checkbox-fa input[type=checkbox] + .checkbox-i,
+.checkbox-fa.checkbox-lg input[type=checkbox] + .checkbox-i {
+  font-size: 18px;
+  width: 18px;
+}
+.form-group-lg .checkbox-fa input[type=checkbox] + .checkbox-i::before,
+.checkbox-fa.checkbox-lg input[type=checkbox] + .checkbox-i::before {
+  top: 12px;
+}
+.checkbox-default label input[type=checkbox]:checked + .checkbox-i::before,
+.checkbox-primary label input[type=checkbox]:checked + .checkbox-i::before,
+.checkbox-success label input[type=checkbox]:checked + .checkbox-i::before,
+.checkbox-info label input[type=checkbox]:checked + .checkbox-i::before,
+.checkbox-warning label input[type=checkbox]:checked + .checkbox-i::before,
+.checkbox-danger label input[type=checkbox]:checked + .checkbox-i::before {
+  content: '\f14a';
+}
+table.table-fa-sort thead .sorting::after,
+table.table-fa-sort thead .sorting_asc::after,
+table.table-fa-sort thead .sorting_desc::after {
+  font-family: 'FontAwesome';
+}
+table.table-fa-sort thead .sorting::after {
+  content: '\f0dc';
+}
+table.table-fa-sort thead .sorting_asc::after {
+  content: '\f0de';
+}
+table.table-fa-sort thead .sorting_desc::after {
+  content: '\f0dd';
 }
 .lt-breadcrumb {
   color: #888;
@@ -197,9 +293,6 @@ html.html-footer-sticky body .footer-sticky {
   width: 15px;
   margin: 0 4px 0 0;
   display: inline-block;
-}
-.m-b-0 {
-  margin-bottom: 0;
 }
 .pre-code {
   white-space: pre-wrap;

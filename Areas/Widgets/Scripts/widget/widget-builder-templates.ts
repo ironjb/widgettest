@@ -335,6 +335,12 @@
 									<div class="small text-muted" data-ng-show="::valuePlaceholder &amp;&amp; valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
 								</div>
 							</div>
+							<div class="form-group form-group-sm" data-ng-show="::['select'].indexOf(ft.element) !== -1">
+								<label for="ltewFieldValueSelect" class="col-sm-4 control-label">Default Value</label>
+								<div class="col-sm-4"><select name="ltewFieldValueSelect" id="ltewFieldValueSelect" class="form-control" data-ng-model="modField.value" data-ng-options="uiFieldVal.Value as uiFieldVal.Text for uiFieldVal in ::uiField.Value">
+										<option value="">- No Value -</option>
+									</select></div>
+							</div>
 							<div class="form-group form-group-sm" data-ng-show="::['input','select','textarea'].indexOf(ft.element) !== -1">
 								<label for="ltewFieldPlaceholder" class="col-sm-4 control-label">Placeholder Text</label>
 								<div class="col-sm-4"><input type="text" class="form-control" id="ltewFieldPlaceholder" name="ltewFieldPlaceholder" data-ng-model="modField.placeholder" data-ng-model-options="modelOptions" /></div>

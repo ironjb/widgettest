@@ -80,6 +80,7 @@ declare namespace IWidgetServices {
 		showLabelPreview: boolean;
 		showTitlePreview: boolean;
 		widgetList: IWidgetHelpers.IWidgetInfo[];
+		uiField: IWidgetBuilder.IModal.IUiField;
 		// dataTableClasses: string;
 	}
 
@@ -409,7 +410,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.modelOptions = ngModelOptions;
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
+				$scope.uiField = instanceOptions.uiField;
 				$scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
+				// window.console && console.log('instanceOpts', instanceOptions);
 
 				var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modBuildObject, true, '.ltw-preview');
 				var previewStyles: string = applyFormStyles.getStyles();
@@ -676,10 +679,21 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				var el = lth.CreateElement();
 				var fakeData: any;
 				var repeatFieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
+				// window.console && console.log('repeatFieldHelperType', repeatFieldHelperType, instanceOptions.fieldOptions.id);
 				$scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
 				$scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
 
-				fakeData = lth.FakeData().deposit;
+				switch (instanceOptions.fieldOptions.id) {
+					case 'depositdatalist':
+						fakeData = lth.FakeData().deposit;
+						break;
+					case 'autoquotedatalist':
+						fakeData = lth.FakeData().autoquote[0];
+						break;
+					default:
+						// code...
+						break;
+				}
 
 				// Initialize display
 				$scope.buildDisplay();

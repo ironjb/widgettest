@@ -231,9 +231,10 @@ var LoanTekWidget;
                         var customFieldNameIndex = null;
                         var returnFieldExt = { index: fIndex, fieldOptions: fieldOpts, UiFieldType: 'text' };
                         if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
-                            uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOpts.id, true);
+                            var fieldOptId = fieldOpts.groupName ? fieldOpts.groupName : fieldOpts.id;
+                            uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOptId, true);
                             if (uiFieldIndex !== -1) {
-                                returnFieldExt.UiField = widgetData.modelUiFields[uiFieldIndex];
+                                returnFieldExt.UiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
                                 if (returnFieldExt.UiField.FieldType.toLowerCase() === 'select') {
                                     returnFieldExt.UiFieldType = 'select';
                                 }
@@ -256,7 +257,7 @@ var LoanTekWidget;
                             }
                             returnFieldExt.additionalInfoIndex = customFieldNameIndex;
                         }
-                        if (['quotingchannel'].indexOf(fieldOpts.id) !== -1) {
+                        if (['quotingchannel', 'fortype'].indexOf(fieldOpts.id) !== -1) {
                             returnFieldExt.UiFieldDisabled = true;
                         }
                         return returnFieldExt;
@@ -302,14 +303,15 @@ var LoanTekWidget;
                         for (var i = fields.length - 1; i >= 0; i--) {
                             var field = fields[i];
                             var fieldExt = lth.ExtendWidgetFieldTemplate(field, fieldHelperType);
-                            if (!field.value && typeof field.value !== 'boolean' && !lth.isNumber(field.value)) {
+                            if (typeof field.value === 'undefined') {
                                 if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
-                                    var uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExt.field, true);
+                                    var fieldExtId = fieldExt.field.replace(/hidden$/, '');
+                                    var uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExtId, true);
                                     if (uiFieldIndex !== -1) {
-                                        var currentUiField = widgetData.modelUiFields[uiFieldIndex];
+                                        var currentUiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
                                         var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
                                         var currentInputType = currentUiField.InputType ? currentUiField.InputType.toLowerCase() : 'text';
-                                        if (currentInputType === 'number' && currentUiField.Value) {
+                                        if (currentInputType === 'number' && currentUiField.Value && typeof currentUiField.Value !== 'number') {
                                             var UiFieldVal = currentUiField.Value;
                                             var UiFieldValNum = +UiFieldVal.replace(/[^\d/.]/g, '');
                                             if (lth.isNumber(UiFieldValNum)) {
@@ -327,6 +329,22 @@ var LoanTekWidget;
                             }
                         }
                     }
+                    function SetSelectOptions(fields, fieldHelperType) {
+                        for (var i = fields.length - 1; i >= 0; i--) {
+                            var field = fields[i];
+                            var fieldExt = lth.ExtendWidgetFieldTemplate(field, fieldHelperType);
+                            if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
+                                var uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExt.field, true);
+                                if (uiFieldIndex !== -1) {
+                                    var currentUiField = widgetData.modelUiFields[uiFieldIndex];
+                                    var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
+                                    if (currentFieldType === 'select' && Array.isArray(currentUiField.Value)) {
+                                        field.selectOptions = currentUiField.Value;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     function WidgetScriptBuild(currentFormObj) {
                         currentFormObj.buildObject.widgetType = widgetObj.widgetType;
                         SetDefaultValues($scope.currentForm.buildObject.fields, widgetObj.fieldHelperType);
@@ -339,7 +357,8 @@ var LoanTekWidget;
                             clearSelectedForm: $scope.ClearSelectedForm,
                             onDragStart: $scope.onDragStart,
                             setCurrentForm: $scope.SetCurrentForm,
-                            buildScript: $scope.WidgetScriptBuild
+                            buildScript: $scope.WidgetScriptBuild,
+                            uiFields: angular.copy(widgetData.modelUiFields)
                         };
                         $scope.editFormInfo = {
                             formObjectType: 'buildObject',
@@ -368,11 +387,13 @@ var LoanTekWidget;
                         }
                         initialScripts += scriptHelpersCode;
                         initialScriptsDisplay += scriptHelpersCode;
+                        var currentFormObjCopy = angular.copy(currentFormObj);
+                        SetSelectOptions(currentFormObjCopy.buildObject.fields, widgetObj.fieldHelperType);
                         var scriptBuildInfo = {
                             url: widgetData.modelWidget.PostingUrl,
                             ClientId: widgetData.modelWidget.ClientId,
                             UserId: widgetData.modelWidget.UserId,
-                            formObject: currentFormObj,
+                            formObject: currentFormObjCopy,
                             initialScript: initialScripts
                         };
                         var scriptBuild = lth.BuildWidgetScript(scriptBuildInfo);

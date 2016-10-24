@@ -1,0 +1,134 @@
+// Bootstrap overrides (use sparingly and try to use custom classes)
+.form-horizontal {
+	// Checkbox sizing
+	.checkbox.checkbox-lg, .form-group-lg .checkbox {
+		font-size: @font-size-large;
+		padding-top: @padding-large-vertical + 1;
+		input[type=checkbox] {
+			margin-top: 7px;
+		}
+	}
+	.checkbox.checkbox-sm, .form-group-sm .checkbox {
+		font-size: @font-size-small;
+		padding-top: @padding-small-vertical + 1;
+		input[type=checkbox] {
+			margin-top: 2px;
+		}
+	}
+
+	// Label Alignment
+	.control-label {
+		&.text-left {
+			text-align: left;
+		}
+	}
+}
+
+.table-no-heading {
+	tbody {
+		> tr {
+			&:first-child {
+				> td {
+					border-top: none;
+				}
+			}
+		}
+	}
+}
+
+// Margins (similar to bootstrap 4 method)
+.m-b-0 {
+	margin-bottom: 0;
+}
+
+// FontAwesome Checkboxes
+.checkbox-fa {
+	label {
+		padding-left: 0;
+		input[type=checkbox] {
+			display: none;
+			+ .checkbox-i {
+				display: inline-block;
+				width: 14px;
+				font-family: 'FontAwesome';
+				font-style: normal;
+				font-size: 14px;
+				&::before {
+					content: '\f096';
+					position: absolute;
+					top: 7px;
+				}
+			}
+			&:checked {
+				+ .checkbox-i {
+					.checkbox-default& {
+						color: @gray-dark;
+					}
+					.checkbox-primary& {
+						color: @brand-primary;
+					}
+					.checkbox-success& {
+						color: @brand-success;
+					}
+					.checkbox-info& {
+						color: @brand-info;
+					}
+					.checkbox-warning& {
+						color: @brand-warning;
+					}
+					.checkbox-danger& {
+						color: @brand-danger;
+					}
+					&::before {
+						//content: '\f14a';		// check-square
+						//content: '\f00c';		// check
+						content: '\f046';		// check-square-o
+					}
+				}
+			}
+			&:disabled {
+				+ .checkbox-i {
+					color: @gray-lighter;
+					cursor: not-allowed;
+				}
+			}
+		}
+	}
+}
+
+.form-group-sm .checkbox-fa, .checkbox-fa.checkbox-sm {
+	input[type=checkbox] {
+		+ .checkbox-i {
+			&::before {
+				top: 5px;
+			}
+		}
+	}
+}
+
+
+.form-group-lg .checkbox-fa, .checkbox-fa.checkbox-lg {
+	input[type=checkbox] {
+		+ .checkbox-i {
+			font-size: 18px;
+			width: 18px;
+			&::before {
+				top: 12px;
+			}
+		}
+	}
+}
+
+.checkbox-default, .checkbox-primary, .checkbox-success, .checkbox-info, .checkbox-warning, .checkbox-danger {
+	label {
+		input[type=checkbox] {
+			&:checked {
+				+ .checkbox-i {
+					&::before {
+						content: '\f14a';		// check-square
+					}
+				}
+			}
+		}
+	}
+}
