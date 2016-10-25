@@ -612,14 +612,14 @@ namespace LoanTekWidget {
 
 				$(settings.form_submit).prop('disabled', false);
 
-				var appendDataToDataList = function (fieldList: IWidgetHelpers.IField[], data: any) {
-					for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
-						var fieldItem = fieldList[flIndex];
-						if (fieldItem.field === 'autoquotedatalist') {
-							fieldItem.fieldData = data;
-						}
-					}
-				}
+				// var appendDataToDataList = function (fieldList: IWidgetHelpers.IField[], data: any) {
+				// 	for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
+				// 		var fieldItem = fieldList[flIndex];
+				// 		if (fieldItem.field === 'autoquotedatalist') {
+				// 			fieldItem.fieldData = data;
+				// 		}
+				// 	}
+				// }
 
 				// Show in Builder
 				if (settings.resultDisplayOptions.showBuilderTools) {
@@ -662,7 +662,7 @@ namespace LoanTekWidget {
 					autoQuotePostData.LoanRequest.Form.NewOrUsedType = $(settings.form_neworusedtype).val();
 					autoQuotePostData.LoanRequest.Form.IsBusinessLoan = $(settings.form_isbusinessloan).val();
 					autoQuotePostData.LoanRequest.Form.IsMember = $(settings.form_ismember).val();
-					window.console && console.log('autoQuotePostData', autoQuotePostData);
+					// window.console && console.log('autoQuotePostData', autoQuotePostData);
 
 					var request = $.ajax({
 						url: settings.postUrl
@@ -701,7 +701,10 @@ namespace LoanTekWidget {
 							settings.resultDisplayOptions.showNoDataMessage = true;
 						}
 
-						appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+						// appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+						// lth.AppendDataToDataList(settings.resultDisplayOptions.fields, resultsData, 'autoquotedatalist');
+						window.console && console.log('WARNING: USING FAKE DATA HERE!!!');
+						lth.AppendDataToDataList(settings.resultDisplayOptions.fields, lth.FakeData().autoquote, 'autoquotedatalist');
 
 						var autoQuoteResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
 						autoQuoteResultBuild.build();
@@ -1153,6 +1156,7 @@ namespace LoanTekWidget {
 		private settings: IWidgetHelpers.IResultBuildOptions;
 		private lth: LoanTekWidget.helpers;
 		constructor(lth: LoanTekWidget.helpers, options: IWidgetHelpers.IResultBuildOptions) {
+			window.console && console.log('resultBuilder constructor: ', options);
 			var _settings: IWidgetHelpers.IResultBuildOptions = {
 				resultWrapperId: 'ltWidgetResultWrapper'
 				, noDataMessageWrapperId: 'ltwNoDataMessageWrapper'
@@ -1193,6 +1197,8 @@ namespace LoanTekWidget {
 			}
 
 			settings.fieldHelperType = resultHelperType;
+			window.console && console.log('resultBuilder settings', settings);
+			// window.console && console.log('resultHelperType', resultHelperType);
 
 			var resultsForm = el.form();
 			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
@@ -1216,6 +1222,9 @@ namespace LoanTekWidget {
 		}
 
 		BuildFields(mainWrapper: JQuery, options: IWidgetHelpers.IBuildOptions, data?: any): JQuery {
+			// window.console && console.log('in BuildFields\n- mainWrapper:', mainWrapper);
+			// window.console && console.log('- options', options);
+			// window.console && console.log('- data', data);
 			var _thisM = this;
 			var lth = this.lth;
 			var $ = lth.$;
@@ -1255,6 +1264,7 @@ namespace LoanTekWidget {
 			});
 
 			$.each(settings.fields, function (fieldIndex, elementItem) {
+				elementItem.element === 'repeat' && window.console && console.log('buildField elementItem', elementItem, '\ndata:', data);
 				var useRowInsteadOfFormGroup = elementItem.field === 'label' ? true : false;
 
 				if (elementItem.id && !lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
@@ -1273,6 +1283,13 @@ namespace LoanTekWidget {
 
 				if (elementItem.field === 'captcha' && !lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
 					elementItem.uniqueQualifier = settings.uniqueQualifier;
+				}
+
+				if (elementItem.element === 'repeat') {
+					if (elementItem.type === 'autoquotedatalistclientfees') {
+						window.console && console.log('builder => repeat.autoquotedatalistclientfees data', data);
+						elementItem.fieldData = data['ClientFees'];
+					}
 				}
 
 				if (elementItem.field === 'customhidden' || elementItem.field === 'custominput') {
@@ -1527,6 +1544,7 @@ namespace LoanTekWidget {
 
 			// Replaces placeholder text in DOM with data
 			if (data) {
+				// window.console && console.log('data replace:', data);
 				for (var dataName in data) {
 					if (typeof data[dataName] === 'number') {
 						// window.console && console.log('dItem', dataName, data[dataName]);
@@ -1769,22 +1787,31 @@ namespace LoanTekWidget {
 					if (elementObj.type === 'depositdatalist') {
 						elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
 					}
+					if (elementObj.type === 'autoquotedatalistclientfees') {
+						window.console && console.log('is autoquotedatalistclientfees', elementObj);
+						elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFieldsClientFees';
+					}
 					if (elementObj.type === 'autoquotedatalist') {
 						elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFields';
 					}
 					var classQualifier: number = Math.ceil((Math.random()*100000));
 					var repeatElementClass = 'ltw-repeat-data' + classQualifier;
 					returnElement = el.div().addClass(repeatElementClass);
-					for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
-						var dataItem = elementObj.fieldData[dataIndex];
-						var resultDataRow = el.div().addClass('widget-results-repeat-section');
-						resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
-						returnElement.append(resultDataRow);
+					// window.console && console.log('repeat returnElement:', returnElement, '\n', elementObj);
+					if (elementObj.fieldData) {
+						for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
+							var dataItem = elementObj.fieldData[dataIndex];
+							var resultDataRow = el.div().addClass('widget-results-repeat-section');
+							resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
+							returnElement.append(resultDataRow);
 
-						var applyFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, elementObj.fieldListOptions, false, '.ltw .' + repeatElementClass).getStyles();
-						if (applyFormStyles) {
-							resultDataRow.prepend(el.style().html(applyFormStyles));
+							var applyFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, elementObj.fieldListOptions, false, '.ltw .' + repeatElementClass).getStyles();
+							if (applyFormStyles) {
+								resultDataRow.prepend(el.style().html(applyFormStyles));
+							}
 						}
+					} else {
+						window.console && console.log('no data for', elementObj);
 					}
 					break;
 				case 'widget':

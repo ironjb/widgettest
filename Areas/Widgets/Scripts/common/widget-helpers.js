@@ -25,6 +25,7 @@ var LoanTekWidget;
             this.autoQuoteFields = new autoQuoteFields();
             this.autoQuoteResultFields = new autoQuoteResultFields();
             this.autoQuoteResultDataFields = new autoQuoteResultDataFields();
+            this.autoQuoteResultDataFieldsClientFees = new autoQuoteResultDataFieldsClientFees();
             this.mortgageQuoteFields = new mortgageQuoteFields();
             this.mortgageRateFields = new mortgageRateFields();
             this.mortgageRateDataTable = new mortgageRateDataTable();
@@ -316,6 +317,9 @@ var LoanTekWidget;
                     case 'depositdatalist':
                         fieldHelperName = 'depositResultDataFields';
                         break;
+                    case 'autoquotedatalistclientfees':
+                        fieldHelperName = 'autoQuoteResultDataFieldsClientFees';
+                        break;
                     case 'autoquotedatalist':
                         fieldHelperName = 'autoQuoteResultDataFields';
                         break;
@@ -337,6 +341,9 @@ var LoanTekWidget;
             try {
                 if (widgetType.toLowerCase() === 'depositdatalist') {
                     returnFieldOptions = _this.depositResultDataFields[fieldName];
+                }
+                else if (widgetType.toLowerCase() === 'autoquotedatalistclientfees') {
+                    returnFieldOptions = _this.autoQuoteResultDataFieldsClientFees[fieldName];
                 }
                 else if (widgetType.toLowerCase() === 'autoquotedatalist') {
                     returnFieldOptions = _this.autoQuoteResultDataFields[fieldName];
@@ -664,7 +671,6 @@ var LoanTekWidget;
             mainScript = this.Interpolate(mainScriptWrap, { m: mainScript });
             mainScript = this.Interpolate(mainScript, { unique: uniqueQualifierForm }, null, unReplaceRegEx);
             wScript += mainScript;
-            wScript = wScript.replace(/\s+/gm, ' ');
             return wScript;
         };
         return helpers;
@@ -956,11 +962,27 @@ var LoanTekWidget;
             this.finalrate = { id: 'finalrate', name: 'FinalRate', fieldTemplate: { element: 'div', value: '#{FinalRate}', cssClass: 'form-control-static' } };
             this.finalfee = { id: 'finalfee', name: 'Final Fee', fieldTemplate: { element: 'div', value: '#{FinalFee}', cssClass: 'form-control-static' } };
             this.monthlypayment = { id: 'monthlypayment', name: 'Monthly Payment', fieldTemplate: { element: 'div', value: '#{MonthlyPayment}', cssClass: 'form-control-static' } };
+            this.clientfees = { id: 'clientfees', name: 'Client Fees', fieldTemplate: { element: 'repeat', type: 'autoquotedatalistclientfees' } };
         }
         autoQuoteResultDataFields.prototype.asArray = function () {
             return helpers.prototype.ConvertObjectToArray(this);
         };
         return autoQuoteResultDataFields;
+    }());
+    var autoQuoteResultDataFieldsClientFees = (function () {
+        function autoQuoteResultDataFieldsClientFees() {
+            var sf = new sharedFields;
+            this.label = sf.label;
+            this.title = sf.title;
+            this.paragraph = sf.paragraph;
+            this.hr = sf.hr;
+            this.feetype = { id: 'feetype', name: 'Fee Type', fieldTemplate: { element: 'div', value: '#{FeeType}', cssClass: 'form-control-static' } };
+            this.frequencytype = { id: 'frequencytype', name: 'Frequency Type', fieldTemplate: { element: 'div', value: '#{FrequencyType}', cssClass: 'form-control-static' } };
+            this.name = { id: 'name', name: 'Name', fieldTemplate: { element: 'div', value: '#{Name}', cssClass: 'form-control-static' } };
+            this.description = { id: 'description', name: 'Description', fieldTemplate: { element: 'div', value: '#{Description}', cssClass: 'form-control-static' } };
+            this.value = { id: 'value', name: 'Value', fieldTemplate: { element: 'div', value: '#{Value}', cssClass: 'form-control-static' } };
+        }
+        return autoQuoteResultDataFieldsClientFees;
     }());
     var mortgageQuoteFields = (function () {
         function mortgageQuoteFields() {

@@ -328,6 +328,7 @@ namespace LoanTekWidget {
 		public autoQuoteFields: autoQuoteFields;
 		public autoQuoteResultFields: autoQuoteResultFields;
 		public autoQuoteResultDataFields: autoQuoteResultDataFields;
+		public autoQuoteResultDataFieldsClientFees: autoQuoteResultDataFieldsClientFees;
 		public mortgageQuoteFields: mortgageQuoteFields;
 		public mortgageRateFields: mortgageRateFields;
 		public mortgageRateDataTable: mortgageRateDataTable;
@@ -354,6 +355,7 @@ namespace LoanTekWidget {
 			this.autoQuoteFields = new autoQuoteFields();
 			this.autoQuoteResultFields = new autoQuoteResultFields();
 			this.autoQuoteResultDataFields = new autoQuoteResultDataFields();
+			this.autoQuoteResultDataFieldsClientFees = new autoQuoteResultDataFieldsClientFees();
 			this.mortgageQuoteFields = new mortgageQuoteFields();
 			this.mortgageRateFields = new mortgageRateFields();
 			this.mortgageRateDataTable = new mortgageRateDataTable();
@@ -705,6 +707,9 @@ namespace LoanTekWidget {
 					case 'depositdatalist':
 						fieldHelperName = 'depositResultDataFields';
 						break;
+					case 'autoquotedatalistclientfees':
+						fieldHelperName = 'autoQuoteResultDataFieldsClientFees';
+						break;
 					case 'autoquotedatalist':
 						fieldHelperName = 'autoQuoteResultDataFields';
 						break;
@@ -728,6 +733,8 @@ namespace LoanTekWidget {
 			try {
 				if (widgetType.toLowerCase() === 'depositdatalist') {
 					returnFieldOptions = _this.depositResultDataFields[fieldName];
+				} else if(widgetType.toLowerCase() === 'autoquotedatalistclientfees') {
+					returnFieldOptions = _this.autoQuoteResultDataFieldsClientFees[fieldName];
 				} else if(widgetType.toLowerCase() === 'autoquotedatalist') {
 					returnFieldOptions = _this.autoQuoteResultDataFields[fieldName];
 				} else if (widgetType.toLowerCase().indexOf('mortgagequote') !== -1) {
@@ -1111,7 +1118,7 @@ namespace LoanTekWidget {
 
 			// Add Main Script to rest of code
 			wScript += mainScript;
-			wScript = wScript.replace(/\s+/gm, ' ');
+			// wScript = wScript.replace(/\s+/gm, ' ');
 
 			return wScript;
 		}
@@ -1576,14 +1583,15 @@ namespace LoanTekWidget {
 
 		quoteid: IWidgetHelpers.IFieldOptions;
 		apr: IWidgetHelpers.IFieldOptions;
-		baserate: IWidgetHelpers.IFieldOptions;
+		// baserate: IWidgetHelpers.IFieldOptions;
 		finalrate: IWidgetHelpers.IFieldOptions;
-		baseprice: IWidgetHelpers.IFieldOptions;
-		finalprice: IWidgetHelpers.IFieldOptions;
-		clientfeedollartotal: IWidgetHelpers.IFieldOptions;
-		clientfeepercenttotal: IWidgetHelpers.IFieldOptions;
+		// baseprice: IWidgetHelpers.IFieldOptions;
+		// finalprice: IWidgetHelpers.IFieldOptions;
+		// clientfeedollartotal: IWidgetHelpers.IFieldOptions;
+		// clientfeepercenttotal: IWidgetHelpers.IFieldOptions;
 		finalfee: IWidgetHelpers.IFieldOptions;
 		monthlypayment: IWidgetHelpers.IFieldOptions;
+		clientfees: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
@@ -1601,10 +1609,37 @@ namespace LoanTekWidget {
 			// this.clientfeepercenttotal = { id: 'clientfeepercenttotal', name: 'ClientFeePercentTotal', fieldTemplate: { element: 'div', value: '#{ClientFeePercentTotal}', cssClass: 'form-control-static' } };
 			this.finalfee = { id: 'finalfee', name: 'Final Fee', fieldTemplate: { element: 'div', value: '#{FinalFee}', cssClass: 'form-control-static' } };
 			this.monthlypayment = { id: 'monthlypayment', name: 'Monthly Payment', fieldTemplate: { element: 'div', value: '#{MonthlyPayment}', cssClass: 'form-control-static' } };
+			this.clientfees = { id: 'clientfees', name: 'Client Fees', fieldTemplate: { element: 'repeat', type: 'autoquotedatalistclientfees' } };
 		}
 
 		asArray() {
 			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
+		}
+	}
+
+	class autoQuoteResultDataFieldsClientFees {
+		label: IWidgetHelpers.IFieldOptions;
+		title: IWidgetHelpers.IFieldOptions;
+		paragraph: IWidgetHelpers.IFieldOptions;
+		hr: IWidgetHelpers.IFieldOptions;
+
+		feetype: IWidgetHelpers.IFieldOptions;
+		frequencytype: IWidgetHelpers.IFieldOptions;
+		name: IWidgetHelpers.IFieldOptions;
+		description: IWidgetHelpers.IFieldOptions;
+		value: IWidgetHelpers.IFieldOptions;
+		constructor() {
+			var sf = new sharedFields;
+			this.label = sf.label;
+			this.title = sf.title;
+			this.paragraph = sf.paragraph;
+			this.hr = sf.hr;
+
+			this.feetype = { id: 'feetype', name: 'Fee Type', fieldTemplate: { element: 'div', value: '#{FeeType}', cssClass: 'form-control-static' } };
+			this.frequencytype = { id: 'frequencytype', name: 'Frequency Type', fieldTemplate: { element: 'div', value: '#{FrequencyType}', cssClass: 'form-control-static' } };
+			this.name = { id: 'name', name: 'Name', fieldTemplate: { element: 'div', value: '#{Name}', cssClass: 'form-control-static' } };
+			this.description = { id: 'description', name: 'Description', fieldTemplate: { element: 'div', value: '#{Description}', cssClass: 'form-control-static' } };
+			this.value = { id: 'value', name: 'Value', fieldTemplate: { element: 'div', value: '#{Value}', cssClass: 'form-control-static' } };
 		}
 	}
 
