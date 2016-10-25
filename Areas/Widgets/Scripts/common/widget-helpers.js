@@ -305,7 +305,7 @@ var LoanTekWidget;
                 returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
             }
             else {
-                window.console && console.error('templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
+                window.console && console.error('Error in ExtendWidgetFieldTemplate... templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
                 returnWidgetField = eItem;
             }
             return returnWidgetField;
@@ -317,7 +317,7 @@ var LoanTekWidget;
                     case 'depositdatalist':
                         fieldHelperName = 'depositResultDataFields';
                         break;
-                    case 'autoquotedatalistclientfees':
+                    case 'autoquoteclientfees':
                         fieldHelperName = 'autoQuoteResultDataFieldsClientFees';
                         break;
                     case 'autoquotedatalist':
@@ -342,7 +342,7 @@ var LoanTekWidget;
                 if (widgetType.toLowerCase() === 'depositdatalist') {
                     returnFieldOptions = _this.depositResultDataFields[fieldName];
                 }
-                else if (widgetType.toLowerCase() === 'autoquotedatalistclientfees') {
+                else if (widgetType.toLowerCase() === 'autoquoteclientfees') {
                     returnFieldOptions = _this.autoQuoteResultDataFieldsClientFees[fieldName];
                 }
                 else if (widgetType.toLowerCase() === 'autoquotedatalist') {
@@ -943,7 +943,7 @@ var LoanTekWidget;
             this.paragraph = sf.paragraph;
             this.hr = sf.hr;
             this.nodatamessage = sf.nodatamessage;
-            this.autoquotedatalist = { id: 'autoquotedatalist', name: 'Auto Quote Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'autoquotedatalist' } };
+            this.autoquotedatalist = { id: 'autoquotedatalist', name: 'Auto Quote Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'autoquotedatalisttypeXX' } };
         }
         autoQuoteResultFields.prototype.asArray = function () {
             return helpers.prototype.ConvertObjectToArray(this);
@@ -962,7 +962,7 @@ var LoanTekWidget;
             this.finalrate = { id: 'finalrate', name: 'FinalRate', fieldTemplate: { element: 'div', value: '#{FinalRate}', cssClass: 'form-control-static' } };
             this.finalfee = { id: 'finalfee', name: 'Final Fee', fieldTemplate: { element: 'div', value: '#{FinalFee}', cssClass: 'form-control-static' } };
             this.monthlypayment = { id: 'monthlypayment', name: 'Monthly Payment', fieldTemplate: { element: 'div', value: '#{MonthlyPayment}', cssClass: 'form-control-static' } };
-            this.clientfees = { id: 'clientfees', name: 'Client Fees', fieldTemplate: { element: 'repeat', type: 'autoquotedatalistclientfees' } };
+            this.autoquoteclientfees = { id: 'autoquoteclientfees', name: 'Client Fees', fieldTemplate: { element: 'repeat', type: 'autoquotedatalistclientfeesXX' } };
         }
         autoQuoteResultDataFields.prototype.asArray = function () {
             return helpers.prototype.ConvertObjectToArray(this);
@@ -982,6 +982,9 @@ var LoanTekWidget;
             this.description = { id: 'description', name: 'Description', fieldTemplate: { element: 'div', value: '#{Description}', cssClass: 'form-control-static' } };
             this.value = { id: 'value', name: 'Value', fieldTemplate: { element: 'div', value: '#{Value}', cssClass: 'form-control-static' } };
         }
+        autoQuoteResultDataFieldsClientFees.prototype.asArray = function () {
+            return helpers.prototype.ConvertObjectToArray(this);
+        };
         return autoQuoteResultDataFieldsClientFees;
     }());
     var mortgageQuoteFields = (function () {

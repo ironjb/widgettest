@@ -133,7 +133,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			, templateUrl: 'template/widgetFieldEditButtons.html'
 			, link: function (scope: IWidgetDirectives.IFieldEdit.IToolNgScope, elem, attrs) {
 				scope.onDragStartDir = scope.fieldData.onDragStart;
-				// window.console && console.log('dir toolInfo:', scope.toolInfo, '\nfieldData:', scope.fieldData);
+				window.console && console.log('dir toolInfo:', scope.toolInfo, '\nfieldData:', scope.fieldData);
 
 				scope.toolInfo.channel = scope.toolInfo.channel || 'form';
 				var currentObject: string;
@@ -146,7 +146,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				}
 
 				var currentField: IWidgetHelpers.IField = scope.fieldData.currentForm[currentObject].fields[scope.toolInfo.index];
+				var currentFieldExt: IWidgetHelpers.IField;
 				scope.currentFieldName = currentField.field;
+				window.console && console.log('currentField', currentField);
 				scope.currentFieldOptions = lth.GetFieldOptionsForWidgetType(scope.fieldData.widgetTypeLower, scope.currentFieldName, currentObject);
 				// window.console && console.log('currentFieldName/OPtions', scope.currentFieldName, scope.currentFieldOptions);
 

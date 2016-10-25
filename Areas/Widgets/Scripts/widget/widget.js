@@ -429,8 +429,7 @@ var LoanTekWidget;
                         else {
                             settings.resultDisplayOptions.showNoDataMessage = true;
                         }
-                        window.console && console.log('WARNING: USING FAKE DATA HERE!!!');
-                        lth.AppendDataToDataList(settings.resultDisplayOptions.fields, lth.FakeData().autoquote, 'autoquotedatalist');
+                        lth.AppendDataToDataList(settings.resultDisplayOptions.fields, resultsData, 'autoquotedatalist');
                         var autoQuoteResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
                         autoQuoteResultBuild.build();
                     }, function (error) {
@@ -638,7 +637,6 @@ var LoanTekWidget;
     LoanTekWidget.MortgageRateFunctionality = MortgageRateFunctionality;
     var ResultsBuilder = (function () {
         function ResultsBuilder(lth, options) {
-            window.console && console.log('resultBuilder constructor: ', options);
             var _settings = {
                 resultWrapperId: 'ltWidgetResultWrapper',
                 noDataMessageWrapperId: 'ltwNoDataMessageWrapper',
@@ -677,7 +675,6 @@ var LoanTekWidget;
                 resultHelperType = 'contactResultFields';
             }
             settings.fieldHelperType = resultHelperType;
-            window.console && console.log('resultBuilder settings', settings);
             var resultsForm = el.form();
             var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
             var resultsFormStyles = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass + '_' + settings.uniqueQualifier).getStyles();
@@ -732,7 +729,6 @@ var LoanTekWidget;
                 }
             });
             $.each(settings.fields, function (fieldIndex, elementItem) {
-                elementItem.element === 'repeat' && window.console && console.log('buildField elementItem', elementItem, '\ndata:', data);
                 var useRowInsteadOfFormGroup = elementItem.field === 'label' ? true : false;
                 if (elementItem.id && !lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
                     elementItem.id += '_' + settings.uniqueQualifier;
@@ -750,8 +746,7 @@ var LoanTekWidget;
                     elementItem.uniqueQualifier = settings.uniqueQualifier;
                 }
                 if (elementItem.element === 'repeat') {
-                    if (elementItem.type === 'autoquotedatalistclientfees') {
-                        window.console && console.log('builder => repeat.autoquotedatalistclientfees data', data);
+                    if (elementItem.field === 'autoquoteclientfees') {
                         elementItem.fieldData = data['ClientFees'];
                     }
                 }
@@ -921,6 +916,9 @@ var LoanTekWidget;
                 for (var dataName in data) {
                     if (typeof data[dataName] === 'number') {
                         data[dataName] += '';
+                    }
+                    if (data[dataName] === null || data[dataName] === undefined) {
+                        data[dataName] = ' ';
                     }
                 }
                 mainWrapper.each(function (index, element) {
@@ -1113,15 +1111,15 @@ var LoanTekWidget;
                     returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', settings.capImg).addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', settings.capErMsg).addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
                     break;
                 case 'repeat':
-                    if (elementObj.type === 'depositdatalist') {
+                    elementObj.fieldListOptions = elementObj.fieldListOptions || { fields: [] };
+                    if (elementObj.field === 'depositdatalist') {
                         elementObj.fieldListOptions.fieldHelperType = 'depositResultDataFields';
                     }
-                    if (elementObj.type === 'autoquotedatalistclientfees') {
-                        window.console && console.log('is autoquotedatalistclientfees', elementObj);
-                        elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFieldsClientFees';
-                    }
-                    if (elementObj.type === 'autoquotedatalist') {
+                    if (elementObj.field === 'autoquotedatalist') {
                         elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFields';
+                    }
+                    if (elementObj.field === 'autoquoteclientfees') {
+                        elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFieldsClientFees';
                     }
                     var classQualifier = Math.ceil((Math.random() * 100000));
                     var repeatElementClass = 'ltw-repeat-data' + classQualifier;
@@ -1137,9 +1135,6 @@ var LoanTekWidget;
                                 resultDataRow.prepend(el.style().html(applyFormStyles));
                             }
                         }
-                    }
-                    else {
-                        window.console && console.log('no data for', elementObj);
                     }
                     break;
                 case 'widget':

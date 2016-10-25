@@ -675,6 +675,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.onDrop = onDrop;
 				$scope.buildDisplay = buildDisplay;
 
+				// Make sure at least a blank 'fieldListOptions' exists on modField
+				$scope.modField.fieldListOptions = $scope.modField.fieldListOptions || { fields: [] };
+
 				var buildTool = new LoanTekWidget.BuildTools(lth);
 				var el = lth.CreateElement();
 				var fakeData: any;
@@ -708,6 +711,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				$scope.editDataForm = function () {
+					window.console && console.log('editDataForm', $scope.modField);
 					var dataFormEditOptions: IWidgetServices.IFormEdit.IOptions = {
 						instanceOptions: {
 							currentBuildObject: $scope.modField.fieldListOptions
@@ -722,6 +726,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 				function addField(fieldId: string) {
 					var fieldToAdd: Object = { field: $scope.allRepeatDataFieldsObject[fieldId].id };
+					window.console && console.log('wbserv addField', fieldId, $scope.modField);
 					$scope.modField.fieldListOptions.fields.push(fieldToAdd);
 					$scope.buildDisplay();
 				};
@@ -736,9 +741,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						if (columns) {
 							newField.cols = columns;
 						}
+						window.console && console.log('wbserv onDrop: if dragData.field', $scope.modField);
 						$scope.modField.fieldListOptions.fields.splice(dropIndex + 1, 0, newField);
 						$scope.buildDisplay();
 					} else if (lth.isNumber($scope.dragData.index)) {
+						window.console && console.log('wbserv onDrop: elseif index');
 						var previousIndex = $scope.dragData.index;
 						if (previousIndex > dropIndex && isPlaceholder) {
 							dropIndex += 1;
@@ -767,6 +774,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					};
 
 					var modFieldForEditDataForm = angular.copy($scope.modField);
+					modFieldForEditDataForm.fieldListOptions = modFieldForEditDataForm.fieldListOptions || { fields: [] };
 					modFieldForEditDataForm.fieldListOptions.fieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
 					modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
 					modFieldForEditDataForm.fieldListOptions.showBuilderTools = true;

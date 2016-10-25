@@ -684,6 +684,7 @@ namespace LoanTekWidget {
 		}
 
 		ExtendWidgetFieldTemplate(eItem: IWidgetHelpers.IField, templateName: string): IWidgetHelpers.IField {
+			// window.console && console.log('EWFT templateName', templateName, eItem);
 			var _this = this;
 			var fOption: IWidgetHelpers.IFieldOptions;
 			var returnWidgetField: IWidgetHelpers.IField;
@@ -691,7 +692,7 @@ namespace LoanTekWidget {
 				fOption = _this[templateName][eItem.field];
 				returnWidgetField = _this.$.extend({}, fOption.fieldTemplate, eItem);
 			} else {
-				window.console && console.error('templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
+				window.console && console.error('Error in ExtendWidgetFieldTemplate... templateName: ', templateName, 'or field:', eItem.field, 'are not valid!');
 				returnWidgetField = eItem;
 			}
 			return returnWidgetField;
@@ -699,6 +700,7 @@ namespace LoanTekWidget {
 
 		GetSubFieldHelperType(fieldName: string): string {
 			var fieldHelperName: string = null;
+			// window.console && console.log('widHelper.GetSubFieldHelperType fieldname', fieldName);
 			try {
 				// if (fieldName.toLowerCase().indexOf('depositdatalist') !== -1) {
 				// 	fieldHelperName = 'depositResultDataFields';
@@ -707,7 +709,7 @@ namespace LoanTekWidget {
 					case 'depositdatalist':
 						fieldHelperName = 'depositResultDataFields';
 						break;
-					case 'autoquotedatalistclientfees':
+					case 'autoquoteclientfees':
 						fieldHelperName = 'autoQuoteResultDataFieldsClientFees';
 						break;
 					case 'autoquotedatalist':
@@ -733,7 +735,7 @@ namespace LoanTekWidget {
 			try {
 				if (widgetType.toLowerCase() === 'depositdatalist') {
 					returnFieldOptions = _this.depositResultDataFields[fieldName];
-				} else if(widgetType.toLowerCase() === 'autoquotedatalistclientfees') {
+				} else if(widgetType.toLowerCase() === 'autoquoteclientfees') {
 					returnFieldOptions = _this.autoQuoteResultDataFieldsClientFees[fieldName];
 				} else if(widgetType.toLowerCase() === 'autoquotedatalist') {
 					returnFieldOptions = _this.autoQuoteResultDataFields[fieldName];
@@ -826,8 +828,10 @@ namespace LoanTekWidget {
 		}
 
 		AppendDataToDataList(fieldList: IWidgetHelpers.IField[], data: any, dataListType: string) {
+			// window.console && console.log('appendDatatoList', fieldList, data, dataListType);
 			for (var fieldIndex = fieldList.length - 1; fieldIndex >= 0; fieldIndex--) {
 				var fieldItem = fieldList[fieldIndex];
+				// window.console && console.log('fielItem', fieldItem, dataListType);
 				if (fieldItem.field === dataListType) {
 					fieldItem.fieldData = data;
 				}
@@ -1567,7 +1571,7 @@ namespace LoanTekWidget {
 			this.paragraph = sf.paragraph;
 			this.hr = sf.hr;
 			this.nodatamessage = sf.nodatamessage;
-			this.autoquotedatalist = { id: 'autoquotedatalist', name: 'Auto Quote Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'autoquotedatalist' } };
+			this.autoquotedatalist = { id: 'autoquotedatalist', name: 'Auto Quote Results', isLTRequired: true, fieldTemplate: { element: 'repeat', type: 'autoquotedatalisttypeXX' } };
 		}
 
 		asArray() {
@@ -1591,7 +1595,7 @@ namespace LoanTekWidget {
 		// clientfeepercenttotal: IWidgetHelpers.IFieldOptions;
 		finalfee: IWidgetHelpers.IFieldOptions;
 		monthlypayment: IWidgetHelpers.IFieldOptions;
-		clientfees: IWidgetHelpers.IFieldOptions;
+		autoquoteclientfees: IWidgetHelpers.IFieldOptions;
 		constructor() {
 			var sf = new sharedFields;
 			this.label = sf.label;
@@ -1609,7 +1613,7 @@ namespace LoanTekWidget {
 			// this.clientfeepercenttotal = { id: 'clientfeepercenttotal', name: 'ClientFeePercentTotal', fieldTemplate: { element: 'div', value: '#{ClientFeePercentTotal}', cssClass: 'form-control-static' } };
 			this.finalfee = { id: 'finalfee', name: 'Final Fee', fieldTemplate: { element: 'div', value: '#{FinalFee}', cssClass: 'form-control-static' } };
 			this.monthlypayment = { id: 'monthlypayment', name: 'Monthly Payment', fieldTemplate: { element: 'div', value: '#{MonthlyPayment}', cssClass: 'form-control-static' } };
-			this.clientfees = { id: 'clientfees', name: 'Client Fees', fieldTemplate: { element: 'repeat', type: 'autoquotedatalistclientfees' } };
+			this.autoquoteclientfees = { id: 'autoquoteclientfees', name: 'Client Fees', fieldTemplate: { element: 'repeat', type: 'autoquotedatalistclientfeesXX' } };
 		}
 
 		asArray() {
@@ -1640,6 +1644,10 @@ namespace LoanTekWidget {
 			this.name = { id: 'name', name: 'Name', fieldTemplate: { element: 'div', value: '#{Name}', cssClass: 'form-control-static' } };
 			this.description = { id: 'description', name: 'Description', fieldTemplate: { element: 'div', value: '#{Description}', cssClass: 'form-control-static' } };
 			this.value = { id: 'value', name: 'Value', fieldTemplate: { element: 'div', value: '#{Value}', cssClass: 'form-control-static' } };
+		}
+
+		asArray() {
+			return helpers.prototype.ConvertObjectToArray<IWidgetHelpers.IFieldOptions>(this);
 		}
 	}
 
