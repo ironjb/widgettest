@@ -1120,6 +1120,9 @@ var LoanTekWidget;
                     }
                     if (elementObj.field === 'autoquoteclientfees') {
                         elementObj.fieldListOptions.fieldHelperType = 'autoQuoteResultDataFieldsClientFees';
+                        if (elementObj.fieldListOptions.fields.length === 0) {
+                            elementObj.fieldListOptions.fields.push({ field: 'paragraph', value: '[edit Client Fees section]' });
+                        }
                     }
                     var classQualifier = Math.ceil((Math.random() * 100000));
                     var repeatElementClass = 'ltw-repeat-data' + classQualifier;

@@ -74,10 +74,9 @@
         "field": "autoquotedatalist",
         "fieldListOptions": {
           "formGroupSpacing": 0,
+          "formBorderType": "panel",
           "fieldSize": "sm",
           "fields": [
-          	{ "field": "label", "cols": 2, "value": "Quote Id" },
-          	{ "field": "quoteid", "cols": 10, "value": "#{QuoteId}" },
           	{ "field": "label", "cols": 2, "value": "APR" },
           	{ "field": "apr", "cols": 3, "value": "#{APR}%", "color": "#5384bf" },
           	{ "field": "label", "cols": 3, "value": "Rate" },
@@ -86,20 +85,31 @@
           	{ "field": "finalfee", "cols": 3, "value": "$#{FinalFee}", "color": "#50be67" },
           	{ "field": "label", "cols": 3, "value": "Monthly Payment" },
           	{ "field": "monthlypayment", "cols": 4, "value": "$#{MonthlyPayment}", "color": "#50be67" },
-          	{ "field": "hr", "marginTopBottom": 0 },
+          	{ "field": "label", "cols": 2, "value": "Quote Id" },
+          	{ "field": "quoteid", "cols": 10, "value": "#{QuoteId}" },
+          	{ "field": "label", "cols": 2, "value": "Client Fees" },
             {
             	"field": "autoquoteclientfees",
+            	"cols": 9,
             	"fieldListOptions": {
-            		// "formGroupSpacing": 20,
+            		"formGroupSpacing": 0,
+            		"formBorderType": "panel",
+            		// "formBorderColor": "#c4daff",
             		"fields": [
-            			{ "field": "feetype" },
-            			{ "field": "frequencytype" },
-            			{ "field": "name" },
-            			{ "field": "description" },
-            			{ "field": "value" }
+            			{ "field": "label", "value": "Fee Type", "cols": 2 },
+            			{ "field": "feetype", "cols": 3 },
+            			{ "field": "label", "value": "Frequency Type", "cols": 2 },
+            			{ "field": "frequencytype", "cols": 5 },
+            			{ "field": "label", "value": "Name", "cols": 2 },
+            			{ "field": "name", "cols": 3 },
+            			{ "field": "label", "value": "Description", "cols": 2 },
+            			{ "field": "description", "cols": 5 },
+            			{ "field": "label", "value": "Value", "cols": 2 },
+            			{ "field": "value", "cols": 3 }
             		]
             	}
-            }
+            },
+          	{ "field": "hr", "marginTopBottom": 0 }
           ]
         }
       }
