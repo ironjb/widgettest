@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bootstrap Isolate</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/Content/lt-bootstrap.css" />
+</head>
+<body>
+<br />
+<div class="container ltw">
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="dropdown">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Action <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#">Separated link</a></li>
+				</ul>
+			</div>
+			Normal Dropdown... does not work programmatically.  Widget version of dropdown uses different class to work programmatically.  In the case of a client site, if separate jQuery.js and bootstrap.js files are loaded, then this dropdown would work.
+		</div>
+		<div class="col-sm-3">
+			<div class="dropdown dd-wrap">
+				<button type="button" class="btn btn-default lt-dd-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Action <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#">Separated link</a></li>
+				</ul>
+			</div>
+			Widget Dropdown - works programmatically because of class 'lt-dd-toggle'
+		</div>
+		<div class="col-sm-3">
+			<div class="dropdown dd-wrap">
+				<button type="button" class="btn btn-default lt-dd-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Action <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#">Separated link</a></li>
+				</ul>
+			</div>
+			Widget Dropdown - ditto
+		</div>
+	</div>
+</div>
+	<!-- This would be the clients version of jQuery -->
+	<script src="http://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
+	<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> -->
+
+
+	<!-- This would be the Widgets version of jQuery and bootstrap.js -->
+	<script type="text/javascript" src="/Scripts/lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/Scripts/lib/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		window.console && console.log('Widget version of jQuery:', jQuery.fn.jquery);
+
+		// Isolates jQuery
+		var jqNew = jQuery.noConflict(true);
+
+		// Makes it so bootstrap javascript needs to run programmatically instead of by data attributes
+		jqNew(document).off('.data-api');
+		jqNew(function () {
+			// Toggles dropdown menu programmatically
+			jqNew('.lt-dd-toggle').dropdown();
+
+			// // Performs additional tasks when Event is triggered
+			// jqNew('.dd-wrap').on('show.bs.dropdown', function () {
+			// 	window.console && console.log('on dropdown');
+			// });
+
+			// Adds ability to close the dropdown if somewhere else is clicked
+			jqNew(document).click(function () {
+				window.console && console.log('close');
+				// Loops through each dropdown
+				jqNew('.lt-dd-toggle').each(function() {
+					// Checks if the parent has class of 'open'
+					var hasOpen = jqNew(this).parent().hasClass('open');
+					window.console && console.log('hasOpen:', hasOpen);
+					// If dropdown is 'open', then it is closed.
+					if (hasOpen) {
+						jqNew(this).trigger('click.bs.dropdown');
+					}
+				});
+			});
+		});
+
+
+
+		window.console && console.log('This is the clients version of jQuery despite the fact that the Widget version of jQuery was loaded after:', jQuery.fn.jquery);
+	</script>
+</body>
+</html>
