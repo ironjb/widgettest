@@ -1,5 +1,4 @@
-/// <reference path="../../../../Scripts/typings/tsd.d.ts" />
-/// <reference path="../common/widget-helpers.ts" />
+/// <reference path="../common/references.d.ts" />
 
 declare namespace IWidgetBuilder {
 	interface IWidget {
@@ -149,6 +148,8 @@ namespace LoanTekWidget {
 				widgetObj.widgetType = lth.widgetType.mortgagerate.id;
 				widgetObj.allFieldsObject = lth.mortgageRateFields;
 				widgetObj.allFieldsOptionsArray = lth.mortgageRateFields.asArray();
+				widgetObj.allResultFieldsObject = lth.mortgageRateResultFields;
+				widgetObj.allResultFieldsOptionsArray = lth.mortgageRateResultFields.asArray();
 			} else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
 				widgetObj.fieldHelperType = 'depositFields';
 				widgetObj.widgetType = lth.widgetType.deposit.id;
@@ -192,6 +193,7 @@ namespace LoanTekWidget {
 					widgetScripts = [
 						'/Scripts/lib/jquery-1/jquery.min.js'
 						, '/Scripts/lib/jquery/jquery.placeholder.min.js'
+						, '/Scripts/lib/bootstrap/bootstrap.min.js'
 						, '/Scripts/lib/datatables/jquery.dataTables.min.js'
 						, '/Scripts/lib/datatables/dataTables.bootstrap.min.js'
 						, '/Areas/Widgets/Scripts/post-object/contact.js'
@@ -204,15 +206,9 @@ namespace LoanTekWidget {
 					]
 				}
 
-				// var scriptHelpersCode = `
-				// 	var ltjq = ltjq || jQuery.noConflict(true);
-				// 	var lthlpr = new LoanTekWidget.helpers(ltjq);`;
-
 				var scriptLoader = function () {
 					var loadScripts = new LoanTekWidget.LoadScriptsInSequence(widgetScripts, wwwRoot, function () {
 						var body = $('body')[0];
-						// var script = el.script().html(scriptHelpersCode)[0];
-						// body.appendChild(script);
 						$scope.UpdateWidgetDisplay();
 					});
 
@@ -259,7 +255,7 @@ namespace LoanTekWidget {
 						field.isIncluded = !!(cIndex >= 0);
 					}
 
-					if ($scope.allResultFieldsOptionsArray){
+					if ($scope.allResultFieldsOptionsArray && $scope.currentForm.resultObject){
 						for(var j = $scope.allResultFieldsOptionsArray.length -1; j >= 0; j--) {
 							var rField = $scope.allResultFieldsOptionsArray[j];
 							var rIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.resultObject.fields, 'field', rField.id);
@@ -382,63 +378,27 @@ namespace LoanTekWidget {
 
 				function FieldExtended(fieldObj: IWidgetHelpers.IField, formObjectType: string, fieldObjectType: string): IWidgetBuilder.IFieldExtended {
 					var uiFieldIndex: number;
-					// var fieldObjectUpdated: boolean = false;
 					var fIndex = $scope.currentForm[formObjectType].fields.indexOf(fieldObj);
 					var fieldOpts: IWidgetHelpers.IFieldOptions = lth[fieldObjectType][fieldObj.field];
 					var customFieldNameIndex: number = null;
 					var returnFieldExt: IWidgetBuilder.IFieldExtended = { index: fIndex, fieldOptions: fieldOpts, UiFieldType: 'text' };
-					// var fieldObjValAlreadySet = function(): boolean { return !!(fieldObj.value || typeof fieldObj.value === 'boolean' || lth.isNumber(fieldObj.value)) };
-					// window.console && console.log('FieldExtend', fieldObj, widgetData.modelUiFields);
 
 					if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
 						var fieldOptId = fieldOpts.groupName ? fieldOpts.groupName : fieldOpts.id;
 						uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldOptId, true);
-						// window.console && console.log('fieldExt uiFieldIndex', uiFieldIndex, fieldOpts.id, fieldOptId);
 						if (uiFieldIndex !== -1) {
 							returnFieldExt.UiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
-							// window.console && console.log(' - ', returnFieldExt);
 
 							if (returnFieldExt.UiField.FieldType.toLowerCase() === 'select') {
 								returnFieldExt.UiFieldType = 'select';
 							} else if (returnFieldExt.UiField.FieldType.toLowerCase() === 'checkbox') {
-								// window.console && console.log('checkbox', returnFieldExt);
-								// $timeout(function() {
-								// 	fieldObj.value = 'true';
-								// });
-								// fieldObjectUpdated = true;
 								returnFieldExt.UiFieldType = 'checkbox';
 							} else {
 								// Sets type
 								if (returnFieldExt.UiField.InputType) {
 									returnFieldExt.UiFieldType = returnFieldExt.UiField.InputType.toLowerCase();
 								}
-
-								// // Changes value from string to number if type is number
-								// if (returnFieldExt.UiFieldType === 'number' && returnFieldExt.UiField.Value) {
-								// 	var UiFieldVal: string = <string>returnFieldExt.UiField.Value;
-								// 	var UiFieldValNum: number = +UiFieldVal.replace(/[^\d/.]/g,'');
-								// 	if (lth.isNumber(UiFieldValNum)) {
-								// 		returnFieldExt.UiField.Value = UiFieldValNum;
-								// 	}
-								// }
-
-								// // Sets to default 'Value' unless a value is already set
-								// // window.console && console.log('fieldObj.value', fieldObj.value, fieldObj);
-								// if ((returnFieldExt.UiField.Value || lth.isNumber(returnFieldExt.UiField.Value)) && !fieldObjValAlreadySet()) {
-								// 	$timeout(function() {
-								// 		fieldObj.value = <string|number>returnFieldExt.UiField.Value;
-								// 	});
-								// 	fieldObjectUpdated = true;
-								// }
 							}
-
-							// // Sets to 'DefaultValue' unless a value is already set
-							// if (returnFieldExt.UiField.DefaultValue && !fieldObjValAlreadySet()) {
-							// 	$timeout(function() {
-							// 		fieldObj.value = <string|number>returnFieldExt.UiField.DefaultValue;
-							// 	});
-							// 	fieldObjectUpdated = true;
-							// }
 						}
 					}
 
@@ -448,7 +408,6 @@ namespace LoanTekWidget {
 						if (customFieldNameIndex === -1) {
 							fieldObj.attrs.push({ name: 'data-lt-additional-info-key', value: '' });
 							customFieldNameIndex = lth.GetIndexOfFirstObjectInArray(fieldObj.attrs,'name', 'data-lt-additional-info-key');
-							// fieldObjectUpdated = true;
 						}
 
 						returnFieldExt.additionalInfoIndex = customFieldNameIndex;
@@ -458,14 +417,6 @@ namespace LoanTekWidget {
 						returnFieldExt.UiFieldDisabled = true;
 					}
 
-					// if (fieldObjectUpdated) {
-					// 	// UpdateWidget();
-					// 	// $timeout(function() {
-					// 	// 	window.console && console.log('timeout to update values');
-					// 	// 	// $scope.UpdateWidget();
-					// 	// });
-					// }
-					// return { index: fIndex, fieldOptions: fieldOpts, additionalInfoIndex: customFieldNameIndex };
 					return returnFieldExt;
 				}
 
@@ -513,20 +464,15 @@ namespace LoanTekWidget {
 				}
 
 				function SetDefaultValues(fields: IWidgetHelpers.IField[], fieldHelperType: string) {
-					// window.console && console.log('fields', fields);
 					for (var i = fields.length - 1; i >= 0; i--) {
 						var field: IWidgetHelpers.IField = fields[i];
 						var fieldExt = lth.ExtendWidgetFieldTemplate(field,fieldHelperType);
-						// window.console && console.log('field', field);
 
 						// If value is not set already, then see if there is a default value
-						// if (!field.value && typeof field.value !== 'boolean' && !lth.isNumber(field.value)) {
 						if (typeof field.value === 'undefined') {
 							if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
-								// window.console && console.log('widgetData.modelUiFields', field, fieldHelperType, fieldExt, widgetData.modelUiFields);
-								var fieldExtId = fieldExt.field.replace(/hidden$/,'');
+								var fieldExtId: string = fieldExt.field.replace(/hidden$/,'').replace(/_d_/g,'.');
 								var uiFieldIndex: number = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExtId, true);
-								// window.console && console.log('uiFieldIndex', uiFieldIndex, fieldExt.field, fieldExtId, fieldExt);
 								if (uiFieldIndex !== -1) {
 									var currentUiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
 									var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
@@ -534,20 +480,12 @@ namespace LoanTekWidget {
 
 									// Changes value from string to number if 'InputType' is 'Number'
 									if (currentInputType === 'number' && currentUiField.Value && typeof currentUiField.Value !== 'number') {
-										// window.console && console.log('number', currentUiField.Value);
 										var UiFieldVal: string = <string>currentUiField.Value;
-										// window.console && console.log('UiFieldVal', UiFieldVal);
 										var UiFieldValNum: any = +UiFieldVal.replace(/[^\d/.]/g,'');
-										// window.console && console.log('UiFieldValNum', UiFieldValNum);
 										if (lth.isNumber(UiFieldValNum)) {
 											currentUiField.Value = UiFieldValNum;
 										}
 									}
-
-									// if (currentFieldType === 'select' && Array.isArray(currentUiField.Value)) {
-									// 	// window.console && console.log('currentUiField', currentUiField);
-									// 	field.selectOptions = <IWidgetHelpers.ISelectOption[]>currentUiField.Value;
-									// }
 
 									if ((currentUiField.Value || lth.isNumber(currentUiField.Value) || typeof currentUiField.Value === 'boolean') && currentFieldType !== 'select') {
 										field.value = <string|number>currentUiField.Value;
@@ -574,7 +512,6 @@ namespace LoanTekWidget {
 								var currentFieldType = currentUiField.FieldType ? currentUiField.FieldType.toLowerCase() : 'input';
 
 								if (currentFieldType === 'select' && Array.isArray(currentUiField.Value)) {
-									// window.console && console.log('currentUiField', currentUiField);
 									field.selectOptions = <IWidgetHelpers.ISelectOption[]>currentUiField.Value;
 								}
 							}
@@ -610,33 +547,8 @@ namespace LoanTekWidget {
 					$scope.editResultInfo = angular.copy($scope.editFormInfo);
 					$scope.editResultInfo.formObjectType = 'resultObject';
 
-					// var cfo: IWidget.IFormObject = angular.copy(currentFormObj);
-					// var cbo: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-					// var cbod: IWidgetFormBuildObject = angular.copy(cfo.buildObject);
-					// var cro: IWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject) : null;
-					// var crod: IWidget.IResultBuildOptions = (cfo.resultObject) ? angular.copy(cfo.resultObject): null;
 					var wScript: string = '<style type="text/css">.ltw {display:none;}</style>';
 					var wScriptDisplay: string = wScript;
-					// var hasCaptchaField = lth.GetIndexOfFirstObjectInArray(cbo.fields, 'field', 'captcha') >= 0;
-					// var fnReplaceRegEx = /"#fn{[^\}]+}"/g;
-					// var unReplaceRegEx = /#un{[^\}]+}/g;
-					// var formStyles = '';
-					// var uniqueQualifierForm = lth.getUniqueQualifier('F');
-					// var uniqueQualifierResult = lth.getUniqueQualifier('R');
-					// cbod.showBuilderTools = true;
-					// cbo.postDOMCallback = '#fn{postDOMFunctions}';
-					// cbod.postDOMCallback = '#fn{postDOMFunctions}';
-
-					// cbo.uniqueQualifier = uniqueQualifierForm;
-					// cbod.uniqueQualifier = uniqueQualifierForm;
-
-					// if (cro) {
-					// 	cro.uniqueQualifier = uniqueQualifierResult;
-					// }
-					// if (crod) {
-					// 	crod.showBuilderTools = true;
-					// 	crod.uniqueQualifier = uniqueQualifierResult;
-					// }
 
 					// Add CSS files
 					for (var iCss = 0, lCss = ltWidgetCSS.length; iCss < lCss; iCss++) {
@@ -653,6 +565,7 @@ namespace LoanTekWidget {
 						<script type="text/javascript">
 							var ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);
 							var ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);
+							ltw_ltjq(document).off('.data-api');
 						</script>`;
 					for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
 						var scriptSrc = widgetScripts[iScript];
@@ -670,12 +583,10 @@ namespace LoanTekWidget {
 					SetSelectOptions(currentFormObjCopy.buildObject.fields, widgetObj.fieldHelperType);
 
 					var scriptBuildInfo: IWidgetHelpers.IWidgetInfo = {
-						url: widgetData.modelWidget.PostingUrl // widgetData.modelUrls[0]
+						url: widgetData.modelWidget.PostingUrl
 						, ClientId: widgetData.modelWidget.ClientId
 						, UserId: widgetData.modelWidget.UserId
 						, formObject: currentFormObjCopy
-						// , scripts: widgetScripts
-						// , wwwRoot: wwwRoot
 						, initialScript: initialScripts
 					};
 					var scriptBuild = lth.BuildWidgetScript(scriptBuildInfo);

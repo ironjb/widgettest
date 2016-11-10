@@ -1,5 +1,4 @@
-/// <reference path="../../../../Scripts/typings/tsd.d.ts" />
-/// <reference path="../common/widget-helpers.ts" />
+/// <reference path="../common/references.d.ts" />
 
 declare namespace IWidgetServices {
 	interface INgServices {
@@ -26,6 +25,7 @@ declare namespace IWidgetServices {
 			previewStyles: string;
 			fieldSizeClass: string;
 			buttonSizeClass: string;
+			checkboxSizeClass: string;
 			modelOptions: Object;
 			borderType: Object;
 			formWidthUnits: Object;
@@ -56,10 +56,13 @@ declare namespace IWidgetServices {
 	interface IWidgetEditFieldNgScope extends ng.IScope {
 		fieldSizeClass: string;
 		buttonSizeClass: string;
+		checkboxSizeClass: string;
 		previewStyles: string;
 		valuePlaceholder: string;
 		customFieldKeyValue: string;
 		fieldStyle: IFieldStyle;
+		additionalClasses: string;
+		additionalStyles: string;
 		modBuildObject: IWidgetHelpers.IBuildOptions
 		modField: IWidgetHelpers.IField;
 		fieldOptions: IWidgetHelpers.IFieldOptions;
@@ -81,7 +84,14 @@ declare namespace IWidgetServices {
 		showTitlePreview: boolean;
 		widgetList: IWidgetHelpers.IWidgetInfo[];
 		uiField: IWidgetBuilder.IModal.IUiField;
+		dataTableExclusions?: IDataTableExclusion[];
 		// dataTableClasses: string;
+	}
+
+	interface IDataTableExclusion {
+		id: string;
+		name: string;
+		isExcluded?: boolean;
 	}
 
 	interface IEditRepeatFieldNgScope extends ng.IScope {
@@ -96,6 +106,7 @@ declare namespace IWidgetServices {
 		cancelClick?(): void;
 		editDataForm?(): void;
 		buildDisplay?(): void;
+		fieldOptions: IWidgetHelpers.IFieldOptions;
 		editFieldData: IWidgetBuilder.IEditFieldData;
 		addField?(fieldId: string, channel: string): void;
 		onDragStart: IWidgetBuilder.IOnDragStart;
@@ -117,103 +128,6 @@ declare namespace IWidgetServices {
 		statusText: string;
 	}
 }
-
-// interface IWidgetNgServices {
-// 	removeFieldItem?(field: IWidget.IField, itemName: string): void;
-// 	editForm?(options: IFormEditOptions): void;
-// 	editField?(options: IWidgetDirectives.IFieldEdit.IOptions): void;
-// 	editRepeatField?(options: IWidgetDirectives.IFieldEdit.IOptions): void;
-// }
-
-// interface IFormEditOptions {
-// 	instanceOptions?: IFormEditModalInstanceOptions;
-// 	saveForm?(updateForm: IWidget.IFormObject): void;
-// }
-
-// interface IFormEditModalInstanceOptions {
-// 	currentBuildObject: IWidget.IBuildOptions;
-// }
-
-// interface IWidgetEditFormNgScope extends ng.IScope {
-// 	modBuildOptions: IWidget.IBuildOptions;
-// 	isBorderTypeNone: boolean;
-// 	isBorderTypePanel: boolean;
-// 	previewStyles: string;
-// 	fieldSizeClass: string;
-// 	buttonSizeClass: string;
-// 	modelOptions: Object;
-// 	borderType: Object;
-// 	formWidthUnits: Object;
-// 	fieldSizeUnits: Object;
-// 	changeFormWidthUnit($event: any, unit: any): void;
-// 	borderTypeChange(): void;
-// 	fieldSizeChange(): void;
-// 	saveClick(): void;
-// 	cancelClick(): void;
-// 	removeBuildObjectItem(itemName: string): void;
-// }
-
-// interface IWidgetFieldStyle {
-// 	fontSize?: string;
-// 	color?: string;
-// 	backgroundColor?: string;
-// 	borderColor?: string;
-// 	borderRadius?: string;
-// 	borderWidth?: string;
-// 	borderStyle?: string;
-// 	padding?: string
-// 	marginTop?: string;
-// 	marginBottom?: string;
-// 	textAlign?: string;
-// }
-
-// interface IWidgetEditFieldNgScope extends ng.IScope {
-// 	fieldSizeClass: string;
-// 	buttonSizeClass: string;
-// 	previewStyles: string;
-// 	valuePlaceholder: string;
-// 	customFieldKeyValue: string;
-// 	fieldStyle: IWidgetFieldStyle;
-// 	modBuildObject: IWidget.IBuildOptions
-// 	modField: IWidget.IField;
-// 	fieldOptions: IWidget.IFieldOptions;
-// 	modelOptions: Object;
-// 	fieldSizeUnits: Object;
-// 	gridColumnsArray: IWidget.IHelper.INameNumId[];
-// 	offsetColumnsArray: IWidget.IHelper.INameNumId[];
-// 	headingArray: IWidget.IHelper.INameNumId[];
-// 	fieldSizeChange(): void;
-// 	removeFieldItem(itemName: string): void;
-// 	saveClick(): void;
-// 	cancelClick(): void;
-// 	showTextFieldPreview: boolean;
-// 	showTextareaPreview: boolean;
-// 	showSelectPreview: boolean;
-// 	showParagraphPreview: boolean;
-// 	showButtonPreview: boolean;
-// 	showLabelPreview: boolean;
-// 	showTitlePreview: boolean;
-// 	widgetList: IWidget.IWidgetInfo[];
-// }
-
-// interface IWidgetEditRepeatFieldNgScope extends ng.IScope {
-// 	modBuildObject: IWidgetFormBuildObject;
-// 	modelOptions: Object;
-// 	modField: IWidget.IField;
-// 	allRepeatDataFieldsObject: Object;
-// 	allRepeatDataFieldsOptionsArray: IWidget.IFieldOptions[];
-// 	repeatFormDisplay: string;
-// 	previewDataFieldStyles: string;
-// 	saveWidget?(): void;
-// 	cancelClick?(): void;
-// 	editDataForm?(): void;
-// 	buildDisplay?(): void;
-// 	editFieldData: IWidgetEditFieldData;
-// 	addField?(fieldId: string, channel: string): void;
-// 	onDragStart: IWidgetOnDragStart;
-// 	dragData?: IWidgetOnDragStartData;
-// 	onDrop?: IWidgetOnDrop;
-// }
 
 var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuery);
 (function () {
@@ -271,13 +185,16 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					if ($scope.modBuildOptions.fieldSize === lth.bootstrap.inputSizing.sm.id) {
 						$scope.fieldSizeClass = 'form-group-sm';
 						$scope.buttonSizeClass = 'btn-sm';
+						$scope.checkboxSizeClass = 'checkbox-sm';
 					}
 					else if ($scope.modBuildOptions.fieldSize === lth.bootstrap.inputSizing.lg.id) {
 						$scope.fieldSizeClass = 'form-group-lg';
 						$scope.buttonSizeClass = 'btn-lg';
+						$scope.checkboxSizeClass = 'checkbox-lg';
 					} else {
 						$scope.fieldSizeClass = '';
 						$scope.buttonSizeClass = '';
+						$scope.checkboxSizeClass = '';
 					}
 				};
 
@@ -406,13 +323,12 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 			var settings: IWidgetDirectives.IFieldEdit.IOptions = { modalSize: 'lg' };
 			angular.extend(settings, options);
 
-			modalCtrl = ['$scope', '$http', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetServices.IWidgetEditFieldNgScope, $http: ng.IHttpService, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IWidgetDirectives.IFieldEdit.IModalInstanceOptions) {
+			modalCtrl = ['$scope', '$http', 'commonServices', '$uibModalInstance', 'instanceOptions', function ($scope: IWidgetServices.IWidgetEditFieldNgScope, $http: ng.IHttpService, commonServices: ICommonNgServices, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance, instanceOptions: IWidgetDirectives.IFieldEdit.IModalInstanceOptions) {
 				$scope.modelOptions = ngModelOptions;
 				$scope.modBuildObject = angular.copy(instanceOptions.currentBuildObject);
 				$scope.modField = $scope.modBuildObject.fields[instanceOptions.currentFieldIndex];
 				$scope.uiField = instanceOptions.uiField;
 				$scope.fieldSizeUnits = angular.copy(lth.bootstrap.inputSizing);
-				// window.console && console.log('instanceOpts', instanceOptions);
 
 				var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, $scope.modBuildObject, true, '.ltw-preview');
 				var previewStyles: string = applyFormStyles.getStyles();
@@ -426,7 +342,6 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.offsetColumnsArray = lth.bootstrap.offsetColumns.asArray();
 				$scope.headingArray = lth.hsize.asArray();
 				$scope.modField.attrs = $scope.modField.attrs || [];
-				//$scope.widgetList = [];
 
 				if (!$scope.modField.size && $scope.modBuildObject.fieldSize) {
 					$scope.modField.size = $scope.modBuildObject.fieldSize;
@@ -497,17 +412,40 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					});
 				}
 
+				if (el === 'datatable') {
+					var dataTableArray: IWidgetHelpers.IDataTable.IColumnInfo[];
+					if ($scope.modField.field === 'ratetable') {
+						dataTableArray = lth.mortgageRateDataTable.asArray();
+					}
+
+					if (dataTableArray) {
+						var currentExcludedList = $scope.modField.dataTableOptions.exclude || [];
+						$scope.dataTableExclusions = $scope.dataTableExclusions || [];
+						for (var iDT = 0; iDT < dataTableArray.length; iDT++) {
+							var dataTable = dataTableArray[iDT];
+							var exclusionInfo: IWidgetServices.IDataTableExclusion = { id: <string>dataTable.column.data, name: dataTable.column.title };
+							if ($scope.modField.dataTableOptions && $scope.modField.dataTableOptions.exclude && $scope.modField.dataTableOptions.exclude.length > 0) {
+								exclusionInfo.isExcluded = $scope.modField.dataTableOptions.exclude.indexOf(<string>dataTable.column.data) !== -1;
+							}
+							$scope.dataTableExclusions.push(exclusionInfo);
+						}
+					}
+				}
+
 				$scope.fieldSizeChange = function () {
 					if ($scope.modField.size === lth.bootstrap.inputSizing.sm.id) {
 						$scope.fieldSizeClass = 'input-sm';
 						$scope.buttonSizeClass = 'btn-sm';
+						$scope.checkboxSizeClass = 'checkbox-sm';
 					}
 					else if ($scope.modField.size === lth.bootstrap.inputSizing.lg.id) {
 						$scope.fieldSizeClass = 'input-lg';
 						$scope.buttonSizeClass = 'btn-lg';
+						$scope.checkboxSizeClass = 'checkbox-lg';
 					} else {
 						$scope.fieldSizeClass = 'input-md';
 						$scope.buttonSizeClass = 'btn-md';
+						$scope.checkboxSizeClass = 'checkbox-md';
 					}
 				};
 				$scope.fieldSizeChange();
@@ -522,6 +460,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					, 'modField.padding'
 					, 'modField.marginTopBottom'
 					, 'modField.align'
+					, 'modField.cssClass'
+					, 'modField.style'
 					// , 'modField.dataTableOptions.isBordered'
 					// , 'modField.dataTableOptions.isCondensed'
 					// , 'modField.dataTableOptions.isStriped'
@@ -529,7 +469,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				];
 				$scope.$watchGroup(watchList, function (newValue) {
 					var newStyle: IWidgetServices.IFieldStyle = {};
-					// $scope.dataTableClasses = '';
+					var newClasses: string = ' ';
+					var newStyles: string = ' ';
 
 					if ($scope.modField.fontSize) {
 						newStyle.fontSize = $scope.modField.fontSize + 'px';
@@ -555,7 +496,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						newStyle.marginTop = $scope.modField.marginTopBottom + 'px';
 						newStyle.marginBottom = $scope.modField.marginTopBottom + 'px';
 					}
-					if ((el === 'p' || el === 'div') && newStyle.borderColor) {
+					if ((el === 'p' || el === 'div' || ty === 'checkbox') && newStyle.borderColor) {
 						newStyle.borderWidth = '1px';
 						newStyle.borderStyle = 'solid';
 					}
@@ -567,74 +508,114 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					// 		$scope.dataTableClasses += '';
 					// 	}
 					// }
+					if ($scope.modField.cssClass) {
+						newClasses += $scope.modField.cssClass;
+					}
+					if ($scope.modField.style) {
+						newStyles += $scope.modField.style;
+					}
 
 					$scope.fieldStyle = newStyle;
+					$scope.additionalClasses = newClasses;
+					$scope.additionalStyles = newStyles;
 				});
 
 				$scope.removeFieldItem = function (itemName) { widgetMethods.removeFieldItem($scope.modField, itemName); };
 
 				$scope.saveClick = function () {
-					if ($scope.modField.cols === lth.bootstrap.gridColumns.getDefault().id) {
-						delete $scope.modField.cols;
+					var newModField = angular.copy($scope.modField);
+
+					if (newModField.cols === lth.bootstrap.gridColumns.getDefault().id) {
+						delete newModField.cols;
 					}
-					if ($scope.modField.size === $scope.modBuildObject.fieldSize) {
-						delete $scope.modField.size;
+					if (newModField.size === $scope.modBuildObject.fieldSize) {
+						delete newModField.size;
 					}
-					if ($scope.modField.size === lth.bootstrap.inputSizing.getDefault().id && !$scope.modBuildObject.fieldSize) {
-						delete $scope.modField.size;
+					if (newModField.size === lth.bootstrap.inputSizing.getDefault().id && !$scope.modBuildObject.fieldSize) {
+						delete newModField.size;
 					}
-					if ($scope.modField.nsize === lth.hsize.getDefault().id) {
-						delete $scope.modField.nsize;
+					if (newModField.nsize === lth.hsize.getDefault().id) {
+						delete newModField.nsize;
 					}
-					if (lth.isStringNullOrEmpty($scope.modField.placeholder)) {
-						delete $scope.modField.placeholder;
+					if (lth.isStringNullOrEmpty(newModField.placeholder)) {
+						delete newModField.placeholder;
 					}
-					if (lth.isStringNullOrEmpty($scope.modField.value + '')) {
-						delete $scope.modField.value;
+					if (lth.isStringNullOrEmpty(newModField.value + '') && !$scope.uiField.Value) {
+						delete newModField.value;
 					}
-					if (!lth.isNumber($scope.modField.fontSize)) {
-						delete $scope.modField.fontSize;
-					} else if ((ty === 'successmessage' || ty === 'nodatamessage') && ft.fontSize && ft.fontSize === $scope.modField.fontSize) {
-						delete $scope.modField.fontSize;
+					if (!lth.isNumber(newModField.fontSize)) {
+						delete newModField.fontSize;
+					} else if ((ty === 'successmessage' || ty === 'nodatamessage') && ft.fontSize && ft.fontSize === newModField.fontSize) {
+						delete newModField.fontSize;
 					}
-					if (!$scope.modField.offsetCols) {
-						delete $scope.modField.offsetCols;
+					if (!newModField.offsetCols) {
+						delete newModField.offsetCols;
 					}
-					if ($scope.modField.required === false) {
-						delete $scope.modField.required;
+					if (newModField.required === false) {
+						delete newModField.required;
 					}
-					if (!lth.isNumber($scope.modField.marginTopBottom)) {
-						delete $scope.modField.marginTopBottom;
+					if (!lth.isNumber(newModField.marginTopBottom)) {
+						delete newModField.marginTopBottom;
 					}
-					if (lth.isStringNullOrEmpty($scope.modField.align)) {
-						delete $scope.modField.align;
+					if (lth.isStringNullOrEmpty(newModField.align)) {
+						delete newModField.align;
 					}
-					if (!lth.isNumber($scope.modField.padding)) {
-						delete $scope.modField.padding;
+					if (!lth.isNumber(newModField.padding)) {
+						delete newModField.padding;
 					}
-					if (!lth.isNumber($scope.modField.borderRadius)) {
-						delete $scope.modField.borderRadius;
+					if (!lth.isNumber(newModField.borderRadius)) {
+						delete newModField.borderRadius;
 					}
 					if (lth.isNumber(customFieldNameIndex) && customFieldNameIndex !== -1) {
-						$scope.modField.attrs[customFieldNameIndex].value = $scope.customFieldKeyValue;
+						newModField.attrs[customFieldNameIndex].value = $scope.customFieldKeyValue;
 					}
-					if ($scope.modField.attrs.length === 0) {
-						delete $scope.modField.attrs;
+					if (newModField.attrs.length === 0) {
+						delete newModField.attrs;
 					}
-					if (el === 'datatable' && !$scope.modField.dataTableOptions.isBordered) {
-						delete $scope.modField.borderColor;
-						delete $scope.modField.dataTableOptions.isBordered;
+					if (el === 'datatable' && !newModField.dataTableOptions.isBordered) {
+						delete newModField.borderColor;
+						delete newModField.dataTableOptions.isBordered;
 					}
-					if (el === 'datatable' && !$scope.modField.dataTableOptions.isCondensed) {
-						delete $scope.modField.dataTableOptions.isCondensed;
+					if (el === 'datatable' && !newModField.dataTableOptions.isCondensed) {
+						delete newModField.dataTableOptions.isCondensed;
 					}
-					if (el === 'datatable' && !$scope.modField.dataTableOptions.isStriped) {
-						delete $scope.modField.dataTableOptions.isStriped;
+					if (el === 'datatable' && !newModField.dataTableOptions.isStriped) {
+						delete newModField.dataTableOptions.isStriped;
 					}
-					if (el === 'datatable' && !$scope.modField.dataTableOptions.isHover) {
-						delete $scope.modField.dataTableOptions.isHover;
+					if (el === 'datatable' && !newModField.dataTableOptions.isHover) {
+						delete newModField.dataTableOptions.isHover;
 					}
-					var newBuildObject: IWidgetHelpers.IFormObject = angular.copy($scope.modBuildObject);
+					if (el === 'datatable' && $scope.dataTableExclusions) {
+						var newExcludeList: string[] = [];
+						if ($scope.dataTableExclusions.length > 0) {
+							for (var iDExclude = $scope.dataTableExclusions.length - 1; iDExclude >= 0; iDExclude--) {
+								var dataExclude: IWidgetServices.IDataTableExclusion = $scope.dataTableExclusions[iDExclude];
+								if (dataExclude.isExcluded) {
+									newExcludeList.push(dataExclude.id);
+								}
+							}
+						}
+
+						if (newExcludeList.length === $scope.dataTableExclusions.length) {
+							// alert('can not exclude all table columns');
+							commonServices.okModal({
+								okOptions: {
+									okMessage: 'You must include at least one table column. Please uncheck one of the excluded table columns.'
+									, okTitle: 'Table Column Needed'
+									, okStyle: 'alert alert-danger'
+								}
+							});
+							return;
+						}
+
+						if (newExcludeList.length > 0) {
+							newModField.dataTableOptions.exclude = newExcludeList;
+						} else {
+							delete newModField.dataTableOptions.exclude;
+						}
+					}
+					var newBuildObject: IWidgetHelpers.IBuildOptions = angular.copy($scope.modBuildObject);
+					newBuildObject.fields[instanceOptions.currentFieldIndex] = newModField;
 					$uibModalInstance.close(newBuildObject);
 				};
 
@@ -674,6 +655,8 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				$scope.onDragStart = onDragStart;
 				$scope.onDrop = onDrop;
 				$scope.buildDisplay = buildDisplay;
+				$scope.fieldOptions = instanceOptions.fieldOptions;
+				// window.console && console.log('instanceOptions', instanceOptions);
 
 				// Make sure at least a blank 'fieldListOptions' exists on modField
 				$scope.modField.fieldListOptions = $scope.modField.fieldListOptions || { fields: [] };
@@ -684,6 +667,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				var repeatFieldHelperType = lth.GetSubFieldHelperType(instanceOptions.fieldOptions.id);
 				// window.console && console.log('repeatFieldHelperType', repeatFieldHelperType, instanceOptions.fieldOptions.id);
 				$scope.allRepeatDataFieldsObject = angular.copy(lth[repeatFieldHelperType]);
+				// window.console && console.log('$scope.allRepeatDataFieldsObject', $scope.allRepeatDataFieldsObject);
 				$scope.allRepeatDataFieldsOptionsArray = angular.copy(lth[repeatFieldHelperType].asArray());
 
 				switch (instanceOptions.fieldOptions.id) {
@@ -692,6 +676,9 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						break;
 					case 'autoquotedatalist':
 						fakeData = lth.FakeData().autoquote[0];
+						break;
+					case 'mortgageratedatalist':
+						fakeData = lth.FakeData().mortgagerate[0];
 						break;
 					default:
 						// code...
@@ -711,7 +698,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 				};
 
 				$scope.editDataForm = function () {
-					window.console && console.log('editDataForm', $scope.modField);
+					// window.console && console.log('editDataForm', $scope.modField);
 					var dataFormEditOptions: IWidgetServices.IFormEdit.IOptions = {
 						instanceOptions: {
 							currentBuildObject: $scope.modField.fieldListOptions
@@ -726,7 +713,7 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 
 				function addField(fieldId: string) {
 					var fieldToAdd: Object = { field: $scope.allRepeatDataFieldsObject[fieldId].id };
-					window.console && console.log('wbserv addField', fieldId, $scope.modField);
+					// window.console && console.log('wbserv addField', fieldId, $scope.modField);
 					$scope.modField.fieldListOptions.fields.push(fieldToAdd);
 					$scope.buildDisplay();
 				};
@@ -741,11 +728,11 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 						if (columns) {
 							newField.cols = columns;
 						}
-						window.console && console.log('wbserv onDrop: if dragData.field', $scope.modField);
+						// window.console && console.log('wbserv onDrop: if dragData.field', $scope.modField);
 						$scope.modField.fieldListOptions.fields.splice(dropIndex + 1, 0, newField);
 						$scope.buildDisplay();
 					} else if (lth.isNumber($scope.dragData.index)) {
-						window.console && console.log('wbserv onDrop: elseif index');
+						// window.console && console.log('wbserv onDrop: elseif index');
 						var previousIndex = $scope.dragData.index;
 						if (previousIndex > dropIndex && isPlaceholder) {
 							dropIndex += 1;
@@ -779,7 +766,15 @@ var LoanTekWidgetHelper = LoanTekWidgetHelper || new LoanTekWidget.helpers(jQuer
 					modFieldForEditDataForm.fieldListOptions.widgetChannel = 'repeat';
 					modFieldForEditDataForm.fieldListOptions.showBuilderTools = true;
 
+					for (var mfIndex = modFieldForEditDataForm.fieldListOptions.fields.length - 1; mfIndex >= 0; mfIndex--) {
+						var field = modFieldForEditDataForm.fieldListOptions.fields[mfIndex];
+						if (field.field === 'mortgageratedatalist') {
+							field.fieldData = [lth.FakeData().mortgagerate[0]];
+						}
+					}
+
 					var rFormWrapper = el.div();
+					// window.console && console.log('result buildDisplay fakedata', modFieldForEditDataForm.fieldListOptions, fakeData);
 					var resultForm = el.div().append(buildTool.BuildFields(rFormWrapper, angular.copy(modFieldForEditDataForm.fieldListOptions), fakeData));
 
 					var applyFormStyles: LoanTekWidget.ApplyFormStyles = new LoanTekWidget.ApplyFormStyles(lth, modFieldForEditDataForm.fieldListOptions, true, '.ltw-repeatpreview');

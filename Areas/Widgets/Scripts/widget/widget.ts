@@ -1,4 +1,4 @@
-/// <reference path="../common/widget-helpers.ts" />
+/// <reference path="../common/references.d.ts" />
 
 declare namespace IWidget {
 
@@ -16,6 +16,7 @@ declare namespace IWidget {
 		uniqueQualifier?: string;
 		form_email?: string;
 
+		buildOptions?: IWidget.IFormBuildObject;
 		resultDisplayOptions?: IWidgetHelpers.IResultBuildOptions;
 		showBuilderTools?: boolean;
 	}
@@ -28,13 +29,10 @@ declare namespace IWidget {
 	}
 
 	interface IAutoQuoteFunctionalityOptions extends IFunctionalityOptions {
-		// form_terminmonths?: string;
-		// form_amount?: string;
 		form_fortype?: string;
 		form_quotingchannel?: string;
 		form_amount?: string;
 		form_terminmonths?: string;
-		// form_loantovalue?: string;
 		form_downpayment?: string;
 		form_zipcode?: string;
 		form_creditscore?: string;
@@ -45,6 +43,7 @@ declare namespace IWidget {
 		form_neworusedtype?: string;
 		form_isbusinessloan?: string;
 		form_ismember?: string;
+		form_hasgap?: string;
 
 		form_noDataMessage?: string;
 		AdditionalPostData?: LoanTekWidget.PostObject_Deposit;
@@ -52,40 +51,41 @@ declare namespace IWidget {
 
 	interface IMortgageQuoteFunctionalityOptions extends IFunctionalityOptions {
 		form_loanPurpose?: string;
-		form_zipCode?: string;	//number;
-		form_purchasePrice?: string;	//number;
-		form_downPayment?: string;	//number;
-		form_propertyValue?: string;	//number;
-		form_balance?: string;	//number;
-		form_cashOut?: string;	//number;
-		form_creditScore?: string;	//number;
-		form_loanProgram_30yearfixed?: string;	//boolean;
-		form_loanProgram_25yearfixed?: string;	//boolean;
-		form_loanProgram_20yearfixed?: string;	//boolean;
-		form_loanProgram_15yearfixed?: string;	//boolean;
-		form_loanProgram_10yearfixed?: string;	//boolean;
-		form_loanProgram_10yeararm?: string;	//boolean;
-		form_loanProgram_7yeararm?: string;	//boolean;
-		form_loanProgram_5yeararm?: string;	//boolean;
-		form_loanProgram_3yeararm?: string;	//boolean;
-		form_monthlyIncome?: string;	//number;
+		form_zipCode?: string;
+		form_purchasePrice?: string;
+		form_downPayment?: string;
+		form_propertyValue?: string;
+		form_balance?: string;
+		form_cashOut?: string;
+		form_creditScore?: string;
+		form_loanProgram_30yearfixed?: string;
+		form_loanProgram_25yearfixed?: string;
+		form_loanProgram_20yearfixed?: string;
+		form_loanProgram_15yearfixed?: string;
+		form_loanProgram_10yearfixed?: string;
+		form_loanProgram_10yeararm?: string;
+		form_loanProgram_7yeararm?: string;
+		form_loanProgram_5yeararm?: string;
+		form_loanProgram_3yeararm?: string;
+		form_monthlyIncome?: string;
 		form_propertyType?: string;
 		form_propertyUsage?: string;
-		form_VAEligible?: string;	//boolean;
-		form_vAFirstTimeUse?: string;	//boolean;
-		form_vADisabled?: string;	//boolean;
+		form_VAEligible?: string;
+		form_vAFirstTimeUse?: string;
+		form_vADisabled?: string;
 		form_vAType?: string;
-		form_firstTimeBuyer?: string;	//boolean;
-		form_foreclosed?: string;	//boolean;
-		form_bankruptcy?: string;	//boolean;
-		form_loanOwnedBy?: string;	//number;
-		form_monthlyDebt?: string;	//number;
+		form_firstTimeBuyer?: string;
+		form_foreclosed?: string;
+		form_bankruptcy?: string;
+		form_loanOwnedBy?: string;
+		form_monthlyDebt?: string;
 		// AdditionalPostData?: LoanTekWidget.PostObject_MortgageQuote;
 	}
 
 	interface IMortgageRateFunctionalityOptions extends IFunctionalityOptions {
 		form_loanType?: string;
 		form_rateTable?: string;
+		form_rateDataDisplay?: string;
 		form_desiredLoanProgram?: string;
 		form_desiredInterestRate?: string;
 
@@ -116,72 +116,66 @@ declare namespace IWidget {
 
 		form_firstName?: string;
 		form_lastName?: string;
-		// form_email?: string;
 		form_phone?: string;
 		form_company?: string;
 		form_state?: string;
 		form_comments?: string;
 		form_successMessageWrapper?: string;
+
+		form_sourceId?: string;
+		form_sourceName?: string;
+		form_notifyUserOfNewLead?: string;
+		form_sendNewLeadInitialWelcomeMessage?: string;
 	}
 }
-
-// interface IWidgetFormBuildObject extends IWidget.IBuildOptions {
-// 	wrapperId?: string;
-// 	formId?: string;
-// 	errorAnchor?: string;
-// 	errorMessageWrapperId?: string;
-// 	errrorMessageId?: string;
-// 	postDOMCallback?: any;
-// }
-
-// interface IWidgetContactFunctionalityOptions extends IWidget.IFunctionalityOptions {
-// 	redirectUrl?: string;
-// 	successMessage?: string;
-// 	AdditionalPostData?: LoanTekWidget.PostObject_Contact;
-
-// 	form_firstName?: string;
-// 	form_lastName?: string;
-// 	// form_email?: string;
-// 	form_phone?: string;
-// 	form_company?: string;
-// 	form_state?: string;
-// 	form_comments?: string;
-// 	form_successMessageWrapper?: string;
-// }
 
 namespace LoanTekWidget {
 	export class FormBuild {
 		private _lth: LoanTekWidget.helpers;
 		private _$: JQueryStatic;
-		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options: IWidget.IFormBuildObject, readyOptions?: any) {
+		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options: IWidget.IFormBuildObject, readyOptions?: IWidget.IFunctionalityOptions) {
 			var _thisC = this;
 			_thisC._lth = lth;
 			_thisC._$ = $;
 			var settings: IWidget.IFormBuildObject = {
-				wrapperId: 'ltWidgetWrapper'
-				, formId: 'ltWidgetForm'
-				, widgetType: lth.widgetType.contact.id
-				, successMessageWrapperId: 'ltwSuccessMessageWrapper'
-				, errorAnchor: 'ltwErrorAnchor'
-				, errorMessageWrapperId: 'ltwErrorMessageWrapper'
-				, errrorMessageId: 'ltwErrorMessage'
-				, fieldSize: null
-				, formBorderType: null
-				, panelTitle: null
-				, showBuilderTools: false
-				, fields: null
-				, uniqueQualifier: ''
+				wrapperId:						'ltWidgetWrapper'
+				, formId:						'ltWidgetForm'
+				, widgetType:					lth.widgetType.contact.id
+				, successMessageWrapperId:		'ltwSuccessMessageWrapper'
+				, errorAnchor:					'ltwErrorAnchor'
+				, errorMessageWrapperId:		'ltwErrorMessageWrapper'
+				, errrorMessageId:				'ltwErrorMessage'
+				, fieldSize:					null
+				, formBorderType:				null
+				, panelTitle:					null
+				, showBuilderTools:				false
+				, fields:						null
+				, uniqueQualifier:				''
 			};
 			$.extend(settings, options);
 
+			// Adds qualifier to IDs
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-				settings.wrapperId += '_' + settings.uniqueQualifier;
-				settings.formId += '_' + settings.uniqueQualifier;
-				settings.successMessageWrapperId += '_' + settings.uniqueQualifier;
-				settings.errorAnchor += '_' + settings.uniqueQualifier;
-				settings.errorMessageWrapperId += '_' + settings.uniqueQualifier;
-				settings.errrorMessageId += '_' + settings.uniqueQualifier;
+				settings.wrapperId +=					'_' + settings.uniqueQualifier;
+				settings.formId +=						'_' + settings.uniqueQualifier;
+				settings.successMessageWrapperId +=		'_' + settings.uniqueQualifier;
+				settings.errorAnchor +=					'_' + settings.uniqueQualifier;
+				settings.errorMessageWrapperId +=		'_' + settings.uniqueQualifier;
+				settings.errrorMessageId +=				'_' + settings.uniqueQualifier;
 			}
+
+			$(document).click(function () {
+				// Loops through each dropdown
+				$('.lt-dd-toggle').each(function() {
+					// Checks if the parent has class of 'open'
+					var hasOpen = $(this).parent().hasClass('open');
+					// If dropdown is 'open', then it is closed.
+					if (hasOpen) {
+						$(this).trigger('click.bs.dropdown');
+					}
+				});
+			});
+
 
 			var fieldHelperType: string;
 
@@ -221,7 +215,6 @@ namespace LoanTekWidget {
 
 			var returnForm = el.form().prop('id', settings.formId).append(errorRow);
 
-			// window.console && console.log('1. FormBuild initializer buildfields settings', settings);
 			var returnForm2 = buildTools.BuildFields(returnForm, settings);
 			var returnFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, false, '.' + lth.defaultFormSpecifierClass + '_' + settings.uniqueQualifier).getStyles();
 			if (returnFormStyles) {
@@ -233,9 +226,13 @@ namespace LoanTekWidget {
 				widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editFormInfo'));
 			}
 
+			// Javascript calls after building form
+			$('.lt-dd-toggle').dropdown();
 			if (typeof settings.postDOMCallback === 'function') {
 				settings.postDOMCallback();
 			}
+
+			readyOptions.buildOptions = settings;
 
 			// call function to set up stuff after DOM created
 			var widgetFunctionality: any;
@@ -256,11 +253,10 @@ namespace LoanTekWidget {
 	export class ContactFunctionality {
 
 		constructor($: JQueryStatic, lth: LoanTekWidget.helpers, options?: IWidget.IContactFunctionalityOptions) {
+			var formEl = lth.contactFields;
 			var settings: IWidget.IContactFunctionalityOptions = {
 				redirectUrl: null
 				, postUrl: null
-				// postUrl: 'https://api.loantek.com/Leads.Clients/SalesLeadRequest/Add/[authToken]',
-				// postUrl: '/widgets/home/angulartemplates/jsonSuccess',
 				, successMessage: 'Thank you. You will be contacted shortly.'
 				, externalValidatorFunction: null
 				, userId: null
@@ -276,32 +272,24 @@ namespace LoanTekWidget {
 
 				// Contact fields
 				, AdditionalPostData: null
-				, form_firstName: '#ltwFirstName'
-				, form_lastName: '#ltwLastName'
-				, form_email: '#ltwEmail'
-				, form_phone: '#ltwPhone'
-				, form_company: '#ltwCompany'
-				, form_state: '#ltwState'
-				, form_comments: '#ltwComments'
+				, form_firstName:	'#' + formEl.firstname.fieldTemplate.id
+				, form_lastName:	'#' + formEl.lastname.fieldTemplate.id
+				, form_email:		'#' + formEl.email.fieldTemplate.id
+				, form_phone:		'#' + formEl.phone.fieldTemplate.id
+				, form_company:		'#' + formEl.company.fieldTemplate.id
+				, form_state:		'#' + formEl.state.fieldTemplate.id
+				, form_comments:	'#' + formEl.comments.fieldTemplate.id
 				, form_successMessageWrapper: '#ltwSuccessMessageWrapper'
+
+				, form_sourceId:							'#' + formEl.source_d_idhidden.fieldTemplate.id
+				, form_sourceName:							'#' + formEl.source_d_namehidden.fieldTemplate.id
+				, form_notifyUserOfNewLead:					'#' + formEl.notifyuserofnewleadhidden.fieldTemplate.id
+				, form_sendNewLeadInitialWelcomeMessage:	'#' + formEl.sendnewleadinitialwelcomemessagehidden.fieldTemplate.id
 			};
 			$.extend(settings, options);
 			var customInputClass = '.lt-custom-input';
 
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-				// settings.form_id += '_' + settings.uniqueQualifier;
-				// settings.form_firstName += '_' + settings.uniqueQualifier;
-				// settings.form_lastName += '_' + settings.uniqueQualifier;
-				// settings.form_email += '_' + settings.uniqueQualifier;
-				// settings.form_phone += '_' + settings.uniqueQualifier;
-				// settings.form_company += '_' + settings.uniqueQualifier;
-				// settings.form_state += '_' + settings.uniqueQualifier;
-				// settings.form_comments += '_' + settings.uniqueQualifier;
-				// settings.form_submit += '_' + settings.uniqueQualifier;
-				// settings.form_successMessageWrapper += '_' + settings.uniqueQualifier;
-				// settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsg += '_' + settings.uniqueQualifier;
 				for (var paramName in settings) {
 					if (paramName.indexOf('form_') !== -1) {
 						settings[paramName] += '_' + settings.uniqueQualifier;
@@ -320,7 +308,6 @@ namespace LoanTekWidget {
 				$(settings.form_id).submit((event) => {
 					event.preventDefault();
 					$(settings.form_errorMsgWrapper).hide(100);
-					$(settings.form_submit).prop('disabled', true);
 
 					if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
 						$(settings.form_submit).prop('disabled', false);
@@ -337,14 +324,24 @@ namespace LoanTekWidget {
 					contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
 					contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
 					contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
-					contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
+					contactPostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
 					contactPostData.ClientId = settings.clientId;
 					contactPostData.UserId = settings.userId;
 					contactPostData.Reason = $(settings.form_comments).val();
+
+					contactPostData.Source.Id = $(settings.form_sourceId).val();
+					contactPostData.Source.Name = $(settings.form_sourceName).val();
+					contactPostData.NotifyUserOfNewLead = $(settings.form_notifyUserOfNewLead).val();
+					contactPostData.SendNewLeadInitialWelcomeMessage = $(settings.form_sendNewLeadInitialWelcomeMessage).val();
 					contactPostData.MiscData[0].Value = '';
 
 					$(customInputClass).each(function (customIndex: number, elem: Element) {
-						contactPostData.MiscData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
+						var keyName: string = $(this).attr('data-lt-additional-info-key');
+						var customDataCurrentIndex = lth.GetIndexOfFirstObjectInArray(contactPostData.MiscData, 'Name', keyName);
+						if (customDataCurrentIndex !== -1) {
+							contactPostData.MiscData.splice(customDataCurrentIndex,1);
+						}
+						contactPostData.MiscData.push({ Name: keyName, Value: $(this).val() });
 					});
 
 					var request = $.ajax({
@@ -354,9 +351,7 @@ namespace LoanTekWidget {
 						, method: 'POST'
 						, contentType: 'application/json'
 						, dataType: 'json'
-						// , data: JSON.stringify(contactPostData)
 						, data: JSON.stringify({ LeadFile: contactPostData })
-						// , data: { LeadFile: contactPostData }
 					});
 
 					request.done((result) => {
@@ -421,14 +416,6 @@ namespace LoanTekWidget {
 			var customInputClass = '.lt-custom-input';
 
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-				// settings.form_id += '_' + settings.uniqueQualifier;
-				// settings.form_submit += '_' + settings.uniqueQualifier;
-				// settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsg += '_' + settings.uniqueQualifier;
-				// settings.form_term += '_' + settings.uniqueQualifier;
-				// settings.form_amount += '_' + settings.uniqueQualifier;
-				// settings.form_noDataMessage += '_' + settings.uniqueQualifier;
 				for (var paramName in settings) {
 					if (paramName.indexOf('form_') !== -1) {
 						settings[paramName] += '_' + settings.uniqueQualifier;
@@ -444,20 +431,10 @@ namespace LoanTekWidget {
 
 				$(settings.form_submit).prop('disabled', false);
 
-				var appendDataToDataList = function (fieldList: IWidgetHelpers.IField[], data: any) {
-					for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
-						var fieldItem = fieldList[flIndex];
-						if (fieldItem.field === 'depositdatalist') {
-							fieldItem.fieldData = data;
-						}
-					}
-				}
-
 				// Show on Create Widget page
 				if (settings.resultDisplayOptions.showBuilderTools) {
-					// var fakeData = [{ APY: 1, TotalInterestEarned: 100, AmountPlusInterest: 100, CompoundInterestType: 'Quarterly', BaseRate: 1.7500, FinalRate: 1.7400 }];
 					var fakeData = [lth.FakeData().deposit];
-					appendDataToDataList(settings.resultDisplayOptions.fields, fakeData);
+					lth.AppendDataToDataList(settings.resultDisplayOptions.fields, fakeData, 'depositdatalist');
 
 					var showDepositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
 					showDepositResultBuild.build();
@@ -478,16 +455,16 @@ namespace LoanTekWidget {
 					}
 
 					depositPostData.UserId = settings.userId;
-					depositPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
-					depositPostData.DepositRequest.ForType = 130;
-					depositPostData.DepositRequest.TermInMonths = $(settings.form_term).val()*1;
-					depositPostData.DepositRequest.Amount = $(settings.form_amount).val()*1;
+					depositPostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
+					// depositPostData.DepositRequest.Form.ForType = 130;
+					depositPostData.DepositRequest.Form.TermInMonths = $(settings.form_term).val()*1;
+					depositPostData.DepositRequest.Form.Amount = $(settings.form_amount).val()*1;
 					if ($(customInputClass).length > 0) {
-						depositPostData.DepositRequest.CustomData = [];
+						depositPostData.DepositRequest.Form.CustomData = [];
 					}
 
 					$(customInputClass).each(function (customIndex: number, elem: Element) {
-						depositPostData.DepositRequest.CustomData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
+						depositPostData.DepositRequest.Form.CustomData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
 					});
 
 					var request = $.ajax({
@@ -495,16 +472,15 @@ namespace LoanTekWidget {
 						// url: 'http://node-cors-server.herokuapp.com/simple-cors'
 						url: settings.postUrl
 						, method: 'POST'
-						// , method: 'GET'
 						, contentType: 'application/json'
 						, dataType: 'json'
 						, data: JSON.stringify(depositPostData)
-						// , data: depositPostData
 					});
 
 					request.done((result) => {
 						$(settings.form_submit).prop('disabled', false);
 
+						// If multiple 'Sumbissions' or multiple 'Quotes', concats them into resultData[] and does some formatting on data.
 						var resultsData = [];
 						if (result.Submissions && result.Submissions.length > 0) {
 							for (var iSubmission = 0, subLen = result.Submissions.length; iSubmission < subLen; iSubmission++) {
@@ -520,13 +496,14 @@ namespace LoanTekWidget {
 							}
 						}
 
+						// If resultData[] is empty, shows 'no data' message
 						if (resultsData.length) {
 							settings.resultDisplayOptions.showNoDataMessage = false;
 						} else {
 							settings.resultDisplayOptions.showNoDataMessage = true;
 						}
 
-						appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+						lth.AppendDataToDataList(settings.resultDisplayOptions.fields, resultsData, 'depositdatalist');
 
 						var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
 						depositResultBuild.build();
@@ -572,13 +549,10 @@ namespace LoanTekWidget {
 				// IAutoQuoteFunctionalityOptions options
 				, AdditionalPostData: null
 				, form_submit: '#' + formEl.submit.fieldTemplate.id
-				// , form_terminmonths: '#' + formEl.terminmonths.fieldTemplate.id
-				// , form_amount: '#' + formEl.amount.fieldTemplate.id
 				, form_fortype: '#' + formEl.fortype.fieldTemplate.id
 				, form_quotingchannel: '#' + formEl.quotingchannel.fieldTemplate.id
 				, form_amount: '#' + formEl.amount.fieldTemplate.id
 				, form_terminmonths: '#' + formEl.terminmonths.fieldTemplate.id
-				// , form_loantovalue: '#' + formEl.loantovalue.fieldTemplate.id
 				, form_downpayment: '#' + formEl.downpayment.fieldTemplate.id
 				, form_zipcode: '#' + formEl.zipcode.fieldTemplate.id
 				, form_creditscore: '#' + formEl.creditscore.fieldTemplate.id
@@ -589,6 +563,7 @@ namespace LoanTekWidget {
 				, form_neworusedtype: '#' + formEl.neworusedtype.fieldTemplate.id
 				, form_isbusinessloan: '#' + formEl.isbusinessloan.fieldTemplate.id
 				, form_ismember: '#' + formEl.ismember.fieldTemplate.id
+				, form_hasgap: '#' + formEl.hasgapinsurance.fieldTemplate.id
 				, form_noDataMessage: '#' + resultEl.nodatamessage.fieldTemplate.id
 				, resultDisplayOptions: {
 					fieldHelperType: 'autoQuoteResultFields'
@@ -612,15 +587,6 @@ namespace LoanTekWidget {
 				var autoQuotePostData: LoanTekWidget.PostObject_AutoQuote = lth.postObjects.autoquote();
 
 				$(settings.form_submit).prop('disabled', false);
-
-				// var appendDataToDataList = function (fieldList: IWidgetHelpers.IField[], data: any) {
-				// 	for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
-				// 		var fieldItem = fieldList[flIndex];
-				// 		if (fieldItem.field === 'autoquotedatalist') {
-				// 			fieldItem.fieldData = data;
-				// 		}
-				// 	}
-				// }
 
 				// Show in Builder
 				if (settings.resultDisplayOptions.showBuilderTools) {
@@ -646,14 +612,21 @@ namespace LoanTekWidget {
 						$.extend(true, autoQuotePostData, settings.AdditionalPostData);
 					}
 
+					autoQuotePostData.LoanRequest.Form.CustomData = autoQuotePostData.LoanRequest.Form.CustomData || [];
+
+					// Remove GAP if added before
+					var gapIndex = lth.GetIndexOfFirstObjectInArray(autoQuotePostData.LoanRequest.Form.CustomData, 'Name', 'GAP');
+					if (gapIndex !== -1) {
+						autoQuotePostData.LoanRequest.Form.CustomData.splice(gapIndex, 1);
+					}
+
 					autoQuotePostData.UserId = settings.userId;
 					autoQuotePostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
 					autoQuotePostData.LoanRequest.Form.ForType = $(settings.form_fortype).val();
 					autoQuotePostData.LoanRequest.Form.QuotingChannel = $(settings.form_quotingchannel).val();
 					autoQuotePostData.LoanRequest.Form.Amount = +$(settings.form_amount).val();
 					autoQuotePostData.LoanRequest.Form.TermInMonths = +$(settings.form_terminmonths).val();
-					// autoQuotePostData.LoanRequest.Form.LoanToValue = +$(settings.form_loantovalue).val();
-					autoQuotePostData.LoanRequest.Form.LoanToValue = $(settings.form_amount).val() - $(settings.form_downpayment).val();
+					autoQuotePostData.LoanRequest.Form.LoanToValue = ($(settings.form_amount).val() - $(settings.form_downpayment).val()) / $(settings.form_amount).val() * 100;
 					autoQuotePostData.LoanRequest.Form.ZipCode = $(settings.form_zipcode).val();
 					autoQuotePostData.LoanRequest.Form.CreditScore = +$(settings.form_creditscore).val();
 					autoQuotePostData.LoanRequest.Form.ModelYear = +$(settings.form_modelyear).val();
@@ -663,7 +636,7 @@ namespace LoanTekWidget {
 					autoQuotePostData.LoanRequest.Form.NewOrUsedType = $(settings.form_neworusedtype).val();
 					autoQuotePostData.LoanRequest.Form.IsBusinessLoan = $(settings.form_isbusinessloan).val();
 					autoQuotePostData.LoanRequest.Form.IsMember = $(settings.form_ismember).val();
-					// window.console && console.log('autoQuotePostData', autoQuotePostData);
+					autoQuotePostData.LoanRequest.Form.CustomData.push({ Name: 'GAP', Value: $(settings.form_hasgap).prop('checked') });
 
 					var request = $.ajax({
 						url: settings.postUrl
@@ -674,7 +647,6 @@ namespace LoanTekWidget {
 					});
 
 					request.then(function (result) {
-						// window.console && console.log('result', result);
 						$(settings.form_submit).prop('disabled', false);
 
 						var resultsData = [];
@@ -684,8 +656,6 @@ namespace LoanTekWidget {
 								if (submission.Quotes && submission.Quotes.length > 0) {
 									for (var iQuote = 0, qLen = submission.Quotes.length; iQuote < qLen; iQuote++) {
 										var quote = submission.Quotes[iQuote];
-										// quote.TotalInterestEarned = lth.FormatNumber(quote.TotalInterestEarned, 2);
-										// quote.AmountPlusInterest = lth.FormatNumber(quote.AmountPlusInterest, 2);
 										quote.APR = lth.FormatNumber(quote.APR, 3);
 										quote.FinalRate = lth.FormatNumber(quote.FinalRate, 3);
 										quote.FinalFee = lth.FormatNumber(quote.FinalFee, 2);
@@ -702,10 +672,7 @@ namespace LoanTekWidget {
 							settings.resultDisplayOptions.showNoDataMessage = true;
 						}
 
-						// appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
 						lth.AppendDataToDataList(settings.resultDisplayOptions.fields, resultsData, 'autoquotedatalist');
-						// window.console && console.log('WARNING: USING FAKE DATA HERE!!!');
-						// lth.AppendDataToDataList(settings.resultDisplayOptions.fields, lth.FakeData().autoquote, 'autoquotedatalist');
 
 						var autoQuoteResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
 						autoQuoteResultBuild.build();
@@ -746,7 +713,6 @@ namespace LoanTekWidget {
 				, form_errorMsg: '#ltwErrorMessage'
 
 				// IMortgageQuoteFunctionalityOptions
-				// , AdditionalPostData: null
 				, form_loanPurpose: '#ltwMQ_LoanPurpose'
 				, form_zipCode: '#ltwMQ_ZipCode'
 				, form_purchasePrice: '#ltwMQ_PurchasePrice'
@@ -782,40 +748,6 @@ namespace LoanTekWidget {
 			var customInputClass = '.lt-custom-input';
 
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-				// settings.form_id += '_' + settings.uniqueQualifier;
-				// settings.form_submit += '_' + settings.uniqueQualifier;
-				// settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsg += '_' + settings.uniqueQualifier;
-				// settings.form_loanPurpose += '_' + settings.uniqueQualifier;
-				// settings.form_zipCode += '_' + settings.uniqueQualifier;
-				// settings.form_purchasePrice += '_' + settings.uniqueQualifier;
-				// settings.form_downPayment += '_' + settings.uniqueQualifier;
-				// settings.form_propertyValue += '_' + settings.uniqueQualifier;
-				// settings.form_balance += '_' + settings.uniqueQualifier;
-				// settings.form_cashOut += '_' + settings.uniqueQualifier;
-				// settings.form_creditScore += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_30yearfixed += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_25yearfixed += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_20yearfixed += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_15yearfixed += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_10yearfixed += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_10yeararm += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_7yeararm += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_5yeararm += '_' + settings.uniqueQualifier;
-				// settings.form_loanProgram_3yeararm += '_' + settings.uniqueQualifier;
-				// settings.form_monthlyIncome += '_' + settings.uniqueQualifier;
-				// settings.form_propertyType += '_' + settings.uniqueQualifier;
-				// settings.form_propertyUsage += '_' + settings.uniqueQualifier;
-				// settings.form_VAEligible += '_' + settings.uniqueQualifier;
-				// settings.form_vAFirstTimeUse += '_' + settings.uniqueQualifier;
-				// settings.form_vADisabled += '_' + settings.uniqueQualifier;
-				// settings.form_vAType += '_' + settings.uniqueQualifier;
-				// settings.form_firstTimeBuyer += '_' + settings.uniqueQualifier;
-				// settings.form_foreclosed += '_' + settings.uniqueQualifier;
-				// settings.form_bankruptcy += '_' + settings.uniqueQualifier;
-				// settings.form_loanOwnedBy += '_' + settings.uniqueQualifier;
-				// settings.form_monthlyDebt += '_' + settings.uniqueQualifier;
 				for (var paramName in settings) {
 					if (paramName.indexOf('form_') !== -1) {
 						settings[paramName] += '_' + settings.uniqueQualifier;
@@ -846,48 +778,30 @@ namespace LoanTekWidget {
 				, form_email: '#ltwEmail'
 
 				// IMortgageRateFunctionalityOptions
-				, form_loanType: '#'+formEl.loantype.fieldTemplate.id //'#ltwLoanType'
-				, form_rateTable: '#'+formEl.ratetable.fieldTemplate.id //'#ltwRateTable'
+				, form_loanType: '#'+formEl.loantype.fieldTemplate.id
+				, form_rateTable: '#'+formEl.ratetable.fieldTemplate.id
+				, form_rateDataDisplay: '#'+formEl.mortgagerateresult.fieldTemplate.id
 				, form_desiredLoanProgram: '#ltwDesiredLoanProgram'
 				, form_desiredInterestRate: '#ltwDesiredInterestRate'
 
-				, form_creditScore: '#'+formEl.creditscore.fieldTemplate.id // '#ltwCreditScore'
-				, form_loanAmount: '#'+formEl.loanamount.fieldTemplate.id // '#ltwLoanAmount'
-				, form_loanPurpose: '#'+formEl.loanpurpose.fieldTemplate.id // '#ltwLoanPurpose'
-				, form_loanToValue: '#'+formEl.loantovalue.fieldTemplate.id // '#ltwLoanToValue'
-				, form_propertyType: '#'+formEl.propertytype.fieldTemplate.id // '#ltwPropertyType'
-				, form_propertyUsage: '#'+formEl.propertyusage.fieldTemplate.id // '#ltwPropertyUsage'
-				, form_quotingChannel: '#'+formEl.quotingchannel.fieldTemplate.id // '#ltwQuotingChannel'
-				, form_vaType: '#'+formEl.vatype.fieldTemplate.id // '#ltwVAType'
-				, form_zipCode: '#'+formEl.zipcode.fieldTemplate.id // '#ltwZipCode'
+				, form_creditScore: '#'+formEl.creditscore.fieldTemplate.id
+				, form_loanAmount: '#'+formEl.loanamount.fieldTemplate.id
+				, form_loanPurpose: '#'+formEl.loanpurpose.fieldTemplate.id
+				, form_loanToValue: '#'+formEl.loantovalue.fieldTemplate.id
+				, form_propertyType: '#'+formEl.propertytype.fieldTemplate.id
+				, form_propertyUsage: '#'+formEl.propertyusage.fieldTemplate.id
+				, form_quotingChannel: '#'+formEl.quotingchannel.fieldTemplate.id
+				, form_vaType: '#'+formEl.vatype.fieldTemplate.id
+				, form_zipCode: '#'+formEl.zipcode.fieldTemplate.id
 			};
 			$.extend(true, settings, options);
 			$('input, textarea').placeholder({ customClass: 'placeholder-text' });
 			var customInputClass = '.lt-custom-input';
-			// window.console && console.log('IMortgageRateFunctionalityOptions settings', options);
+			var rateTableIndex: number = lth.GetIndexOfFirstObjectInArray(settings.buildOptions.fields, 'field', 'ratetable');
+			var hasRateTable: boolean = rateTableIndex !== -1;
 
+			// Add qualifier to form field ids
 			if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-				// settings.form_id += '_' + settings.uniqueQualifier;
-				// settings.form_submit += '_' + settings.uniqueQualifier;
-				// settings.form_errorAnchor += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsgWrapper += '_' + settings.uniqueQualifier;
-				// settings.form_errorMsg += '_' + settings.uniqueQualifier;
-				// settings.form_email += '_' + settings.uniqueQualifier;
-
-				// settings.form_loanType += '_' + settings.uniqueQualifier;
-				// settings.form_rateTable += '_' + settings.uniqueQualifier;
-				// settings.form_desiredLoanProgram += '_' + settings.uniqueQualifier;
-				// settings.form_desiredInterestRate += '_' + settings.uniqueQualifier;
-
-				// settings.form_creditScore += '_' + settings.uniqueQualifier;
-				// settings.form_loanAmount += '_' + settings.uniqueQualifier;
-				// settings.form_loanPurpose += '_' + settings.uniqueQualifier;
-				// settings.form_loanToValue += '_' + settings.uniqueQualifier;
-				// settings.form_propertyType += '_' + settings.uniqueQualifier;
-				// settings.form_propertyUsage += '_' + settings.uniqueQualifier;
-				// settings.form_quotingChannel += '_' + settings.uniqueQualifier;
-				// settings.form_vaType += '_' + settings.uniqueQualifier;
-				// settings.form_zipCode += '_' + settings.uniqueQualifier;
 				for (var paramName in settings) {
 					if (paramName.indexOf('form_') !== -1) {
 						settings[paramName] += '_' + settings.uniqueQualifier;
@@ -912,15 +826,15 @@ namespace LoanTekWidget {
 				mortgageRatePostData.LoanRequest.ZipCode = $(settings.form_zipCode).val(); // "90808";
 				mortgageRatePostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
 				mortgageRatePostData.UserId = settings.userId;
-				// window.console && console.log('vatype', settings.form_vaType, $(settings.form_vaType).val());
 				if ($(settings.form_vaType).val()) {
 					mortgageRatePostData.LoanRequest.VAType = $(settings.form_vaType).val();
 				}
-				// window.console && console.log('mortgageRatePostData', mortgageRatePostData);
 
 				// Populate Dropdown & Rate Table
 				var populateRateTable = function (rateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[]) {
 					var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
+					var sortColumn = 'InterestRate';
+					var sortReverse = true;
 
 					// Sets dropdown for Loan Type
 					$(settings.form_loanType).html('');
@@ -932,55 +846,124 @@ namespace LoanTekWidget {
 						}
 					}
 
-					// var datatableFormatPercent = function (data, type, row) {
-					// 	return lth.FormatNumber(data, 3, true, null, '%');
-					// };
-					// var datatableFormatCurrency = function (data, type, row) {
-					// 	return lth.FormatNumber(data, 2, true, '$');
-					// };
-					// var datatableFormatPoints = function (data, type, row) {
-					// 	return lth.FormatNumber(data, 3, true);
-					// };
-
-					var getFilteredRateTableData = function () {
+					// Filters the data based on the 'LoanType' value.
+					var getFilteredRateTableData = function (): IWidgetHelpers.IRateTable.IMortgageLoanQuote[] {
 						var loanTypeValue = $(settings.form_loanType).val();
 						var returnFilteredRates: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
 						return returnFilteredRates;
-					}
-
-					// Initializes table for first time
-					var rateTableInfo: DataTables.Settings = {
-						data: getFilteredRateTableData()
-						, stripeClasses: ['ratetable-strip1', 'ratetable-strip2']
-						, paging: false
-						, info: false
-						, searching: false
-						// , columns: [
-						// 	{ "data": "InterestRate", render: datatableFormatPercent, title: 'Rate', className: 'ratetable-rate' }
-						// 	, { "data": "APR", render: datatableFormatPercent, title: 'APR', className: 'ratetable-apr' }
-						// 	, { "data": "FinalFees", render: datatableFormatCurrency, title: 'Loan Fees', className: 'ratetable-loanfees' }
-						// 	, { "data": "PIP", render: datatableFormatCurrency, title: 'Payment', className: 'ratetable-payment' }
-						// 	, { "data": "CalcPrice", render: datatableFormatPoints, title: 'Points', className: 'ratetable-points' }
-						// 	// , { "data": "TermInMonths", title: 'Months', className: 'ratetable-months' }
-						// ]
-						, columns: []
 					};
 
-					for (var colName in lth.mortgageRateDataTable) {
-						var col: IWidgetHelpers.IDataTable.IColumnInfo = lth.mortgageRateDataTable[colName];
-						if (col.column) {
-							rateTableInfo.columns.push(col.column);
+					var sortAndFormatRateTableData = function() {
+						// Make copy so sorting will not be affected by formatting
+						var returnData: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = $.merge([], getFilteredRateTableData());
+						returnData.sort(lth.SortObjectArray(sortColumn, sortReverse));
+
+						// Format
+						for (var i = returnData.length - 1; i >= 0; i--) {
+							var dataItem = returnData[i];
+							dataItem.InterestRate = typeof dataItem.InterestRate === 'number' ? lth.FormatNumber(<number>dataItem.InterestRate,3) : dataItem.InterestRate;
+							dataItem.APR = typeof dataItem.APR === 'number' ? lth.FormatNumber(<number>dataItem.APR,3) : dataItem.APR;
+							dataItem.FinalFees = typeof dataItem.FinalFees === 'number' ? lth.FormatNumber(<number>dataItem.FinalFees,2,true) : dataItem.FinalFees;
+							dataItem.PIP = typeof dataItem.PIP === 'number' ? lth.FormatNumber(<number>dataItem.PIP,2,true) : dataItem.PIP;
+							dataItem.CalcPrice = typeof dataItem.CalcPrice === 'number' ? lth.FormatNumber(<number>dataItem.CalcPrice,3,true) : dataItem.CalcPrice;
+						}
+
+						return returnData;
+					};
+
+					var rateResultDisplay: IWidgetHelpers.IField = null;
+					var redrawRateDisplay = function() {
+						lth.AppendDataToDataList(rateResultDisplay.fieldListOptions.fields, sortAndFormatRateTableData(), 'mortgageratedatalist');
+						var mortgageRateResultBuild = new ResultsBuilder(lth, rateResultDisplay.fieldListOptions);
+						mortgageRateResultBuild.build();
+						buildSortDropDowns();
+					};
+
+					var buildSortDropDowns = function() {
+						var mortgageRateDataTableArray: IWidgetHelpers.IDataTable.IColumnInfo[] = lth.mortgageRateDataTable.asArray();
+						var sortUl = $('.mortgageratedatasortul');
+						for (var iSortInfo = 0; iSortInfo < mortgageRateDataTableArray.length; iSortInfo++) {
+							var sortInfo = mortgageRateDataTableArray[iSortInfo];
+							var sortInfoClass = 'mortgageratesort_' + sortInfo.column.data;
+							var sortLink = el.a().attr({href: '#'}).addClass(sortInfoClass).text(sortInfo.column.title);
+							if (sortColumn === sortInfo.column.data) {
+								if (sortReverse) {
+									sortLink.prepend(el.span().addClass('pull-right fa fa-sort-asc'));
+								} else {
+									sortLink.prepend(el.span().addClass('pull-right fa fa-sort-desc'));
+								}
+							} else {
+								sortLink.prepend(el.span().addClass('pull-right fa fa-sort'));
+							}
+							sortLink.data('mortgageratesortcolumn',sortInfo.column.data);
+							sortUl.append(el.li().append(sortLink));
+							$('.' + sortInfoClass).click(function(event) {
+								var sortCol: string = $(this).data()['mortgageratesortcolumn'];
+								event.preventDefault();
+								if (sortColumn === sortCol) {
+									sortReverse = !sortReverse;
+								} else {
+									sortColumn = sortCol;
+									sortReverse = true;
+								}
+								redrawRateDisplay();
+							});
+						}
+					};
+
+					var rateTableOptions: IWidgetHelpers.IDataTable.IOptions;
+					var rateTableInfo: DataTables.Settings;
+					var rateTable: DataTables.DataTable;
+					if (hasRateTable) {
+						// Rate table options
+						rateTableOptions = settings.buildOptions.fields[rateTableIndex].dataTableOptions;
+						rateTableOptions.exclude = rateTableOptions.exclude || [];
+
+						// Variable for initializing the DataTable
+						rateTableInfo = {
+							data: getFilteredRateTableData()
+							, stripeClasses: ['ratetable-strip1', 'ratetable-strip2']
+							, paging: false
+							, info: false
+							, searching: false
+							, columns: []
+						};
+
+						// Adds the columns to the DataTable
+						for (var colName in lth.mortgageRateDataTable) {
+							var col: IWidgetHelpers.IDataTable.IColumnInfo = lth.mortgageRateDataTable[colName];
+							if (col.column && rateTableOptions.exclude.indexOf(<string>col.column.data) === -1) {
+								rateTableInfo.columns.push(col.column);
+							}
+						}
+
+						// Initializes DataTable
+						rateTable = $(settings.form_rateTable + ' > table').DataTable(rateTableInfo);
+						rateTable.order([0, 'asc']).draw();
+					}
+
+					// Rate Data Display (alternate to DataTable)
+					if (settings.buildOptions && settings.buildOptions.fields) {
+						var rateResultDisplayIndex = lth.GetIndexOfFirstObjectInArray(settings.buildOptions.fields,'field', 'mortgagerateresult')
+						if (rateResultDisplayIndex !== -1) {
+							rateResultDisplay = settings.buildOptions.fields[rateResultDisplayIndex];
+							rateResultDisplay.fieldListOptions.widgetType = lth.widgetType.mortgagerate.id;
+							rateResultDisplay.fieldListOptions.resultWrapperId = lth.mortgageRateFields.mortgagerateresult.fieldTemplate.id + '_' + settings.uniqueQualifier;
+							rateResultDisplay.fieldListOptions.uniqueQualifier = lth.getUniqueQualifier();
+
+							redrawRateDisplay();
 						}
 					}
 
-					// rateTableInfo.columns[0].width = '400px';
-					var rateTable = $(settings.form_rateTable + ' > table').DataTable(rateTableInfo);
-					rateTable.order([0, 'asc']).draw();
-
-					// Updates rate table on change of LoanType
+					// Updates rate table/list on change of LoanType
 					$(settings.form_loanType).change(function() {
-						var updatedRateList = getFilteredRateTableData();
-						rateTable.clear().rows.add(updatedRateList).draw();
+						if (rateTable) {
+							rateTable.clear().rows.add(getFilteredRateTableData()).draw();
+						}
+
+						if (rateResultDisplay) {
+							redrawRateDisplay();
+						}
 					});
 				};
 
@@ -991,131 +974,20 @@ namespace LoanTekWidget {
 					populateRateTable(fakeData);
 				} else {
 					var rateRequest = $.ajax({
-						// method: 'GET'
-						// , url: 'https://partners-pricing-api.loantek.com/v2.2/Mortgage/LoanTek/YjRGazcxU1JxcEdSTXNLZ1QxbXpEVE9UVU5FQjJ2bTM1Rk9wbWNKdDlnVUE1/FullMortgageRequest/Test'
-						// , url: '/test/rate_widget/response.json'
 						method: 'POST'
 						, url: settings.postUrl
 						, dataType: 'json'
 						, contentType: 'application/json'
 						, data: JSON.stringify(mortgageRatePostData)
-						// , data: mortgageRatePostData
 					}).then(function (result) {
-						// window.console && console.log('then success result', result);
-						// var rateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = (result.Submissions && result.Submissions[0] && result.Submissions[0].Quotes && result.Submissions[0].Quotes.length > 0) ? result.Submissions[0].Quotes : [];
 						var rateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[];
 						try {
 							rateList = result.Submissions[0].Quotes;
 						} catch (er) {
 							rateList = [];
 						}
-						// var filteredRateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = [];
-						// Get unique values from ProductTermType
-						// var loanTypes = lth.getUniqueValuesFromArray(['2', '3', '4', '2', '4']);
-						// var loanTypes = lth.getUniqueValuesFromArray([
-						// 	{ name: 'foo' }
-						// 	, { name: 'bar' }
-						// 	, { name: 'foo' }
-						// 	, { name: 'bar' }
-						// ],'name');
-						// var loanTypes = lth.getUniqueValuesFromArray([
-						// 	{ level1: { level2: { level3: { name: 'foo' } } } }
-						// 	, { level1: { level2: { level3: { name: 'bar' } } } }
-						// 	, { level1: { level2: { level3: { name: 'foo' } } } }
-						// 	, { level1: { level2: { level3: { name: 'bar' } } } }
-						// 	, { level1: { level2: { level3: { name: 'foo' } } } }
-						// 	, { level1: { level2: { level3: { name: 'bar2' } } } }
-						// 	, { level1: { level2: { level3: { name: 'foo' } } } }
-						// 	, { level1: { level2: { level3: { name: 'bar2' } } } }
-						// 	, { level1: { level2: { level3: { name: 'bar2' } } } }
-						// 	, { level1: { level2: { level3: { name: 'bar3' } } } }
-						// ],'level1.level2.level3.name');
 
 						populateRateTable(rateList);
-
-						// var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
-						// // loanTypes.sort();
-						// // loanTypes.reverse();
-						// // window.console && console.log('loanTypes', loanTypes);
-
-						// // var sortTest = ['NotSet', 'A1_1', 'F15', 'A5_1', 'A3_1', 'F10', 'A2_1', 'F40', 'F20', 'A7_1', 'F30', 'A10_1', 'F25'];
-						// // sortTest.sort();
-						// // sortTest.reverse();
-						// // window.console && console.log('sortTest', sortTest);
-
-						// // Sets dropdown for Loan Type
-						// $(settings.form_loanType).html('');
-
-						// // for (var iLt = loanTypes.length - 1; iLt >= 0; iLt--) {
-						// // 	var ltype: string = loanTypes[iLt];
-						// // 	var termType: IWidgetHelpers.IProductTermType = lth.ProductTermType[ltype];
-						// // 	$(settings.form_loanType).prepend(el.option().val(termType.name).html(termType.description));
-						// // }
-
-						// // for (var iLt = 0; iLt < loanTypes.length; iLt++) {
-						// // 	var ltype: string = loanTypes[iLt];
-						// // 	var termType: IWidgetHelpers.IProductTermType = lth.ProductTermType[ltype];
-						// // 	$(settings.form_loanType).append(el.option().val(termType.name).html(termType.description));
-						// // }
-
-						// for (var iLt = 0, pttl = lth.ProductTermType.asArray().length; iLt < pttl; iLt++) {
-						// 	var ptt = lth.ProductTermType.asArray()[iLt];
-						// 	if (loanTypes.indexOf(ptt.name) !== -1) {
-						// 		// window.console && console.log('ptt index', ptt.name);
-						// 		$(settings.form_loanType).append(el.option().val(ptt.name).html(ptt.description));
-						// 	}
-						// }
-
-						// // // Get LoanType dropdown value
-						// // window.console && console.log('loantype val', $(settings.form_loanType).val());
-
-						// var datatableFormatPercent = function (data, type, row) {
-						// 	return lth.FormatNumber(data, 3, true, null, '%');
-						// };
-						// var datatableFormatCurrency = function (data, type, row) {
-						// 	return lth.FormatNumber(data, 2, true, '$');
-						// };
-
-						// var datatableFormatPoints = function (data, type, row) {
-						// 	return lth.FormatNumber(data, 3, true);
-						// };
-
-						// var getFilteredRateTableData = function () {
-						// 	var loanTypeValue = $(settings.form_loanType).val();
-						// 	var returnFilteredRates: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
-						// 	return returnFilteredRates;
-						// }
-
-						// // Initializes table for first time
-						// // $(settings.form_rateTable).empty().append(el.table().addClass('table').attr('width', '100%').attr('cellpadding','0').attr('cellspacing', '0'));
-						// var rateTable = $(settings.form_rateTable + ' > table').DataTable({
-						// 	data: getFilteredRateTableData()
-						// 	, stripeClasses: ['ratetable-strip1', 'ratetable-strip2']
-						// 	, paging: false
-						// 	, info: false
-						// 	, searching: false
-						// 	, columns: [
-						// 		{ "data": "InterestRate", render: datatableFormatPercent, title: 'Rate', className: 'ratetable-rate' }
-						// 		, { "data": "APR", render: datatableFormatPercent, title: 'APR', className: 'ratetable-apr' }
-						// 		, { "data": "FinalFees", render: datatableFormatCurrency, title: 'Loan Fees', className: 'ratetable-loanfees' }
-						// 		, { "data": "PIP", render: datatableFormatCurrency, title: 'Payment', className: 'ratetable-payment' }
-						// 		, { "data": "CalcPrice", render: datatableFormatPoints, title: 'Points', className: 'ratetable-points' }
-						// 		// , { "data": "TermInMonths", title: 'Months', className: 'ratetable-months' }
-						// 	]
-						// });
-						// rateTable.order([0, 'asc']).draw();
-
-						// // Updates rate table on change of LoanType
-						// $(settings.form_loanType).change(function() {
-						// 	// window.console && console.log('change loantype', $(settings.form_loanType).val());
-						// 	// var loanTypeValue = $(settings.form_loanType).val();
-						// 	// var filteredRateList: IWidgetHelpers.IRateTable.IMortgageLoanQuote[] = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
-						// 	var updatedRateList = getFilteredRateTableData();
-						// 	rateTable.clear().rows.add(updatedRateList).draw();
-						// 	// window.console && console.log('array lengths', rateList.length, filteredRateList.length);
-						// });
-
-						// // $(settings.form_loanType).trigger('change');
 					}, function (error) {
 						try {
 							window.console && console.error('Error: ', error.responseJSON.Message);
@@ -1123,31 +995,6 @@ namespace LoanTekWidget {
 							window.console && console.error('Error getting rates', error);
 						}
 					});
-
-					// ddRequest.done(function (result) {
-					// 	window.console && console.log('result of dropdown data', result);
-					// 	// var fakeResultForLoanTypeDropdown = [
-					// 	// 	{ value: '30yearFixed', name: '30 year Fixed' }
-					// 	// 	, { value: '15yearFixed', name: '15 year Fixed' }
-					// 	// 	, { value: '5yearARM', name: '5/1 ARM' }
-					// 	// ];
-					// 	// if (fakeResultForLoanTypeDropdown.length > 0) {
-					// 	// 	$(settings.form_loanType).html('');
-					// 	// }
-					// 	// $.each(fakeResultForLoanTypeDropdown, function (i, type) {
-					// 	// 	$(settings.form_loanType).append(el.option().val(type.value).html(type.name));
-					// 	// });
-					// });
-
-					// ddRequest.fail(function (error) {
-					// 	window.console && console.error('Error getting dropdown data', error);
-					// });
-
-					// // On change of Loan Type
-					// $(settings.form_loanType).change(function(event) {
-					// 	window.console && console.log('LoanType changed');
-					// 	// getRateData();
-					// });
 				}
 			});
 		}
@@ -1157,7 +1004,7 @@ namespace LoanTekWidget {
 		private settings: IWidgetHelpers.IResultBuildOptions;
 		private lth: LoanTekWidget.helpers;
 		constructor(lth: LoanTekWidget.helpers, options: IWidgetHelpers.IResultBuildOptions) {
-			// window.console && console.log('resultBuilder constructor: ', options);
+			var isUpdatedResultWrapperId = !!(options.resultWrapperId);
 			var _settings: IWidgetHelpers.IResultBuildOptions = {
 				resultWrapperId: 'ltWidgetResultWrapper'
 				, noDataMessageWrapperId: 'ltwNoDataMessageWrapper'
@@ -1168,8 +1015,10 @@ namespace LoanTekWidget {
 			lth.$.extend(_settings, options)
 
 			if (_settings.uniqueQualifier && _settings.uniqueQualifier.length > 0) {
-				_settings.resultWrapperId += '_' + _settings.uniqueQualifier;
 				_settings.noDataMessageWrapperId += '_' + _settings.uniqueQualifier;
+				if (!isUpdatedResultWrapperId) {
+					_settings.resultWrapperId += '_' + _settings.uniqueQualifier;
+				}
 			}
 
 			this.settings = _settings;
@@ -1188,7 +1037,7 @@ namespace LoanTekWidget {
 			if (settings.widgetType === _thisM.lth.widgetType.mortgagequote.id) {
 				resultHelperType = 'mortgageQuoteResultFields';
 			} else if (settings.widgetType === lth.widgetType.mortgagerate.id) {
-				resultHelperType = 'rateResultFields';
+				resultHelperType = 'mortgageRateResultFields';
 			} else if (settings.widgetType === lth.widgetType.deposit.id) {
 				resultHelperType = 'depositResultFields';
 			} else if (settings.widgetType === lth.widgetType.autoquote.id) {
@@ -1198,11 +1047,8 @@ namespace LoanTekWidget {
 			}
 
 			settings.fieldHelperType = resultHelperType;
-			// window.console && console.log('resultBuilder settings', settings);
-			// window.console && console.log('resultHelperType', resultHelperType);
 
 			var resultsForm = el.form();
-			// window.console && console.log('2. REsults buildFields', settings);
 			var resultsForm2 = buildTools.BuildFields(resultsForm, settings);
 			var resultsFormStyles: string = new LoanTekWidget.ApplyFormStyles(lth, settings, true, '.' + lth.defaultResultSpecifierClass + '_' + settings.uniqueQualifier).getStyles();
 			if (resultsFormStyles) {
@@ -1213,6 +1059,9 @@ namespace LoanTekWidget {
 			if (_thisM.settings.showBuilderTools) {
 				widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editResultInfo'));
 			}
+
+			// Enables dropdown for results
+			$('.lt-dd-toggle').dropdown();
 		}
 	}
 
@@ -1224,9 +1073,6 @@ namespace LoanTekWidget {
 		}
 
 		BuildFields(mainWrapper: JQuery, options: IWidgetHelpers.IBuildOptions, data?: any): JQuery {
-			// window.console && console.log('in BuildFields\n- mainWrapper:', mainWrapper);
-			// window.console && console.log('- options', options);
-			// window.console && console.log('- data', data);
 			var _thisM = this;
 			var lth = this.lth;
 			var $ = lth.$;
@@ -1261,13 +1107,11 @@ namespace LoanTekWidget {
 			// First transform each template (must be done first because during the main loop it looks forward to the next element sometimes)
 			$.each(settings.fields, function (i, elementItem) {
 				if (elementItem.field) {
-					// window.console && console.log('widget.buildfields each settings.fieldHelperType', settings.fieldHelperType, elementItem);
 					settings.fields[i] = lth.ExtendWidgetFieldTemplate(elementItem, settings.fieldHelperType);
 				}
 			});
 
 			$.each(settings.fields, function (fieldIndex, elementItem) {
-				// elementItem.element === 'repeat' && window.console && console.log('buildField elementItem', elementItem, '\ndata:', data);
 				var useRowInsteadOfFormGroup = elementItem.field === 'label' ? true : false;
 
 				if (elementItem.id && !lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
@@ -1290,7 +1134,6 @@ namespace LoanTekWidget {
 
 				if (elementItem.element === 'repeat') {
 					if (elementItem.field === 'autoquoteclientfees') {
-						// window.console && console.log('builder => repeat.autoquoteclientfees data', data);
 						elementItem.fieldData = data['ClientFees'];
 					}
 				}
@@ -1318,35 +1161,11 @@ namespace LoanTekWidget {
 
 						// Removes 'data-lt-assign-additional-info-key' if it was added before... Must remove old one before adding again
 						lth.RemoveObjectFromArray(elementItem.attrs, 'name', 'data-lt-assign-additional-info-key');
-						// window.console && console.log('bef elementItem.attrs.length', elementItem.attrs.length);
-						// for (var iAttrs = elementItem.attrs.length - 1; iAttrs >= 0; iAttrs--) {
-						// 	var attr = elementItem.attrs[iAttrs];
-						// 	if (attr.name === 'data-lt-assign-additional-info-key') {
-						// 		elementItem.attrs.splice(iAttrs, 1);
-						// 	}
-						// }
 
 						// Adds 'data-lt-assign-additional-info-key'
 						elementItem.attrs.push({ name: 'data-lt-assign-additional-info-key', value: lth.Interpolate(`{ fieldIndex: #{fi}, editInfo: #{eInfo} }`, { fi: fieldIndex+'', eInfo: editInfo }) });
-						// window.console && console.log('aft elementItem.attrs.length', elementItem.attrs.length);
 					}
 				}
-
-				// if (elementItem.element === 'widget' && settings.showBuilderTools) {
-				// 	//
-				// }
-
-				// if (elementItem.element === 'datatable') {
-				// 	window.console && console.log('datatable item', elementItem);
-				// 	var tableEl: JQuery = el.table().addClass('table').attr('width', '100%').attr('cellpadding','0').attr('cellspacing', '0');
-				// }
-
-				// if (elementItem.field === 'emailwidget') {
-				// 	elementItem.id = elementItem.id || 'ltwEmailWidget_' + fieldIndex;
-				// 	if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
-				// 		elementItem.id += '_' + settings.uniqueQualifier;
-				// 	}
-				// }
 
 				nextIndex = fieldIndex + 1;
 				do {
@@ -1360,11 +1179,32 @@ namespace LoanTekWidget {
 				if (isHidden) {
 					mainWrapper.append(_thisM.CreateFormElement(elementItem));
 				} else {
+					var appendBuilderTools = function (currentCell) {
+						var passData = { index: fieldIndex, channel: settings.widgetChannel };
+						var passString = JSON.stringify(passData);
+						currentCell.addClass('ltw-builder-tools-field').prepend(
+							el.div().addClass('ltw-tool-field-update')
+								.attr('data-lt-field-edit-tool', passString)
+								.attr('data-lt-field-edit-tool-data', 'editFieldData')
+						);
+
+						if (!isSingleRow) {
+							currentCell.addClass('ltw-builder-tools-multi-cell-row');
+						}
+					};
+
+					var appendMoveTools = function (currentCell) {
+						currentCell.prepend(el.div().addClass('move-hover'));
+
+						currentCell.attr('data-drop', 'true')
+							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\')' }`, { pdi: '' + fieldIndex, channel: settings.widgetChannel }))
+							.attr('data-jqyoui-options', lth.Interpolate(`{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}`, { channel: settings.widgetChannel }));
+					};
+
 					// Create row
 					if (!row) {
 						columnCount = 0
 						if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
-							// window.console && console.log('elementItem', useRowInsteadOfFormGroup, elementItem);
 							row = el.formGroup(elementItem.size, useRowInsteadOfFormGroup);
 							isSingleRow = true;
 						} else {
@@ -1409,28 +1249,6 @@ namespace LoanTekWidget {
 
 					if (elementItem.offsetCols > 0) {
 						cell.addClass('col-sm-offset-' + elementItem.offsetCols);
-					}
-
-					function appendBuilderTools(currentCell) {
-						var passData = { index: fieldIndex, channel: settings.widgetChannel };
-						var passString = JSON.stringify(passData);
-						currentCell.addClass('ltw-builder-tools-field').prepend(
-							el.div().addClass('ltw-tool-field-update')
-								.attr('data-lt-field-edit-tool', passString)
-								.attr('data-lt-field-edit-tool-data', 'editFieldData')
-						);
-
-						if (!isSingleRow) {
-							currentCell.addClass('ltw-builder-tools-multi-cell-row');
-						}
-					}
-
-					function appendMoveTools(currentCell) {
-						currentCell.prepend(el.div().addClass('move-hover'));
-
-						currentCell.attr('data-drop', 'true')
-							.attr('data-jqyoui-droppable', lth.Interpolate(`{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\')' }`, { pdi: '' + fieldIndex, channel: settings.widgetChannel }))
-							.attr('data-jqyoui-options', lth.Interpolate(`{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}`, { channel: settings.widgetChannel }));
 					}
 
 					isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
@@ -1547,10 +1365,8 @@ namespace LoanTekWidget {
 
 			// Replaces placeholder text in DOM with data
 			if (data) {
-				// window.console && console.log('data replace:', data);
 				for (var dataName in data) {
 					if (typeof data[dataName] === 'number') {
-						// window.console && console.log('dItem', dataName, data[dataName]);
 						data[dataName] += '';
 					}
 
@@ -1560,7 +1376,6 @@ namespace LoanTekWidget {
 				}
 				mainWrapper.each(function(index, element) {
 					lth.ModifyTextElementsInDOM(element, function(nodeValue: string) {
-						// window.console && console.log('data', data);
 						return lth.Interpolate(nodeValue, data);
 					});
 				});
@@ -1579,10 +1394,13 @@ namespace LoanTekWidget {
 			var checkboxLabel: JQuery = null;
 			var checkboxIcon: JQuery = null;
 			var checkboxText: JQuery = null;
+			var dropdownBtn: JQuery = null;
+			var dropdownBtnUl: JQuery = null;
 			switch (elementObj.element) {
 				case 'title':
 					elementObj.nsize = elementObj.nsize || lth.hsize.getDefault().id;
 					returnElement = el.h(elementObj.nsize);
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					returnElement.html(elementObj.value + '');
 					break;
 				case 'label':
@@ -1594,14 +1412,16 @@ namespace LoanTekWidget {
 				case 'p':
 					elementObj.value = elementObj.value || ' ';
 					returnElement = el.p();
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					returnElement.html(elementObj.value + '');
 					break;
 				case 'hr':
 					returnElement = el.hr();
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					break;
 				case 'button':
 					returnElement = el.button(elementObj.type ? elementObj.type : 'button');
-					elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+					elementObj.cssClass = elementObj.cssClass ? 'btn btn-default ' + elementObj.cssClass : 'btn btn-default';
 					elementObj.value = elementObj.value ? elementObj.value : 'OK';
 					returnElement.addClass(elementObj.cssClass).html(elementObj.value + '');
 					break;
@@ -1658,31 +1478,7 @@ namespace LoanTekWidget {
 								returnElement.append(el.option().val(amnt.value).html(amnt.name));
 							});
 							break;
-						// case 'loantype':
-						// 	var loanTypeList = [
-						// 		{ value: '30yearFixed', name: '30 year Fixed' }
-						// 		, { value: '15yearFixed', name: '15 year Fixed' }
-						// 		, { value: '5yearARM', name: '5/1 ARM' }
-						// 	];
-						// 	$.each(loanTypeList, function (i, type) {
-						// 		returnElement.append(el.option().val(type.value).html(type.name));
-						// 	});
-						// 	break;
 						case 'desiredloanprogram':
-							// var desiredLoanProgramList = [
-							// 	{ value: '30yearFixed', name: '30 year Fixed' }
-							// 	, { value: '25yearFixed', name: '25 year Fixed' }
-							// 	, { value: '20yearFixed', name: '20 year Fixed' }
-							// 	, { value: '15yearFixed', name: '15 year Fixed' }
-							// 	, { value: '10yearFixed', name: '10 year Fixed' }
-							// 	, { value: '10yearARM', name: '10 year ARM' }
-							// 	, { value: '7yearARM', name: '7 year ARM' }
-							// 	, { value: '5yearARM', name: '5 year ARM' }
-							// 	, { value: '3yearARM', name: '3 year ARM' }
-							// ];
-							// $.each(desiredLoanProgramList, function (i, program) {
-							// 	returnElement.append(el.option().val(program.value).html(program.name));
-							// });
 							var desiredLoanProgramList = lth.ProductTermType.asArray();
 							desiredLoanProgramList.splice(0,1);
 							$.each(desiredLoanProgramList, function (i, program) {
@@ -1718,7 +1514,7 @@ namespace LoanTekWidget {
 					returnElement = el.input(elementObj.type);
 					switch (elementObj.type) {
 						case 'button':
-							elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+							elementObj.cssClass = elementObj.cssClass ? 'btn btn-default ' + elementObj.cssClass : 'btn btn-default';
 							elementObj.value = elementObj.value ? elementObj.value : 'OK';
 							returnElement.val(elementObj.value);
 							break;
@@ -1730,14 +1526,17 @@ namespace LoanTekWidget {
 							checkboxLabel = el.label('');
 							checkboxIcon = el.i().addClass('checkbox-i');
 							checkboxText = el.span();
-							//if (elementObj.value) { returnElement.val(elementObj.value); }
 							break;
 						default:
 							returnElement.addClass('form-control');
 							if (elementObj.value || lth.isNumber(elementObj.value)) { returnElement.val(elementObj.value); }
 							break;
 					}
-					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
+					if (elementObj.type === 'checkbox') {
+						if (elementObj.cssClass) { checkboxWrapper.addClass(elementObj.cssClass); }
+					} else {
+						if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
+					}
 					break;
 				case 'captcha':
 					var settings = {
@@ -1789,6 +1588,7 @@ namespace LoanTekWidget {
 								)
 							)
 					);
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					break;
 				case 'repeat':
 					elementObj.fieldListOptions = elementObj.fieldListOptions || { fields: [] };
@@ -1813,16 +1613,20 @@ namespace LoanTekWidget {
 							elementObj.fieldListOptions.fields.push({ field: 'paragraph', value: '[edit Client Fees section]' });
 						}
 					}
+					if (elementObj.field === 'mortgageratedatalist') {
+						elementObj.fieldListOptions.fieldHelperType = 'mortgageRateDataDisplay';
+						if (elementObj.fieldListOptions.fields.length === 0) {
+							elementObj.fieldListOptions.fields.push({ field: 'paragraph', value: '[edit Rate Data section]', backgroundColor: '#f00', color: '#fff' });
+						}
+					}
 					var classQualifier: number = Math.ceil((Math.random()*100000));
 					var repeatElementClass = 'ltw-repeat-data' + classQualifier;
 					returnElement = el.div().addClass(repeatElementClass);
-					// window.console && console.log('repeat returnElement:', returnElement, '\n', elementObj);
-					// window.console && console.log('repeat elementObj.fieldData', elementObj.fieldData, elementObj);
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					if (elementObj.fieldData) {
 						for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
 							var dataItem = elementObj.fieldData[dataIndex];
 							var resultDataRow = el.div().addClass('widget-results-repeat-section');
-							// window.console && console.log('3. CreateElem case repeat BuildFields', elementObj.fieldListOptions);
 							resultDataRow = _thisM.BuildFields(resultDataRow, elementObj.fieldListOptions, dataItem);
 							returnElement.append(resultDataRow);
 
@@ -1831,19 +1635,15 @@ namespace LoanTekWidget {
 								resultDataRow.prepend(el.style().html(applyFormStyles));
 							}
 						}
-					// } else {
-					// 	window.console && console.log('no data for', elementObj);
 					}
 					break;
 				case 'widget':
-					// window.console && console.log('case is widget for element and type is: ', elementObj.type);
 					returnElement = el.div();
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
 					if (elementObj.widgetInfo) {
 						var widgetCode = lth.BuildWidgetScript(elementObj.widgetInfo);
-						// window.console && console.log('widgetCode: ', widgetCode);
 						returnElement.html(widgetCode);
 					} else {
-						// returnElement.addClass('lt-assign-widget-info').html('<br /><br />');
 						returnElement.html('[please edit to choose widget]');
 					}
 					break;
@@ -1864,6 +1664,16 @@ namespace LoanTekWidget {
 						}
 					}
 					returnElement = el.div().addClass('table-responsive').append(tableEl);
+					if (elementObj.cssClass) { returnElement.addClass(elementObj.cssClass); }
+					break;
+				case 'buttondropdown':
+					returnElement = el.div().addClass('dropdown');
+					dropdownBtn = el.button().addClass('btn btn-default lt-dd-toggle').attr({ 'data-toggle': 'dropdown', 'aria-haspopup': 'true', 'aria-expanded': 'false' });
+					dropdownBtnUl = el.ul().addClass('dropdown-menu ' + elementObj.field + 'ul');
+					elementObj.cssClass = elementObj.cssClass ? elementObj.cssClass : '';
+					elementObj.value = elementObj.value ? elementObj.value + ' ' : 'Sort ';
+					dropdownBtn.addClass(elementObj.cssClass).html(elementObj.value.toString());
+					dropdownBtn.append(el.span().addClass('caret'));
 					break;
 				default:
 					elementObj.value = elementObj.value || ' ';
@@ -1887,6 +1697,8 @@ namespace LoanTekWidget {
 				if (elementObj.color) {
 					if (checkboxWrapper) {
 						checkboxWrapper.css({ color: elementObj.color });
+					} else if (dropdownBtn) {
+						dropdownBtn.css({ color: elementObj.color });
 					} else {
 						returnElement.css({ color: elementObj.color });
 					}
@@ -1895,6 +1707,8 @@ namespace LoanTekWidget {
 				if (elementObj.fontSize) {
 					if (checkboxWrapper) {
 						checkboxWrapper.css({ fontSize: elementObj.fontSize + 'px' });
+					} else if (dropdownBtn) {
+						dropdownBtn.css({ fontSize: elementObj.fontSize + 'px' });
 					} else {
 						returnElement.css({ fontSize: elementObj.fontSize + 'px' });
 					}
@@ -1908,6 +1722,8 @@ namespace LoanTekWidget {
 						default:
 							if (checkboxWrapper) {
 								checkboxWrapper.css({ backgroundColor: elementObj.backgroundColor });
+							}  else if (dropdownBtn) {
+								dropdownBtn.css({ backgroundColor: elementObj.backgroundColor });
 							} else {
 								returnElement.css({ backgroundColor: elementObj.backgroundColor });
 							}
@@ -1918,6 +1734,8 @@ namespace LoanTekWidget {
 				if (lth.isNumber(elementObj.borderRadius)) {
 					if (checkboxWrapper) {
 						checkboxWrapper.css({ borderRadius: elementObj.borderRadius + 'px' });
+					} else if (dropdownBtn) {
+						dropdownBtn.css({ borderRadius: elementObj.borderRadius + 'px' });
 					} else {
 						returnElement.css({ borderRadius: elementObj.borderRadius + 'px' });
 					}
@@ -1934,13 +1752,14 @@ namespace LoanTekWidget {
 							// break;
 						default:
 							if (checkboxWrapper) {
-								checkboxWrapper.css({ borderColor: elementObj.borderColor });
+								checkboxWrapper.css({ borderWidth: '1px', borderStyle: 'solid', borderColor: elementObj.borderColor });
+							} else if (dropdownBtn) {
+								dropdownBtn.css({ borderColor: elementObj.borderColor });
 							} else {
 								returnElement.css({ borderColor: elementObj.borderColor });
 							}
 							break;
 					}
-					// returnElement.css({ borderColor: elementObj.borderColor });
 				}
 
 				if (lth.isNumber(elementObj.padding)) {
@@ -1978,6 +1797,8 @@ namespace LoanTekWidget {
 							if (styleKey && styleValue) {
 								if (checkboxWrapper) {
 									checkboxWrapper.css(styleKey, styleValue);
+								} else if (dropdownBtn) {
+									dropdownBtn.css(styleKey, styleValue);
 								} else {
 									returnElement.css(styleKey, styleValue);
 								}
@@ -2050,6 +1871,9 @@ namespace LoanTekWidget {
 									break;
 							}
 							break;
+						case 'buttondropdown':
+							dropdownBtn.addClass('btn-' + elementObj.size);
+							break;
 						default:
 							// code...
 							break;
@@ -2065,11 +1889,12 @@ namespace LoanTekWidget {
 			}
 
 			if (checkboxWrapper) {
-				checkboxLabel.append(returnElement);
-				checkboxLabel.append(checkboxIcon);
-				checkboxLabel.append(checkboxText);
-				checkboxWrapper.append(checkboxLabel);
-				returnElement = checkboxWrapper;
+				checkboxLabel.append(returnElement).append(checkboxIcon).append(checkboxText);
+				returnElement = checkboxWrapper.append(checkboxLabel);
+			}
+
+			if (dropdownBtn) {
+				returnElement.append(dropdownBtn).append(dropdownBtnUl);
 			}
 
 			return returnElement;

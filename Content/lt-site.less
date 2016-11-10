@@ -5,32 +5,7 @@
 
 @import 'less/lt/bootstrap-mods.less';
 @import 'less/lt/datatable-mods.less';
-
-// // Bootstrap override (use sparingly and try to use custom classes)
-// .form-horizontal {
-// 	.form-group-sm {
-// 		.checkbox {
-// 			padding-top: 3px;
-// 		}
-// 	}
-// 	.control-label {
-// 		&.text-left {
-// 			text-align: left;
-// 		}
-// 	}
-// }
-
-// .table-no-heading {
-// 	tbody {
-// 		> tr {
-// 			&:first-child {
-// 				> td {
-// 					border-top: none;
-// 				}
-// 			}
-// 		}
-// 	}
-// }
+@import 'less/lt/misc-mods.less';
 
 .lt-breadcrumb {
 	color: @breadcrumb-color;
@@ -68,7 +43,6 @@ html.html-footer-sticky {
 
 // Page Header
 .page-head {
-	// margin-bottom: 20px;
 	border-bottom: 4px solid @navbar-default-border;
 	> .page-head-menu {
 		.navbar {
@@ -163,9 +137,6 @@ html.html-footer-sticky {
 			background-color: @dropdown-bg;
 			border: 1px solid @dropdown-fallback-border; // IE8 fallback
 			border: 1px solid @dropdown-border;
-			// .box-shadow(0 6px 12px rgba(0,0,0,.175));
-			// .box-shadow(4px 4px #EEEEEE);
-			// .box-shadow(2px 2px rgba(0,0,0,.175));
 			.box-shadow(@box-shadow);
 
 			> li {
@@ -246,11 +217,6 @@ html.html-footer-sticky {
 		.simple-icon-pad();
 	}
 }
-
-// // Margins
-// .m-b-0 {
-// 	margin-bottom: 0;
-// }
 
 // Other
 .pre-code {

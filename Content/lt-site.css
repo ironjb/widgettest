@@ -30,7 +30,9 @@
   padding-left: 0;
 }
 .checkbox-fa label input[type=checkbox] {
-  display: none;
+  margin-left: 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
 }
 .checkbox-fa label input[type=checkbox] + .checkbox-i {
   display: inline-block;
@@ -103,6 +105,11 @@ table.table-fa-sort thead .sorting_asc::after {
 }
 table.table-fa-sort thead .sorting_desc::after {
   content: '\f0dd';
+}
+.fa-xs,
+.btn-xs .fa-size {
+  width: 10px;
+  font-size: 11px;
 }
 .lt-breadcrumb {
   color: #888;

@@ -21,6 +21,7 @@ namespace LoanTekWidget {
 				DebtToIncome?: number;
 				IsBusinessLoan?: boolean;
 				IsMember?: boolean;
+				CustomData?: { Name: string; Value: string; }[];
 			}
 		};
 		CustomQuoteResponseJson: any;

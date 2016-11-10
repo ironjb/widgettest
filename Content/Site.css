@@ -93,6 +93,12 @@ textarea {
   cursor: not-allowed;
   opacity: .5;
 }
+.k-grid .k-grid-header .k-header .k-link {
+  height: auto;
+}
+.k-grid .k-grid-header .k-header {
+  white-space: normal;
+}
 .lt-spinner {
   width: 100px;
   height: 100px;

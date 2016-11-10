@@ -1,0 +1,30 @@
+@import url('https://modules.loantek.com/Content/kendo/KendoBundle.min.css');
+.k-grid .k-grid-header .k-header .k-link {
+  height: auto;
+}
+.k-grid .k-grid-header .k-header {
+  white-space: normal;
+}
+/* full width on Kendo pages */
+.container.content {
+  min-width: 96% !important;
+  max-width: 96% !important;
+  width: 96% !important;
+}
+.alert {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.panel {
+  border: none;
+}
+.panel-heading {
+  border: 1px solid #aaa;
+}
+/* Needed to force the same color button when part of a 'input-add-on' */
+.btn-primary {
+  color: #fff !important;
+  background-color: #1E376D !important;
+  border-color: #182d59 !important;
+}

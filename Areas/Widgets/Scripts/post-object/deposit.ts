@@ -6,12 +6,14 @@ namespace LoanTekWidget {
 		PassThroughItems: any;
 		DepositRequest: {
 			RequestId: number;
-			ForType: number;
-			QuotingChannelType: number;
-			Amount: number;
-			TermInMonths: number;
-			CustomData: { Name: string; Value: string; }[];
-			CustomFields: any[];
+			Form: {
+				ForType: number;
+				QuotingChannelType: number;
+				Amount: number;
+				TermInMonths: number;
+				CustomData?: { Name: string; Value: string; }[];
+				CustomFields?: any[];
+			}
 		};
 		CustomQuoteResponseJson: any;
 		constructor() {
@@ -21,12 +23,12 @@ namespace LoanTekWidget {
 			this.PassThroughItems = null;
 			this.DepositRequest = {
 				RequestId: null,
-				ForType: null,
-				QuotingChannelType: 0,
-				Amount: null,
-				TermInMonths: null,
-				CustomData: null,
-				CustomFields: null
+				Form: {
+					ForType: 130,	// 130 or 'DepositCd'
+					QuotingChannelType: 3,	// 3 or 'Loantek'
+					Amount: null,
+					TermInMonths: null
+				}
 			};
 			this.CustomQuoteResponseJson = null;
 		}

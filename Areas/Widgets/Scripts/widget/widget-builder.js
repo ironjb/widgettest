@@ -19,6 +19,8 @@ var LoanTekWidget;
                 widgetObj.widgetType = lth.widgetType.mortgagerate.id;
                 widgetObj.allFieldsObject = lth.mortgageRateFields;
                 widgetObj.allFieldsOptionsArray = lth.mortgageRateFields.asArray();
+                widgetObj.allResultFieldsObject = lth.mortgageRateResultFields;
+                widgetObj.allResultFieldsOptionsArray = lth.mortgageRateResultFields.asArray();
             }
             else if (widgetData.modelWidget.WidgetType.toLowerCase() === 'depositwidget') {
                 widgetObj.fieldHelperType = 'depositFields';
@@ -59,6 +61,7 @@ var LoanTekWidget;
                         widgetScripts = [
                             '/Scripts/lib/jquery-1/jquery.min.js',
                             '/Scripts/lib/jquery/jquery.placeholder.min.js',
+                            '/Scripts/lib/bootstrap/bootstrap.min.js',
                             '/Scripts/lib/datatables/jquery.dataTables.min.js',
                             '/Scripts/lib/datatables/dataTables.bootstrap.min.js',
                             '/Areas/Widgets/Scripts/post-object/contact.js',
@@ -111,7 +114,7 @@ var LoanTekWidget;
                             var cIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.buildObject.fields, 'field', field.id);
                             field.isIncluded = !!(cIndex >= 0);
                         }
-                        if ($scope.allResultFieldsOptionsArray) {
+                        if ($scope.allResultFieldsOptionsArray && $scope.currentForm.resultObject) {
                             for (var j = $scope.allResultFieldsOptionsArray.length - 1; j >= 0; j--) {
                                 var rField = $scope.allResultFieldsOptionsArray[j];
                                 var rIndex = lth.GetIndexOfFirstObjectInArray($scope.currentForm.resultObject.fields, 'field', rField.id);
@@ -305,7 +308,7 @@ var LoanTekWidget;
                             var fieldExt = lth.ExtendWidgetFieldTemplate(field, fieldHelperType);
                             if (typeof field.value === 'undefined') {
                                 if (widgetData.modelUiFields && Array.isArray(widgetData.modelUiFields)) {
-                                    var fieldExtId = fieldExt.field.replace(/hidden$/, '');
+                                    var fieldExtId = fieldExt.field.replace(/hidden$/, '').replace(/_d_/g, '.');
                                     var uiFieldIndex = lth.GetIndexOfFirstObjectInArray(widgetData.modelUiFields, 'Name', fieldExtId, true);
                                     if (uiFieldIndex !== -1) {
                                         var currentUiField = angular.copy(widgetData.modelUiFields[uiFieldIndex]);
@@ -379,7 +382,7 @@ var LoanTekWidget;
                         }
                         var initialScripts = '';
                         var initialScriptsDisplay = '';
-                        var scriptHelpersCode = "\n\t\t\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\t\t\t\tvar ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);\n\t\t\t\t\t\t\tvar ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);\n\t\t\t\t\t\t</script>";
+                        var scriptHelpersCode = "\n\t\t\t\t\t\t<script type=\"text/javascript\">\n\t\t\t\t\t\t\tvar ltw_ltjq = ltw_ltjq || jQuery.noConflict(true);\n\t\t\t\t\t\t\tvar ltw_lthlpr = new LoanTekWidget.helpers(ltw_ltjq);\n\t\t\t\t\t\t\tltw_ltjq(document).off('.data-api');\n\t\t\t\t\t\t</script>";
                         for (var iScript = 0, lScript = widgetScripts.length; iScript < lScript; iScript++) {
                             var scriptSrc = widgetScripts[iScript];
                             var scriptLink = lth.Interpolate('\n<script type="text/javascript" src="#{src}"></script>', { src: wwwRoot + scriptSrc });

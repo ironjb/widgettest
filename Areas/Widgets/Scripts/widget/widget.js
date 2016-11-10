@@ -29,6 +29,14 @@ var LoanTekWidget;
                 settings.errorMessageWrapperId += '_' + settings.uniqueQualifier;
                 settings.errrorMessageId += '_' + settings.uniqueQualifier;
             }
+            $(document).click(function () {
+                $('.lt-dd-toggle').each(function () {
+                    var hasOpen = $(this).parent().hasClass('open');
+                    if (hasOpen) {
+                        $(this).trigger('click.bs.dropdown');
+                    }
+                });
+            });
             var fieldHelperType;
             var el = lth.CreateElement();
             var buildTools = new BuildTools(lth);
@@ -67,9 +75,11 @@ var LoanTekWidget;
             if (settings.showBuilderTools) {
                 widgetWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editFormInfo'));
             }
+            $('.lt-dd-toggle').dropdown();
             if (typeof settings.postDOMCallback === 'function') {
                 settings.postDOMCallback();
             }
+            readyOptions.buildOptions = settings;
             var widgetFunctionality;
             if (settings.widgetType === lth.widgetType.mortgagequote.id) {
                 widgetFunctionality = new MortgageQuoteFunctionality(lth, readyOptions);
@@ -92,6 +102,7 @@ var LoanTekWidget;
     LoanTekWidget.FormBuild = FormBuild;
     var ContactFunctionality = (function () {
         function ContactFunctionality($, lth, options) {
+            var formEl = lth.contactFields;
             var settings = {
                 redirectUrl: null,
                 postUrl: null,
@@ -106,14 +117,18 @@ var LoanTekWidget;
                 form_errorMsgWrapper: '#ltwErrorMessageWrapper',
                 form_errorMsg: '#ltwErrorMessage',
                 AdditionalPostData: null,
-                form_firstName: '#ltwFirstName',
-                form_lastName: '#ltwLastName',
-                form_email: '#ltwEmail',
-                form_phone: '#ltwPhone',
-                form_company: '#ltwCompany',
-                form_state: '#ltwState',
-                form_comments: '#ltwComments',
-                form_successMessageWrapper: '#ltwSuccessMessageWrapper'
+                form_firstName: '#' + formEl.firstname.fieldTemplate.id,
+                form_lastName: '#' + formEl.lastname.fieldTemplate.id,
+                form_email: '#' + formEl.email.fieldTemplate.id,
+                form_phone: '#' + formEl.phone.fieldTemplate.id,
+                form_company: '#' + formEl.company.fieldTemplate.id,
+                form_state: '#' + formEl.state.fieldTemplate.id,
+                form_comments: '#' + formEl.comments.fieldTemplate.id,
+                form_successMessageWrapper: '#ltwSuccessMessageWrapper',
+                form_sourceId: '#' + formEl.source_d_idhidden.fieldTemplate.id,
+                form_sourceName: '#' + formEl.source_d_namehidden.fieldTemplate.id,
+                form_notifyUserOfNewLead: '#' + formEl.notifyuserofnewleadhidden.fieldTemplate.id,
+                form_sendNewLeadInitialWelcomeMessage: '#' + formEl.sendnewleadinitialwelcomemessagehidden.fieldTemplate.id
             };
             $.extend(settings, options);
             var customInputClass = '.lt-custom-input';
@@ -132,7 +147,6 @@ var LoanTekWidget;
                 $(settings.form_id).submit(function (event) {
                     event.preventDefault();
                     $(settings.form_errorMsgWrapper).hide(100);
-                    $(settings.form_submit).prop('disabled', true);
                     if (typeof settings.externalValidatorFunction === 'function' && !settings.externalValidatorFunction()) {
                         $(settings.form_submit).prop('disabled', false);
                         return false;
@@ -146,13 +160,22 @@ var LoanTekWidget;
                     contactPostData.Persons[0].ContactMethods[1].Number = $(settings.form_phone).val();
                     contactPostData.Persons[0].Assets[0].CompanyName = $(settings.form_company).val();
                     contactPostData.Persons[0].Addresses[0].State = $(settings.form_state + ' option:selected').val();
-                    contactPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
+                    contactPostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
                     contactPostData.ClientId = settings.clientId;
                     contactPostData.UserId = settings.userId;
                     contactPostData.Reason = $(settings.form_comments).val();
+                    contactPostData.Source.Id = $(settings.form_sourceId).val();
+                    contactPostData.Source.Name = $(settings.form_sourceName).val();
+                    contactPostData.NotifyUserOfNewLead = $(settings.form_notifyUserOfNewLead).val();
+                    contactPostData.SendNewLeadInitialWelcomeMessage = $(settings.form_sendNewLeadInitialWelcomeMessage).val();
                     contactPostData.MiscData[0].Value = '';
                     $(customInputClass).each(function (customIndex, elem) {
-                        contactPostData.MiscData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
+                        var keyName = $(this).attr('data-lt-additional-info-key');
+                        var customDataCurrentIndex = lth.GetIndexOfFirstObjectInArray(contactPostData.MiscData, 'Name', keyName);
+                        if (customDataCurrentIndex !== -1) {
+                            contactPostData.MiscData.splice(customDataCurrentIndex, 1);
+                        }
+                        contactPostData.MiscData.push({ Name: keyName, Value: $(this).val() });
                     });
                     var request = $.ajax({
                         url: settings.postUrl,
@@ -227,17 +250,9 @@ var LoanTekWidget;
             $(function () {
                 var depositPostData = lth.postObjects.deposit();
                 $(settings.form_submit).prop('disabled', false);
-                var appendDataToDataList = function (fieldList, data) {
-                    for (var flIndex = fieldList.length - 1; flIndex >= 0; flIndex--) {
-                        var fieldItem = fieldList[flIndex];
-                        if (fieldItem.field === 'depositdatalist') {
-                            fieldItem.fieldData = data;
-                        }
-                    }
-                };
                 if (settings.resultDisplayOptions.showBuilderTools) {
                     var fakeData = [lth.FakeData().deposit];
-                    appendDataToDataList(settings.resultDisplayOptions.fields, fakeData);
+                    lth.AppendDataToDataList(settings.resultDisplayOptions.fields, fakeData, 'depositdatalist');
                     var showDepositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
                     showDepositResultBuild.build();
                 }
@@ -253,15 +268,14 @@ var LoanTekWidget;
                         $.extend(true, depositPostData, settings.AdditionalPostData);
                     }
                     depositPostData.UserId = settings.userId;
-                    depositPostData.ClientDefinedIdentifier = 'LTWS' + new Date().getTime();
-                    depositPostData.DepositRequest.ForType = 130;
-                    depositPostData.DepositRequest.TermInMonths = $(settings.form_term).val() * 1;
-                    depositPostData.DepositRequest.Amount = $(settings.form_amount).val() * 1;
+                    depositPostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
+                    depositPostData.DepositRequest.Form.TermInMonths = $(settings.form_term).val() * 1;
+                    depositPostData.DepositRequest.Form.Amount = $(settings.form_amount).val() * 1;
                     if ($(customInputClass).length > 0) {
-                        depositPostData.DepositRequest.CustomData = [];
+                        depositPostData.DepositRequest.Form.CustomData = [];
                     }
                     $(customInputClass).each(function (customIndex, elem) {
-                        depositPostData.DepositRequest.CustomData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
+                        depositPostData.DepositRequest.Form.CustomData.push({ Name: $(this).attr('data-lt-additional-info-key'), Value: $(this).val() });
                     });
                     var request = $.ajax({
                         url: settings.postUrl,
@@ -292,7 +306,7 @@ var LoanTekWidget;
                         else {
                             settings.resultDisplayOptions.showNoDataMessage = true;
                         }
-                        appendDataToDataList(settings.resultDisplayOptions.fields, resultsData);
+                        lth.AppendDataToDataList(settings.resultDisplayOptions.fields, resultsData, 'depositdatalist');
                         var depositResultBuild = new ResultsBuilder(lth, settings.resultDisplayOptions);
                         depositResultBuild.build();
                     });
@@ -346,6 +360,7 @@ var LoanTekWidget;
                 form_neworusedtype: '#' + formEl.neworusedtype.fieldTemplate.id,
                 form_isbusinessloan: '#' + formEl.isbusinessloan.fieldTemplate.id,
                 form_ismember: '#' + formEl.ismember.fieldTemplate.id,
+                form_hasgap: '#' + formEl.hasgapinsurance.fieldTemplate.id,
                 form_noDataMessage: '#' + resultEl.nodatamessage.fieldTemplate.id,
                 resultDisplayOptions: {
                     fieldHelperType: 'autoQuoteResultFields'
@@ -382,13 +397,18 @@ var LoanTekWidget;
                     if (settings.AdditionalPostData) {
                         $.extend(true, autoQuotePostData, settings.AdditionalPostData);
                     }
+                    autoQuotePostData.LoanRequest.Form.CustomData = autoQuotePostData.LoanRequest.Form.CustomData || [];
+                    var gapIndex = lth.GetIndexOfFirstObjectInArray(autoQuotePostData.LoanRequest.Form.CustomData, 'Name', 'GAP');
+                    if (gapIndex !== -1) {
+                        autoQuotePostData.LoanRequest.Form.CustomData.splice(gapIndex, 1);
+                    }
                     autoQuotePostData.UserId = settings.userId;
                     autoQuotePostData.ClientDefinedIdentifier = 'LTWS' + lth.getRandomString();
                     autoQuotePostData.LoanRequest.Form.ForType = $(settings.form_fortype).val();
                     autoQuotePostData.LoanRequest.Form.QuotingChannel = $(settings.form_quotingchannel).val();
                     autoQuotePostData.LoanRequest.Form.Amount = +$(settings.form_amount).val();
                     autoQuotePostData.LoanRequest.Form.TermInMonths = +$(settings.form_terminmonths).val();
-                    autoQuotePostData.LoanRequest.Form.LoanToValue = $(settings.form_amount).val() - $(settings.form_downpayment).val();
+                    autoQuotePostData.LoanRequest.Form.LoanToValue = ($(settings.form_amount).val() - $(settings.form_downpayment).val()) / $(settings.form_amount).val() * 100;
                     autoQuotePostData.LoanRequest.Form.ZipCode = $(settings.form_zipcode).val();
                     autoQuotePostData.LoanRequest.Form.CreditScore = +$(settings.form_creditscore).val();
                     autoQuotePostData.LoanRequest.Form.ModelYear = +$(settings.form_modelyear).val();
@@ -398,6 +418,7 @@ var LoanTekWidget;
                     autoQuotePostData.LoanRequest.Form.NewOrUsedType = $(settings.form_neworusedtype).val();
                     autoQuotePostData.LoanRequest.Form.IsBusinessLoan = $(settings.form_isbusinessloan).val();
                     autoQuotePostData.LoanRequest.Form.IsMember = $(settings.form_ismember).val();
+                    autoQuotePostData.LoanRequest.Form.CustomData.push({ Name: 'GAP', Value: $(settings.form_hasgap).prop('checked') });
                     var request = $.ajax({
                         url: settings.postUrl,
                         method: 'POST',
@@ -528,6 +549,7 @@ var LoanTekWidget;
                 form_email: '#ltwEmail',
                 form_loanType: '#' + formEl.loantype.fieldTemplate.id,
                 form_rateTable: '#' + formEl.ratetable.fieldTemplate.id,
+                form_rateDataDisplay: '#' + formEl.mortgagerateresult.fieldTemplate.id,
                 form_desiredLoanProgram: '#ltwDesiredLoanProgram',
                 form_desiredInterestRate: '#ltwDesiredInterestRate',
                 form_creditScore: '#' + formEl.creditscore.fieldTemplate.id,
@@ -543,6 +565,8 @@ var LoanTekWidget;
             $.extend(true, settings, options);
             $('input, textarea').placeholder({ customClass: 'placeholder-text' });
             var customInputClass = '.lt-custom-input';
+            var rateTableIndex = lth.GetIndexOfFirstObjectInArray(settings.buildOptions.fields, 'field', 'ratetable');
+            var hasRateTable = rateTableIndex !== -1;
             if (!lth.isStringNullOrEmpty(settings.uniqueQualifier)) {
                 for (var paramName in settings) {
                     if (paramName.indexOf('form_') !== -1) {
@@ -568,6 +592,8 @@ var LoanTekWidget;
                 }
                 var populateRateTable = function (rateList) {
                     var loanTypes = lth.getUniqueValuesFromArray(rateList, 'ProductTermType');
+                    var sortColumn = 'InterestRate';
+                    var sortReverse = true;
                     $(settings.form_loanType).html('');
                     for (var iLt = 0, pttl = lth.ProductTermType.asArray().length; iLt < pttl; iLt++) {
                         var ptt = lth.ProductTermType.asArray()[iLt];
@@ -580,25 +606,100 @@ var LoanTekWidget;
                         var returnFilteredRates = lth.getFilteredArray(rateList, loanTypeValue, false, 'ProductTermType');
                         return returnFilteredRates;
                     };
-                    var rateTableInfo = {
-                        data: getFilteredRateTableData(),
-                        stripeClasses: ['ratetable-strip1', 'ratetable-strip2'],
-                        paging: false,
-                        info: false,
-                        searching: false,
-                        columns: []
+                    var sortAndFormatRateTableData = function () {
+                        var returnData = $.merge([], getFilteredRateTableData());
+                        returnData.sort(lth.SortObjectArray(sortColumn, sortReverse));
+                        for (var i = returnData.length - 1; i >= 0; i--) {
+                            var dataItem = returnData[i];
+                            dataItem.InterestRate = typeof dataItem.InterestRate === 'number' ? lth.FormatNumber(dataItem.InterestRate, 3) : dataItem.InterestRate;
+                            dataItem.APR = typeof dataItem.APR === 'number' ? lth.FormatNumber(dataItem.APR, 3) : dataItem.APR;
+                            dataItem.FinalFees = typeof dataItem.FinalFees === 'number' ? lth.FormatNumber(dataItem.FinalFees, 2, true) : dataItem.FinalFees;
+                            dataItem.PIP = typeof dataItem.PIP === 'number' ? lth.FormatNumber(dataItem.PIP, 2, true) : dataItem.PIP;
+                            dataItem.CalcPrice = typeof dataItem.CalcPrice === 'number' ? lth.FormatNumber(dataItem.CalcPrice, 3, true) : dataItem.CalcPrice;
+                        }
+                        return returnData;
                     };
-                    for (var colName in lth.mortgageRateDataTable) {
-                        var col = lth.mortgageRateDataTable[colName];
-                        if (col.column) {
-                            rateTableInfo.columns.push(col.column);
+                    var rateResultDisplay = null;
+                    var redrawRateDisplay = function () {
+                        lth.AppendDataToDataList(rateResultDisplay.fieldListOptions.fields, sortAndFormatRateTableData(), 'mortgageratedatalist');
+                        var mortgageRateResultBuild = new ResultsBuilder(lth, rateResultDisplay.fieldListOptions);
+                        mortgageRateResultBuild.build();
+                        buildSortDropDowns();
+                    };
+                    var buildSortDropDowns = function () {
+                        var mortgageRateDataTableArray = lth.mortgageRateDataTable.asArray();
+                        var sortUl = $('.mortgageratedatasortul');
+                        for (var iSortInfo = 0; iSortInfo < mortgageRateDataTableArray.length; iSortInfo++) {
+                            var sortInfo = mortgageRateDataTableArray[iSortInfo];
+                            var sortInfoClass = 'mortgageratesort_' + sortInfo.column.data;
+                            var sortLink = el.a().attr({ href: '#' }).addClass(sortInfoClass).text(sortInfo.column.title);
+                            if (sortColumn === sortInfo.column.data) {
+                                if (sortReverse) {
+                                    sortLink.prepend(el.span().addClass('pull-right fa fa-sort-asc'));
+                                }
+                                else {
+                                    sortLink.prepend(el.span().addClass('pull-right fa fa-sort-desc'));
+                                }
+                            }
+                            else {
+                                sortLink.prepend(el.span().addClass('pull-right fa fa-sort'));
+                            }
+                            sortLink.data('mortgageratesortcolumn', sortInfo.column.data);
+                            sortUl.append(el.li().append(sortLink));
+                            $('.' + sortInfoClass).click(function (event) {
+                                var sortCol = $(this).data()['mortgageratesortcolumn'];
+                                event.preventDefault();
+                                if (sortColumn === sortCol) {
+                                    sortReverse = !sortReverse;
+                                }
+                                else {
+                                    sortColumn = sortCol;
+                                    sortReverse = true;
+                                }
+                                redrawRateDisplay();
+                            });
+                        }
+                    };
+                    var rateTableOptions;
+                    var rateTableInfo;
+                    var rateTable;
+                    if (hasRateTable) {
+                        rateTableOptions = settings.buildOptions.fields[rateTableIndex].dataTableOptions;
+                        rateTableOptions.exclude = rateTableOptions.exclude || [];
+                        rateTableInfo = {
+                            data: getFilteredRateTableData(),
+                            stripeClasses: ['ratetable-strip1', 'ratetable-strip2'],
+                            paging: false,
+                            info: false,
+                            searching: false,
+                            columns: []
+                        };
+                        for (var colName in lth.mortgageRateDataTable) {
+                            var col = lth.mortgageRateDataTable[colName];
+                            if (col.column && rateTableOptions.exclude.indexOf(col.column.data) === -1) {
+                                rateTableInfo.columns.push(col.column);
+                            }
+                        }
+                        rateTable = $(settings.form_rateTable + ' > table').DataTable(rateTableInfo);
+                        rateTable.order([0, 'asc']).draw();
+                    }
+                    if (settings.buildOptions && settings.buildOptions.fields) {
+                        var rateResultDisplayIndex = lth.GetIndexOfFirstObjectInArray(settings.buildOptions.fields, 'field', 'mortgagerateresult');
+                        if (rateResultDisplayIndex !== -1) {
+                            rateResultDisplay = settings.buildOptions.fields[rateResultDisplayIndex];
+                            rateResultDisplay.fieldListOptions.widgetType = lth.widgetType.mortgagerate.id;
+                            rateResultDisplay.fieldListOptions.resultWrapperId = lth.mortgageRateFields.mortgagerateresult.fieldTemplate.id + '_' + settings.uniqueQualifier;
+                            rateResultDisplay.fieldListOptions.uniqueQualifier = lth.getUniqueQualifier();
+                            redrawRateDisplay();
                         }
                     }
-                    var rateTable = $(settings.form_rateTable + ' > table').DataTable(rateTableInfo);
-                    rateTable.order([0, 'asc']).draw();
                     $(settings.form_loanType).change(function () {
-                        var updatedRateList = getFilteredRateTableData();
-                        rateTable.clear().rows.add(updatedRateList).draw();
+                        if (rateTable) {
+                            rateTable.clear().rows.add(getFilteredRateTableData()).draw();
+                        }
+                        if (rateResultDisplay) {
+                            redrawRateDisplay();
+                        }
                     });
                 };
                 if (settings.showBuilderTools) {
@@ -637,6 +738,7 @@ var LoanTekWidget;
     LoanTekWidget.MortgageRateFunctionality = MortgageRateFunctionality;
     var ResultsBuilder = (function () {
         function ResultsBuilder(lth, options) {
+            var isUpdatedResultWrapperId = !!(options.resultWrapperId);
             var _settings = {
                 resultWrapperId: 'ltWidgetResultWrapper',
                 noDataMessageWrapperId: 'ltwNoDataMessageWrapper',
@@ -645,8 +747,10 @@ var LoanTekWidget;
             };
             lth.$.extend(_settings, options);
             if (_settings.uniqueQualifier && _settings.uniqueQualifier.length > 0) {
-                _settings.resultWrapperId += '_' + _settings.uniqueQualifier;
                 _settings.noDataMessageWrapperId += '_' + _settings.uniqueQualifier;
+                if (!isUpdatedResultWrapperId) {
+                    _settings.resultWrapperId += '_' + _settings.uniqueQualifier;
+                }
             }
             this.settings = _settings;
             this.lth = lth;
@@ -663,7 +767,7 @@ var LoanTekWidget;
                 resultHelperType = 'mortgageQuoteResultFields';
             }
             else if (settings.widgetType === lth.widgetType.mortgagerate.id) {
-                resultHelperType = 'rateResultFields';
+                resultHelperType = 'mortgageRateResultFields';
             }
             else if (settings.widgetType === lth.widgetType.deposit.id) {
                 resultHelperType = 'depositResultFields';
@@ -685,6 +789,7 @@ var LoanTekWidget;
             if (_thisM.settings.showBuilderTools) {
                 widgetResultWrapper.addClass('ltw-builder-tools').prepend(el.div().addClass('ltw-tool-form-update').attr('data-lt-form-edit-tool', 'editResultInfo'));
             }
+            $('.lt-dd-toggle').dropdown();
         };
         return ResultsBuilder;
     }());
@@ -786,6 +891,22 @@ var LoanTekWidget;
                     mainWrapper.append(_thisM.CreateFormElement(elementItem));
                 }
                 else {
+                    var appendBuilderTools = function (currentCell) {
+                        var passData = { index: fieldIndex, channel: settings.widgetChannel };
+                        var passString = JSON.stringify(passData);
+                        currentCell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
+                            .attr('data-lt-field-edit-tool', passString)
+                            .attr('data-lt-field-edit-tool-data', 'editFieldData'));
+                        if (!isSingleRow) {
+                            currentCell.addClass('ltw-builder-tools-multi-cell-row');
+                        }
+                    };
+                    var appendMoveTools = function (currentCell) {
+                        currentCell.prepend(el.div().addClass('move-hover'));
+                        currentCell.attr('data-drop', 'true')
+                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\')' }", { pdi: '' + fieldIndex, channel: settings.widgetChannel }))
+                            .attr('data-jqyoui-options', lth.Interpolate("{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}", { channel: settings.widgetChannel }));
+                    };
                     if (!row) {
                         columnCount = 0;
                         if (elementItem.cols + elementItem.offsetCols >= COLUMNS_IN_ROW) {
@@ -831,22 +952,6 @@ var LoanTekWidget;
                     }
                     if (elementItem.offsetCols > 0) {
                         cell.addClass('col-sm-offset-' + elementItem.offsetCols);
-                    }
-                    function appendBuilderTools(currentCell) {
-                        var passData = { index: fieldIndex, channel: settings.widgetChannel };
-                        var passString = JSON.stringify(passData);
-                        currentCell.addClass('ltw-builder-tools-field').prepend(el.div().addClass('ltw-tool-field-update')
-                            .attr('data-lt-field-edit-tool', passString)
-                            .attr('data-lt-field-edit-tool-data', 'editFieldData'));
-                        if (!isSingleRow) {
-                            currentCell.addClass('ltw-builder-tools-multi-cell-row');
-                        }
-                    }
-                    function appendMoveTools(currentCell) {
-                        currentCell.prepend(el.div().addClass('move-hover'));
-                        currentCell.attr('data-drop', 'true')
-                            .attr('data-jqyoui-droppable', lth.Interpolate("{ index: #{pdi}, onDrop: 'onDrop(#{pdi}, \\'#{channel}\\')' }", { pdi: '' + fieldIndex, channel: settings.widgetChannel }))
-                            .attr('data-jqyoui-options', lth.Interpolate("{accept: '.#{channel}-channel', hoverClass: 'on-drag-hover'}", { channel: settings.widgetChannel }));
                     }
                     isTimeToAddRow = isLastField || columnCount >= COLUMNS_IN_ROW;
                     isSpaceLeftOver = columnCount < COLUMNS_IN_ROW && columnCount + nextFieldCols > COLUMNS_IN_ROW;
@@ -939,10 +1044,15 @@ var LoanTekWidget;
             var checkboxLabel = null;
             var checkboxIcon = null;
             var checkboxText = null;
+            var dropdownBtn = null;
+            var dropdownBtnUl = null;
             switch (elementObj.element) {
                 case 'title':
                     elementObj.nsize = elementObj.nsize || lth.hsize.getDefault().id;
                     returnElement = el.h(elementObj.nsize);
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     returnElement.html(elementObj.value + '');
                     break;
                 case 'label':
@@ -956,14 +1066,20 @@ var LoanTekWidget;
                 case 'p':
                     elementObj.value = elementObj.value || ' ';
                     returnElement = el.p();
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     returnElement.html(elementObj.value + '');
                     break;
                 case 'hr':
                     returnElement = el.hr();
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     break;
                 case 'button':
                     returnElement = el.button(elementObj.type ? elementObj.type : 'button');
-                    elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+                    elementObj.cssClass = elementObj.cssClass ? 'btn btn-default ' + elementObj.cssClass : 'btn btn-default';
                     elementObj.value = elementObj.value ? elementObj.value : 'OK';
                     returnElement.addClass(elementObj.cssClass).html(elementObj.value + '');
                     break;
@@ -1063,7 +1179,7 @@ var LoanTekWidget;
                     returnElement = el.input(elementObj.type);
                     switch (elementObj.type) {
                         case 'button':
-                            elementObj.cssClass = elementObj.cssClass ? 'btn ' + elementObj.cssClass : 'btn btn-default';
+                            elementObj.cssClass = elementObj.cssClass ? 'btn btn-default ' + elementObj.cssClass : 'btn btn-default';
                             elementObj.value = elementObj.value ? elementObj.value : 'OK';
                             returnElement.val(elementObj.value);
                             break;
@@ -1083,8 +1199,15 @@ var LoanTekWidget;
                             }
                             break;
                     }
-                    if (elementObj.cssClass) {
-                        returnElement.addClass(elementObj.cssClass);
+                    if (elementObj.type === 'checkbox') {
+                        if (elementObj.cssClass) {
+                            checkboxWrapper.addClass(elementObj.cssClass);
+                        }
+                    }
+                    else {
+                        if (elementObj.cssClass) {
+                            returnElement.addClass(elementObj.cssClass);
+                        }
                     }
                     break;
                 case 'captcha':
@@ -1109,6 +1232,9 @@ var LoanTekWidget;
                     var captchaInput = _thisM.CreateFormElement(captchaInputObj);
                     var captchaResetBtn = _thisM.CreateFormElement(captchaResetBtnObj);
                     returnElement = el.div().addClass('lt-captcha').append(el.div().addClass('panel panel-info').append(el.div().addClass('panel-heading').text('Security Check')).append(el.div().addClass('panel-body').append(el.formGroup().append(el.col().append(el.div().prop('id', settings.capImg).addClass('captcha-font')))).append(el.row().append(el.col(8, 'xs').append(captchaInput).append(el.span().prop('id', settings.capErMsg).addClass('text-danger small').text('The code you entered does not match the one shown in the image.'))).append(el.col(4, 'xs').addClass('text-right').append(captchaResetBtn.html('&nbsp;').append(el.span().addClass('glyphicon glyphicon-refresh')).append('&nbsp;'))))));
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     break;
                 case 'repeat':
                     elementObj.fieldListOptions = elementObj.fieldListOptions || { fields: [] };
@@ -1124,9 +1250,18 @@ var LoanTekWidget;
                             elementObj.fieldListOptions.fields.push({ field: 'paragraph', value: '[edit Client Fees section]' });
                         }
                     }
+                    if (elementObj.field === 'mortgageratedatalist') {
+                        elementObj.fieldListOptions.fieldHelperType = 'mortgageRateDataDisplay';
+                        if (elementObj.fieldListOptions.fields.length === 0) {
+                            elementObj.fieldListOptions.fields.push({ field: 'paragraph', value: '[edit Rate Data section]', backgroundColor: '#f00', color: '#fff' });
+                        }
+                    }
                     var classQualifier = Math.ceil((Math.random() * 100000));
                     var repeatElementClass = 'ltw-repeat-data' + classQualifier;
                     returnElement = el.div().addClass(repeatElementClass);
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     if (elementObj.fieldData) {
                         for (var dataIndex = 0, dataLength = elementObj.fieldData.length; dataIndex < dataLength; ++dataIndex) {
                             var dataItem = elementObj.fieldData[dataIndex];
@@ -1142,6 +1277,9 @@ var LoanTekWidget;
                     break;
                 case 'widget':
                     returnElement = el.div();
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
                     if (elementObj.widgetInfo) {
                         var widgetCode = lth.BuildWidgetScript(elementObj.widgetInfo);
                         returnElement.html(widgetCode);
@@ -1167,6 +1305,18 @@ var LoanTekWidget;
                         }
                     }
                     returnElement = el.div().addClass('table-responsive').append(tableEl);
+                    if (elementObj.cssClass) {
+                        returnElement.addClass(elementObj.cssClass);
+                    }
+                    break;
+                case 'buttondropdown':
+                    returnElement = el.div().addClass('dropdown');
+                    dropdownBtn = el.button().addClass('btn btn-default lt-dd-toggle').attr({ 'data-toggle': 'dropdown', 'aria-haspopup': 'true', 'aria-expanded': 'false' });
+                    dropdownBtnUl = el.ul().addClass('dropdown-menu ' + elementObj.field + 'ul');
+                    elementObj.cssClass = elementObj.cssClass ? elementObj.cssClass : '';
+                    elementObj.value = elementObj.value ? elementObj.value + ' ' : 'Sort ';
+                    dropdownBtn.addClass(elementObj.cssClass).html(elementObj.value.toString());
+                    dropdownBtn.append(el.span().addClass('caret'));
                     break;
                 default:
                     elementObj.value = elementObj.value || ' ';
@@ -1191,6 +1341,9 @@ var LoanTekWidget;
                     if (checkboxWrapper) {
                         checkboxWrapper.css({ color: elementObj.color });
                     }
+                    else if (dropdownBtn) {
+                        dropdownBtn.css({ color: elementObj.color });
+                    }
                     else {
                         returnElement.css({ color: elementObj.color });
                     }
@@ -1198,6 +1351,9 @@ var LoanTekWidget;
                 if (elementObj.fontSize) {
                     if (checkboxWrapper) {
                         checkboxWrapper.css({ fontSize: elementObj.fontSize + 'px' });
+                    }
+                    else if (dropdownBtn) {
+                        dropdownBtn.css({ fontSize: elementObj.fontSize + 'px' });
                     }
                     else {
                         returnElement.css({ fontSize: elementObj.fontSize + 'px' });
@@ -1212,6 +1368,9 @@ var LoanTekWidget;
                             if (checkboxWrapper) {
                                 checkboxWrapper.css({ backgroundColor: elementObj.backgroundColor });
                             }
+                            else if (dropdownBtn) {
+                                dropdownBtn.css({ backgroundColor: elementObj.backgroundColor });
+                            }
                             else {
                                 returnElement.css({ backgroundColor: elementObj.backgroundColor });
                             }
@@ -1221,6 +1380,9 @@ var LoanTekWidget;
                 if (lth.isNumber(elementObj.borderRadius)) {
                     if (checkboxWrapper) {
                         checkboxWrapper.css({ borderRadius: elementObj.borderRadius + 'px' });
+                    }
+                    else if (dropdownBtn) {
+                        dropdownBtn.css({ borderRadius: elementObj.borderRadius + 'px' });
                     }
                     else {
                         returnElement.css({ borderRadius: elementObj.borderRadius + 'px' });
@@ -1236,7 +1398,10 @@ var LoanTekWidget;
                             returnElement.css({ borderWidth: '1px', borderStyle: 'solid' });
                         default:
                             if (checkboxWrapper) {
-                                checkboxWrapper.css({ borderColor: elementObj.borderColor });
+                                checkboxWrapper.css({ borderWidth: '1px', borderStyle: 'solid', borderColor: elementObj.borderColor });
+                            }
+                            else if (dropdownBtn) {
+                                dropdownBtn.css({ borderColor: elementObj.borderColor });
                             }
                             else {
                                 returnElement.css({ borderColor: elementObj.borderColor });
@@ -1278,6 +1443,9 @@ var LoanTekWidget;
                             if (styleKey && styleValue) {
                                 if (checkboxWrapper) {
                                     checkboxWrapper.css(styleKey, styleValue);
+                                }
+                                else if (dropdownBtn) {
+                                    dropdownBtn.css(styleKey, styleValue);
                                 }
                                 else {
                                     returnElement.css(styleKey, styleValue);
@@ -1348,6 +1516,9 @@ var LoanTekWidget;
                                     break;
                             }
                             break;
+                        case 'buttondropdown':
+                            dropdownBtn.addClass('btn-' + elementObj.size);
+                            break;
                         default:
                             break;
                     }
@@ -1360,11 +1531,11 @@ var LoanTekWidget;
                 }
             }
             if (checkboxWrapper) {
-                checkboxLabel.append(returnElement);
-                checkboxLabel.append(checkboxIcon);
-                checkboxLabel.append(checkboxText);
-                checkboxWrapper.append(checkboxLabel);
-                returnElement = checkboxWrapper;
+                checkboxLabel.append(returnElement).append(checkboxIcon).append(checkboxText);
+                returnElement = checkboxWrapper.append(checkboxLabel);
+            }
+            if (dropdownBtn) {
+                returnElement.append(dropdownBtn).append(dropdownBtnUl);
             }
             return returnElement;
         };

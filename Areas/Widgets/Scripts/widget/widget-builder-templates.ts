@@ -309,7 +309,7 @@
 									<input type="number" min="0" class="form-control" id="ltewFieldBorderRadius" name="ltewFieldBorderRadius" data-ng-model="modField.borderRadius" data-ng-model-options="modelOptions" />
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::['p','div','textarea','title','button'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1">
+							<div class="form-group form-group-sm" data-ng-show="::['p','div','textarea','title','button','buttondropdown'].indexOf(ft.element) !== -1 || ['successmessage'].indexOf(ft.type) !== -1">
 								<label for="ltewFieldPadding" class="col-sm-4 control-label">Padding</label>
 								<div class="col-sm-4">
 									<input type="number" min="0" class="form-control" id="ltewFieldPadding" name="ltewFieldPadding" data-ng-model="modField.padding" data-ng-model-options="modelOptions" />
@@ -328,7 +328,7 @@
 									<div class="small text-muted" data-ng-show="::valuePlaceholder.indexOf('#{') !== -1">Please include <strong data-ng-bind="::valuePlaceholder"></strong> in the text for the data to display correctly.</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm" data-ng-show="::['label','title','button','input'].indexOf(ft.element) !== -1">
+							<div class="form-group form-group-sm" data-ng-show="::['label','title','button','input','buttondropdown'].indexOf(ft.element) !== -1 &amp;&amp; ft.type !== 'checkbox'">
 								<label for="ltewFieldValue" class="col-sm-4 control-label">{{::ft.element === 'input' ? 'Default Value' : 'Text'}}</label>
 								<div class="col-sm-4">
 									<input type="{{::ft.type === 'number' ? 'number' : 'text'}}" class="form-control" id="ltewFieldValue" name="ltewFieldValue" data-ng-model="modField.value" data-ng-model-options="modelOptions" placeholder="{{::valuePlaceholder}}" />
@@ -360,11 +360,19 @@
 									</select>
 								</div>
 							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewCssClasses" class="col-sm-4 control-label">CSS Classes</label>
+								<div class="col-sm-4"><input type="text" class="form-control" id="ltewCssClasses" name="ltewCssClasses" data-ng-model="modField.cssClass" data-ng-model-options="modelOptions" /></div>
+							</div>
+							<div class="form-group form-group-sm">
+								<label for="ltewStyles" class="col-sm-4 control-label">Custom CSS Code</label>
+								<div class="col-sm-4"><input type="text" class="form-control" id="ltewStyles" name="ltewStyles" data-ng-model="modField.style" data-ng-model-options="modelOptions" /></div>
+							</div>
 							<div class="form-group form-group-sm" data-ng-show="::(['input','select','textarea'].indexOf(ft.element) !== -1) &amp;&amp; !fieldOptions.isLTRequired">
 								<label for="ltewFieldRequired" class="col-sm-4 control-label">Require Field</label>
 								<div class="col-sm-4">
-									<div class="checkbox">
-										<label for="ltewFieldRequired"><input type="checkbox" id="ltewFieldRequired" name="ltewFieldRequired" data-ng-model="modField.required" /></label>
+									<div class="checkbox checkbox-fa">
+										<label for="ltewFieldRequired"><input type="checkbox" id="ltewFieldRequired" name="ltewFieldRequired" data-ng-model="modField.required" /><i class="checkbox-i"></i></label>
 									</div>
 								</div>
 							</div>
@@ -383,25 +391,31 @@
 							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
 								<label for="ltewDataTableBordered" class="col-sm-4 control-label">Include Table Border</label>
 								<div class="col-sm-4">
-									<div class="checkbox"><label for="ltewDataTableBordered"><input type="checkbox" id="ltewDataTableBordered" name="ltewDataTableBordered" data-ng-model="modField.dataTableOptions.isBordered" /></label></div>
+									<div class="checkbox checkbox-fa"><label for="ltewDataTableBordered"><input type="checkbox" id="ltewDataTableBordered" name="ltewDataTableBordered" data-ng-model="modField.dataTableOptions.isBordered" /><i class="checkbox-i"></i></label></div>
 								</div>
 							</div>
 							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
 								<label for="ltewDataTableCondensed" class="col-sm-4 control-label">Condense Table</label>
 								<div class="col-sm-4">
-									<div class="checkbox"><label for="ltewDataTableCondensed"><input type="checkbox" id="ltewDataTableCondensed" name="ltewDataTableCondensed" data-ng-model="modField.dataTableOptions.isCondensed" /></label></div>
+									<div class="checkbox checkbox-fa"><label for="ltewDataTableCondensed"><input type="checkbox" id="ltewDataTableCondensed" name="ltewDataTableCondensed" data-ng-model="modField.dataTableOptions.isCondensed" /><i class="checkbox-i"></i></label></div>
 								</div>
 							</div>
 							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
 								<label for="ltewDataTableStriped" class="col-sm-4 control-label">Striped Table</label>
 								<div class="col-sm-4">
-									<div class="checkbox"><label for="ltewDataTableStriped"><input type="checkbox" id="ltewDataTableStriped" name="ltewDataTableStriped" data-ng-model="modField.dataTableOptions.isStriped" /></label></div>
+									<div class="checkbox checkbox-fa"><label for="ltewDataTableStriped"><input type="checkbox" id="ltewDataTableStriped" name="ltewDataTableStriped" data-ng-model="modField.dataTableOptions.isStriped" /><i class="checkbox-i"></i></label></div>
 								</div>
 							</div>
 							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1)">
 								<label for="ltewDataTableHover" class="col-sm-4 control-label">Table Hover</label>
 								<div class="col-sm-4">
-									<div class="checkbox"><label for="ltewDataTableHover"><input type="checkbox" id="ltewDataTableHover" name="ltewDataTableHover" data-ng-model="modField.dataTableOptions.isHover" /></label></div>
+									<div class="checkbox checkbox-fa"><label for="ltewDataTableHover"><input type="checkbox" id="ltewDataTableHover" name="ltewDataTableHover" data-ng-model="modField.dataTableOptions.isHover" /><i class="checkbox-i"></i></label></div>
+								</div>
+							</div>
+							<div class="form-group form-group-sm" data-ng-show="::(['datatable'].indexOf(ft.element) !== -1) && !!dataTableExclusions">
+								<label class="col-sm-4 control-label">Exclude Table Columns</label>
+								<div class="col-sm-4">
+									<div class="checkbox checkbox-fa" data-ng-repeat="exclude in dataTableExclusions"><label for="ltewDataTableExclude_{{$index}}"><input type="checkbox" id="ltewDataTableExclude_{{$index}}" name="ltewDataTableExclude_{{$index}}" data-ng-model="exclude.isExcluded" /><i class="checkbox-i"></i> {{exclude.name}}</label></div>
 								</div>
 							</div>
 						</div>
@@ -410,79 +424,92 @@
 							<hr />
 							<style type="text/css">{{previewStyles}}</style>
 							<div class="ltw ltw-preview" style="width:100%;">
-								<div class="lt-widget-border">
-									<div data-ng-show="::ft.element === 'input'">
+								<div class="lt-widget-border" style="padding:8px;">
+									<div data-ng-show="::ft.element === 'input' && ft.type !== 'checkbox'">
 										<div class="form-group">
-											<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="Field Placeholder Text" value="Text Field" /></div>
+											<div class="col-sm-12"><input type="text" class="form-control {{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="Field Placeholder Text" value="Text Field" /></div>
 										</div>
 										<div class="form-group">
-											<div class="col-sm-12"><input type="text" class="form-control" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color" /></div>
+											<div class="col-sm-12"><input type="text" class="form-control {{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color" /></div>
+										</div>
+									</div>
+									<div data-ng-show="::ft.element === 'input' && ft.type === 'checkbox'">
+										<div class="form-group">
+											<div class="col-sm-12">
+												<div class="checkbox checkbox-fa {{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle" data-ng-class="checkboxSizeClass">
+													<label>
+														<input type="checkbox" />
+														<i class="checkbox-i"></i>
+														<span>{{modField.placeholder}}</span>
+													</label>
+												</div>
+											</div>
 										</div>
 									</div>
 									<div data-ng-if="::ft.element === 'select'">select</div>
 									<div class="form-group" data-ng-show="::ft.element === 'select'">
 										<div class="col-sm-12">
-											<select class="form-control" data-ng-style="fieldStyle", data-ng-class="fieldSizeClass">
+											<select class="form-control {{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle", data-ng-class="fieldSizeClass">
 												<option value="">{{modField.placeholder || '- Select -'}}</option>
 											</select>
 										</div>
 									</div>
 									<div data-ng-show="::ft.element === 'textarea'">
 										<div class="form-group">
-											<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color">Textarea</textarea></div>
+											<div class="col-sm-12"><textarea class="form-control {{additionalClasses}}" style="{{additionalStyles}}" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color">Textarea</textarea></div>
 										</div>
 										<div class="form-group">
-											<div class="col-sm-12"><textarea class="form-control" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color"></textarea></div>
+											<div class="col-sm-12"><textarea class="form-control {{additionalClasses}}" style="{{additionalStyles}}" rows="{{modField.rows || 1}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass" placeholder="placeholder text doesn't change color"></textarea></div>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'button'">
-										<div class="col-sm-12"><button class="btn btn-primary" type="button" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass">{{modField.value || 'Submit'}}</button></div>
+										<div class="col-sm-12"><button class="btn btn-primary {{additionalClasses}}" style="{{additionalStyles}}" type="button" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass">{{modField.value || 'Submit'}}</button></div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'p'">
 										<div class="col-sm-12">
 											<div style="margin: 8px;">
-												<p data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+												<p class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 											</div>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'div'">
 										<div class="col-sm-12">
-											<div data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+											<div class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'widget'">
 										<div class="col-sm-12">
-											<div data-ng-style="fieldStyle">NOTE: The widget you are importing has some of its own styling. However, most of the default styling will be overridden by the parent widgets styles.</div>
+											<div class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">NOTE: The widget you are importing has some of its own styling. However, most of the default styling will be overridden by the parent widgets styles.</div>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'hr'">
 										<div class="col-sm-12">
-											<hr data-ng-style="fieldStyle" />
+											<hr class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle" />
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.type === 'successmessage'">
 										<div class="col-sm-12">
-											<p data-ng-style="fieldStyle">{{modField.value || ft.value || 'Thank you. After submit form text.'}}</p>
+											<p class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || ft.value || 'Thank you. After submit form text.'}}</p>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'label'">
-										<label for="" class="control-label col-sm-8" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass">{{modField.value || 'Input Label'}}</label>
+										<label for="" class="control-label col-sm-8 {{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle" data-ng-class="fieldSizeClass">{{modField.value || 'Input Label'}}</label>
 										<div class="col-sm-4"><input type="text" class="form-control" data-ng-class="fieldSizeClass" placeholder="&lt;- Label" /></div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'title'">
 										<div class="col-sm-12">
-											<h1 data-ng-show="modField.nsize === 1" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h1>
-											<h2 data-ng-show="modField.nsize === 2" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h2>
-											<h3 data-ng-show="modField.nsize === 3" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h3>
-											<h4 data-ng-show="modField.nsize === 4" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h4>
-											<h5 data-ng-show="modField.nsize === 5" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h5>
-											<h6 data-ng-show="modField.nsize === 6" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h6>
+											<h1 data-ng-show="modField.nsize === 1" class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h1>
+											<h2 data-ng-show="modField.nsize === 2" class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h2>
+											<h3 data-ng-show="modField.nsize === 3" class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h3>
+											<h4 data-ng-show="modField.nsize === 4" class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h4>
+											<h5 data-ng-show="modField.nsize === 5" class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h5>
+											<h6 data-ng-show="modField.nsize === 6" class="{{additionalClasses}}" style="{{additionalStyles}}" data-ng-style="fieldStyle">{{modField.value || 'Title'}}</h6>
 										</div>
 									</div>
 									<div class="form-group" data-ng-show="::ft.element === 'datatable'">
 										<div class="col-sm-12">
 											<div class="table-responsive">
-												<table class="table dataTable" data-ng-class="{'table-bordered': modField.dataTableOptions.isBordered, 'table-condensed': modField.dataTableOptions.isCondensed, 'table-striped': modField.dataTableOptions.isStriped, 'table-hover': modField.dataTableOptions.isHover}" data-ng-style="fieldStyle">
+												<table class="table dataTable {{additionalClasses}}" style="{{additionalStyles}}" data-ng-class="{'table-bordered': modField.dataTableOptions.isBordered, 'table-condensed': modField.dataTableOptions.isCondensed, 'table-striped': modField.dataTableOptions.isStriped, 'table-hover': modField.dataTableOptions.isHover}" data-ng-style="fieldStyle">
 													<thead>
 														<tr>
 															<th>Header</th>
@@ -507,6 +534,17 @@
 											</div>
 										</div>
 									</div>
+									<div class="form-group" data-ng-show="::ft.element === 'buttondropdown'">
+										<div class="col-sm-12">
+											<div class="dropdown">
+												<button class="btn btn-default dropdown-toggle {{additionalClasses}}" type="button" style="{{additionalStyles}}" data-ng-style="fieldStyle" data-ng-class="buttonSizeClass" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{modField.value || 'Sort'}} <span class="caret"></span></button>
+												<ul class="dropdown-menu mortgageratedatasortul">
+													<li><a href="javascript:void(0);"><span class="pull-right fa fa-sort-asc"></span>sort item</a></li>
+													<li><a href="javascript:void(0);"><span class="pull-right fa fa-sort"></span>sort item</a></li>
+												</ul>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -520,9 +558,9 @@
 		`);
 
 		$templateCache.put('template/modal/editRepeatField.html', `
-			<form class="form-horizontal" data-ng-submit="saveWidget();" data-ng-init="ft = fieldOptions.fieldTemplate">
+			<form class="form-horizontal" data-ng-submit="saveWidget();">
 				<div class="modal-header modal-header-alert alert alert-info">
-					<h3 class="modal-title">Edit Widget Data Field</h3>
+					<h3 class="modal-title">Edit Widget Data Field: {{fieldOptions.name}}</h3>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">

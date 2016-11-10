@@ -4692,7 +4692,9 @@
   padding-left: 0;
 }
 .ltw .checkbox-fa label input[type=checkbox] {
-  display: none;
+  margin-left: 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
 }
 .ltw .checkbox-fa label input[type=checkbox] + .checkbox-i {
   display: inline-block;

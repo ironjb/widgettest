@@ -8,12 +8,12 @@ var LoanTekWidget;
             this.PassThroughItems = null;
             this.DepositRequest = {
                 RequestId: null,
-                ForType: null,
-                QuotingChannelType: 0,
-                Amount: null,
-                TermInMonths: null,
-                CustomData: null,
-                CustomFields: null
+                Form: {
+                    ForType: 130,
+                    QuotingChannelType: 3,
+                    Amount: null,
+                    TermInMonths: null
+                }
             };
             this.CustomQuoteResponseJson = null;
         }

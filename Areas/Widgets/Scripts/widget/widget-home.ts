@@ -1,4 +1,7 @@
 /// <reference path="../../../../Scripts/typings/tsd.d.ts" />
+/// <reference path="../../../../Scripts/common/ng/services.ts" />
+/// <reference path="../../../../Scripts/common/ng/directives.ts" />
+/// <reference path="../widget/widget-builder-services.ts" />
 
 declare namespace IWidgetHome {
 	interface INgScope extends ng.IScope {
