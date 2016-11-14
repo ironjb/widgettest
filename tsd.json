@@ -34,6 +34,15 @@
     },
     "jquery.dataTables/jquery.dataTables.d.ts": {
       "commit": "754ac82a16d9a22d6c28bba2dcd8b227693650b8"
+    },
+    "wnumb/wnumb.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
+    },
+    "nouislider/nouislider.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
+    },
+    "moment/moment.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
     }
   }
 }

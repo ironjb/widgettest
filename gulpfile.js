@@ -91,6 +91,18 @@
 			])
 		.pipe(gulp.dest('Scripts/lib/datatables'));
 
+		// Copy noUiSlider-angular
+		gulp.src(['bower_components/nouislider/distribute/nouislider.min.css'])
+		.pipe(gulp.dest('Content/lib/nouislider'));
+		gulp.src(['bower_components/nouislider/distribute/nouislider.min.js'])
+		.pipe(gulp.dest('Scripts/lib/nouislider'));
+		gulp.src(['bower_components/nouislider-angular/nouislider.min.js'])
+		.pipe(gulp.dest('Scripts/lib/nouislider-angular'));
+
+		// Copy moment.js
+		gulp.src(['bower_components/moment/min/moment.min.js'])
+		.pipe(gulp.dest('Scripts/lib/moment'));
+
 		// // Metronic Bootstrap SASS
 		// gulp.src([
 		// 	'metronic_assets/theme/sass/**'

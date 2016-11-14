@@ -26,6 +26,8 @@
     "papaparse": "^4.1.2",
     "simple-line-icons": "^2.4.1",
     "datatables.net": "^1.10.12",
-    "datatables.net-bs": "^1.10.12"
+    "datatables.net-bs": "^1.10.12",
+    "nouislider-angular": "^2.6.2",
+    "moment": "^2.16.0"
   }
 }
