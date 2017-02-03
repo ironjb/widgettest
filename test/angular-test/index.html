@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Angular Test</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+	<div data-ng-app="myApp" data-ng-controller="myController">
+		<p>Goals for this test:</p>
+		<ul>
+			<li>
+				Use the following URL to get data using Angular's '$http' service: <a href="https://clients-pricing-api.loantek.com/Mortgage/v1.0/MortgageLoan/Mjh4UnJxNmFDeXFlc2pXRlArNU52NzlZUDNLSmg3ZmhBQT090/FullMortgageRequest/Test?UserId=861" target="_blank">https://clients-pricing-api.loantek.com/Mortgage/v1.0/MortgageLoan/Mjh4UnJxNmFDeXFlc2pXRlArNU52NzlZUDNLSmg3ZmhBQT090/FullMortgageRequest/Test?UserId=861</a>
+			</li>
+			<li>
+				Loop through the "Submissions[0].Quotes" array in the results you get back and display the following items:
+				<ul>
+					<li>InterestRate (display heading/label as 'Rate')</li>
+					<li>APR</li>
+					<li>QuoteFees (display as 'Loan Fees')</li>
+					<li>PIP (display as 'Payment')</li>
+					<li>CalcPrice (display as 'Points')</li>
+				</ul>
+			</li>
+			<li>Add a search box to filter the results</li>
+			<li>In the list of results, include a button to remove that particular row (even if results are filtered)</li>
+			<li>Display any negative numbers in red</li>
+			<li>Add bootstrap's css using a CDN and give it some styling using bootstrap, or create your own style (or a combination). Basically try to make it look good.</li>
+			<li>Keep responsive design in mind</li>
+		</ul>
+		<div class="container">
+			<input type="text" data-ng-model="filterResults" />
+			<div data-ng-repeat="item in rateList | myFilter : filterResults">
+				<div class="well">
+					<div class="row">
+						<div class="col-sm-2">Rate: <span data-ng-class="item.InterestRate < 0 && 'text-danger'">{{item.InterestRate}}</span></div>
+						<div class="col-sm-2">APR: <span data-ng-class="item.APR < 0 && 'text-danger'">{{item.APR}}</span></div>
+						<div class="col-sm-2">Loan Fees: <span data-ng-class="item.QuoteFees < 0 && 'text-danger'">{{item.QuoteFees}}</span></div>
+						<div class="col-sm-2">Payment: <span data-ng-class="item.PIP < 0 && 'text-danger'">{{item.PIP}}</span></div>
+						<div class="col-sm-2">Points: <span data-ng-class="item.CalcPrice < 0 && 'text-danger' || ''">{{item.CalcPrice}}</span></div>
+					</div>
+					<div class="row">
+
+					</div>
+					<button class="btn btn-danger" type="button" data-ng-click="removeItem(item)">Remove</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+</body>
+</html>
